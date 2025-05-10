@@ -1,0 +1,242 @@
+.chatbot-container {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  z-index: 1000;
+}
+
+.chat-window {
+  width: 340px;
+  height: 500px;
+  background-color: #f9f9f9;
+  border: 1px solid #f9f9f9;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+}
+
+.chat-header h2 {
+  font-size: 18px;
+  margin: 0;
+}
+.chat-icon {
+  cursor: pointer;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #54b4d3;
+  cursor: pointer;
+  margin-right: -15px;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+.file-input {
+  display: none;
+  cursor: pointer;
+}
+.message {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.message.user {
+  flex-direction: row-reverse;
+}
+
+.avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  margin: 0 10px;
+}
+
+.bubble {
+  background-color: #e0e0e0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  max-width: 70%;
+  position: relative;
+  font-size: 14px;
+}
+
+.message.user .bubble {
+  background-color: #54b4d3;
+  color: white;
+}
+
+.timestamp {
+  font-size: 11px;
+  color: #666;
+  margin-top: 4px;
+  text-align: right;
+}
+
+.input-container {
+  padding-top: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.input-container input[type="text"] {
+  flex: 1;
+  padding: 10px 15px;
+  font-size: 15px;
+  border: none;
+  border-radius: 20px;
+  outline: none;
+  background-color: #ffffff;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+.message-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  cursor: pointer;
+  pointer-events: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-image {
+  max-width: 90%;
+  max-height: 90%;
+}
+
+.input-container button {
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+.message-image {
+  max-width: 100%; /* Đảm bảo hình ảnh không vượt quá chiều rộng của khung chat */
+  height: auto; /* Giữ tỉ lệ khung hình */
+  border-radius: 8px; /* Tùy chọn: bo góc hình ảnh */
+  cursor: pointer;
+}
+
+.input-container .btn_message:hover,
+.input-container .btn_message2:hover {
+  background-color: #e0f7ff;
+}
+
+.input-container .btn_message svg {
+  color: #54b4d3;
+  font-size: 18px;
+}
+
+.input-container .btn_message2 svg {
+  color: #7b7b7b;
+  font-size: 18px;
+  cursor: pointer;
+}
+.chat-window.fullscreen {
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+}
+
+@media (max-width: 768px) {
+  .chatbot-container {
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end; /* Đảm bảo icon nằm bên phải */
+    padding: 0; /* Không dùng padding ở đây nữa */
+    position: fixed; /* Đảm bảo chat icon không bị lệch */
+  }
+
+  .chat-icon {
+    position: absolute;
+    bottom: 25px; /* Vị trí cách đáy một chút */
+    right: 25px; /* Vị trí cách phải một chút */
+    z-index: 1001;
+    cursor: pointer;
+  }
+
+  .chat-window {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    padding: 10px 8px;
+  }
+
+  .chat-header {
+    padding: 10px;
+  }
+
+  .chat-header h2 {
+    font-size: 16px;
+  }
+
+  .messages {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .bubble {
+    font-size: 13px;
+    max-width: 85%;
+  }
+
+  .avatar {
+    width: 30px;
+    height: 30px;
+  }
+
+  .input-container {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+
+  .input-container input[type="text"] {
+    flex: 1;
+    font-size: 14px;
+  }
+
+  .input-container button {
+    padding: 6px;
+  }
+
+  .input-container .btn_message svg,
+  .input-container .btn_message2 svg {
+    font-size: 16px;
+  }
+}
