@@ -45,6 +45,7 @@ export default function Footer() {
         { label: "Chính sách bảo hành", url: "/guarantee" },
         { label: "Chính sách đổi trả", url: "/returnpolicy" },
         { label: "Chính sách giao hàng", url: "/deliverypolicy" },
+        { label: "Kiểm tra IMEI", url: "/checkimei" },
       ],
     },
     {
@@ -53,6 +54,7 @@ export default function Footer() {
       information: [
         { label: "Hotline: 0396 180 619" },
         { label: "Chat với chúng tôi" },
+        { label: "Mã giảm giá", url: "/voucher" },
       ],
     },
   ];

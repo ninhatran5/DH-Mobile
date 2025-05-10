@@ -1,0 +1,382 @@
+:root {
+  --default-font: "Roboto", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --heading-font: "Nunito", sans-serif;
+  --nav-font: "Inter", sans-serif;
+}
+
+/* Global Colors - The following color variables are used throughout the website. Updating them here will change the color scheme of the entire website */
+:root {
+  --background-color: #ffffff; /* Background color for the entire website, including individual sections */
+  --default-color: #212529; /* Default color used for the majority of the text content across the entire website */
+  --heading-color: #2d465e; /* Color for headings, subheadings and title throughout the website */
+  --accent-color: #0d83fd; /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
+  --surface-color: #ffffff; /* The surface color is used as a background of boxed elements within sections, such as cards, icon boxes, or other elements that require a visual separation from the global background. */
+  --contrast-color: #ffffff; /* Contrast color for text, ensuring readability against backgrounds of accent, heading, or default colors. */
+}
+
+/* Nav Menu Colors - The following color variables are used specifically for the navigation menu. They are separate from the global colors to allow for more customization options */
+:root {
+  --nav-color: #212529; /* The default color of the main navmenu links */
+  --nav-hover-color: #0d83fd; /* Applied to main navmenu links when they are hovered over or active */
+  --nav-mobile-background-color: #ffffff; /* Used as the background color for mobile navigation menu */
+  --nav-dropdown-background-color: #ffffff; /* Used as the background color for dropdown items that appear when hovering over primary navigation items */
+  --nav-dropdown-color: #212529; /* Used for navigation links of the dropdown items in the navigation menu. */
+  --nav-dropdown-hover-color: #0d83fd; /* Similar to --nav-hover-color, this color is applied to dropdown navigation links when they are hovered over. */
+}
+
+/* Color Presets - These classes override global colors when applied to any section or element, providing reuse of the sam color scheme. */
+
+.light-background {
+  --background-color: #f3f9ff;
+  --surface-color: #ffffff;
+}
+
+.dark-background {
+  --background-color: #0d83fd;
+  --default-color: #ffffff;
+  --heading-color: #ffffff;
+  --surface-color: #409dfd;
+  --contrast-color: #ffffff;
+}
+
+/* Smooth scroll */
+:root {
+  scroll-behavior: smooth;
+}
+
+/*--------------------------------------------------------------
+# General Styling & Shared Classes
+--------------------------------------------------------------*/
+body {
+  color: var(--default-color);
+  background-color: var(--background-color);
+  font-family: var(--default-font);
+}
+
+a {
+  color: #0d83fd;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+a:hover {
+  color: color-mix(in srgb, #0d83fd, transparent 25%);
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--heading-color);
+  font-family: var(--heading-font);
+}
+
+.imei-info-card {
+  padding-top: 20px;
+}
+.checkimei_image {
+  justify-content: end;
+  display: flex;
+  align-items: center;
+}
+.checkimei-hero {
+  position: relative;
+  padding-top: 120px;
+  margin-bottom: 200px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #0d83fd, transparent 95%) 50%,
+    color-mix(in srgb, #0d83fd, transparent 98%) 25%,
+    transparent 50%
+  );
+}
+
+.checkimei-hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle at 90% 10%,
+    color-mix(in srgb, #0d83fd, transparent 92%),
+    transparent 40%
+  );
+  pointer-events: none;
+}
+
+.checkimei-hero .checkimei-hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.checkimei-hero .checkimei-hero-content h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+
+.checkimei-hero .checkimei-hero-content h1 .checkimei-accent-text {
+  color: #0d83fd;
+}
+
+@media (max-width: 992px) {
+  .checkimei-hero .checkimei-hero-content {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .checkimei-hero .checkimei-hero-content h1 {
+    font-size: 2.5rem;
+  }
+
+  .checkimei-hero .checkimei-hero-content .checkimei-hero-buttons {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 575px) {
+  .checkimei-hero .checkimei-hero-content h1 {
+    font-size: 2rem;
+  }
+}
+
+.checkimei-hero .checkimei-company-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background-color: color-mix(in srgb, #0d83fd, transparent 92%);
+  border-radius: 50px;
+  color: #0d83fd;
+  font-weight: 500;
+}
+
+.checkimei-hero .checkimei-company-badge i {
+  font-size: 1.25rem;
+}
+
+.checkimei-hero .btn-primary {
+  background-color: #0d83fd;
+  border-color: #0d83fd;
+  color: var(--contrast-color);
+  padding: 0.75rem 2.5rem;
+  border-radius: 50px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.checkimei-hero .btn-primary:hover {
+  background-color: color-mix(in srgb, #0d83fd, black 20%);
+  border-color: color-mix(in srgb, #0d83fd, black 20%);
+}
+
+.checkimei-hero .btn-link {
+  color: var(--heading-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.checkimei-hero .btn-link:hover {
+  color: #0d83fd;
+}
+
+.checkimei-hero .btn-link i {
+  font-size: 1.5rem;
+  vertical-align: middle;
+}
+
+.checkimei-hero .checkimei-hero-image {
+  position: relative;
+  text-align: center;
+  z-index: 1;
+}
+
+.checkimei-hero .checkimei-hero-image img {
+  max-width: 100%;
+  height: auto;
+}
+
+.checkimei-hero .checkimei-customers-badge {
+  position: absolute;
+  bottom: 10px;
+  right: 30px;
+  background-color: white;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  max-width: 300px;
+  animation: float-badge 3s ease-in-out infinite;
+  will-change: transform;
+}
+
+.checkimei-hero .checkimei-customer-avatars {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.checkimei-hero .checkimei-avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: 2px solid var(--surface-color);
+  margin-left: -8px;
+}
+
+.checkimei-hero .checkimei-avatar:first-child {
+  margin-left: 0;
+}
+
+.checkimei-hero .checkimei-avatar.checkimei-more {
+  background-color: #0d83fd;
+  color: var(--contrast-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.checkimei-hero .checkimei-customers-badge p {
+  font-size: 0.875rem;
+  color: color-mix(in srgb, var(--default-color), transparent 40%);
+}
+
+@media (max-width: 992px) {
+  .checkimei-hero .checkimei-customers-badge {
+    position: static;
+    margin: 1rem auto;
+    max-width: 250px;
+  }
+}
+
+.checkimei-hero .checkimei-stats-row {
+  position: relative;
+  z-index: 1;
+  margin-top: 5rem;
+  background-color: var(--surface-color);
+  border-radius: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  padding-bottom: 2rem;
+}
+
+.checkimei-hero .checkimei-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+}
+
+.checkimei-hero .checkimei-stat-item .checkimei-stat-icon {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: color-mix(in srgb, #0d83fd, transparent 92%);
+  border-radius: 50px;
+  transition: 0.3s;
+}
+
+.checkimei-hero .checkimei-stat-item .checkimei-stat-icon i {
+  font-size: 1.5rem;
+  color: #0d83fd;
+}
+
+.checkimei-hero .checkimei-stat-item:hover .checkimei-stat-icon {
+  background-color: #0d83fd;
+}
+
+.checkimei-hero .checkimei-stat-item:hover .checkimei-stat-icon i {
+  color: var(--contrast-color);
+}
+
+.checkimei-hero .checkimei-stat-item .checkimei-stat-content {
+  flex-grow: 1;
+}
+
+.checkimei-hero .checkimei-stat-item .checkimei-stat-content h4 {
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.checkimei-hero .checkimei-stat-item .checkimei-stat-content p {
+  font-size: 0.875rem;
+  color: color-mix(in srgb, var(--default-color), transparent 40%);
+  margin: 0;
+}
+.searchbar {
+  margin-bottom: auto;
+  margin-top: auto;
+  height: 60px;
+  background-color: #0d83fd;
+  border-radius: 30px;
+  padding: 10px;
+}
+
+.search_input {
+  color: white;
+  border: 0;
+  outline: 0;
+  background: none;
+  width: 0;
+  caret-color: transparent;
+  line-height: 40px;
+  transition: width 0.4s linear;
+}
+
+.searchbar:hover > .search_input {
+  padding: 0 10px;
+  width: 450px;
+  caret-color: white;
+  transition: width 0.4s linear;
+}
+.search_input::placeholder {
+  color: white;
+}
+.searchbar:hover > .search_icon {
+  background: white;
+  color: #0d83fd;
+}
+
+.search_icon {
+  height: 40px;
+  width: 40px;
+  float: right;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  color: white;
+  text-decoration: none;
+}
+
+@media (max-width: 575px) {
+  .checkimei-hero .checkimei-stat-item {
+    padding: 1.5rem;
+  }
+}
+
+@keyframes float-badge {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}

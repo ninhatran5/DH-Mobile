@@ -15,6 +15,7 @@ import CheckOut from "./pages/CheckOut";
 import ChangeCheckout from "./pages/ChangeCheckout";
 import ThanksYou from "./pages/ThanksYou";
 import Voucher from "./pages/Voucher";
+import CheckImei from "./pages/CheckImei";
 
 const withLayoutClient = (Component) => {
   return (
@@ -64,6 +65,10 @@ const routerConfig = [
   {
     path: "/voucher",
     element: withLayoutClient(Voucher),
+  },
+  {
+    path: "/checkimei",
+    element: withLayoutClient(CheckImei),
   },
   {
     path: "/guarantee",
