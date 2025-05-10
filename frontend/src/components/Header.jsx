@@ -55,6 +55,11 @@ export default function Header() {
       nameService: "Chính sách giao hàng",
       link: "/deliverypolicy",
     },
+    {
+      id: 4,
+      nameService: "Kiểm tra IMEI",
+      link: "/checkimei",
+    },
   ];
   const langues = [
     {
@@ -244,12 +249,6 @@ export default function Header() {
                   >
                     <div className="offcanvas-body">
                       <ul className="navbar-nav justify-content-end menu-list list-unstyled d-flex gap-md-3 mb-0">
-                        <li
-                          className="nav-item fw-bold"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <a className="nav-link">Danh mục</a>
-                        </li>
                         {navbars.map((navbar) => {
                           const isActive = location.pathname === navbar.link;
                           return (
