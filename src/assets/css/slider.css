@@ -1,0 +1,91 @@
+.partner-page{
+  margin-bottom: 10px;
+}
+
+.partner {
+  margin-top: 70px;
+  margin-bottom: 50px;
+}
+.partner-title {
+  color: #2766ad;
+  font-size: 30px;
+  font-weight: 600;
+  margin-top: 30px;
+}
+.partner-des {
+  color: #3d79bd;
+  font-size: 15px;
+  font-weight: 600;
+}
+.slide-partner {
+  margin-top: 30px;
+}
+/* Tổng thể container */
+.slider-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Cấu hình track cho smooth */
+.slick-track {
+  display: flex !important;
+  align-items: center;
+  will-change: transform;
+  margin: 0; /* Đảm bảo không có khoảng cách không cần thiết */
+}
+
+/* Slide căn giữa */
+.slick-slide {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  padding: 0px; /* giảm khoảng cách giữa các logo */
+  box-sizing: border-box;
+}
+
+/* Ô chứa logo */
+.logo-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+  margin: 0 5px; /* Thay đổi khoảng cách giữa các logo */
+}
+
+/* Logo image chuẩn hóa */
+.logo-img {
+  height: 40px; /* Đồng bộ chiều cao */
+  max-width: 120px; /* Không quá to */
+  width: auto;
+  object-fit: contain;
+  filter: grayscale(100%) brightness(90%);
+  transition: filter 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+}
+
+.logo-img:hover {
+  filter: grayscale(0%) brightness(100%);
+  transform: scale(1.1);
+}
+
+/* Responsive cho màn nhỏ hơn */
+@media (max-width: 1024px) {
+  .logo-img {
+    height: 35px;
+    max-width: 100px;
+  }
+}
+
+@media (max-width: 768px) {
+  .logo-img {
+    height: 30px;
+    max-width: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-img {
+    height: 25px;
+    max-width: 90px;
+  }
+}

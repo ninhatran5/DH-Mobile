@@ -1,0 +1,126 @@
+.voucher-title {
+  text-transform: uppercase;
+  font-weight: 900;
+  border-left: 10px solid #fec500;
+  padding-left: 10px;
+  margin-bottom: 30px;
+}
+
+.voucher-card {
+  background-color: #f2bc41;
+  position: relative;
+}
+
+.voucher-date {
+  width: 80px;
+  border-right: 2px dashed white;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-right: 23px;
+}
+.btn_copy_voucher {
+  position: absolute;
+  top: -13px;
+  right: 0;
+  font-size: 23px;
+  cursor: pointer;
+}
+
+.tooltip {
+  visibility: hidden;
+  width: auto;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  text-align: center;
+  border-radius: 5px;
+  padding: 8px 12px;
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.btn_copy_voucher:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translate(-50%, -5px);
+}
+.voucher-day {
+  margin-right: 13px;
+  font-size: 3rem;
+  font-weight: bold;
+  color: white;
+  line-height: 1;
+}
+.voucher_margin{
+  margin-bottom: 40px;
+}
+.voucher-circle {
+  width: 25px;
+  height: 25px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.top-circle {
+  top: -29px;
+  margin-left: 40px;
+}
+
+.bottom-circle {
+  bottom: -29px;
+  margin-left: 40px;
+}
+
+.voucher-content {
+  color: white;
+  flex: 1;
+  position: relative;
+}
+
+.voucher-heading {
+  font-weight: 700;
+  color: white;
+  margin: 0.2rem 0 0.5rem;
+}
+
+.text-strike {
+  text-decoration: line-through;
+}
+
+.voucher-info {
+  font-size: 0.9rem;
+  color: white;
+}
+
+.voucher-btn {
+  position: absolute;
+  right: 15px;
+  bottom: 15px;
+  color: #fff;
+  width: 90px;
+}
+
+.voucher-btn.tickets {
+  background-color: #ced4da;
+  color: white;
+}
+
+.voucher-btn.booked {
+  background-color: #007bff;
+}
+
+.voucher-btn.cancel {
+  background-color: #f8504c;
+}

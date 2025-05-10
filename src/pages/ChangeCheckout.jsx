@@ -1,0 +1,320 @@
+import { Link } from "react-router-dom";
+import iphone from "../assets/images/iphone-16-pro-max.webp";
+import { IoReturnDownBack } from "react-icons/io5";
+
+const ChangeCheckout = () => {
+  const purchaseInformation = [
+    {
+      id: 1,
+      name: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
+      image: iphone,
+      quantity: 1,
+      total: "27.890.000đ",
+    },
+    {
+      id: 2,
+      name: "iPhone 15 Pro Max 64GB | Chính hãng US/A",
+      image: iphone,
+      quantity: 2,
+      total: "14.890.000đ",
+    },
+  ];
+
+  const wards = [
+    {
+      id: 1,
+      name: "Phường Tràng Tiền",
+      value: "phuong-trang-tien",
+      districtId: 1, // Quận Hoàn Kiếm
+    },
+    {
+      id: 2,
+      name: "Phường Khâm Thiên",
+      value: "phuong-kham-thien",
+      districtId: 2, // Quận Đống Đa
+    },
+    {
+      id: 3,
+      name: "Phường Bạch Đằng",
+      value: "phuong-bach-dang",
+      districtId: 3, // Quận Hai Bà Trưng
+    },
+    {
+      id: 4,
+      name: "Phường Nghĩa Đô",
+      value: "phuong-nghia-do",
+      districtId: 4, // Quận Cầu Giấy
+    },
+    {
+      id: 5,
+      name: "Phường Tứ Liên",
+      value: "phuong-tu-lien",
+      districtId: 5, // Quận Tây Hồ
+    },
+    {
+      id: 6,
+      name: "Phường Ngọc Lâm",
+      value: "phuong-ngoc-lam",
+      districtId: 6, // Quận Long Biên
+    },
+    {
+      id: 7,
+      name: "Phường Mộ Lao",
+      value: "phuong-mo-lao",
+      districtId: 7, // Quận Hà Đông
+    },
+  ];
+  const districts = [
+    {
+      id: 1,
+      name: "Quận Hoàn Kiếm",
+      value: "quan-hoan-kiem",
+    },
+    {
+      id: 2,
+      name: "Quận Đống Đa",
+      value: "quan-dong-da",
+    },
+    {
+      id: 3,
+      name: "Quận Hai Bà Trưng",
+      value: "quan-hai-ba-trung",
+    },
+    {
+      id: 4,
+      name: "Quận Cầu Giấy",
+      value: "quan-cau-giay",
+    },
+    {
+      id: 5,
+      name: "Quận Tây Hồ",
+      value: "quan-tay-ho",
+    },
+    {
+      id: 6,
+      name: "Quận Long Biên",
+      value: "quan-long-bien",
+    },
+    {
+      id: 7,
+      name: "Quận Hà Đông",
+      value: "quan-ha-dong",
+    },
+  ];
+
+  const cities = [
+    {
+      id: 1,
+      name: "Hà Nội",
+      value: "ha-noi",
+    },
+    {
+      id: 2,
+      name: "Hải Phòng",
+      value: "hai-phong",
+    },
+    {
+      id: 3,
+      name: "Đà Nẵng",
+      value: "da-nang",
+    },
+    {
+      id: 4,
+      name: "Hồ Chí Minh",
+      value: "ho-chi-minh",
+    },
+  ];
+  return (
+    <>
+      <div className="container-fluid">
+        <section className="breadcrumb-option">
+          <div className="container-fluid">
+            <div className="row">
+              <div className="col-lg-12">
+                <div className="breadcrumb__text">
+                  <h4>Thay Đổi Thông Tin Nhận Hàng</h4>
+                  <div className="breadcrumb__links">
+                    <Link style={{ textDecoration: "none" }} to={"/"}>
+                      Trang chủ
+                    </Link>
+                    <Link style={{ textDecoration: "none" }} to={"/products"}>
+                      Sản phẩm
+                    </Link>
+                    <span>Thanh toán</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section className="checkout" style={{ marginTop: 60 }}>
+          <div className="checkout__form">
+            <form action="#">
+              <div className="row">
+                <div className="col-lg-8 col-md-6">
+                  <h5 className="checkout__title">
+                    Vui lòng nhập thông tin thanh toán
+                  </h5>
+                  <div className="row">
+                    <div className="col-lg-6">
+                      <div className="checkout__input">
+                        <p>
+                          Họ tên<span>*</span>
+                        </p>
+                        <input type="text" />
+                      </div>
+                    </div>
+                    <div className="col-lg-6">
+                      <div className="checkout__input">
+                        <p>
+                          Số điện thoại<span>*</span>
+                        </p>
+                        <input type="number" min={0} />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="checkout__input">
+                    <p>
+                      Phường/Xã<span>*</span>
+                    </p>
+                    <select
+                      className="checkout_change_select form-select"
+                      aria-label="Default select example"
+                    >
+                      <option selected>Chọn phường/xã</option>
+                      {wards.map((item) => (
+                        <option key={item.id} value={item.value}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="checkout__input">
+                    <p>
+                      Quận/Huyện<span>*</span>
+                    </p>
+                    <select
+                      className="checkout_change_select form-select"
+                      aria-label="Default select example"
+                    >
+                      <option selected>Chọn quận/huyện</option>
+                      {districts.map((item) => (
+                        <option key={item.id} value={item.value}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="checkout__input">
+                    <p>
+                      Tỉnh/Thành Phố<span>*</span>
+                    </p>
+                    <select
+                      className="checkout_change_select form-select"
+                      aria-label="Default select example"
+                    >
+                      <option selected>Chọn tỉnh/thành phố</option>
+                      {cities.map((item) => (
+                        <option key={item.id} value={item.value}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="checkout__input">
+                    <p>
+                      Địa chỉ cụ thể<span>*</span>
+                    </p>
+                    <input type="text" />
+                  </div>
+                  <div className="checkout_change_address">
+                    <Link
+                      to={"/checkout"}
+                      className="checkout_change_address_link"
+                    >
+                      <h6 className="checkout_change_address_name">
+                        <IoReturnDownBack
+                          style={{
+                            marginRight: 5,
+                            marginBottom: 2,
+                            fontSize: 23,
+                          }}
+                        />
+                        Quay lại trang thanh toán
+                      </h6>
+                    </Link>
+                  </div>
+                  <div className="checkout__input__checkbox">
+                    <label htmlFor="acc">
+                      <h4 className="checkout-text">
+                        Thanh Toán khi nhận hàng
+                      </h4>
+                      <input type="radio" name="checkout" id="acc" />
+                      <span className="checkmark" />
+                    </label>
+                  </div>
+                  <div className="checkout__input__checkbox">
+                    <label htmlFor="vnpay">
+                      <h4 className="checkout-text">Thanh Toán qua VNPAY</h4>
+                      <input type="radio" name="checkout" id="vnpay" />
+                      <span className="checkmark" />
+                    </label>
+                  </div>
+                </div>
+                <div className="col-lg-4 col-md-6">
+                  <div className="checkout__order">
+                    <h4 className="order__title">TỔNG GIỎ HÀNG</h4>
+                    <div className="checkout__order__products">
+                      <div className="checkout_title_card">
+                        <p className="checkout_title_card_name_product">
+                          Sản phẩm
+                        </p>
+                        <p className="checkout_title_card_name_quantity">
+                          Số lượng
+                        </p>
+                        <p className="checkout_title_card_name_total">
+                          Tổng tiền
+                        </p>
+                      </div>
+                    </div>
+                    {purchaseInformation.map((item) => (
+                      <ul key={item.id} className="checkout__total__products">
+                        <li>
+                          <div className="checkout_card">
+                            <div className="checkout_card_image">
+                              <img src={item.image} alt="" />
+                            </div>
+                            <p className="checkout_card_name">{item.name}</p>
+                            <p className="checkout_card_quantity">
+                              {item.quantity}
+                            </p>
+                            <span className="checkout_card_total">
+                              {item.total}
+                            </span>
+                          </div>
+                        </li>
+                      </ul>
+                    ))}
+
+                    <ul className="checkout__total__all">
+                      <li>
+                        Mã giảm giá <span>- 750đ</span>
+                      </li>
+                      <li>
+                        Tổng tiền <span>1000000đ</span>
+                      </li>
+                    </ul>
+                    <Link to={"/thanksyou"}>
+                      <button className="site-btn">THANH TOÁN</button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
+      </div>
+    </>
+  );
+};
+export default ChangeCheckout;

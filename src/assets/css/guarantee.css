@@ -1,0 +1,10 @@
+.container-fluid {
+  max-width: 1600px;
+}
+.guarantee {
+  margin-top: 10px;
+  margin-bottom: 50px;
+}
+.text-des {
+  text-align: center;
+}

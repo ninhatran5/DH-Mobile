@@ -1,0 +1,71 @@
+body {
+  background-color: #fff;
+  /* Uncomment to use gradient background */
+  /* background: radial-gradient(at 50% -20%, #908392, #0d060e) fixed; */
+  margin: 0; /* Ensure no default margin */
+  height: 100vh; /* Full viewport height */
+}
+
+.container-error {
+  display: flex;
+  align-items: center; /* Center vertically */
+  justify-content: center; /* Center horizontally */
+  height: 100vh; /* Full height */
+  padding: 20px; /* Add some padding if needed */
+  box-sizing: border-box; /* Include padding in height calculation */
+}
+
+.row-error {
+  max-width: 100%; /* Limit row width */
+  width: 100%; /* Take full width */
+  text-align: center; /* Center text */
+}
+
+svg {
+  max-width: 100%; /* Ensure SVG doesn't exceed container */
+  height: auto; /* Maintain aspect ratio */
+  /* Optional: Set a max height if needed */
+  max-height: 80vh; /* Limit height to 80% of viewport */
+}
+
+#handboy {
+  animation: swing ease-in-out 1.3s infinite alternate;
+  transform-origin: 98% 98%;
+  transform-box: fill-box;
+}
+
+#girllight {
+  animation: swing ease-in-out 1.3s infinite alternate;
+  transform-origin: 0% 97%;
+  transform-box: fill-box;
+}
+
+#hairgirl {
+  animation: swinghair ease-in-out 1.3s infinite alternate;
+  transform-origin: 60% 0%;
+  transform-box: fill-box;
+}
+
+#zero {
+  transform-origin: bottom;
+}
+
+/*************swing************/
+@keyframes swing {
+  0% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(-10deg);
+  }
+}
+
+/*************swing hair************/
+@keyframes swinghair {
+  0% {
+    transform: rotate(6deg);
+  }
+  100% {
+    transform: rotate(-6deg);
+  }
+}
