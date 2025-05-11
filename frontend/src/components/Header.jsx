@@ -25,7 +25,7 @@ export default function Header() {
     {
       id: 2,
       icon: <RiUserLine />,
-      link: "/",
+      link: "/login",
     },
     {
       id: 3,

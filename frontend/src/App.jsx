@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useRoutes } from "react-router-dom";
 import "../src/assets/css/style.css";
 import Home from "./pages/Home";
@@ -16,6 +17,11 @@ import ChangeCheckout from "./pages/ChangeCheckout";
 import ThanksYou from "./pages/ThanksYou";
 import Voucher from "./pages/Voucher";
 import CheckImei from "./pages/CheckImei";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import SetNewPassword from "./pages/ChangePassword";
+import ChangePassword from "./pages/ChangePassword";
 
 const withLayoutClient = (Component) => {
   return (
@@ -81,6 +87,22 @@ const routerConfig = [
   {
     path: "/deliverypolicy",
     element: withLayoutClient(DeliveryPolicy),
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
+  },
+  {
+    path: "/change-password",
+    element: <ChangePassword />,
   },
   {
     path: "*",
