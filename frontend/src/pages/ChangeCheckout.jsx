@@ -126,32 +126,32 @@ const ChangeCheckout = () => {
   ];
   return (
     <>
-      <div className="container-fluid">
-        <section className="breadcrumb-option">
-          <div className="container-fluid">
-            <div className="row">
-              <div className="col-lg-12">
-                <div className="breadcrumb__text">
-                  <h4>Thay Đổi Thông Tin Nhận Hàng</h4>
-                  <div className="breadcrumb__links">
-                    <Link style={{ textDecoration: "none" }} to={"/"}>
-                      Trang chủ
-                    </Link>
-                    <Link style={{ textDecoration: "none" }} to={"/products"}>
-                      Sản phẩm
-                    </Link>
-                    <span>Thanh toán</span>
-                  </div>
+      <section className="breadcrumb-option">
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-lg-12">
+              <div className="breadcrumb__text">
+                <h4>Thay Đổi Thông Tin Nhận Hàng</h4>
+                <div className="breadcrumb__links">
+                  <Link style={{ textDecoration: "none" }} to={"/"}>
+                    Trang chủ
+                  </Link>
+                  <Link style={{ textDecoration: "none" }} to={"/products"}>
+                    Sản phẩm
+                  </Link>
+                  <span>Thanh toán</span>
                 </div>
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
+      <div className="container-fluid">
         <section className="checkout" style={{ marginTop: 60 }}>
           <div className="checkout__form">
             <form action="#">
               <div className="row">
-                <div className="col-lg-8 col-md-6">
+                <div className="col-lg-8 col-md-6 mb-5">
                   <h5 className="checkout__title">
                     Vui lòng nhập thông tin thanh toán
                   </h5>
@@ -244,21 +244,23 @@ const ChangeCheckout = () => {
                       </h6>
                     </Link>
                   </div>
-                  <div className="checkout__input__checkbox">
-                    <label htmlFor="acc">
-                      <h4 className="checkout-text">
-                        Thanh Toán khi nhận hàng
-                      </h4>
-                      <input type="radio" name="checkout" id="acc" />
-                      <span className="checkmark" />
-                    </label>
-                  </div>
-                  <div className="checkout__input__checkbox">
-                    <label htmlFor="vnpay">
-                      <h4 className="checkout-text">Thanh Toán qua VNPAY</h4>
-                      <input type="radio" name="checkout" id="vnpay" />
-                      <span className="checkmark" />
-                    </label>
+                  <div style={{ marginTop: -30, width: "60%" }}>
+                    <div className="checkout__input__checkbox">
+                      <label htmlFor="acc">
+                        <h4 className="checkout-text">
+                          Thanh Toán khi nhận hàng
+                        </h4>
+                        <input type="radio" name="checkout" id="acc" />
+                        <span className="checkmark" />
+                      </label>
+                    </div>
+                    <div className="checkout__input__checkbox">
+                      <label htmlFor="vnpay">
+                        <h4 className="checkout-text">Thanh Toán qua VNPAY</h4>
+                        <input type="radio" name="checkout" id="vnpay" />
+                        <span className="checkmark" />
+                      </label>
+                    </div>
                   </div>
                 </div>
                 <div className="col-lg-4 col-md-6">
