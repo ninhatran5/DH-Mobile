@@ -1,0 +1,284 @@
+.profile-content {
+  background-color: #ffffff;
+  padding: 30px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin-bottom: 20px;
+}
+
+.profile-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: -10px;
+}
+
+.profile-col-full,
+.profile-col-4,
+.profile-col-8,
+.profile-col-half {
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.profile-col-full {
+  width: 100%;
+}
+
+.profile-col-4 {
+  width: 100%;
+}
+
+.profile-col-8 {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .profile-col-4 {
+    width: 33.3333%;
+  }
+  .profile-col-8 {
+    width: 66.6666%;
+  }
+  .profile-col-half {
+    width: 50%;
+  }
+}
+
+.profile-box {
+  padding: 20px;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.profile-box-bg {
+  background-color: #ecba48;
+  color: white;
+}
+
+.profile-avatar {
+  display: inline-block;
+  margin-right: 20px;
+}
+
+.profile-img {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #fff;
+}
+
+.profile-user-info {
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+.profile-username {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+}
+
+.profile-title {
+  font-size: 16px;
+  margin-bottom: 5px;
+  color: black;
+}
+
+.profile-location {
+  font-size: 13px;
+  opacity: 0.9;
+  color: white;
+}
+
+.profile-edit-wrapper {
+  text-align: right;
+}
+
+.profile-btn-edit {
+  background-color: white;
+  color: #ecba48;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.profile-description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #6c757d;
+}
+
+.profile-info-list p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.profile-lang {
+  display: inline-block;
+  background-color: #eff2f7;
+  color: #6c757d;
+  border-radius: 12px;
+  padding: 2px 10px;
+  font-size: 13px;
+  margin-right: 6px;
+}
+
+.profile-social-list {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 15px;
+}
+
+.profile-social-list li {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.profile-social-list a {
+  color: #6c757d;
+  font-size: 16px;
+}
+
+.profile-card {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.profile-ribbon {
+  position: relative;
+}
+
+.profile-ribbon-title {
+  background-color: #ecba48;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px 6px 0 0;
+  font-weight: bold;
+}
+
+.profile-messages {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.profile-message-item {
+  align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.profile-message-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.profile-message-text {
+  flex-grow: 1;
+}
+
+.profile-message-author {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.profile-message-snippet {
+  font-size: 13px;
+  color: #6c757d;
+}
+
+.profile-btn-reply {
+  background-color: transparent;
+  border: 1px solid #ecba48;
+  color: #e9b742;
+  padding: 4px 10px;
+  width: 100%;
+  border-radius: 5px;
+  font-size: 16px;
+  margin-top: 6px;
+  cursor: pointer;
+}
+.profile-btn-reply:hover {
+  border: 1px solid #ecba48;
+  background-color: #e9b742;
+  color: white;
+}
+
+.profile-stat-label {
+  font-size: 14px;
+  color: #6c757d;
+}
+
+.profile-stat-value {
+  font-size: 28px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.profile-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 20px;
+  color: white;
+}
+
+.profile-badge.custom {
+  background-color: #ecba48;
+}
+
+.profile-badge.danger {
+  background-color: #f1556c;
+}
+
+.profile-muted-text {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.profile-position {
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.profile-table-wrapper {
+  overflow-x: auto;
+}
+
+.profile-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.profile-table th,
+.profile-table td {
+  border: 1px solid #dee2e6;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.profile-table th {
+  background-color: #f8f9fa;
+}
+
+.profile-label {
+  background-color: #ec4848;
+  color: white;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  display: inline-block;
+}

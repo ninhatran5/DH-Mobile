@@ -22,6 +22,7 @@ import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import SetNewPassword from "./pages/ChangePassword";
 import ChangePassword from "./pages/ChangePassword";
+import Profile from "./pages/Profile";
 
 const withLayoutClient = (Component) => {
   return (
@@ -87,6 +88,10 @@ const routerConfig = [
   {
     path: "/deliverypolicy",
     element: withLayoutClient(DeliveryPolicy),
+  },
+  {
+    path: "/profile",
+    element: withLayoutClient(Profile),
   },
   {
     path: "/login",
