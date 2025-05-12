@@ -59,6 +59,7 @@ const ForgotPassword = () => {
                                   className="form-control"
                                   name="email"
                                   id="email"
+                                  spellCheck={false}
                                   placeholder="name@example.com"
                                   {...register("email", {
                                     required: "Không được bỏ trống Email",

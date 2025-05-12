@@ -121,7 +121,7 @@ const EditProfile = () => {
                         <input
                           type="text"
                           name="name"
-                          spellcheck="false"
+                          spellCheck={false}
                           className="input_profile_edit form-control"
                           placeholder=""
                           value={formData.name}
@@ -135,7 +135,7 @@ const EditProfile = () => {
                         <input
                           type="text"
                           name="phone"
-                          spellcheck="false"
+                          spellCheck={false}
                           className="input_profile_edit form-control"
                           placeholder=""
                           value={formData.phone}
@@ -149,7 +149,7 @@ const EditProfile = () => {
                         <input
                           type="email"
                           name="email"
-                          spellcheck="false"
+                          spellCheck={false}
                           className="input_profile_edit form-control"
                           value={formData.email}
                           onChange={handleChange}
@@ -184,7 +184,7 @@ const EditProfile = () => {
                           type="introduce"
                           name="introduce"
                           rows="6"
-                          spellcheck="false"
+                          spellCheck={false}
                           className="input_profile_edit form-control"
                           value={formData.introduce}
                           onChange={handleChange}
@@ -225,7 +225,7 @@ const EditProfile = () => {
                         </label>
                         <div className="input-password-wrapper">
                           <input
-                            spellcheck="false"
+                            spellCheck={false}
                             type={isShowPassword ? "text" : "password"}
                             name="oldPassword"
                             className="form-control"
@@ -249,7 +249,7 @@ const EditProfile = () => {
                         </label>
                         <div className="input-password-wrapper">
                           <input
-                            spellcheck="false"
+                            spellCheck={false}
                             type={isShowPasswordNew ? "text" : "password"}
                             name="newPassword"
                             className="form-control"
@@ -278,7 +278,7 @@ const EditProfile = () => {
                         </label>
                         <div className="input-password-wrapper">
                           <input
-                            spellcheck="false"
+                            spellCheck={false}
                             type={isShowConfirmPassword ? "text" : "password"}
                             name="confirmPassword"
                             className="form-control"
