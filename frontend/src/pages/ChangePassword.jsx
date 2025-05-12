@@ -4,6 +4,7 @@ import logo from "../assets/images/logo3.png";
 import { FaEyeSlash } from "react-icons/fa";
 import { IoEyeSharp } from "react-icons/io5";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 const ChangePassword = () => {
   const [isShowPassword, setIsShowPassword] = useState(false);
   const [isShowPasswordNew, setIsShowPasswordNew] = useState(false);
@@ -16,6 +17,15 @@ const ChangePassword = () => {
   };
   const handleShowConfirmPassword = () => {
     setIsShowConfirmPassword(!isShowConfirmPassword);
+  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = () => {
+    console.log("onSubmit");
   };
 
   return (
@@ -56,7 +66,7 @@ const ChangePassword = () => {
                             </div>
                           </div>
                         </div>
-                        <form noValidate>
+                        <form onSubmit={handleSubmit(onSubmit)} noValidate>
                           <div className="row gy-3 overflow-hidden">
                             <div className="col-12">
                               <div className="form-floating mb-3">
@@ -68,8 +78,24 @@ const ChangePassword = () => {
                                   name="password"
                                   id="password"
                                   placeholder="Password"
-                                  required
+                                  {...register("password", {
+                                    required: "Không được bỏ trống Mật Khẩu",
+                                    pattern: {
+                                      value:
+                                        /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/,
+                                      message:
+                                        "Mật khẩu 8–16 ký tự, có chữ hoa, số, ký tự đặc biệt",
+                                    },
+                                  })}
                                 />
+                                {errors?.password && (
+                                  <small
+                                    className="mt-2"
+                                    style={{ color: "red" }}
+                                  >
+                                    {errors?.password?.message}
+                                  </small>
+                                )}
                                 <div
                                   style={{
                                     fontSize: 20,
@@ -101,11 +127,27 @@ const ChangePassword = () => {
                                     isShowPasswordNew ? "text" : "password"
                                   }`}
                                   className="form-control position-relative"
-                                  name="password"
+                                  name="newpassword"
                                   id="newpassword"
                                   placeholder="Password"
-                                  required
+                                  {...register("newpassword", {
+                                    required: "Không được bỏ trống Mật Khẩu",
+                                    pattern: {
+                                      value:
+                                        /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/,
+                                      message:
+                                        "Mật khẩu 8–16 ký tự, có chữ hoa, số, ký tự đặc biệt",
+                                    },
+                                  })}
                                 />
+                                {errors?.newpassword && (
+                                  <small
+                                    className="mt-2"
+                                    style={{ color: "red" }}
+                                  >
+                                    {errors?.newpassword?.message}
+                                  </small>
+                                )}
                                 <div
                                   style={{
                                     fontSize: 20,
@@ -140,8 +182,25 @@ const ChangePassword = () => {
                                   name="confirmpassword"
                                   id="confirmpassword"
                                   placeholder="Password"
-                                  required
+                                  {...register("confirmpassword", {
+                                    required:
+                                      "Không được bỏ trống Kiểm Tra Mật Khẩu",
+                                    pattern: {
+                                      value:
+                                        /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/,
+                                      message:
+                                        "Mật khẩu 8–16 ký tự, có chữ hoa, số, ký tự đặc biệt",
+                                    },
+                                  })}
                                 />
+                                {errors?.confirmpassword && (
+                                  <small
+                                    className="mt-2"
+                                    style={{ color: "red" }}
+                                  >
+                                    {errors?.confirmpassword?.message}
+                                  </small>
+                                )}
                                 <div
                                   style={{
                                     fontSize: 20,
