@@ -4,10 +4,20 @@ import logo from "../assets/images/logo3.png";
 import { FaEyeSlash } from "react-icons/fa";
 import { IoEyeSharp } from "react-icons/io5";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 const Register = () => {
   const [isShowPassword, setIsShowPassword] = useState(false);
   const handleShowPassword = () => {
     setIsShowPassword(!isShowPassword);
+  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = () => {
+    console.log("onSubmit");
   };
   return (
     <>
@@ -47,7 +57,7 @@ const Register = () => {
                             </div>
                           </div>
                         </div>
-                        <form noValidate>
+                        <form onSubmit={handleSubmit(onSubmit)} noValidate>
                           <div className="row gy-3 overflow-hidden">
                             <div className="col-12">
                               <div className="form-floating mb-3">
@@ -57,8 +67,18 @@ const Register = () => {
                                   name="username"
                                   id="username"
                                   placeholder="Username"
-                                  required
+                                  {...register("username", {
+                                    required: "Không được bỏ trống Họ tên",
+                                  })}
                                 />
+                                {errors?.username && (
+                                  <small
+                                    className="mt-2"
+                                    style={{ color: "red" }}
+                                  >
+                                    {errors.username.message}
+                                  </small>
+                                )}
                                 <label
                                   htmlFor="username"
                                   className="form-label"
@@ -75,8 +95,23 @@ const Register = () => {
                                   name="email"
                                   id="email"
                                   placeholder="name@example.com"
-                                  required
+                                  {...register("email", {
+                                    required: "Không được bỏ trống Email",
+                                    pattern: {
+                                      value:
+                                        /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                      message: "Địa chỉ email không hợp lệ",
+                                    },
+                                  })}
                                 />
+                                {errors?.email && (
+                                  <small
+                                    className="mt-2"
+                                    style={{ color: "red" }}
+                                  >
+                                    {errors.email.message}
+                                  </small>
+                                )}
                                 <label htmlFor="email" className="form-label">
                                   Email
                                 </label>
@@ -92,8 +127,24 @@ const Register = () => {
                                   name="password"
                                   id="password"
                                   placeholder="Password"
-                                  required
+                                  {...register("password", {
+                                    required: "Không được bỏ trống Mật Khẩu",
+                                    pattern: {
+                                      value:
+                                        /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/,
+                                      message:
+                                        "Mật khẩu 8–16 ký tự, có chữ hoa, số, ký tự đặc biệt",
+                                    },
+                                  })}
                                 />
+                                {errors?.password && (
+                                  <small
+                                    className="mt-2"
+                                    style={{ color: "red" }}
+                                  >
+                                    {errors?.password?.message}
+                                  </small>
+                                )}
                                 <div
                                   style={{
                                     fontSize: 20,

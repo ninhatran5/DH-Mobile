@@ -4,11 +4,22 @@ import logo from "../assets/images/logo3.png";
 import { FaEyeSlash } from "react-icons/fa";
 import { IoEyeSharp } from "react-icons/io5";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 const Login = () => {
   const [isShowPassword, setIsShowPassword] = useState(false);
   const handleShowPassword = () => {
     setIsShowPassword(!isShowPassword);
+  };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const login = () => {
+    console.log("login");
   };
   return (
     <>
@@ -48,7 +59,7 @@ const Login = () => {
                             </div>
                           </div>
                         </div>
-                        <form noValidate>
+                        <form onSubmit={handleSubmit(login)} noValidate>
                           <div className="row gy-3 overflow-hidden">
                             <div className="col-12">
                               <div className="form-floating mb-3">
@@ -58,8 +69,23 @@ const Login = () => {
                                   name="email"
                                   id="email"
                                   placeholder="name@example.com"
-                                  required
+                                  {...register("email", {
+                                    required: "Không được bỏ trống Email",
+                                    pattern: {
+                                      value:
+                                        /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                      message: "Địa chỉ email không hợp lệ",
+                                    },
+                                  })}
                                 />
+                                {errors?.email && (
+                                  <small
+                                    className="mt-2"
+                                    style={{ color: "red" }}
+                                  >
+                                    {errors.email.message}
+                                  </small>
+                                )}
                                 <label htmlFor="email" className="form-label">
                                   Email
                                 </label>
@@ -75,10 +101,31 @@ const Login = () => {
                                   name="password"
                                   id="password"
                                   placeholder="Password"
-                                  required
+                                  {...register("password", {
+                                    required: "Không được bỏ trống Mật Khẩu",
+                                    pattern: {
+                                      value:
+                                        /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/,
+                                      message:
+                                        "Mật khẩu 8–16 ký tự, có chữ hoa, số, ký tự đặc biệt",
+                                    },
+                                  })}
                                 />
+                                {errors?.password && (
+                                  <small
+                                    className="mt-2"
+                                    style={{ color: "red" }}
+                                  >
+                                    {errors?.password?.message}
+                                  </small>
+                                )}
                                 <div
-                                  style={{ fontSize: 20, cursor: "pointer", top: "8px", left: "90%" }}
+                                  style={{
+                                    fontSize: 20,
+                                    cursor: "pointer",
+                                    top: "8px",
+                                    left: "90%",
+                                  }}
                                   onClick={handleShowPassword}
                                   className="position-absolute"
                                 >
