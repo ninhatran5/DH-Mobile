@@ -1,7 +1,17 @@
 import { Link } from "react-router-dom";
 import loginImage from "../assets/images/login.jpg";
 import logo from "../assets/images/logo3.png";
+import { useForm } from "react-hook-form";
 const ForgotPassword = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = () => {
+    console.log("onSubmit");
+  };
   return (
     <>
       <section className="bg-light p-3">
@@ -40,7 +50,7 @@ const ForgotPassword = () => {
                             </div>
                           </div>
                         </div>
-                        <form noValidate>
+                        <form onSubmit={handleSubmit(onSubmit)} noValidate>
                           <div className="row gy-3 overflow-hidden">
                             <div className="col-12">
                               <div className="form-floating mb-3">
@@ -50,8 +60,23 @@ const ForgotPassword = () => {
                                   name="email"
                                   id="email"
                                   placeholder="name@example.com"
-                                  required
+                                  {...register("email", {
+                                    required: "Không được bỏ trống Email",
+                                    pattern: {
+                                      value:
+                                        /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                      message: "Địa chỉ email không hợp lệ",
+                                    },
+                                  })}
                                 />
+                                {errors?.email && (
+                                  <small
+                                    className="mt-2"
+                                    style={{ color: "red" }}
+                                  >
+                                    {errors.email.message}
+                                  </small>
+                                )}
                                 <label htmlFor="email" className="form-label">
                                   Email
                                 </label>
