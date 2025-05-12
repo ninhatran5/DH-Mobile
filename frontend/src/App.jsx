@@ -24,6 +24,7 @@ import SetNewPassword from "./pages/ChangePassword";
 import ChangePassword from "./pages/ChangePassword";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
+import ProductDetail from "./pages/ProductDetail";
 
 const withLayoutClient = (Component) => {
   return (
@@ -97,6 +98,10 @@ const routerConfig = [
   {
     path: "/edit-profile",
     element: withLayoutClient(EditProfile),
+  },
+  {
+    path: "/product-detail/:id",
+    element: withLayoutClient(ProductDetail),
   },
   {
     path: "/login",

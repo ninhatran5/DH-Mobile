@@ -1,0 +1,30 @@
+.text-price {
+  color: rgb(228, 3, 3);
+}
+.product_detail_image {
+  cursor: pointer;
+}
+.img-thumbnail {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+}
+.carousel-indicators {
+  display: none !important;
+}
+.color-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid rgb(235, 235, 235);
+  transition: border 0.3s;
+}
+
+.color-circle:hover {
+  border: 2px solid rgb(235, 235, 235);
+}
+.btn-zoom:focus {
+  outline: none;
+  box-shadow: none;
+}
