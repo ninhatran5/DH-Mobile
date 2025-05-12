@@ -78,6 +78,7 @@ const ChangePassword = () => {
                                   name="password"
                                   id="password"
                                   placeholder="Password"
+                                spellCheck={false}
                                   {...register("password", {
                                     required: "Không được bỏ trống Mật Khẩu",
                                     pattern: {
@@ -129,6 +130,7 @@ const ChangePassword = () => {
                                   className="form-control position-relative"
                                   name="newpassword"
                                   id="newpassword"
+                                spellCheck={false}
                                   placeholder="Password"
                                   {...register("newpassword", {
                                     required: "Không được bỏ trống Mật Khẩu",
@@ -182,6 +184,7 @@ const ChangePassword = () => {
                                   name="confirmpassword"
                                   id="confirmpassword"
                                   placeholder="Password"
+                                spellCheck={false}
                                   {...register("confirmpassword", {
                                     required:
                                       "Không được bỏ trống Kiểm Tra Mật Khẩu",
