@@ -5,11 +5,14 @@ import iphone2 from "../assets/images/iphone-15-pro_2__2_1_1_1.webp";
 import iphone3 from "../assets/images/iphone-15-plus_1__1.webp";
 import { MdOutlineZoomInMap } from "react-icons/md";
 import Carousel from "react-bootstrap/Carousel";
-
 import "../assets/css/product-detail.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import Comment from "../components/Comment";
 
 const ProductDetail = () => {
+  const [activeTab, setActiveTab] = useState("description");
+  const navigate = useNavigate();
   const productImages = [
     { id: 1, image: iphone },
     { id: 2, image: iphone2 },
@@ -58,8 +61,18 @@ const ProductDetail = () => {
     },
   ];
 
+  const machineInformation = [
+    {
+      id: 1,
+      name: "iPhone 16 Pro Max",
+      price: "24.000.000đ",
+      desc: "iPhone 16 Pro Max mang đến thiết kế sang trọng với khung thép không gỉ và mặt lưng kính cường lực. Màn hình Super Retina XDR với công nghệ ProMotion cung cấp trải nghiệm hình ảnh mượt mà. Được trang bị chip A17 Bionic, nó mạnh mẽ và tiết kiệm năng lượng. Hệ thống camera cải tiến cho khả năng chụp ảnh và quay video ấn tượng, bao gồm chế độ ban đêm và video 4K. Hỗ trợ kết nối 5G, thời lượng pin lâu dài và chạy trên iOS mới nhất, iPhone 16 Pro Max là lựa chọn hoàn hảo cho những người yêu công nghệ.",
+    },
+  ];
+
   const [currentImage, setCurrentImage] = useState(iphone);
   const [showModal, setShowModal] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
   const handleThumbnailClick = (image) => {
     setCurrentImage(image);
@@ -67,6 +80,45 @@ const ProductDetail = () => {
 
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
+  const handleUpQuantity = () => {
+    setQuantity((prev) => prev + 1);
+  };
+
+  const handleDownQuantity = () => {
+    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+  };
+
+  const handleChangQuantity = (e) => {
+    let value = e.target.value;
+    if (value === "") {
+      setQuantity("");
+    } else if (Number(value) >= 1 && !isNaN(value)) {
+      setQuantity(Number(value));
+    } else if (Number(value) === 0) {
+      toast.warn("Giá trị tổi thiếu là 1  ");
+      setQuantity(1);
+    } else {
+      setQuantity(1);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "-" || e.key === "e") {
+      e.preventDefault();
+      toast.warn("Không thể nhập kí tự đặc biệt");
+    }
+  };
+
+  const addToFavorites = () => {
+    console.log("added");
+    toast.success("Đã thêm vào yêu thích");
+  };
+
+  const addToShoppingCart = () => {
+    console.log("added");
+    toast.success("Đã thêm vào giỏ hàng");
+    navigate("/shoppingcart");
+  };
 
   return (
     <>
@@ -83,7 +135,7 @@ const ProductDetail = () => {
                   <Link style={{ textDecoration: "none" }} to={"/products"}>
                     Sản phẩm
                   </Link>
-                  <span>Chi tiết sản phẩm</span>
+                  <span>iPhone 16 Pro Max</span>
                 </div>
               </div>
             </div>
@@ -93,8 +145,7 @@ const ProductDetail = () => {
 
       <div className="container-fluid py-5">
         <div className="row">
-          {/* Cột hình ảnh sản phẩm */}
-          <div className="col-md-6 position-relative">
+          <div className="col-md-6 mb-5 position-relative">
             <div className="border rounded mb-3 p-3 text-center position-relative">
               <img
                 src={currentImage}
@@ -110,9 +161,9 @@ const ProductDetail = () => {
                   zIndex: "1",
                   fontSize: 23,
                   color: "black",
-                  border: "none", // Thêm dòng này
+                  border: "none",
                   outline: "none",
-                  background: "transparent", // Nếu cần, thêm để đảm bảo không có nền
+                  background: "transparent",
                 }}
                 onClick={handleShowModal}
               >
@@ -150,24 +201,17 @@ const ProductDetail = () => {
           </Modal>
 
           <div className="col-md-6">
-            <h2 className="mb-3">iPhone 16 Pro Max</h2>
-            <h4 className="text-price mb-3">12.000.000đ</h4>
-            <p className="text-muted">
-              iPhone 16 Pro Max mang đến thiết kế sang trọng với khung thép
-              không gỉ và mặt lưng kính cường lực. Màn hình Super Retina XDR với
-              công nghệ ProMotion cung cấp trải nghiệm hình ảnh mượt mà. Được
-              trang bị chip A17 Bionic, nó mạnh mẽ và tiết kiệm năng lượng. Hệ
-              thống camera cải tiến cho khả năng chụp ảnh và quay video ấn
-              tượng, bao gồm chế độ ban đêm và video 4K. Hỗ trợ kết nối 5G, thời
-              lượng pin lâu dài và chạy trên iOS mới nhất, iPhone 16 Pro Max là
-              lựa chọn hoàn hảo cho những người yêu công nghệ.
-            </p>
+            {machineInformation.map((item) => (
+              <div key={item.id}>
+                <h2 className="mb-3">{item.name}</h2>
+                <h4 className="text-price mb-3">{item.price}</h4>
+                <p className="text-muted">{item.desc}</p>
+              </div>
+            ))}
 
             <div className="mb-3">
-              <label className="font-weight-bold">
-                Chọn phiên bản điện thoại
-              </label>
-              <div className="d-flex justify-content-start">
+              <label className="font-weight-bold mb-2">Chọn phiên bản</label>
+              <div className="d-flex justify-content-start version-button-group">
                 {phoneVersions.map((phoneVersion) => (
                   <button
                     key={phoneVersion.id}
@@ -179,8 +223,8 @@ const ProductDetail = () => {
               </div>
             </div>
 
-            <div className="mb-3">
-              <label className="font-weight-bold">Chọn màu</label>
+            <div className="mb-4">
+              <label className="font-weight-bold mb-2">Chọn màu</label>
               <div className="d-flex justify-content-start">
                 {phoneColors.map((phoneColor) => (
                   <div
@@ -192,92 +236,97 @@ const ProductDetail = () => {
                 ))}
               </div>
             </div>
-            <div className="align-items-center mb-4">
+            <div className="quantity-group mb-4">
+              <button onClick={handleDownQuantity} className="btn-quantity">
+                -
+              </button>
               <input
                 type="number"
-                min="1"
-                defaultValue="1"
-                className="form-control w-25 mr-3"
+                className="input-quantity hide-spinner"
+                onChange={handleChangQuantity}
+                min={1}
+                value={quantity}
+                onKeyDown={handleKeyDown}
               />
+              <button onClick={handleUpQuantity} className="btn-quantity">
+                +
+              </button>
             </div>
+
             <div style={{ display: "flex", gap: 5 }}>
-              <button className="btn btn-danger px-4">
+              <button
+                onClick={addToFavorites}
+                className="btn-custom btn-favorite px-4"
+              >
                 Thêm vào yêu thích
               </button>
-              <button className="btn btn-primary px-4">
+              <button onClick={addToShoppingCart} className="btn-custom px-4">
                 Thêm vào giỏ hàng
               </button>
             </div>
           </div>
         </div>
-
-        {/* Tabs */}
-        <div className="mt-5">
-          <ul className="nav nav-tabs" role="tablist">
+        <div className="card_introducde_product_detail mt-5">
+          <ul className="introduce_productdetail nav">
             <li className="nav-item">
-              <a
-                className="nav-link active"
-                data-toggle="tab"
-                href="#description"
+              <button
+                className={`nav-link ${
+                  activeTab === "description" ? "active" : ""
+                }`}
+                onClick={() => setActiveTab("description")}
               >
-                Description
-              </a>
+                Mô tả
+              </button>
             </li>
             <li className="nav-item">
-              <a className="nav-link" data-toggle="tab" href="#info">
-                Additional Info
-              </a>
+              <button
+                className={`nav-link ${activeTab === "info" ? "active" : ""}`}
+                onClick={() => setActiveTab("info")}
+              >
+                Thông số kỹ thuật
+              </button>
             </li>
             <li className="nav-item">
-              <a className="nav-link" data-toggle="tab" href="#reviews">
-                Reviews (1)
-              </a>
+              <button
+                className={`nav-link ${
+                  activeTab === "reviews" ? "active" : ""
+                }`}
+                onClick={() => setActiveTab("reviews")}
+              >
+                Bình luận
+              </button>
             </li>
           </ul>
 
-          <div className="tab-content border p-4 bg-light">
-            <div className="tab-pane fade show active" id="description">
-              <p>
-                This is the most powerful iPhone ever made. Sleek, fast, and
-                packed with features. Perfect for photography, productivity, and
-                everything in between.
-              </p>
-            </div>
-            <div className="tab-pane fade" id="info">
-              <ul className="mb-0">
-                <li>Weight: 0.79kg</li>
-                <li>Dimensions: 110 x 33 x 100 cm</li>
-                <li>Materials: 60% aluminum</li>
-                <li>Color options: Red, Blue, Grey, White</li>
-                <li>Sizes available: S, M, L, XL</li>
-              </ul>
-            </div>
-            <div className="tab-pane fade" id="reviews">
-              <div className="mb-3">
-                <strong>Ariana Grande</strong>
-                <p className="mb-1">★★★★★</p>
-                <p>Great phone! Totally worth the upgrade.</p>
+          <div className=" p-4">
+            {activeTab === "description" && (
+              <div className="tab-pane fade show active">
+                <p className="desc_productdetai">
+                  This is the most powerful iPhone ever made. Sleek, fast...
+                  This is the most powerful iPhone ever made. Sleek, fast...
+                  This is the most powerful iPhone ever made. Sleek, fast...
+                  This is the most powerful iPhone ever made. Sleek, fast...
+                  This is the most powerful iPhone ever made. Sleek, fast...
+                  This is the most powerful iPhone ever made. Sleek, fast...
+                  This is the most powerful iPhone ever made. Sleek, fast...
+                  This is the most powerful iPhone ever made. Sleek, fast...
+                  This is the most powerful iPhone ever made. Sleek, fast...
+                  This is the most powerful iPhone ever made. Sleek, fast...
+                </p>
               </div>
-              <form>
-                <div className="form-group">
-                  <label>Your Review</label>
-                  <textarea className="form-control" rows="3"></textarea>
-                </div>
-                <div className="form-row">
-                  <div className="form-group col-md-6">
-                    <label>Name</label>
-                    <input type="text" className="form-control" />
-                  </div>
-                  <div className="form-group col-md-6">
-                    <label>Email</label>
-                    <input type="email" className="form-control" />
-                  </div>
-                </div>
-                <button type="submit" className="btn btn-success">
-                  Submit
-                </button>
-              </form>
-            </div>
+            )}
+            {activeTab === "info" && (
+              <div className="tab-pane fade show active">
+                <ul className="desc_productdetai mb-0">
+                  <li>Weight: 0.79kg</li>
+                  <li>Dimensions: 110 x 33 x 100 cm</li>
+                  <li>Materials: 60% aluminum</li>
+                  <li>Color options: Red, Blue, Grey, White</li>
+                  <li>Sizes available: S, M, L, XL</li>
+                </ul>
+              </div>
+            )}
+            {activeTab === "reviews" && <Comment />}
           </div>
         </div>
       </div>

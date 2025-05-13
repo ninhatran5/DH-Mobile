@@ -1,0 +1,10 @@
+.star-filled {
+  color: #f5c518; /* vàng kiểu IMDb */
+}
+
+.star-empty {
+  color: #ccc; /* xám nhạt */
+}
+.hr_comment {
+  border-bottom: 1px solid rgb(235, 235, 235) !important;
+}
