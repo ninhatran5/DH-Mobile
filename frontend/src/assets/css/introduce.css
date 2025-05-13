@@ -1,0 +1,44 @@
+/* Section box with subtle hover effect */
+.section-box {
+  background-color: #f9fafb;
+  border-left: 4px solid #ffc43f;
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 32px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.section-box:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Icon styling */
+.section-box svg {
+  transition: transform 0.3s ease;
+}
+
+.section-box svg:hover {
+  transform: scale(1.2);
+}
+
+.section-title-introduce {
+  color: #ffc43f;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.container-fluid {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-gray-700 {
+  color: #4a5568;
+}
