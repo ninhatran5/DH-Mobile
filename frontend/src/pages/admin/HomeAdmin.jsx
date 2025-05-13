@@ -38,25 +38,22 @@ const Homeadmin =()=>{
       setIsSidebarCollapsed(!isSidebarCollapsed);
     }
   };
-
-  // Close sidebar when clicking outside on mobile
   const handleContentClick = () => {
     if (window.innerWidth <= 768 && isSidebarActive) {
       setIsSidebarActive(false);
     }
   };
-
 return(
   <>
-    <div className="wrapper">
-      <nav id="sidebar" className={`${isSidebarCollapsed ? 'collapsed' : ''} ${isSidebarActive ? 'active' : ''}`}>
-        <div className="sidebar-header d-flex justify-content-between align-items-center">
-          <div className="logo-container">
+    <div className="dh-wrapper">
+      <nav id="dh-sidebar" className={`${isSidebarCollapsed ? 'dh-sidebar-collapsed' : ''} ${isSidebarActive ? 'dh-sidebar-active' : ''}`}>
+        <div className="dh-sidebar-header d-flex justify-content-between align-items-center">
+          <div className="dh-logo-container">
             <Link to="/">
               <img 
                 src={logo} 
                 alt="admin-logo" 
-                className="admin-logo" 
+                className="dh-admin-logo" 
                 style={{ 
                   height: '40px',
                   width: 'auto',
@@ -67,7 +64,7 @@ return(
           </div>
           <button 
             type="button" 
-            id="sidebarClose" 
+            id="dh-sidebarClose" 
             className="btn d-md-none" 
             aria-label="Đóng menu"
             onClick={toggleSidebar}
@@ -75,10 +72,10 @@ return(
             <i className="bi bi-x-lg" />
           </button>
         </div>
-        <ul className="list-unstyled components">
+        <ul className="dh-list-unstyled dh-components">
           {/* Thống kê */}
           <li>
-            <Link to="/admin">
+            <Link to="/admin" className="dh-nav-link">
               <i className="bi bi-bar-chart-line" />
               <span>Thống kê</span>
             </Link>
@@ -86,79 +83,79 @@ return(
 
           {/* Quản lý danh mục */}
           <li>
-            <a href="#danhMucSubmenu" data-bs-toggle="collapse" className="dropdown-toggle">
+            <a href="#danhMucSubmenu" data-bs-toggle="collapse" className="dh-dropdown-toggle">
               <i className="bi bi-ui-checks-grid" />
               <span>Quản lý danh mục</span>
             </a>
-            <ul className="collapse list-unstyled" id="danhMucSubmenu">
-              <li><Link to="/admin/categories">Danh sách danh mục</Link></li>
-              <li><Link to="/admin/categories/add">Thêm danh mục</Link></li>
+            <ul className="collapse dh-list-unstyled" id="danhMucSubmenu">
+              <li><Link to="/admin/categories" className="dh-nav-link">Danh sách danh mục</Link></li>
+              <li><Link to="/admin/categories/add" className="dh-nav-link">Thêm danh mục</Link></li>
             </ul>
           </li>
 
           {/* Quản lý sản phẩm */}
           <li>
-            <a href="#sanPhamSubmenu" data-bs-toggle="collapse" className="dropdown-toggle">
+            <a href="#sanPhamSubmenu" data-bs-toggle="collapse" className="dh-dropdown-toggle">
               <i className="bi bi-box-seam" />
               <span>Quản lý sản phẩm</span>
             </a>
-            <ul className="collapse list-unstyled" id="sanPhamSubmenu">
-              <li><Link to="/admin/product">Danh sách sản phẩm</Link></li>
-              <li><Link to="/admin/addproduct">Thêm sản phẩm</Link></li>
+            <ul className="collapse dh-list-unstyled" id="sanPhamSubmenu">
+              <li><Link to="/admin/product" className="dh-nav-link">Danh sách sản phẩm</Link></li>
+              <li><Link to="/admin/addproduct" className="dh-nav-link">Thêm sản phẩm</Link></li>
             </ul>
           </li>
 
           <li>
-            <Link to="/admin/accounts">
+            <Link to="/admin/accounts" className="dh-nav-link">
               <i className="bi bi-person-lines-fill" />
               <span>Quản lý tài khoản</span>
             </Link>
           </li>
 
           <li>
-            <Link to="/admin/orders">
+            <Link to="/admin/orders" className="dh-nav-link">
               <i className="bi bi-bag-check" />
               <span>Quản lý đơn hàng</span>
             </Link>
           </li>
 
           <li>
-            <Link to="/admin/vouchers">
+            <Link to="/admin/vouchers" className="dh-nav-link">
               <i className="bi bi-ticket-perforated" />
               <span>Quản lý voucher</span>
             </Link>
           </li>
 
           <li>
-            <Link to="/admin/banners">
+            <Link to="/admin/banners" className="dh-nav-link">
               <i className="bi bi-image" />
               <span>Quản lý banner</span>
             </Link>
           </li>
 
           <li>
-            <Link to="/admin/chatbot">
+            <Link to="/admin/chatbot" className="dh-nav-link">
               <i className="bi bi-robot" />
               <span>Quản lý chatbot</span>
             </Link>
           </li>
 
           <li>
-            <Link to="/admin/comments">
+            <Link to="/admin/comments" className="dh-nav-link">
               <i className="bi bi-chat-dots" />
               <span>Quản lý bình luận</span>
             </Link>
           </li>
 
           <li>
-            <Link to="/admin/news">
+            <Link to="/admin/news" className="dh-nav-link">
               <i className="bi bi-newspaper" />
               <span>Quản lý tin tức</span>
             </Link>
           </li>
 
           <li>
-            <Link to="/admin/trash">
+            <Link to="/admin/trash" className="dh-nav-link">
               <i className="bi bi-trash3" />
               <span>Thùng rác</span>
             </Link>
@@ -167,36 +164,39 @@ return(
       </nav>
       {/* Page Content */}
       <div 
-        id="content" 
-        className={`${isSidebarCollapsed ? 'expanded' : ''} ${isSidebarActive ? 'dimmed active' : ''}`}
+        id="dh-content" 
+        className={`${isSidebarCollapsed ? 'dh-content-expanded' : ''} ${isSidebarActive ? 'dh-content-dimmed dh-content-active' : ''}`}
         onClick={handleContentClick}
       >
         {/* Top Navigation */}
-        <nav className="navbar navbar-expand-lg">
+        <nav className="dh-navbar navbar-expand-lg">
           <div className="container-fluid">
-            {/* Nút menu cho desktop */}
-            <button 
-              type="button" 
-              id="sidebarCollapse" 
-              className="btn d-none d-md-block"
-              onClick={toggleSidebar}
-            >
-              <i className={`bi ${isSidebarCollapsed ? 'bi-chevron-right' : 'bi-chevron-left'}`} />
-            </button>
-            {/* Nút menu cho mobile */}
-            <button 
-              type="button" 
-              id="sidebarOpen" 
-              className="btn d-md-none"
-              onClick={toggleSidebar}
-            >
-              <i className="bi bi-list" />
-            </button>
-            <div className="d-flex align-items-center">
-              <div className="search-bar me-3">
+            <div className="dh-navbar-left">
+              {/* Nút menu cho desktop */}
+              <button 
+                type="button" 
+                id="dh-sidebarCollapse" 
+                className="btn d-none d-md-block"
+                onClick={toggleSidebar}
+              >
+                <i className={`bi ${isSidebarCollapsed ? 'bi-chevron-right' : 'bi-chevron-left'}`} />
+              </button>
+              {/* Nút menu cho mobile */}
+              <button 
+                type="button" 
+                id="dh-sidebarOpen" 
+                className="btn d-md-none"
+                onClick={toggleSidebar}
+              >
+                <i className="bi bi-list" />
+              </button>
+              <div className="search-bar">
                 <input type="text" className="form-control" placeholder="Tìm kiếm..." />
               </div>
-              <div className="notifications-nav me-3">
+            </div>
+
+            <div className="dh-navbar-right">
+              <div className="notifications-nav">
                 <div className="dropdown">
                   <a className="nav-link position-relative" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i className="bi bi-bell" />
@@ -263,16 +263,6 @@ return(
         <Outlet/>
       </div>
     </div>
-    
-    {showScrollTop && (
-      <button 
-        className="scroll-to-top"
-        onClick={scrollToTop}
-        aria-label="Cuộn lên đầu trang"
-      >
-        <i className="bi bi-arrow-up"></i>
-      </button>
-    )}
   </>
 )
 }
