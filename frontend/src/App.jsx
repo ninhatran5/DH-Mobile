@@ -30,7 +30,7 @@ import Chart from "./pages/admin/Chart";
 import AddProduct from "./pages/admin/AddProduct";
 import ProductList from "./pages/admin/ProductList";
 import Categories from "./pages/admin/Categories";
-
+import AddCategories from "./pages/admin/AddCategory";
 const withLayoutClient = (Component) => {
   return (
     <Layout>
@@ -144,6 +144,10 @@ const routerConfig = [
       {
         path:"categories",
         element:<Categories/>
+      },
+      {
+        path:"Addcategories",
+        element:<AddCategories/>
       }
     ]
   },

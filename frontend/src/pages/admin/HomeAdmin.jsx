@@ -111,7 +111,7 @@ const Homeadmin =()=>{
               </a>
               <ul className={`dh-submenu ${isDropdownActive('categories') ? 'show' : ''}`}>
                 <li><Link to="/admin/categories">Danh sách danh mục</Link></li>
-                <li><Link to="/admin/categories/add">Thêm danh mục</Link></li>
+                <li><Link to="/admin/Addcategories">Thêm danh mục</Link></li>
               </ul>
             </li>
 

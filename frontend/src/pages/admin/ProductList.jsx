@@ -133,8 +133,6 @@ const ProductList = () => {
           </div>
         </div>
       )}
-
-      {/* Products Table */}
       <div className="products-table">
         <table className="table">
           <thead>
