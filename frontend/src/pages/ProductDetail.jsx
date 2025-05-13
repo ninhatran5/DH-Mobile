@@ -270,6 +270,7 @@ const ProductDetail = () => {
           <ul className="introduce_productdetail nav">
             <li className="nav-item">
               <button
+                style={{ fontWeight: 800 }}
                 className={`nav-link ${
                   activeTab === "description" ? "active" : ""
                 }`}
@@ -280,6 +281,7 @@ const ProductDetail = () => {
             </li>
             <li className="nav-item">
               <button
+                style={{ fontWeight: 800 }}
                 className={`nav-link ${activeTab === "info" ? "active" : ""}`}
                 onClick={() => setActiveTab("info")}
               >
@@ -288,6 +290,7 @@ const ProductDetail = () => {
             </li>
             <li className="nav-item">
               <button
+                style={{ fontWeight: 800 }}
                 className={`nav-link ${
                   activeTab === "reviews" ? "active" : ""
                 }`}
