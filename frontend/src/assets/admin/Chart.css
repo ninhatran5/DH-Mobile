@@ -1,0 +1,174 @@
+/* Chart Component Styles */
+.stat-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.stat-card .card-title {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    color: #6B7280;
+    margin-bottom: 0.75rem;
+}
+
+.stat-card h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0.5rem 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
+}
+
+.stat-card p {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.stat-card p i {
+    font-size: 1.1rem;
+}
+
+/* Table Styles */
+.table thead th {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6B7280;
+    padding: 1rem;
+    background: rgba(249, 250, 251, 0.8);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+}
+
+.table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+    color: #374151;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.table .text-primary {
+    color: #2563EB !important;
+    font-weight: 600;
+}
+
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.fw-medium {
+    font-weight: 600 !important;
+    color: #111827;
+}
+
+.text-muted {
+    color: #6B7280 !important;
+    font-size: 0.875rem;
+}
+
+/* Badge Styles */
+.badge {
+    padding: 0.5em 0.75em;
+    font-weight: 600;
+    font-size: 0.75rem;
+    border-radius: 6px;
+}
+
+.bg-success-soft {
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: #059669 !important;
+}
+
+.bg-warning-soft {
+    background: rgba(245, 158, 11, 0.1) !important;
+    color: #D97706 !important;
+}
+
+.bg-danger-soft {
+    background: rgba(239, 68, 68, 0.1) !important;
+    color: #DC2626 !important;
+}
+
+/* Button Styles */
+.btn-light {
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    color: #374151;
+}
+
+.btn-light:hover {
+    background: #F9FAFB;
+}
+
+/* Card Header */
+.card-title.mb-0 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+/* Pagination */
+.pagination {
+    margin: 0;
+}
+
+.page-link {
+    font-weight: 500;
+    color: #374151;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    margin: 0 0.125rem;
+}
+
+.page-item.active .page-link {
+    background-color: #2563EB;
+    border-color: #2563EB;
+    color: white;
+    font-weight: 600;
+}
+
+/* Filter and Export Buttons */
+.btn-sm {
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.btn-sm i {
+    font-size: 1rem;
+    margin-right: 0.25rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .stat-card {
+        padding: 1.25rem;
+    }
+
+    .stat-card h2 {
+        font-size: 1.75rem;
+    }
+
+    .table thead th {
+        font-size: 0.7rem;
+    }
+
+    .table tbody td {
+        font-size: 0.8125rem;
+    }
+} 

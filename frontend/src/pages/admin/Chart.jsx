@@ -1,4 +1,6 @@
 import React from "react";
+import '../../assets/admin/Chart.css'
+
 const Chart = () => {
     return(
         <div className="container-fluid">
@@ -26,7 +28,10 @@ const Chart = () => {
               <div className="card-body">
                 <h5 className="card-title">Đơn Hàng</h5>
                 <h2>567</h2>
-                <p className="text-danger"><i className="bi bi-arrow-down" /> 3.2%</p>
+                <p style={{ color: '#dc3545' }}>
+  <i className="bi bi-arrow-down" /> 3.2%
+</p>
+
               </div>
             </div>
           </div>

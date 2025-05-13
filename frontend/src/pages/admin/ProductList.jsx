@@ -19,7 +19,52 @@ const ProductList = () => {
       status: "Còn hàng",
       lastUpdated: "2024-02-20"
     },
- 
+    {
+      id: 1,
+      name: "MacBook Pro 14-inch",
+      image: "https://example.com/macbook-pro.jpg",
+      price: "45,990,000₫",
+      category: "Laptop",
+      stock: 15,
+      status: "Còn hàng",
+      lastUpdated: "2024-02-20"
+    },{
+      id: 1,
+      name: "MacBook Pro 14-inch",
+      image: "https://example.com/macbook-pro.jpg",
+      price: "45,990,000₫",
+      category: "Laptop",
+      stock: 15,
+      status: "Còn hàng",
+      lastUpdated: "2024-02-20"
+    },{
+      id: 1,
+      name: "MacBook Pro 14-inch",
+      image: "https://example.com/macbook-pro.jpg",
+      price: "45,990,000₫",
+      category: "Laptop",
+      stock: 15,
+      status: "Còn hàng",
+      lastUpdated: "2024-02-20"
+    },{
+      id: 1,
+      name: "MacBook Pro 14-inch",
+      image: "https://example.com/macbook-pro.jpg",
+      price: "45,990,000₫",
+      category: "Laptop",
+      stock: 15,
+      status: "Còn hàng",
+      lastUpdated: "2024-02-20"
+    },{
+      id: 1,
+      name: "MacBook Pro 14-inch",
+      image: "https://example.com/macbook-pro.jpg",
+      price: "45,990,000₫",
+      category: "Laptop",
+      stock: 15,
+      status: "Còn hàng",
+      lastUpdated: "2024-02-20"
+    },
   ];
 
   const handleSelectAll = (e) => {

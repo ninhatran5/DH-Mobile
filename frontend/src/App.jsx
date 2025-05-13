@@ -29,6 +29,8 @@ import HomeAdmin from "./pages/admin/HomeAdmin";
 import Chart from "./pages/admin/Chart";
 import AddProduct from "./pages/admin/AddProduct";
 import ProductList from "./pages/admin/ProductList";
+import Categories from "./pages/admin/Categories";
+
 const withLayoutClient = (Component) => {
   return (
     <Layout>
@@ -138,6 +140,10 @@ const routerConfig = [
       {
         path:"addproduct",
         element:<AddProduct/>
+      },
+      {
+        path:"categories",
+        element:<Categories/>
       }
     ]
   },
