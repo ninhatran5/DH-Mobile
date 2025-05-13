@@ -75,21 +75,21 @@ input[type="number"] {
   width: fit-content;
 }
 .btn-quantity {
-    background-color: #f0f0f0; /* Màu nền sáng */
-    color: #333; /* Màu chữ */
-    border: none;
-    border-radius: 5px; /* Góc bo tròn */
-    padding: 10px 15px;
-    font-size: 18px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background-color: #f0f0f0; /* Màu nền sáng */
+  color: #333; /* Màu chữ */
+  border: none;
+  border-radius: 5px; /* Góc bo tròn */
+  padding: 10px 15px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .btn-quantity:hover {
-    background-color: #e0e0e0; /* Màu khi hover */
-    transform: scale(1.05); /* Phóng to nhẹ khi hover */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Bóng đổ mạnh hơn */
+  background-color: #e0e0e0; /* Màu khi hover */
+  transform: scale(1.05); /* Phóng to nhẹ khi hover */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Bóng đổ mạnh hơn */
 }
 .hide-spinner::-webkit-outer-spin-button,
 .hide-spinner::-webkit-inner-spin-button {
