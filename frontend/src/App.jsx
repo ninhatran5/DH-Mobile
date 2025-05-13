@@ -25,7 +25,10 @@ import ChangePassword from "./pages/ChangePassword";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import ProductDetail from "./pages/ProductDetail";
-
+import HomeAdmin from "./pages/admin/HomeAdmin";
+import Chart from "./pages/admin/Chart";
+import AddProduct from "./pages/admin/AddProduct";
+import ProductList from "./pages/admin/ProductList";
 const withLayoutClient = (Component) => {
   return (
     <Layout>
@@ -119,6 +122,27 @@ const routerConfig = [
     path: "/change-password",
     element: <ChangePassword />,
   },
+
+  {
+    path:"/admin",
+    element:<HomeAdmin/>,
+    children:[
+      {
+        path:"",
+        element:<Chart/>
+      },
+      {
+        path:"product",
+        element:<ProductList/>
+      },
+      {
+        path:"addproduct",
+        element:<AddProduct/>
+      }
+    ]
+  },
+  
+
   {
     path: "*",
     element: <ErrorPage />,

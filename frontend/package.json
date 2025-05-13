@@ -11,9 +11,12 @@
   },
   "dependencies": {
     "animejs": "^4.0.2",
+    "bootstrap": "^5.3.6",
+    "bootstrap-icons": "^1.13.1",
     "font-awesome": "^4.7.0",
     "i18next": "^25.1.2",
     "react": "^19.1.0",
+    "react-bootstrap": "^2.10.10",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.56.3",
     "react-i18next": "^15.5.1",
