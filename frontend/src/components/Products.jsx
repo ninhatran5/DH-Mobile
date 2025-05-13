@@ -1,14 +1,30 @@
 import { FaRegHeart, FaShippingFast } from "react-icons/fa";
 import iphone from "../assets/images/iphone-16-pro-max.webp";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaArrowDownShortWide, FaArrowUpWideShort } from "react-icons/fa6";
 import "../assets/css/products.css";
+import { toast } from "react-toastify";
+
 export default function Products({
   title,
   showHeader = true,
   padding,
   filter = true,
 }) {
+  const navigate = useNavigate();
+  const nextProductDetail = () => {
+    navigate("/product-detail/:id");
+  };
+  const addToFavorites = () => {
+    console.log("added");
+    toast.success("Đã thêm vào yêu thích");
+  };
+
+  const addToShoppingCart = () => {
+    console.log("added");
+    toast.success("Đã thêm vào giỏ hàng");
+    navigate("/shoppingcart");
+  };
   const products = [
     {
       name: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
@@ -138,21 +154,37 @@ export default function Products({
                       {products.map((product, index) => (
                         <div className="col" key={index}>
                           <div className="product-item">
-                            <a href="#" className="btn-wishlist">
+                            <a
+                              onClick={addToFavorites}
+                              style={{ cursor: "pointer" }}
+                              className="btn-wishlist"
+                            >
                               <FaRegHeart style={{ fontSize: 20 }} />
                             </a>
                             <figure>
-                              <Link to={""} title={product.name}>
+                              <Link
+                                to={"/product-detail/:id"}
+                                title={product.name}
+                              >
                                 <img
                                   src={product.image}
                                   className="tab-image"
                                 />
                               </Link>
                             </figure>
-                            <h3>{product.name}</h3>
+                            <h3
+                              onClick={nextProductDetail}
+                              style={{ cursor: "pointer" }}
+                            >
+                              {product.name}
+                            </h3>
                             <span className="price">{product.price}</span>
                             <div className="d-flex align-items-center justify-content-between">
-                              <a href="#" className="nav-link">
+                              <a
+                                onClick={addToShoppingCart}
+                                style={{ cursor: "pointer" }}
+                                className="nav-link"
+                              >
                                 Add to Cart
                                 <iconify-icon icon="uil:shopping-cart" />
                               </a>

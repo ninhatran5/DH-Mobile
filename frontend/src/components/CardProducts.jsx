@@ -4,8 +4,12 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import iphone16 from "../assets/images/aaa.png";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-export default function CardProduct() {
+export default function CardProduct({ title }) {
+  const navigate = useNavigate();
+
   const products = [
     {
       id: 1,
@@ -28,6 +32,18 @@ export default function CardProduct() {
       image: iphone16,
     },
   ];
+  const addToFavorites = () => {
+    console.log("added");
+    toast.success("Đã thêm vào yêu thích");
+  };
+  const nextProductDetail = () => {
+    navigate("/product-detail/:id");
+  };
+  const addToShoppingCart = () => {
+    console.log("added");
+    toast.success("Đã thêm vào giỏ hàng");
+    navigate("/shoppingcart");
+  };
 
   return (
     <section className="py-5 overflow-hidden">
@@ -35,11 +51,14 @@ export default function CardProduct() {
         <div className="row">
           <div className="col-md-12">
             <div className="section-header d-flex flex-wrap justify-content-between my-5">
-              <h2 className="section-title">Sản Phẩm Bán Chạy</h2>
+              <h2 className="section-title">{title}</h2>
               <div className="d-flex align-items-center">
-                <a href="#" className="btn-link text-decoration-none">
-                  Xem tất cả →
-                </a>
+                <Link
+                  to={"/products"}
+                  className="btn-link text-decoration-none"
+                >
+                  Đi Đến Shop →
+                </Link>
                 <div className="swiper-buttons">
                   <button className="category-carousel-prev btn btn-primary">
                     ❮
@@ -73,22 +92,37 @@ export default function CardProduct() {
               {products.map((product) => (
                 <SwiperSlide key={product.id}>
                   <div className="product-item">
-                    <a href="#" className="btn-wishlist">
+                    <a
+                      style={{ cursor: "pointer" }}
+                      onClick={addToFavorites}
+                      className="btn-wishlist"
+                    >
                       <FaRegHeart />
                     </a>
                     <figure>
-                      <a href="#" title={product.title}>
+                      <a title={product.title}>
                         <img
+                          style={{ cursor: "pointer" }}
+                          onClick={nextProductDetail}
                           src={product.image}
                           className="tab-image"
                           alt={product.title}
                         />
                       </a>
                     </figure>
-                    <h3>{product.title}</h3>
+                    <h3
+                      style={{ cursor: "pointer" }}
+                      onClick={nextProductDetail}
+                    >
+                      {product.title}
+                    </h3>
                     <span className="price">{product.price}</span>
                     <div className="d-flex align-items-center justify-content-between">
-                      <a href="#" className="nav-link">
+                      <a
+                        style={{ cursor: "pointer" }}
+                        onClick={addToShoppingCart}
+                        className="nav-link"
+                      >
                         Add to Cart
                       </a>
                     </div>

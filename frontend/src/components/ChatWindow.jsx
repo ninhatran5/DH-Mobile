@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "../assets/css/chatbot.css";
 import chatbotLogo2 from "../assets/images/logochat.png";
 import { FaPaperPlane, FaTimes } from "react-icons/fa";
 import { GoPaperclip } from "react-icons/go";
+import { Modal } from "react-bootstrap";
 
 const messagesData = [
   { sender: "user", text: "Xin chào", time: "10:00 AM" },
@@ -22,7 +23,8 @@ const messagesData = [
   },
   {
     sender: "user",
-    image: "https://picsum.photos/200",
+    image:
+      "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg",
     time: "10:05 AM",
   },
   {
@@ -33,17 +35,11 @@ const messagesData = [
 ];
 
 export default function ChatWindow() {
+  const [show, setShow] = useState(false);
+  const [selectedImage, setSelectedImage] = useState("");
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
   const [visible, setVisible] = useState(true);
-  const [imageModal, setImageModal] = useState(null); // Modal state
-
-  const openImageModal = (image) => {
-    console.log("Click ảnh:", image);
-    setImageModal(image);
-  };
-
-  const closeImageModal = () => {
-    setImageModal(null);
-  };
 
   return (
     <div className="chatbot-container">
@@ -81,7 +77,11 @@ export default function ChatWindow() {
                       src={msg.image}
                       alt="message"
                       className="message-image"
-                      onClick={() => openImageModal(msg.image)}
+                      onClick={() => {
+                        setSelectedImage(msg.image);
+                        handleShow();
+                      }}
+                      style={{ cursor: "pointer" }}
                     />
                   )}
                   <div className="timestamp">{msg.time}</div>
@@ -90,11 +90,39 @@ export default function ChatWindow() {
             ))}
           </div>
 
-          {imageModal && (
-            <div className="modal" onClick={closeImageModal}>
-              <img src={imageModal} alt="Phóng to" className="modal-image" />
-            </div>
-          )}
+          <Modal show={show} onHide={handleClose} centered size="lg">
+            <Modal.Body style={{ padding: 0, position: "relative" }}>
+              <button
+                onClick={handleClose}
+                style={{
+                  position: "absolute",
+                  top: -19,
+                  right: -15,
+                  background: "none",
+                  color: "white",
+                  border: "none",
+                  fontSize: 37,
+                  cursor: "pointer",
+                  zIndex: 10,
+                }}
+                aria-label="Đóng"
+              >
+                &times;
+              </button>
+
+              <img
+                src={selectedImage}
+                alt="Preview"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  maxHeight: "90vh",
+                  objectFit: "contain",
+                  display: "block",
+                }}
+              />
+            </Modal.Body>
+          </Modal>
 
           <div className="input-container">
             <input type="text" placeholder="Gõ tin nhắn của bạn..." />
@@ -107,7 +135,7 @@ export default function ChatWindow() {
             <label
               htmlFor="file-input"
               className="btn_message2"
-              style={{ cursor: "pointer", marginTop: 9, marginLefts: 5 }}
+              style={{ cursor: "pointer", marginTop: 9 }}
             >
               <GoPaperclip />
             </label>
