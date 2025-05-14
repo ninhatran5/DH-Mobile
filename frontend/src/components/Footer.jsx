@@ -33,7 +33,7 @@ export default function Footer() {
   const footerData = [
     {
       id: 1,
-      title: "Thông tin",
+      title: t("header.info"),
       information: [
         { label: t("header.home"), url: "/" },
         { label: t("header.products"), url: "/products" },
@@ -43,7 +43,7 @@ export default function Footer() {
     },
     {
       id: 2,
-      title: "Hỗ trợ khách hàng",
+      title: t("header.customer_support"),
       information: [
         { label: t("header.warrantyPolicy"), url: "/guarantee" },
         { label: t("header.returnPolicy"), url: "/returnpolicy" },
@@ -53,7 +53,7 @@ export default function Footer() {
     },
     {
       id: 3,
-      title: "Kết nối với chúng tôi",
+      title: t("header.connect_with_us"),
       information: [
         { label: "Hotline: 0396 180 619" },
         { label: t("header.chat") },
@@ -105,20 +105,17 @@ export default function Footer() {
 
             <div className="col-lg-3 col-md-6 col-sm-6">
               <div className="footer-menu">
-                <h5 className="widget-title">Phản hồi với chúng tôi</h5>
-                <p>Chúng tôi rất sẵn lòng lắng nghe các ý kiến của bạn</p>
+                <h5 className="widget-title">{t("header.feedback_with_us")}</h5>
+                <p>{t("header.we_are_pleased_to_hear")}</p>
                 <form className="d-flex mt-3 gap-0" role="newsletter">
                   <input
                     className="form-control rounded-start rounded-0 bg-light"
                     type="email"
-                    placeholder="Địa chỉ Email"
+                    placeholder={t("header.email_address")}
                     aria-label="Email Address"
                   />
-                  <button
-                    className="btn btn-dark rounded-end rounded-0"
-                    type="submit"
-                  >
-                    Gửi
+                  <button className="btn btn-dark rounded-end rounded-0">
+                    {t("header.send")}
                   </button>
                 </form>
               </div>

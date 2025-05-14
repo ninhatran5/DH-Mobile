@@ -38,6 +38,13 @@
     "hello": "Hello",
     "search": "Search for products here...",
     "searchIcon": "Search",
-    "chat": "Chat with us"
+    "chat": "Chat with us",
+    "info": "Information",
+    "customer_support": "Customer Support",
+    "connect_with_us": "Connect with Us",
+    "feedback_with_us": "Feedback to Us",
+    "we_are_pleased_to_hear": "We are pleased to hear your opinions",
+    "email_address": "Email Address",
+    "send": "Send"
   }
 }
