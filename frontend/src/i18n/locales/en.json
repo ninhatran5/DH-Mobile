@@ -1,0 +1,43 @@
+{
+  "home": {
+    "brand": "Brands",
+    "brandViewAllBrands": "View all brands →",
+    "productsYouLiked": "Products You Liked",
+    "productLikedViewAllBrands": "View all products →",
+    "ourServices": "Our Services",
+    "servicesFreeShipping": "Free shipping within 5km radius",
+    "servicesFreeShippingDesc": "Free delivery within a 5km radius",
+    "servicesSecurePayment": "100% Secure Payment",
+    "servicesSecurePaymentDesc": "Ensuring secure payments and data protection",
+    "servicesGuaranteedSavings": "Guaranteed Savings",
+    "servicesGuaranteedSavingsDesc": "Committed to great prices and daily attractive deals",
+    "servicesDailyDeals": "Daily Deals",
+    "servicesDailyDealsDesc": "New promotions every day just for you",
+    "featuredProducts": "Featured Products",
+    "goToShop": "Go to shop →",
+    "bestSellingProducts": "Best Selling Products",
+    "partners": "PARTNERS AND CUSTOMERS",
+    "blog": "Blog",
+    "seeAll": "See all →",
+    "moblieTitle": "Explore the Mobile World at DH Mobile!",
+    "moblieDesc": "Welcome to DH Mobile – the ideal destination for tech enthusiasts! We offer a diverse collection of smartphones from renowned brands like Samsung, Apple, Xiaomi, and more. With reasonable prices and dedicated service, we are committed to providing you with the best shopping experience. Download our app now to discover amazing deals and the latest products!"
+  },
+  "header": {
+    "home": "Home",
+    "products": "Products",
+    "voucher": "Vouchers",
+    "blog": "Blog",
+    "introduce": "About Us",
+    "service": "Services",
+    "warrantyPolicy": "Warranty Policy",
+    "returnPolicy": "Return Policy",
+    "deliveryPolicy": "Delivery Policy",
+    "checkImei": "Check IMEI",
+    "vi": "Vietnamese",
+    "en": "English",
+    "hello": "Hello",
+    "search": "Search for products here...",
+    "searchIcon": "Search",
+    "chat": "Chat with us"
+  }
+}

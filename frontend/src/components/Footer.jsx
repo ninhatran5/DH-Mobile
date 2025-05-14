@@ -2,8 +2,11 @@ import { LiaFacebookF } from "react-icons/lia";
 import logo from "../assets/images/logo2.png";
 import { FaBehance, FaGithub, FaInstagram } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function Footer() {
+  const { t } = useTranslation();
+
   const iconLogoSocial = [
     {
       id: 1,
@@ -32,20 +35,20 @@ export default function Footer() {
       id: 1,
       title: "Thông tin",
       information: [
-        { label: "Trang chủ", url: "/" },
-        { label: "Sản phẩm", url: "/products" },
-        { label: "Bài viết", url: "/blogs" },
-        { label: "Giới thiệu", url: "/introduce" },
+        { label: t("header.home"), url: "/" },
+        { label: t("header.products"), url: "/products" },
+        { label: t("header.blog"), url: "/blogs" },
+        { label: t("header.introduce"), url: "/introduce" },
       ],
     },
     {
       id: 2,
       title: "Hỗ trợ khách hàng",
       information: [
-        { label: "Chính sách bảo hành", url: "/guarantee" },
-        { label: "Chính sách đổi trả", url: "/returnpolicy" },
-        { label: "Chính sách giao hàng", url: "/deliverypolicy" },
-        { label: "Kiểm tra IMEI", url: "/checkimei" },
+        { label: t("header.warrantyPolicy"), url: "/guarantee" },
+        { label: t("header.returnPolicy"), url: "/returnpolicy" },
+        { label: t("header.deliveryPolicy"), url: "/deliverypolicy" },
+        { label: t("header.checkImei"), url: "/checkimei" },
       ],
     },
     {
@@ -53,8 +56,8 @@ export default function Footer() {
       title: "Kết nối với chúng tôi",
       information: [
         { label: "Hotline: 0396 180 619" },
-        { label: "Chat với chúng tôi" },
-        { label: "Mã giảm giá", url: "/voucher" },
+        { label: t("header.chat") },
+        { label: t("header.voucher"), url: "/voucher" },
       ],
     },
   ];

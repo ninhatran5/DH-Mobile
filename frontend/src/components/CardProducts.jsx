@@ -6,10 +6,11 @@ import "swiper/css/navigation";
 import iphone16 from "../assets/images/aaa.png";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 export default function CardProduct({ title }) {
   const navigate = useNavigate();
-
+  const { t } = useTranslation();
   const products = [
     {
       id: 1,
@@ -57,7 +58,7 @@ export default function CardProduct({ title }) {
                   to={"/products"}
                   className="btn-link text-decoration-none"
                 >
-                  Đi Đến Shop →
+                  {t("home.goToShop")}
                 </Link>
                 <div className="swiper-buttons">
                   <button className="category-carousel-prev btn btn-primary">

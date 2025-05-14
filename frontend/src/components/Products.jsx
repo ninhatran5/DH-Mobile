@@ -6,6 +6,7 @@ import { LuHeartOff } from "react-icons/lu";
 
 import "../assets/css/products.css";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 export default function Products({
   title,
@@ -14,6 +15,7 @@ export default function Products({
   filter = true,
   unfavorite = true,
 }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const nextProductDetail = () => {
     navigate("/product-detail/:id");
@@ -145,7 +147,7 @@ export default function Products({
                           to={"/products"}
                           className="nav-link text-uppercase fs-6 active"
                         >
-                          Đi đến shop →
+                          {t("home.goToShop")}
                         </Link>
                       </div>
                     </nav>
