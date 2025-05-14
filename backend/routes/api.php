@@ -5,15 +5,24 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BannerController;
 use App\Http\Middleware\CheckAdmin;
 
-// API login     check postman dùng raw
+// API login     
 
 Route::post('/login', [AuthController::class, 'login']);
 
 // API Banner
-// http://127.0.0.1:80000/api/getbanners
+// http://127.0.0.1:8000/api/getbanners
 Route::get('/getbanners', [BannerController::class, 'index']); // lấy toàn bộ danh sách banner
-// http://127.0.0.1:80000/api/getbanners/1
+// http://127.0.0.1:8000/api/getbanners/{id}
 Route::get('/getbanners/{id}', [BannerController::class, 'show']); // lấy banner theo id
+
+Route::middleware('auth:sanctum')->group(function () {
+// http://127.0.0.1:8000/api/getbanners/{id}
+    Route::post('updatebanners/{id}', [BannerController::class, 'update']); // cập nhật banner theo id
+});
+
+
+
+
 
 
 
@@ -23,6 +32,3 @@ Route::get('/getbanners/{id}', [BannerController::class, 'show']); // lấy bann
 
 // Route::middleware(CheckAdmin::class)->group(function () {  
 // });
-
-
-

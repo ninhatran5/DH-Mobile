@@ -16,4 +16,5 @@ class Banner extends Model
         'link_url',
         'is_active',
     ];
+    
 }
