@@ -14,6 +14,7 @@ import vnpayLogo from "../assets/images/logo-vndpay.webp";
 import samsungLogo from "../assets/images/logo-samsung.svg";
 
 import "../assets/css/slider.css";
+import { useTranslation } from "react-i18next";
 
 const SliderLogoBrand = () => {
   const settings = {
@@ -62,6 +63,7 @@ const SliderLogoBrand = () => {
     sonyLogo,
     masstelLogo,
   ];
+  const { t } = useTranslation();
 
   return (
     <>
@@ -69,7 +71,7 @@ const SliderLogoBrand = () => {
         <div className="partner-page">
           <div className="slide-partner">
             <div className="partner">
-              <p className="partner-title text-center">ĐỐI TÁC VÀ KHÁCH HÀNG</p>
+              <p className="partner-title text-center">{t("home.partners")}</p>
               <p className="partner-des text-center">PARTNERS AND CUSTOMERS</p>
             </div>
             <div className="slider-container">

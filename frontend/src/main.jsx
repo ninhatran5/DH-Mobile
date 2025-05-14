@@ -6,14 +6,11 @@ import "font-awesome/css/font-awesome.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { ToastContainer } from "react-toastify";
-import i18n from "./Langue/i18n.js";
-import { I18nextProvider } from "react-i18next";
+import "./i18n";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
-    <I18nextProvider i18n={i18n}>
-      <App />
-      <ToastContainer />
-    </I18nextProvider>
+    <App />
+    <ToastContainer />
   </BrowserRouter>
 );

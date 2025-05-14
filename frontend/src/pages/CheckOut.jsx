@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import iphone from "../assets/images/iphone-16-pro-max.webp";
 import { TbExchange } from "react-icons/tb";
+import Breadcrumb from "../components/Breadcrumb";
 
 const CheckOut = () => {
   const purchaseInformation = [
@@ -21,26 +22,14 @@ const CheckOut = () => {
   ];
   return (
     <>
-      <section className="breadcrumb-option">
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="breadcrumb__text">
-                <h4>Thanh Toán</h4>
-                <div className="breadcrumb__links">
-                  <Link style={{ textDecoration: "none" }} to={"/"}>
-                    Trang chủ
-                  </Link>
-                  <Link style={{ textDecoration: "none" }} to={"/products"}>
-                    Sản phẩm
-                  </Link>
-                  <span>Thanh toán</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Breadcrumb
+        title={"Thanh Toán"}
+        mainItem={"Trang chủ"}
+        mainItem2={"Giỏ hàng"}
+        secondaryItem={"Thanh toán"}
+        linkMainItem={"/"}
+        linkMainItem2={"/shopping-cart"}
+      />
       <div className="container-fluid">
         <section className="checkout" style={{ marginTop: 60 }}>
           <div className="checkout__form">
@@ -105,7 +94,7 @@ const CheckOut = () => {
                   </div>
                   <div className="checkout_change_address">
                     <Link
-                      to={"/changecheckout"}
+                      to={"/change-checkout"}
                       className="checkout_change_address_link"
                     >
                       <h6 className="checkout_change_address_name">

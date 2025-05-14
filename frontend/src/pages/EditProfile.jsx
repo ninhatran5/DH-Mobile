@@ -3,6 +3,7 @@ import "../assets/css/editprofile.css";
 import { FaEyeSlash } from "react-icons/fa";
 import { IoEyeSharp } from "react-icons/io5";
 import { useState } from "react";
+import Breadcrumb from "../components/Breadcrumb";
 
 const EditProfile = () => {
   const [isShowPassword, setIsShowPassword] = useState(false);
@@ -85,26 +86,15 @@ const EditProfile = () => {
 
   return (
     <>
-      <section className="breadcrumb-option">
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="breadcrumb__text">
-                <h4>Chỉnh Sửa Hồ Sơ</h4>
-                <div className="breadcrumb__links">
-                  <Link style={{ textDecoration: "none" }} to={"/"}>
-                    Trang chủ
-                  </Link>
-                  <Link style={{ textDecoration: "none" }} to={"/profile"}>
-                    Hồ sơ cá nhân
-                  </Link>
-                  <span>Chỉnh sửa hồ sơ cá nhân</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Breadcrumb
+        title={"Chỉnh Sửa Hồ Sơ Cá Nhân"}
+        mainItem={"Trang chủ"}
+        mainItem2={"Hồ sơ cá nhân"}
+        secondaryItem={"Chỉnh sửa hồ sơ"}
+        linkMainItem={"/"}
+        linkMainItem2={"/profile"}
+        showMainItem2={true}
+      />
       <div className="container-fluid">
         <div className="row">
           <div className="col-12">

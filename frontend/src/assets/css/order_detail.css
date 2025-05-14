@@ -1,0 +1,150 @@
+body {
+  color: #000;
+  overflow-x: hidden;
+  height: 100%;
+  background-color: #8c9eff;
+  background-repeat: no-repeat;
+}
+
+.card_order_detail {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05) !important;
+}
+
+.top {
+  padding-top: 40px;
+  padding-left: 13% !important;
+  padding-right: 13% !important;
+}
+
+/*Icon progressbar*/
+#progressbar {
+  margin: 30px 0;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+  flex-wrap: wrap;
+  counter-reset: step;
+  position: relative;
+  color: #455a64;
+}
+
+#progressbar li {
+  flex: 1 1 auto;
+  position: relative;
+  text-align: center;
+  min-width: 120px;
+  margin-bottom: 20px;
+}
+
+#progressbar li::before {
+  content: "\f10c";
+  font-family: FontAwesome;
+  display: inline-block;
+  width: 42px;
+  height: 42px;
+  line-height: 42px;
+  font-size: 20px;
+  background-color: #c5cae9;
+  color: white;
+  border-radius: 50%;
+  z-index: 2;
+  position: relative;
+}
+
+#progressbar li::after {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  width: 100%;
+  height: 6px;
+  background-color: #c5cae9;
+  z-index: 1;
+}
+
+#progressbar li:last-child::after {
+  display: none;
+}
+
+/* Active bước */
+#progressbar li.active::before {
+  content: "\f00c";
+  background-color: #651fff;
+}
+
+#progressbar li.active::after {
+  background-color: #651fff;
+}
+
+/* Label tên bước */
+#progressbar li .step-label {
+  margin-top: 8px;
+  display: block;
+  font-size: 13px;
+  color: #333;
+}
+
+/* Responsive chỉnh sửa */
+@media (max-width: 768px) {
+  .top {
+    padding-left: 5% !important;
+    padding-right: 5% !important;
+  }
+
+  #progressbar {
+    padding: 0 10px;
+  }
+
+  #progressbar li {
+    flex: 0 0 33.333%;
+    margin-bottom: 30px;
+  }
+
+  #progressbar li::after {
+    width: calc(100% - 21px);
+    left: calc(50% + 21px);
+  }
+
+  #progressbar li:nth-child(3n)::after {
+    display: none;
+  }
+
+  #progressbar li .step-label {
+    font-size: 12px;
+    padding: 0 5px;
+  }
+
+  .card {
+    margin: 0 10px 90px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  #progressbar li {
+    flex: 0 0 50%;
+  }
+
+  #progressbar li:nth-child(3n)::after {
+    display: block;
+  }
+
+  #progressbar li:nth-child(2n)::after {
+    display: none;
+  }
+}
+.icon {
+  width: 60px;
+  height: 60px;
+  margin-right: 15px;
+}
+
+.icon-content {
+  padding-bottom: 20px;
+}
+
+@media screen and (max-width: 992px) {
+  .icon-content {
+    width: 50%;
+  }
+}

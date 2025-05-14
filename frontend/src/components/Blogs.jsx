@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import blogsImage1 from "../assets/images/post-thumb-1.jpg";
+import { useTranslation } from "react-i18next";
 
 export default function Blogs({ showHeader = true, padding }) {
+  const { t } = useTranslation();
+
   const blogsItem = [
     {
       id: 1,
@@ -39,10 +42,10 @@ export default function Blogs({ showHeader = true, padding }) {
           {showHeader && (
             <div className="row">
               <div className="section-header d-flex align-items-center justify-content-between my-5">
-                <h2 className="section-title">Tin Tức</h2>
+                <h2 className="section-title">{t("home.blog")}</h2>
                 <div className="btn-wrap align-right">
                   <Link to={"/blogs"} className="btn-link text-decoration-none">
-                    Xem tất cả →
+                    {t("home.seeAll")}
                   </Link>
                 </div>
               </div>
@@ -53,7 +56,7 @@ export default function Blogs({ showHeader = true, padding }) {
               <div className="card-products col-md-4" key={item.id}>
                 <article className="post-item card border-0 shadow-sm d-flex flex-column">
                   <div className="image-holder zoom-effect">
-                    <Link to={"/blogdetails"}>
+                    <Link to={"/blogdetails/:id"}>
                       <img
                         src={item.image}
                         alt="post"
@@ -68,7 +71,7 @@ export default function Blogs({ showHeader = true, padding }) {
                     <div className="post-header">
                       <h3 className="post-title">
                         <Link
-                          to={"/blogdetails"}
+                          to={"/blogdetails/:id"}
                           className="text-decoration-none fw-bold"
                           style={{ color: "black" }}
                         >

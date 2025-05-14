@@ -12,15 +12,18 @@ import { useTranslation } from "react-i18next";
 export default function Header() {
   const location = useLocation();
   const { i18n } = useTranslation();
-  const handleChangeLanguage = (lang) => {
-    i18n.changeLanguage(lang);
+
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
   };
+
+  const { t } = useTranslation();
 
   const iconNavbars = [
     {
       id: 1,
       icon: <FiShoppingCart />,
-      link: "/shoppingcart",
+      link: "/shopping-cart",
     },
     {
       id: 2,
@@ -42,61 +45,63 @@ export default function Header() {
   const services = [
     {
       id: 1,
-      nameService: "Chính sách bảo hành",
+      nameService: t("header.warrantyPolicy"),
       link: "/guarantee",
     },
     {
       id: 2,
-      nameService: "Chính sách đổi trả",
+      nameService: t("header.returnPolicy"),
       link: "/returnpolicy",
     },
     {
       id: 3,
-      nameService: "Chính sách giao hàng",
+      nameService: t("header.deliveryPolicy"),
       link: "/deliverypolicy",
     },
     {
       id: 4,
-      nameService: "Kiểm tra IMEI",
+      nameService: t("header.checkImei"),
       link: "/checkimei",
     },
   ];
-  const langues = [
+  const languages = [
     {
       id: 1,
-      name: "Tiếng Anh",
+      name: t("header.en"),
+      code: "en",
       flag: Anh,
     },
     {
       id: 2,
-      name: "Tiếng Việt",
+      name: t("header.vi"),
+      code: "vi",
       flag: VietNam,
     },
   ];
   const navbars = [
     {
       id: 1,
-      name: "Trang chủ",
+      name: t("header.home"),
       link: "/",
     },
     {
       id: 2,
-      name: "Sản phẩm",
+      name: t("header.products"),
       link: "/products",
     },
     {
       id: 3,
-      name: "Mã giảm giá",
+      name: t("header.voucher"),
       link: "/voucher",
     },
     {
       id: 4,
-      name: "Bài viết",
+      name: t("header.blog"),
       link: "/blogs",
     },
     {
       id: 5,
-      name: "Giới thiệu",
+      name: t("header.introduce"),
       link: "/introduce",
     },
   ];
@@ -124,7 +129,7 @@ export default function Header() {
           <div className="offcanvas-body">
             <div className="order-md-last">
               <h4 className="d-flex justify-content-between align-items-center mb-3">
-                <span className="text-primary">Tìm Kiếm</span>
+                <span className="text-primary">{t("header.searchIcon")}</span>
               </h4>
               <form
                 role="search"
@@ -135,7 +140,7 @@ export default function Header() {
                 <input
                   className="header_search form-control rounded-start rounded-0 bg-light"
                   type="email"
-                  placeholder="Tìm kiếm sản phẩm...."
+                  placeholder={t("header.search")}
                   aria-label="What are you looking for?"
                 />
                 <button
@@ -170,7 +175,7 @@ export default function Header() {
                       <input
                         type="text"
                         className="header_search form-control border-0 bg-transparent"
-                        placeholder="Tìm kiếm sản phẩm tại đây..."
+                        placeholder={t("header.search")}
                       />
                     </form>
                   </div>
@@ -221,7 +226,7 @@ export default function Header() {
 
                 <div className="cart text-end d-none d-lg-block">
                   <button className="border-0 bg-transparent d-flex flex-column gap-2 lh-1 text-end">
-                    <span className="fs-6 text-muted">Xin chào</span>
+                    <span className="fs-6 text-muted">{t("header.hello")}</span>
                     <span className="cart-total fs-5 fw-bold">Nguyên Tùng</span>
                   </button>
                 </div>
@@ -271,7 +276,7 @@ export default function Header() {
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                           >
-                            Dịch vụ
+                            {t("header.service")}
                           </a>
                           <ul className="dropdown-menu" aria-labelledby="pages">
                             {services.map((service) => (
@@ -302,23 +307,23 @@ export default function Header() {
                             />
                           </a>
                           <ul className="dropdown-menu" aria-labelledby="pages">
-                            {langues.map((langue) => (
-                              <li key={langue.id}>
+                            {languages.map((language) => (
+                              <li key={language.id}>
                                 <button
                                   className="dropdown-item d-flex align-items-center gap-2"
                                   onClick={() =>
-                                    handleChangeLanguage(
-                                      langue.name === "Tiếng Việt" ? "vi" : "en"
+                                    changeLanguage(
+                                      language.code === "vi" ? "vi" : "en"
                                     )
                                   }
                                 >
                                   <img
                                     className="flagSmall"
-                                    src={langue.flag}
-                                    alt={langue.name}
+                                    src={language.flag}
+                                    alt={language.name}
                                   />
                                   <span className="name-langue">
-                                    {langue.name}
+                                    {language.name}
                                   </span>
                                 </button>
                               </li>

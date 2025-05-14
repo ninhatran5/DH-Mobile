@@ -1,8 +1,8 @@
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Autoplay, Navigation } from "swiper/modules"; // Nhập Navigation
+import { Pagination, Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-import "swiper/css/navigation"; // Nhập CSS cho Navigation
+import "swiper/css/navigation";
 
 import banner1 from "../assets/images/banner1.jpg";
 import banner2 from "../assets/images/banner2.jpg";
@@ -22,7 +22,7 @@ import nokiaLogo from "../assets/images/nokia-new-logo-2023-png-vector.svg";
 import asusLogo from "../assets/images/AsusTek-black-logo.png";
 import sonyLogo from "../assets/images/sony.png";
 import masstelLogo from "../assets/images/Masstel-logo.png";
-import phone from "../assets/images/phone.png";
+import phone from "../assets/images/phone3x.png";
 import backgroundPhone from "../assets/images/bg-pattern-2.png";
 
 import iphone from "../assets/images/iphone-16-pro-max.webp";
@@ -30,10 +30,12 @@ import Products from "../components/Products";
 import CardProduct from "../components/CardProducts";
 import Blogs from "../components/Blogs";
 import SliderLogoBrand from "../components/SliderLogoBrand";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Home = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const banners = [banner1, banner2, banner3];
   const logoBrand = [
     { id: 1, name: "Apple", logo: appleLogo },
@@ -111,8 +113,8 @@ const Home = () => {
           />
         </svg>
       ),
-      title: "Giao hàng miễn phí",
-      description: "Giao hàng miễn phí trong bán kính 5km",
+      title: t("home.productLikedViewAllBrands"),
+      description: t("home.servicesFreeShipping"),
     },
     {
       id: 2,
@@ -129,8 +131,8 @@ const Home = () => {
           />
         </svg>
       ),
-      title: "Thanh toán an toàn 100%",
-      description: "Đảm bảo thanh toán an toàn và bảo mật thông tin",
+      title: t("home.servicesFreeShippingDesc"),
+      description: t("home.servicesSecurePayment"),
     },
     {
       id: 3,
@@ -147,8 +149,8 @@ const Home = () => {
           />
         </svg>
       ),
-      title: "Tiết kiệm đảm bảo",
-      description: "Cam kết giá tốt và ưu đãi hấp dẫn mỗi ngày",
+      title: t("home.servicesSecurePaymentDesc"),
+      description: t("home.servicesGuaranteedSavings"),
     },
     {
       id: 4,
@@ -165,8 +167,8 @@ const Home = () => {
           />
         </svg>
       ),
-      title: "Ưu đãi mỗi ngày",
-      description: "Khuyến mãi mới mỗi ngày dành riêng cho bạn",
+      title: t("home.servicesDailyDeals"),
+      description: t("home.servicesDailyDealsDesc"),
     },
   ];
 
@@ -225,10 +227,10 @@ const Home = () => {
           <div className="row">
             <div className="col-md-12">
               <div className="section-header d-flex flex-wrap justify-content-between mb-5">
-                <h2 className="section-title">Các Nhãn Hàng</h2>
+                <h2 className="section-title">{t("home.brand")}</h2>
                 <div className="d-flex align-items-center">
                   <a className="btn-link text-decoration-none">
-                    Xem tất cả nhãn hàng →
+                    {t("home.brandViewAllBrands")}
                   </a>
                   {/* Custom buttons */}
                   <div className="swiper-buttons">
@@ -318,11 +320,16 @@ const Home = () => {
       <section className="py-5 overflow-hidden">
         <div className="container-fluid">
           <div className="d-flex justify-content-between flex-wrap mb-4">
-            <h2 className="section-title">Sản Phẩm Bạn Đã Thích</h2>
+            <h3 className="section-title cursor-pointer">
+              {t("home.productsYouLiked")}
+            </h3>
             <div className="d-flex align-items-center gap-3">
-              <a href="#" className="btn-link text-decoration-none">
-                Xem tất cả sản phẩm →
-              </a>
+              <Link
+                to={"/favorite-products"}
+                className="btn-link text-decoration-none"
+              >
+                {t("home.productLikedViewAllBrands")}
+              </Link>
               <div className="swiper-buttons">
                 <button className="swiper-prev brand-carousel-prev btn btn-yellow">
                   ❮
@@ -383,9 +390,9 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="py-5">
+      <section>
         <div className="container-fluid">
-          <h2 className="my-5">Dịch Vụ Của Chúng Tôi</h2>
+          <h3 className="my-5">{t("home.ourServices")}</h3>
         </div>
         <div className="container-fluid">
           <div className="row row-cols-1 row-cols-sm-4 row-cols-lg-4">
@@ -411,13 +418,13 @@ const Home = () => {
       </section>
 
       <Products
-        title={"Sản Phẩm Nổi Bật"}
+        title={t("home.featuredProducts")}
         showHeader={true}
         padding={"py-5"}
         filter={false}
       />
 
-      <CardProduct title={"Sản Phẩm Bán Chạy"} />
+      <CardProduct title={t("home.bestSellingProducts")} />
 
       <section className="py-2">
         <div className="container-fluid">
@@ -451,7 +458,7 @@ const Home = () => {
               backgroundImage: `url('images/${backgroundPhone}') no-repeat`,
             }}
           >
-            <div className="container">
+            <div className="container mb-4">
               <div className="row">
                 <div className="col-md-4">
                   <img
@@ -460,16 +467,17 @@ const Home = () => {
                     className="image-float img-fluid"
                   />
                 </div>
-                <div className="col-md-8">
-                  <h2 className="my-5">Shop faster with foodmart App</h2>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Sagittis sed ptibus liberolectus nonet psryroin. Amet sed
-                    lorem posuere sit iaculis amet, ac urna. Adipiscing fames
-                    semper erat ac in suspendisse iaculis. Amet blandit tortor
-                    praesent ante vitae. A, enim pretiummi senectus magna.
-                    Sagittis sed ptibus liberolectus non et psryroin.
-                  </p>
+                <div
+                  className="col-md-8"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    marginBottom: 50,
+                  }}
+                >
+                  <h2 className="my-5">{t("home.moblieTitle")}</h2>
+                  <p>{t("home.moblieDesc")}</p>
                 </div>
               </div>
             </div>

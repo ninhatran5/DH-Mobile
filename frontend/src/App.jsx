@@ -20,11 +20,11 @@ import CheckImei from "./pages/CheckImei";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
-import SetNewPassword from "./pages/ChangePassword";
 import ChangePassword from "./pages/ChangePassword";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import ProductDetail from "./pages/ProductDetail";
+
 import HomeAdmin from "./pages/admin/HomeAdmin";
 import Chart from "./pages/admin/Chart";
 import AddProduct from "./pages/admin/AddProduct";
@@ -33,6 +33,10 @@ import Categories from "./pages/admin/Categories";
 import AddCategories from "./pages/admin/AddCategory";
 import ChatBotAdmin from "./pages/admin/Chatbot";
 import AcccountList from './pages/admin/AccountsList';
+import FavoriteProducts from "./pages/FavoriteProducts";
+import OrderTable from "./components/OrderTable";
+import OrderDetail from "./components/OrderDetail";
+
 const withLayoutClient = (Component) => {
   return (
     <Layout>
@@ -59,11 +63,11 @@ const routerConfig = [
     element: withLayoutClient(Introduce),
   },
   {
-    path: "/blogdetails",
+    path: "/blogdetails/:id",
     element: withLayoutClient(BlogDetail),
   },
   {
-    path: "/shoppingcart",
+    path: "/shopping-cart",
     element: withLayoutClient(ShoppingCart),
   },
   {
@@ -71,7 +75,7 @@ const routerConfig = [
     element: withLayoutClient(CheckOut),
   },
   {
-    path: "/changecheckout",
+    path: "/change-checkout",
     element: withLayoutClient(ChangeCheckout),
   },
   {
@@ -109,6 +113,18 @@ const routerConfig = [
   {
     path: "/product-detail/:id",
     element: withLayoutClient(ProductDetail),
+  },
+  {
+    path: "/favorite-products",
+    element: withLayoutClient(FavoriteProducts),
+  },
+  {
+    path: "/order-history",
+    element: withLayoutClient(OrderTable),
+  },
+  {
+    path: "/order-detail/:id",
+    element: withLayoutClient(OrderDetail),
   },
   {
     path: "/login",

@@ -272,7 +272,7 @@
 .profile-table td {
   border: 1px solid #dee2e6;
   padding: 8px;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .profile-table th {
@@ -283,7 +283,7 @@
   background-color: #ec4848;
   color: white;
   padding: 4px 8px;
-  font-size: 12px;
+  font-size: 13px;
   border-radius: 4px;
   display: inline-block;
   cursor: pointer;

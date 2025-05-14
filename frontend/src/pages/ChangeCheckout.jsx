@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import iphone from "../assets/images/iphone-16-pro-max.webp";
 import { IoReturnDownBack } from "react-icons/io5";
+import Breadcrumb from "../components/Breadcrumb";
 
 const ChangeCheckout = () => {
   const purchaseInformation = [
@@ -126,26 +127,14 @@ const ChangeCheckout = () => {
   ];
   return (
     <>
-      <section className="breadcrumb-option">
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="breadcrumb__text">
-                <h4>Thay Đổi Thông Tin Nhận Hàng</h4>
-                <div className="breadcrumb__links">
-                  <Link style={{ textDecoration: "none" }} to={"/"}>
-                    Trang chủ
-                  </Link>
-                  <Link style={{ textDecoration: "none" }} to={"/products"}>
-                    Sản phẩm
-                  </Link>
-                  <span>Thanh toán</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Breadcrumb
+        title={"Thay Đổi Thông Tin Thanh Toán"}
+        mainItem={"Trang chủ"}
+        mainItem2={"Giỏ hàng"}
+        secondaryItem={"Thanh toán"}
+        linkMainItem={"/"}
+        linkMainItem2={"/shopping-cart"}
+      />
       <div className="container-fluid">
         <section className="checkout" style={{ marginTop: 60 }}>
           <div className="checkout__form">

@@ -44,4 +44,17 @@ class AuthController extends Controller
             ]
         ]);
     }
+
+    public function logout(Request $request)
+    {
+        // Xóa token hiện tại
+        $user = $request->user();
+
+        $user->currentAccessToken()->delete(); // xoá token hiện tại
+
+        return response()->json([
+            'message' => 'Đăng xuất thành công.',
+        ]);
+    }
+
 }
