@@ -46,5 +46,17 @@
     "we_are_pleased_to_hear": "We are pleased to hear your opinions",
     "email_address": "Email Address",
     "send": "Send"
+  },
+  "products": {
+    "trademark": "Brand",
+    "price": "Price Range",
+    "lowToHigh": "Price: Low to High",
+    "highToLow": "Price: High to Low",
+    "readyStock": "In Stock",
+    "addToCart": "Add to Cart",
+    "all": "All",
+    "addedToFavorites": "Added to Favorites",
+    "addedToCart": "Added to Cart",
+    "removeFavorites": "Removed from Favorites"
   }
 }

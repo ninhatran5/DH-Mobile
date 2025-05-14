@@ -46,5 +46,17 @@
     "we_are_pleased_to_hear": "Chúng tôi rất sẵn lòng lắng nghe các ý kiến của bạn",
     "email_address": "Địa chỉ Email",
     "send": "Gửi"
+  },
+  "products": {
+    "trademark": "Thương hiệu",
+    "price": "Khoảng giá",
+    "lowToHigh": "Giá Thấp - Cao",
+    "highToLow": "Giá Cao - Thấp",
+    "readyStock": "Sẵn hàng",
+    "addToCart": "Thêm vào giỏ hàng",
+    "all": "Tất cả",
+    "addedToFavorites": "Đã thêm vào yêu thích",
+    "addedToCart": "Đã thêm vào giỏ hàng",
+    "removeFavorites": "Đã xóa khỏi yêu thích"
   }
 }
