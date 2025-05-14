@@ -46,7 +46,7 @@ export default function CardProduct({ title }) {
   };
 
   return (
-    <section className="py-5 overflow-hidden">
+    <section className="overflow-hidden">
       <div className="container-fluid">
         <div className="row">
           <div className="col-md-12">

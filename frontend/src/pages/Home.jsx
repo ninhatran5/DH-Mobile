@@ -318,9 +318,9 @@ const Home = () => {
       <section className="py-5 overflow-hidden">
         <div className="container-fluid">
           <div className="d-flex justify-content-between flex-wrap mb-4">
-            <h2 className="section-title cursor-pointer">
+            <h3 className="section-title cursor-pointer">
               Sản Phẩm Bạn Đã Thích
-            </h2>
+            </h3>
             <div className="d-flex align-items-center gap-3">
               <Link
                 to={"/favorite-products"}
@@ -388,9 +388,9 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="py-5">
+      <section>
         <div className="container-fluid">
-          <h2 className="my-5">Dịch Vụ Của Chúng Tôi</h2>
+          <h3 className="my-5">Dịch Vụ Của Chúng Tôi</h3>
         </div>
         <div className="container-fluid">
           <div className="row row-cols-1 row-cols-sm-4 row-cols-lg-4">
@@ -471,7 +471,7 @@ const Home = () => {
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "center",
-                    marginBottom: 50
+                    marginBottom: 50,
                   }}
                 >
                   <h2 className="my-5">

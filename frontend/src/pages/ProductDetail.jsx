@@ -132,7 +132,7 @@ const ProductDetail = () => {
         linkMainItem2={"/products"}
       />
 
-      <div className="container-fluid py-5">
+      <div className="container-fluid">
         <div className="row">
           <div className="col-md-6 mb-5 position-relative">
             <div className="border rounded mb-3 p-3 text-center position-relative">
