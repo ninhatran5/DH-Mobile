@@ -42,7 +42,7 @@ export default function CardProduct({ title }) {
   const addToShoppingCart = () => {
     console.log("added");
     toast.success("Đã thêm vào giỏ hàng");
-    navigate("/shoppingcart");
+    navigate("/shopping-cart");
   };
 
   return (
