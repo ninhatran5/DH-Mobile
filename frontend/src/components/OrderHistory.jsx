@@ -1,4 +1,10 @@
+import { useNavigate } from "react-router-dom";
+
 const OrderHistory = ({ orders }) => {
+  const navigate = useNavigate();
+  const handleNextPageOrderDetail = () => {
+    navigate(`/order-detail/:id`);
+  };
   return (
     <div className="profile-table-wrapper">
       <table className="profile-table">
@@ -22,7 +28,7 @@ const OrderHistory = ({ orders }) => {
               <td>{order.location}</td>
               <td>{order.paymentMethod}</td>
               <td>{order.status}</td>
-              <td>
+              <td onClick={handleNextPageOrderDetail}>
                 <span className="profile-label">Xem chi tiết</span>
               </td>
             </tr>

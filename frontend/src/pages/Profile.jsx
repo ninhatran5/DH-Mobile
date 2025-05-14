@@ -101,7 +101,7 @@ const Profile = () => {
     {
       id: 3,
       name: "Đơn hàng",
-      links: "/",
+      links: "/order-history",
     },
     {
       id: 4,

@@ -28,6 +28,7 @@ import ProductDetail from "./pages/ProductDetail";
 import FavoriteProducts from "./pages/FavoriteProducts";
 import OrderHistory from "./components/OrderHistory";
 import OrderTable from "./components/OrderTable";
+import OrderDetail from "./components/OrderDetail";
 
 const withLayoutClient = (Component) => {
   return (
@@ -55,7 +56,7 @@ const routerConfig = [
     element: withLayoutClient(Introduce),
   },
   {
-    path: "/blogdetails",
+    path: "/blogdetails?:id",
     element: withLayoutClient(BlogDetail),
   },
   {
@@ -113,6 +114,10 @@ const routerConfig = [
   {
     path: "/order-history",
     element: withLayoutClient(OrderTable),
+  },
+  {
+    path: "/order-detail/:id",
+    element: withLayoutClient(OrderDetail),
   },
   {
     path: "/login",

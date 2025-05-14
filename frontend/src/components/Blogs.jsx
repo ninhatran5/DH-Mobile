@@ -53,7 +53,7 @@ export default function Blogs({ showHeader = true, padding }) {
               <div className="card-products col-md-4" key={item.id}>
                 <article className="post-item card border-0 shadow-sm d-flex flex-column">
                   <div className="image-holder zoom-effect">
-                    <Link to={"/blogdetails"}>
+                    <Link to={"/blogdetails/:id"}>
                       <img
                         src={item.image}
                         alt="post"
@@ -68,7 +68,7 @@ export default function Blogs({ showHeader = true, padding }) {
                     <div className="post-header">
                       <h3 className="post-title">
                         <Link
-                          to={"/blogdetails"}
+                          to={"/blogdetails/:id"}
                           className="text-decoration-none fw-bold"
                           style={{ color: "black" }}
                         >
