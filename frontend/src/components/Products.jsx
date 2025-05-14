@@ -2,6 +2,8 @@ import { FaRegHeart, FaShippingFast } from "react-icons/fa";
 import iphone from "../assets/images/iphone-16-pro-max.webp";
 import { Link, useNavigate } from "react-router-dom";
 import { FaArrowDownShortWide, FaArrowUpWideShort } from "react-icons/fa6";
+import { LuHeartOff } from "react-icons/lu";
+
 import "../assets/css/products.css";
 import { toast } from "react-toastify";
 
@@ -10,6 +12,7 @@ export default function Products({
   showHeader = true,
   padding,
   filter = true,
+  unfavorite = true,
 }) {
   const navigate = useNavigate();
   const nextProductDetail = () => {
@@ -18,6 +21,11 @@ export default function Products({
   const addToFavorites = () => {
     console.log("added");
     toast.success("Đã thêm vào yêu thích");
+  };
+
+  const handleUnFavorites = () => {
+    console.log("un");
+    toast.success("Đã xóa khỏi yêu thích");
   };
 
   const addToShoppingCart = () => {
@@ -154,13 +162,24 @@ export default function Products({
                       {products.map((product, index) => (
                         <div className="col" key={index}>
                           <div className="product-item">
-                            <a
-                              onClick={addToFavorites}
-                              style={{ cursor: "pointer" }}
-                              className="btn-wishlist"
-                            >
-                              <FaRegHeart style={{ fontSize: 20 }} />
-                            </a>
+                            {unfavorite ? (
+                              <a
+                                onClick={addToFavorites}
+                                style={{ cursor: "pointer" }}
+                                className="btn-wishlist"
+                              >
+                                <FaRegHeart style={{ fontSize: 20 }} />
+                              </a>
+                            ) : (
+                              <a
+                                onClick={handleUnFavorites}
+                                style={{ cursor: "pointer" }}
+                                className="btn-wishlist"
+                              >
+                                <LuHeartOff style={{ fontSize: 20 }} />
+                              </a>
+                            )}
+
                             <figure>
                               <Link
                                 to={"/product-detail/:id"}
