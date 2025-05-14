@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaUpload, FaFilter, FaSort } from 'react-icons/fa';
 import '../../assets/admin/Categories.css';
+import '../../assets/admin/HomeAdmin.css';
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
@@ -42,6 +43,24 @@ const Categories = () => {
       },
       {
         id: 2,
+        name: 'Ốp lưng',
+        description: 'Ốp lưng điện thoại các loại',
+        image: 'cases.jpg',
+        parentId: 1,
+        displayOrder: 2,
+        status: 'SHOW'
+      },
+      {
+        id: 3,
+        name: 'Ốp lưng',
+        description: 'Ốp lưng điện thoại các loại',
+        image: 'cases.jpg',
+        parentId: 1,
+        displayOrder: 2,
+        status: 'SHOW'
+      },
+      {
+        id: 4,
         name: 'Ốp lưng',
         description: 'Ốp lưng điện thoại các loại',
         image: 'cases.jpg',
@@ -205,174 +224,172 @@ const Categories = () => {
   };
 
   return (
-    <div className="categories-container">
-      <div className="categories-header">
-        <h1>Quản lý danh mục</h1>
-        <div className="header-actions">
+    <div className="admin_dh-product-container">
+      {/* Header Section */}
+      <div className="admin_dh-product-header">
+        <div className="admin_dh-product-title">
+          <h1>Quản lý danh mục</h1>
+          <p className="text-muted">Quản lý các danh mục sản phẩm của cửa hàng</p>
+        </div>
+        <div className="admin_dh-product-actions">
+          <button className="admin_dh-btn admin_dh-btn-primary" onClick={() => setShowModal(true)}>
+            <i className="bi bi-plus-lg" style={{ color: '#ffffff' }}></i> Thêm danh mục
+          </button>
+        </div>
+      </div>
+
+      {/* Filter Section */}
+      <div className="admin_dh-top-row">
+        <div className="admin_dh-search-box">
+          <i className="bi bi-search admin_dh-search-icon" style={{ color: '#0071e3' }}></i>
+          <input
+            type="text"
+            className="admin_dh-search-input"
+            placeholder="Tìm kiếm danh mục..."
+            value={filters.search}
+            onChange={(e) => handleFilterChange('search', e.target.value)}
+          />
+        </div>
+        <div className="admin_dh-filters">
           <button 
-            className="btn btn-outline-secondary me-2" 
+            className="admin_dh-btn admin_dh-btn-outline" 
             onClick={() => setShowFilters(!showFilters)}
           >
-            <FaFilter className="me-2" />
-            Bộ lọc
+            <i className="bi bi-funnel" style={{ color: '#5ac8fa' }}></i> Bộ lọc
           </button>
-          <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-            <FaPlus className="me-2" />
-            Thêm danh mục
+          <button className="admin_dh-btn admin_dh-btn-outline" onClick={() => handleSort('displayOrder')}>
+            <i className="bi bi-sort-down" style={{ color: '#5ac8fa' }}></i> Sắp xếp
           </button>
         </div>
       </div>
 
       {/* Filter Panel */}
       {showFilters && (
-        <div className="filter-panel mb-4">
-          <div className="row g-3">
-            <div className="col-md-4">
-              <div className="filter-group">
-                <label className="filter-label">Trạng thái</label>
-                <div className="form-check">
+        <div className="admin_dh-filter-panel">
+          <div className="admin_dh-filter-row">
+            <div className="admin_dh-filter-column">
+              <div className="admin_dh-filter-group">
+                <label className="admin_dh-filter-label">Trạng thái</label>
+                <div className="admin_dh-check-item">
                   <input
                     type="checkbox"
-                    className="form-check-input"
+                    className="admin_dh-checkbox"
                     id="statusShow"
                     checked={filters.status.includes('SHOW')}
                     onChange={() => handleStatusFilterChange('SHOW')}
                   />
-                  <label className="form-check-label" htmlFor="statusShow">
+                  <label className="admin_dh-check-label" htmlFor="statusShow">
                     Hiển thị
                   </label>
                 </div>
-                <div className="form-check">
+                <div className="admin_dh-check-item">
                   <input
                     type="checkbox"
-                    className="form-check-input"
+                    className="admin_dh-checkbox"
                     id="statusHide"
                     checked={filters.status.includes('HIDE')}
                     onChange={() => handleStatusFilterChange('HIDE')}
                   />
-                  <label className="form-check-label" htmlFor="statusHide">
+                  <label className="admin_dh-check-label" htmlFor="statusHide">
                     Ẩn
                   </label>
                 </div>
               </div>
             </div>
-            <div className="col-md-4">
-              <div className="filter-group">
-                <label className="filter-label">Danh mục </label>
-                <div className="form-check">
+            <div className="admin_dh-filter-column">
+              <div className="admin_dh-filter-group">
+                <label className="admin_dh-filter-label">Danh mục </label>
+                <div className="admin_dh-check-item">
                   <input
                     type="radio"
-                    className="form-check-input"
+                    className="admin_dh-radio"
                     name="parentFilter"
                     id="parentAll"
                     checked={filters.hasParent === null}
                     onChange={() => handleFilterChange('hasParent', null)}
                   />
-                  <label className="form-check-label" htmlFor="parentAll">
+                  <label className="admin_dh-check-label" htmlFor="parentAll">
                     Tất cả
                   </label>
                 </div>
-                <div className="form-check">
+                <div className="admin_dh-check-item">
                   <input
                     type="radio"
-                    className="form-check-input"
+                    className="admin_dh-radio"
                     name="parentFilter"
                     id="hasParent"
                     checked={filters.hasParent === true}
                     onChange={() => handleFilterChange('hasParent', true)}
                   />
-                  <label className="form-check-label" htmlFor="hasParent">
+                  <label className="admin_dh-check-label" htmlFor="hasParent">
                     Có danh mục 
                   </label>
                 </div>
-                <div className="form-check">
+                <div className="admin_dh-check-item">
                   <input
                     type="radio"
-                    className="form-check-input"
+                    className="admin_dh-radio"
                     name="parentFilter"
                     id="noParent"
                     checked={filters.hasParent === false}
                     onChange={() => handleFilterChange('hasParent', false)}
                   />
-                  <label className="form-check-label" htmlFor="noParent">
+                  <label className="admin_dh-check-label" htmlFor="noParent">
                     Không có danh mục
                   </label>
                 </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="filter-group">
-                <label className="filter-label">Tìm kiếm</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Tìm theo tên hoặc mô tả..."
-                  value={filters.search}
-                  onChange={(e) => handleFilterChange('search', e.target.value)}
-                />
               </div>
             </div>
           </div>
         </div>
       )}
 
-      <div className="table-responsive">
-        <table className="table table-hover">
+      <div className="admin_dh-product-list">
+        <table className="admin_dh-product-table">
           <thead>
             <tr>
-              <th>Hình ảnh</th>
-              <th onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>
-                Tên danh mục
-                {sortConfig.field === 'name' && (
-                  <FaSort className={`ms-2 ${sortConfig.direction === 'asc' ? 'asc' : 'desc'}`} />
-                )}
-              </th>
+              <th>STT</th>
+              
+              <th>Tên danh mục</th>
               <th>Mô tả</th>
               <th>Danh mục cha</th>
-              <th onClick={() => handleSort('displayOrder')} style={{ cursor: 'pointer' }}>
-                Thứ tự
-                {sortConfig.field === 'displayOrder' && (
-                  <FaSort className={`ms-2 ${sortConfig.direction === 'asc' ? 'asc' : 'desc'}`} />
-                )}
-              </th>
               <th>Trạng thái</th>
               <th>Thao tác</th>
             </tr>
           </thead>
           <tbody>
-            {filteredCategories.map(category => (
+            {filteredCategories.map((category, index) => (
               <tr key={category.id}>
+                <td className="text-center">{category.displayOrder}</td>
+                
                 <td>
-                  <img
-                    src={category.image}
-                    alt={category.name}
-                    className="category-image"
-                  />
+                  <div className="admin_dh-product-name">{category.name}</div>
                 </td>
-                <td>{category.name}</td>
-                <td>{category.description}</td>
-                <td>
-                  {categories.find(cat => cat.id === category.parentId)?.name || '-'}
+                <td className="admin_dh-product-description">{category.description}</td>
+                <td className="admin_dh-product-category">
+                  {categories.find(cat => cat.id === category.parentId)?.name || 
+                    <span className="admin_dh-text-muted">-</span>}
                 </td>
-                <td>{category.displayOrder}</td>
                 <td>
-                  <span className={`status-badge ${category.status === 'SHOW' ? 'status-active' : 'status-inactive'}`}>
+                  <span className={`admin_dh-product-status ${category.status === 'SHOW' ? 'admin_dh-status-active' : 'admin_dh-status-inactive'}`}>
                     {category.status === 'SHOW' ? 'Hiển thị' : 'Ẩn'}
                   </span>
                 </td>
                 <td>
-                  <div className="action-buttons">
+                  <div className="admin_dh-product-actions-col">
                     <button
-                      className="btn btn-sm btn-outline-primary me-2"
+                      className="admin_dh-action-btn admin_dh-edit-btn"
                       onClick={() => handleEdit(category)}
+                      title="Sửa danh mục"
                     >
-                      <FaEdit />
+                      <i className="bi bi-pencil" style={{ color: '#0071e3' }}></i>
                     </button>
                     <button
-                      className="btn btn-sm btn-outline-danger"
+                      className="admin_dh-action-btn admin_dh-delete-btn"
                       onClick={() => handleDelete(category.id)}
+                      title="Xóa danh mục"
                     >
-                      <FaTrash />
+                      <i className="bi bi-trash" style={{ color: '#ff3b30' }}></i>
                     </button>
                   </div>
                 </td>
@@ -384,21 +401,21 @@ const Categories = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className="modal-backdrop" onClick={handleCloseModal}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h5 className="modal-title">
+        <div className="admin_dh-modal-backdrop" onClick={handleCloseModal}>
+          <div className="admin_dh-modal-content" onClick={e => e.stopPropagation()}>
+            <div className="admin_dh-modal-header">
+              <h5 className="admin_dh-modal-title">
                 {editingId ? "Sửa danh mục" : "Thêm danh mục mới"}
               </h5>
-              <button type="button" className="btn-close" onClick={handleCloseModal}></button>
+              <button type="button" className="admin_dh-modal-close" onClick={handleCloseModal}>&times;</button>
             </div>
-            <div className="modal-body">
-              <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                  <label className="form-label">Tên danh mục *</label>
+            <div className="admin_dh-modal-body">
+              <form onSubmit={handleSubmit} className="admin_dh-form">
+                <div className="admin_dh-form-group">
+                  <label className="admin_dh-form-label">Tên danh mục *</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="admin_dh-form-control"
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
@@ -406,40 +423,44 @@ const Categories = () => {
                   />
                 </div>
 
-                <div className="mb-3">
-                  <label className="form-label">Mô tả</label>
+                <div className="admin_dh-form-group">
+                  <label className="admin_dh-form-label">Mô tả</label>
                   <textarea
-                    className="form-control"
+                    className="admin_dh-form-control admin_dh-textarea"
                     name="description"
                     value={formData.description}
                     onChange={handleInputChange}
                     rows="3"
                   />
                 </div>
-
-                <div className="mb-3">
-                  <label className="form-label">Hình ảnh</label>
-                  <div className="image-upload-container">
+                
+                <div className="admin_dh-form-group">
+                  <label className="admin_dh-form-label">Hình ảnh</label>
+                  <div className="admin_dh-image-upload">
                     {imagePreview && (
-                      <div className="image-preview">
+                      <div className="admin_dh-image-preview">
                         <img src={imagePreview} alt="Preview" />
                       </div>
                     )}
-                    <div className="upload-button">
-                      <input
-                        type="file"
-                        className="form-control"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                      />
+                    <div className="admin_dh-upload-controls">
+                      <label className="admin_dh-upload-label">
+                        <i className="bi bi-upload" style={{ color: '#0071e3' }}></i>
+                        <span>Chọn hình ảnh</span>
+                        <input
+                          type="file"
+                          className="admin_dh-file-input"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                        />
+                      </label>
                     </div>
                   </div>
                 </div>
 
-                <div className="mb-3">
-                  <label className="form-label">Danh mục cha</label>
+                <div className="admin_dh-form-group">
+                  <label className="admin_dh-form-label">Danh mục cha</label>
                   <select
-                    className="form-select"
+                    className="admin_dh-form-control admin_dh-select"
                     name="parentId"
                     value={formData.parentId}
                     onChange={handleInputChange}
@@ -451,11 +472,11 @@ const Categories = () => {
                   </select>
                 </div>
 
-                <div className="mb-3">
-                  <label className="form-label">Thứ tự hiển thị *</label>
+                <div className="admin_dh-form-group">
+                  <label className="admin_dh-form-label">Thứ tự hiển thị *</label>
                   <input
                     type="number"
-                    className="form-control"
+                    className="admin_dh-form-control"
                     name="displayOrder"
                     value={formData.displayOrder}
                     onChange={handleInputChange}
@@ -464,10 +485,10 @@ const Categories = () => {
                   />
                 </div>
 
-                <div className="mb-3">
-                  <label className="form-label">Trạng thái *</label>
+                <div className="admin_dh-form-group">
+                  <label className="admin_dh-form-label">Trạng thái *</label>
                   <select
-                    className="form-select"
+                    className="admin_dh-form-control admin_dh-select"
                     name="status"
                     value={formData.status}
                     onChange={handleInputChange}
@@ -478,11 +499,11 @@ const Categories = () => {
                   </select>
                 </div>
 
-                <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
+                <div className="admin_dh-modal-footer">
+                  <button type="button" className="admin_dh-btn admin_dh-btn-outline" onClick={handleCloseModal}>
                     Hủy
                   </button>
-                  <button type="submit" className="btn btn-primary">
+                  <button type="submit" className="admin_dh-btn admin_dh-btn-primary">
                     {editingId ? 'Cập nhật' : 'Thêm mới'}
                   </button>
                 </div>

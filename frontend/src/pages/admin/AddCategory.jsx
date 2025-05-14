@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from '../../assets/admin/AddCategory.module.css';
+import '../../assets/admin/AddCategory.module.css';
 
 
 const AddCategory = () => {
@@ -24,8 +24,9 @@ const AddCategory = () => {
 
   const fetchParentCategories = async () => {
     try {
-      const response = await axios.get('/api/categories');
-      setParentCategories(response.data);
+      const response = await fetch('/api/categories');
+      const data = await response.json();
+      setParentCategories(data);
     } catch (error) {
       console.error('Error fetching parent categories:', error);
     }
@@ -60,10 +61,9 @@ const AddCategory = () => {
         formDataToSend.append(key, formData[key]);
       });
 
-      await axios.post('/api/categories', formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+      await fetch('/api/categories', {
+        method: 'POST',
+        body: formDataToSend
       });
 
       navigate('/admin/categories');
@@ -76,23 +76,23 @@ const AddCategory = () => {
   };
 
   return (
-    <div className={styles.acContainer}>
-      <div className={styles.acHeader}>
-        <h2>Add New Category</h2>
+    <div className="admin_dh-category-container">
+      <div className="admin_dh-category-header">
+        <h2 className="admin_dh-category-title">Add New Category</h2>
         <button
-          className={styles.acBackButton}
+          className="admin_dh-btn admin_dh-btn-secondary"
           onClick={() => navigate('/admin/categories')}
         >
-          <i className="fas fa-arrow-left"></i> Back to Categories
+          <i className="bi bi-arrow-left"></i> Back to Categories
         </button>
       </div>
 
-      <form className={styles.acForm} onSubmit={handleSubmit}>
-        <div className={styles.acFormGroup}>
-          <label className={styles.acLabel}>Name</label>
+      <form className="admin_dh-category-form" onSubmit={handleSubmit}>
+        <div className="admin_dh-form-group">
+          <label className="admin_dh-form-label admin_dh-required-label">Name</label>
           <input
             type="text"
-            className={styles.acInput}
+            className="admin_dh-form-control"
             name="name"
             value={formData.name}
             onChange={handleInputChange}
@@ -100,10 +100,10 @@ const AddCategory = () => {
           />
         </div>
 
-        <div className={styles.acFormGroup}>
-          <label className={styles.acLabel}>Description</label>
+        <div className="admin_dh-form-group">
+          <label className="admin_dh-form-label">Description</label>
           <textarea
-            className={styles.acTextarea}
+            className="admin_dh-form-control"
             name="description"
             value={formData.description}
             onChange={handleInputChange}
@@ -111,28 +111,30 @@ const AddCategory = () => {
           />
         </div>
 
-        <div className={styles.acFormGroup}>
-          <label className={styles.acLabel}>Image</label>
-          <div className={styles.acImageUpload}>
+        <div className="admin_dh-form-group">
+          <label className="admin_dh-form-label">Image</label>
+          <div className="admin_dh-image-upload">
             <input
               type="file"
-              className={styles.acInput}
+              className="admin_dh-form-control"
               name="image"
               onChange={handleImageChange}
               accept="image/*"
             />
             {preview && (
-              <div className={styles.acPreview}>
-                <img src={preview} alt="Preview" />
+              <div className="admin_dh-preview-container">
+                <div className="admin_dh-image-preview">
+                  <img src={preview} alt="Preview" />
+                </div>
               </div>
             )}
           </div>
         </div>
 
-        <div className={styles.acFormGroup}>
-          <label className={styles.acLabel}>Parent Category</label>
+        <div className="admin_dh-form-group">
+          <label className="admin_dh-form-label">Parent Category</label>
           <select
-            className={styles.acSelect}
+            className="admin_dh-form-control admin_dh-form-select"
             name="parentCategory"
             value={formData.parentCategory}
             onChange={handleInputChange}
@@ -146,11 +148,11 @@ const AddCategory = () => {
           </select>
         </div>
 
-        <div className={styles.acFormGroup}>
-          <label className={styles.acLabel}>Display Order</label>
+        <div className="admin_dh-form-group">
+          <label className="admin_dh-form-label">Display Order</label>
           <input
             type="number"
-            className={styles.acInput}
+            className="admin_dh-form-control"
             name="displayOrder"
             value={formData.displayOrder}
             onChange={handleInputChange}
@@ -158,10 +160,10 @@ const AddCategory = () => {
           />
         </div>
 
-        <div className={styles.acFormGroup}>
-          <label className={styles.acLabel}>Status</label>
+        <div className="admin_dh-form-group">
+          <label className="admin_dh-form-label">Status</label>
           <select
-            className={styles.acSelect}
+            className="admin_dh-form-control admin_dh-form-select"
             name="status"
             value={formData.status}
             onChange={handleInputChange}
@@ -171,21 +173,23 @@ const AddCategory = () => {
           </select>
         </div>
 
-        <button
-          type="submit"
-          className={styles.acSubmitButton}
-          disabled={loading}
-        >
-          {loading ? (
-            <>
-              <i className="fas fa-spinner ac-spinner"></i> Adding...
-            </>
-          ) : (
-            <>
-              <i className="fas fa-plus"></i> Add Category
-            </>
-          )}
-        </button>
+        <div className="admin_dh-btn-container">
+          <button
+            type="submit"
+            className="admin_dh-btn admin_dh-btn-primary"
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <i className="bi bi-arrow-repeat"></i> Adding...
+              </>
+            ) : (
+              <>
+                <i className="bi bi-plus"></i> Add Category
+              </>
+            )}
+          </button>
+        </div>
       </form>
     </div>
   );

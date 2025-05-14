@@ -31,6 +31,8 @@ import AddProduct from "./pages/admin/AddProduct";
 import ProductList from "./pages/admin/ProductList";
 import Categories from "./pages/admin/Categories";
 import AddCategories from "./pages/admin/AddCategory";
+import ChatBotAdmin from "./pages/admin/Chatbot";
+import AcccountList from './pages/admin/AccountsList';
 const withLayoutClient = (Component) => {
   return (
     <Layout>
@@ -148,7 +150,16 @@ const routerConfig = [
       {
         path:"Addcategories",
         element:<AddCategories/>
-      }
+      },
+      {
+        path:"chatbot",
+        element:<ChatBotAdmin/>
+      },
+      {
+        path:"accounts",
+        element:<AcccountList/>
+      },
+      
     ]
   },
   
