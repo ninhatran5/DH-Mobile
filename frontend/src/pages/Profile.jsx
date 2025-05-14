@@ -103,7 +103,7 @@ const Profile = () => {
           <div className="row">
             <div className="col-lg-12">
               <div className="breadcrumb__text">
-                <h4>Hồ sơ cá nhân</h4>
+                <h4>Hồ Sơ Cá Nhân</h4>
                 <div className="breadcrumb__links">
                   <Link style={{ textDecoration: "none" }} to={"/"}>
                     Trang chủ
@@ -136,10 +136,10 @@ const Profile = () => {
                   </div>
                   <div className="profile-col-half">
                     <div className="profile-edit-wrapper">
-                      <button type="button" className="profile-btn-edit">
+                      <Link to={"/edit-profile"} className="profile-btn-edit">
                         <i className="mdi mdi-account-settings-variant" />
                         Chỉnh sửa
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -150,12 +150,13 @@ const Profile = () => {
           <div className="profile-row">
             <div className="profile-col-4">
               <div className="profile-card">
-                <h4 className="profile-title">Thông tin cá nhân</h4>
+                <h4 className="profile-title">Giới thiệu</h4>
                 <div className="profile-body">
                   <p className="profile-description">
                     Xin chào, tôi là Lê Nguyên Tùng...
                   </p>
                   <hr />
+                  <h4 className="profile-title mb-2">Thông tin cá nhân</h4>
                   <div className="profile-info-list">
                     {personalInformations.map((personalInformation) => (
                       <p key={personalInformation.id}>

@@ -67,6 +67,7 @@ const Login = () => {
                                   type="text"
                                   className="form-control"
                                   name="email"
+                                  spellCheck={false}
                                   id="email"
                                   placeholder="name@example.com"
                                   {...register("email", {
@@ -100,6 +101,7 @@ const Login = () => {
                                   className="form-control position-relative"
                                   name="password"
                                   id="password"
+                                  spellCheck={false}
                                   placeholder="Password"
                                   {...register("password", {
                                     required: "Không được bỏ trống Mật Khẩu",

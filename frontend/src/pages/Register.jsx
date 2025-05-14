@@ -21,7 +21,7 @@ const Register = () => {
   };
   return (
     <>
-      <section className="bg-light p-3">
+      <section className="bg-light p-4">
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-12 col-xxl-11">
@@ -66,6 +66,7 @@ const Register = () => {
                                   className="form-control"
                                   name="username"
                                   id="username"
+                                  spellCheck={false}
                                   placeholder="Username"
                                   {...register("username", {
                                     required: "Không được bỏ trống Họ tên",
@@ -94,6 +95,7 @@ const Register = () => {
                                   className="form-control"
                                   name="email"
                                   id="email"
+                                  spellCheck={false}
                                   placeholder="name@example.com"
                                   {...register("email", {
                                     required: "Không được bỏ trống Email",
@@ -126,6 +128,7 @@ const Register = () => {
                                   className="form-control position-relative"
                                   name="password"
                                   id="password"
+                                  spellCheck={false}
                                   placeholder="Password"
                                   {...register("password", {
                                     required: "Không được bỏ trống Mật Khẩu",

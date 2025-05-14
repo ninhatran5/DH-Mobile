@@ -30,8 +30,10 @@ import Products from "../components/Products";
 import CardProduct from "../components/CardProducts";
 import Blogs from "../components/Blogs";
 import SliderLogoBrand from "../components/SliderLogoBrand";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate();
   const banners = [banner1, banner2, banner3];
   const logoBrand = [
     { id: 1, name: "Apple", logo: appleLogo },
@@ -51,44 +53,44 @@ const Home = () => {
   const products = [
     {
       id: 1,
-      name: "Amber Jar",
-      title: "Honey best nectar you wish to get",
+      price: "27.890.000đ",
+      title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
       image: iphone,
     },
     {
       id: 2,
-      name: "Amber Jar",
-      title: "Honey best nectar you wish to get",
+      price: "27.890.000đ",
+      title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
       image: iphone,
     },
     {
       id: 3,
-      name: "Amber Jar",
-      title: "Honey best nectar you wish to get",
+      price: "27.890.000đ",
+      title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
       image: iphone,
     },
     {
       id: 4,
-      name: "Amber Jar",
-      title: "Honey best nectar you wish to get",
+      price: "27.890.000đ",
+      title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
       image: iphone,
     },
     {
       id: 5,
-      name: "Amber Jar",
-      title: "Honey best nectar you wish to get",
+      price: "27.890.000đ",
+      title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
       image: iphone,
     },
     {
       id: 6,
-      name: "Amber Jar",
-      title: "Honey best nectar you wish to get",
+      price: "27.890.000đ",
+      title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
       image: iphone,
     },
     {
       id: 7,
-      name: "Amber Jar",
-      title: "Honey best nectar you wish to get",
+      price: "27.890.000đ",
+      title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
       image: iphone,
     },
   ];
@@ -170,6 +172,12 @@ const Home = () => {
 
   const bannerAdvertisement = [banner4, banner5];
 
+  const nextProductDetail = () => {
+    navigate("/product-detail/:id");
+  };
+  const nextShop = () => {
+    navigate("/products");
+  };
   return (
     <>
       <section
@@ -219,7 +227,7 @@ const Home = () => {
               <div className="section-header d-flex flex-wrap justify-content-between mb-5">
                 <h2 className="section-title">Các Nhãn Hàng</h2>
                 <div className="d-flex align-items-center">
-                  <a href="#" className="btn-link text-decoration-none">
+                  <a className="btn-link text-decoration-none">
                     Xem tất cả nhãn hàng →
                   </a>
                   {/* Custom buttons */}
@@ -351,6 +359,7 @@ const Home = () => {
                   <div className="row g-0">
                     <div className="col-md-4">
                       <img
+                        onClick={nextProductDetail}
                         src={item.image}
                         className="img-fluid rounded"
                         alt={item.title}
@@ -358,8 +367,12 @@ const Home = () => {
                     </div>
                     <div className="col-md-8">
                       <div className="card-body py-0">
-                        <p className="text-muted mb-0">{item.name}</p>
-                        <h5 className="card-title">{item.title}</h5>
+                        <h5 onClick={nextProductDetail} className="card-title">
+                          {item.title}
+                        </h5>
+                        <h6 style={{ color: "#e40303" }} className=" mb-0">
+                          {item.price}
+                        </h6>
                       </div>
                     </div>
                   </div>
@@ -404,14 +417,19 @@ const Home = () => {
         filter={false}
       />
 
-      <CardProduct />
+      <CardProduct title={"Sản Phẩm Bán Chạy"} />
 
       <section className="py-2">
         <div className="container-fluid">
           <div className="row">
             {bannerAdvertisement.map((item) => {
               return (
-                <div key={item} className="col-md-6 mb-3">
+                <div
+                  style={{ cursor: "pointer" }}
+                  onClick={nextShop}
+                  key={item}
+                  className="col-md-6 mb-3"
+                >
                   <div className="banner-ad">
                     <img src={item} className="img-fluid" />
                   </div>

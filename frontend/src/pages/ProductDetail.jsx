@@ -1,0 +1,340 @@
+import { useState } from "react";
+import { Modal, Button } from "react-bootstrap";
+import iphone from "../assets/images/iphone-16-pro-max.webp";
+import iphone2 from "../assets/images/iphone-15-pro_2__2_1_1_1.webp";
+import iphone3 from "../assets/images/iphone-15-plus_1__1.webp";
+import { MdOutlineZoomInMap } from "react-icons/md";
+import Carousel from "react-bootstrap/Carousel";
+import "../assets/css/product-detail.css";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import Comment from "../components/Comment";
+
+const ProductDetail = () => {
+  const [activeTab, setActiveTab] = useState("description");
+  const navigate = useNavigate();
+  const productImages = [
+    { id: 1, image: iphone },
+    { id: 2, image: iphone2 },
+    { id: 3, image: iphone3 },
+  ];
+
+  const phoneVersions = [
+    {
+      id: 1,
+      version: "Titan đen",
+    },
+    {
+      id: 2,
+      version: "Titan tự nhiên",
+    },
+    {
+      id: 3,
+      version: "Titan trắng",
+    },
+    {
+      id: 4,
+      version: "Titan sa mạc",
+    },
+  ];
+
+  const phoneColors = [
+    {
+      id: 1,
+      colors: "red",
+      values: "red",
+    },
+    {
+      id: 2,
+      colors: "green",
+      values: "green",
+    },
+    {
+      id: 3,
+      colors: "yellow",
+      values: "yellow",
+    },
+    {
+      id: 4,
+      colors: "blue",
+      values: "blue",
+    },
+  ];
+
+  const machineInformation = [
+    {
+      id: 1,
+      name: "iPhone 16 Pro Max",
+      price: "24.000.000đ",
+      desc: "iPhone 16 Pro Max mang đến thiết kế sang trọng với khung thép không gỉ và mặt lưng kính cường lực. Màn hình Super Retina XDR với công nghệ ProMotion cung cấp trải nghiệm hình ảnh mượt mà. Được trang bị chip A17 Bionic, nó mạnh mẽ và tiết kiệm năng lượng. Hệ thống camera cải tiến cho khả năng chụp ảnh và quay video ấn tượng, bao gồm chế độ ban đêm và video 4K. Hỗ trợ kết nối 5G, thời lượng pin lâu dài và chạy trên iOS mới nhất, iPhone 16 Pro Max là lựa chọn hoàn hảo cho những người yêu công nghệ.",
+    },
+  ];
+
+  const [currentImage, setCurrentImage] = useState(iphone);
+  const [showModal, setShowModal] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+
+  const handleThumbnailClick = (image) => {
+    setCurrentImage(image);
+  };
+
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+  const handleUpQuantity = () => {
+    setQuantity((prev) => prev + 1);
+  };
+
+  const handleDownQuantity = () => {
+    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+  };
+
+  const handleChangQuantity = (e) => {
+    let value = e.target.value;
+    if (value === "") {
+      setQuantity("");
+    } else if (Number(value) >= 1 && !isNaN(value)) {
+      setQuantity(Number(value));
+    } else if (Number(value) === 0) {
+      toast.warn("Giá trị tổi thiếu là 1  ");
+      setQuantity(1);
+    } else {
+      setQuantity(1);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "-" || e.key === "e") {
+      e.preventDefault();
+      toast.warn("Không thể nhập kí tự đặc biệt");
+    }
+  };
+
+  const addToFavorites = () => {
+    console.log("added");
+    toast.success("Đã thêm vào yêu thích");
+  };
+
+  const addToShoppingCart = () => {
+    console.log("added");
+    toast.success("Đã thêm vào giỏ hàng");
+    navigate("/shoppingcart");
+  };
+
+  return (
+    <>
+      <section className="breadcrumb-option">
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-lg-12">
+              <div className="breadcrumb__text">
+                <h4>Chi Tiết Sản Phẩm</h4>
+                <div className="breadcrumb__links">
+                  <Link style={{ textDecoration: "none" }} to={"/"}>
+                    Trang chủ
+                  </Link>
+                  <Link style={{ textDecoration: "none" }} to={"/products"}>
+                    Sản phẩm
+                  </Link>
+                  <span>iPhone 16 Pro Max</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="container-fluid py-5">
+        <div className="row">
+          <div className="col-md-6 mb-5 position-relative">
+            <div className="border rounded mb-3 p-3 text-center position-relative">
+              <img
+                src={currentImage}
+                alt="iPhone"
+                className="img-fluid"
+                style={{ maxHeight: "400px" }}
+              />
+              <button
+                className="btn-zoom btn position-absolute"
+                style={{
+                  top: "10px",
+                  right: "10px",
+                  zIndex: "1",
+                  fontSize: 23,
+                  color: "black",
+                  border: "none",
+                  outline: "none",
+                  background: "transparent",
+                }}
+                onClick={handleShowModal}
+              >
+                <MdOutlineZoomInMap />
+              </button>
+            </div>
+            <div className="product_detail_image d-flex justify-content-center">
+              {productImages.map((item) => (
+                <img
+                  key={item.id}
+                  src={item.image}
+                  alt="thumbnail"
+                  className="img-thumbnail mx-1"
+                  onClick={() => handleThumbnailClick(item.image)}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Modal ảnh */}
+          <Modal show={showModal} onHide={handleCloseModal} centered size="lg">
+            <Modal.Body className="text-center">
+              <Carousel data-bs-theme="dark">
+                {productImages.map((item) => (
+                  <Carousel.Item key={item.id}>
+                    <img
+                      className="d-block w-100"
+                      src={item.image}
+                      alt="First slide"
+                    />
+                  </Carousel.Item>
+                ))}
+              </Carousel>
+            </Modal.Body>
+          </Modal>
+
+          <div className="col-md-6">
+            {machineInformation.map((item) => (
+              <div key={item.id}>
+                <h2 className="mb-3">{item.name}</h2>
+                <h4 className="text-price mb-3">{item.price}</h4>
+                <p className="text-muted">{item.desc}</p>
+              </div>
+            ))}
+
+            <div className="mb-3">
+              <label className="font-weight-bold mb-2">Chọn phiên bản</label>
+              <div className="d-flex justify-content-start version-button-group">
+                {phoneVersions.map((phoneVersion) => (
+                  <button
+                    key={phoneVersion.id}
+                    className="btn btn-outline-secondary mx-1"
+                  >
+                    {phoneVersion.version}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <label className="font-weight-bold mb-2">Chọn màu</label>
+              <div className="d-flex justify-content-start">
+                {phoneColors.map((phoneColor) => (
+                  <div
+                    key={phoneColor.id}
+                    className="color-circle mx-1"
+                    style={{ backgroundColor: phoneColor.colors }}
+                    onClick={() => console.log(phoneColor.values)}
+                  ></div>
+                ))}
+              </div>
+            </div>
+            <div className="quantity-group mb-4">
+              <button onClick={handleDownQuantity} className="btn-quantity">
+                -
+              </button>
+              <input
+                type="number"
+                className="input-quantity hide-spinner"
+                onChange={handleChangQuantity}
+                min={1}
+                value={quantity}
+                onKeyDown={handleKeyDown}
+              />
+              <button onClick={handleUpQuantity} className="btn-quantity">
+                +
+              </button>
+            </div>
+
+            <div style={{ display: "flex", gap: 5 }}>
+              <button
+                onClick={addToFavorites}
+                className="btn-custom btn-favorite px-4"
+              >
+                Thêm vào yêu thích
+              </button>
+              <button onClick={addToShoppingCart} className="btn-custom px-4">
+                Thêm vào giỏ hàng
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="card_introducde_product_detail mt-5">
+          <ul className="introduce_productdetail nav">
+            <li className="nav-item">
+              <button
+                style={{ fontWeight: 800 }}
+                className={`nav-link ${
+                  activeTab === "description" ? "active" : ""
+                }`}
+                onClick={() => setActiveTab("description")}
+              >
+                Mô tả
+              </button>
+            </li>
+            <li className="nav-item">
+              <button
+                style={{ fontWeight: 800 }}
+                className={`nav-link ${activeTab === "info" ? "active" : ""}`}
+                onClick={() => setActiveTab("info")}
+              >
+                Thông số kỹ thuật
+              </button>
+            </li>
+            <li className="nav-item">
+              <button
+                style={{ fontWeight: 800 }}
+                className={`nav-link ${
+                  activeTab === "reviews" ? "active" : ""
+                }`}
+                onClick={() => setActiveTab("reviews")}
+              >
+                Bình luận
+              </button>
+            </li>
+          </ul>
+
+          <div className=" p-4">
+            {activeTab === "description" && (
+              <div className="tab-pane fade show active">
+                <p className="desc_productdetai">
+                  This is the most powerful iPhone ever made. Sleek, fast...
+                  This is the most powerful iPhone ever made. Sleek, fast...
+                  This is the most powerful iPhone ever made. Sleek, fast...
+                  This is the most powerful iPhone ever made. Sleek, fast...
+                  This is the most powerful iPhone ever made. Sleek, fast...
+                  This is the most powerful iPhone ever made. Sleek, fast...
+                  This is the most powerful iPhone ever made. Sleek, fast...
+                  This is the most powerful iPhone ever made. Sleek, fast...
+                  This is the most powerful iPhone ever made. Sleek, fast...
+                  This is the most powerful iPhone ever made. Sleek, fast...
+                </p>
+              </div>
+            )}
+            {activeTab === "info" && (
+              <div className="tab-pane fade show active">
+                <ul className="desc_productdetai mb-0">
+                  <li>Weight: 0.79kg</li>
+                  <li>Dimensions: 110 x 33 x 100 cm</li>
+                  <li>Materials: 60% aluminum</li>
+                  <li>Color options: Red, Blue, Grey, White</li>
+                  <li>Sizes available: S, M, L, XL</li>
+                </ul>
+              </div>
+            )}
+            {activeTab === "reviews" && <Comment />}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default ProductDetail;
