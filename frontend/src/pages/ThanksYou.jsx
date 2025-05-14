@@ -1,6 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const ThanksYou = () => {
+  const navigate = useNavigate();
+  const handleNextPageOrderHistory = () => {
+    navigate("/order-history");
+  };
   return (
     <>
       <div className="container-fluid">
@@ -42,6 +46,7 @@ const ThanksYou = () => {
             <button
               style={{ marginLeft: 5 }}
               className="btn btn-outline-danger mt-3"
+              onClick={handleNextPageOrderHistory}
             >
               Theo dõi đơn hàng
             </button>

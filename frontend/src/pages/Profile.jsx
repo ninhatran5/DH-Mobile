@@ -1,6 +1,7 @@
 import "../assets/css/profile.css";
 import { Link } from "react-router-dom";
 import OrderHistory from "../components/OrderHistory";
+import Breadcrumb from "../components/Breadcrumb";
 
 const Profile = () => {
   const personalInformations = [
@@ -41,6 +42,7 @@ const Profile = () => {
   const orders = [
     {
       id: 1,
+      orderCode: "ORD001",
       product: "ÁKDFJK",
       price: "1.000.000₫",
       location: "Thanh Hóa",
@@ -49,6 +51,7 @@ const Profile = () => {
     },
     {
       id: 2,
+      orderCode: "ORD002",
       product: "ÁKDFJK",
       price: "1.000.000₫",
       location: "Thanh Hóa",
@@ -57,6 +60,7 @@ const Profile = () => {
     },
     {
       id: 3,
+      orderCode: "ORD003",
       product: "ÁKDFJK",
       price: "1.000.000₫",
       location: "Thanh Hóa",
@@ -65,6 +69,7 @@ const Profile = () => {
     },
     {
       id: 4,
+      orderCode: "ORD004",
       product: "ÁKDFJK",
       price: "1.000.000₫",
       location: "Thanh Hóa",
@@ -73,6 +78,7 @@ const Profile = () => {
     },
     {
       id: 5,
+      orderCode: "ORD005",
       product: "ÁKDFJK",
       price: "1.000.000₫",
       location: "Thanh Hóa",
@@ -104,24 +110,14 @@ const Profile = () => {
   ];
   return (
     <>
-      <section className="breadcrumb-option">
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="breadcrumb__text">
-                <h4>Hồ Sơ Cá Nhân</h4>
-                <div className="breadcrumb__links">
-                  <Link style={{ textDecoration: "none" }} to={"/"}>
-                    Trang chủ
-                  </Link>
-                  <span>Hồ sơ cá nhân</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      <div className="profile-content">
+      <Breadcrumb
+        title={"Hồ Sơ Cá Nhân"}
+        mainItem={"Trang chủ"}
+        secondaryItem={"Hồ sơ cá nhân"}
+        linkMainItem={"/"}
+        showMainItem2={false}
+      />
+      <div className="profile-content" style={{ marginTop: "-3rem" }}>
         <div className="container-fluid">
           <div className="profile-row">
             <div className="profile-col-full">
@@ -207,7 +203,7 @@ const Profile = () => {
                 <div className="d-flex col-12">
                   <h4 className="profile-title mb-3 col-9">Lịch sử mua hàng</h4>
                   <Link
-                    to={"/favorite-products"}
+                    to={"/order-history"}
                     className="text-decoration-none  col-3"
                   >
                     <h4 className="text-end profile-title mb-3">
@@ -215,9 +211,7 @@ const Profile = () => {
                     </h4>
                   </Link>
                 </div>
-                <div className="profile-table-wrapper">
-                  <OrderHistory orders={orders} />
-                </div>
+                <OrderHistory orders={orders} />
               </div>
             </div>
           </div>

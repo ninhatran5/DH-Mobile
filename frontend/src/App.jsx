@@ -26,6 +26,8 @@ import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import ProductDetail from "./pages/ProductDetail";
 import FavoriteProducts from "./pages/FavoriteProducts";
+import OrderHistory from "./components/OrderHistory";
+import OrderTable from "./components/OrderTable";
 
 const withLayoutClient = (Component) => {
   return (
@@ -107,6 +109,10 @@ const routerConfig = [
   {
     path: "/favorite-products",
     element: withLayoutClient(FavoriteProducts),
+  },
+  {
+    path: "/order-history",
+    element: withLayoutClient(OrderTable),
   },
   {
     path: "/login",
