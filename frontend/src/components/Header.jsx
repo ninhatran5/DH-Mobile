@@ -20,7 +20,7 @@ export default function Header() {
     {
       id: 1,
       icon: <FiShoppingCart />,
-      link: "/shoppingcart",
+      link: "/shopping-cart",
     },
     {
       id: 2,

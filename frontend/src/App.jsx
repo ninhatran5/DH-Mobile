@@ -25,6 +25,7 @@ import ChangePassword from "./pages/ChangePassword";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import ProductDetail from "./pages/ProductDetail";
+import FavoriteProducts from "./pages/FavoriteProducts";
 
 const withLayoutClient = (Component) => {
   return (
@@ -56,7 +57,7 @@ const routerConfig = [
     element: withLayoutClient(BlogDetail),
   },
   {
-    path: "/shoppingcart",
+    path: "/shopping-cart",
     element: withLayoutClient(ShoppingCart),
   },
   {
@@ -64,7 +65,7 @@ const routerConfig = [
     element: withLayoutClient(CheckOut),
   },
   {
-    path: "/changecheckout",
+    path: "/change-checkout",
     element: withLayoutClient(ChangeCheckout),
   },
   {
@@ -102,6 +103,10 @@ const routerConfig = [
   {
     path: "/product-detail/:id",
     element: withLayoutClient(ProductDetail),
+  },
+  {
+    path: "/favorite-products",
+    element: withLayoutClient(FavoriteProducts),
   },
   {
     path: "/login",

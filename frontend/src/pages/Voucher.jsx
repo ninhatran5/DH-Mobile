@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import "../assets/css/voucher.css";
 import Coupon from "../components/Coupon";
+import Breadcrumb from "../components/Breadcrumb";
 
 const Voucher = () => {
   const vouchers = [
@@ -28,24 +29,13 @@ const Voucher = () => {
 
   return (
     <>
-      <section className="breadcrumb-option mb-5">
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="breadcrumb__text">
-                <h4>Mã giảm giá</h4>
-                <div className="breadcrumb__links">
-                  <Link style={{ textDecoration: "none" }} to={"/"}>
-                    Trang chủ
-                  </Link>
-
-                  <span>Mã giảm giá</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Breadcrumb
+        title={"Mã Giảm Giá"}
+        mainItem={"Trang chủ"}
+        secondaryItem={"Mã giảm giá"}
+        linkMainItem={"/"}
+        showMainItem2={false}
+      />
       <section className="container-fluid">
         <div className="voucher_margin">
           <div className="row">

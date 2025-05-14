@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import iphone from "../assets/images/iphone-16-pro-max.webp";
 import iphone2 from "../assets/images/iphone-15-pro_2__2_1_1_1.webp";
 import iphone3 from "../assets/images/iphone-15-plus_1__1.webp";
 import { MdOutlineZoomInMap } from "react-icons/md";
 import Carousel from "react-bootstrap/Carousel";
 import "../assets/css/product-detail.css";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Comment from "../components/Comment";
+import Breadcrumb from "../components/Breadcrumb";
 
 const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
@@ -117,31 +118,19 @@ const ProductDetail = () => {
   const addToShoppingCart = () => {
     console.log("added");
     toast.success("Đã thêm vào giỏ hàng");
-    navigate("/shoppingcart");
+    navigate("/shopping-cart");
   };
 
   return (
     <>
-      <section className="breadcrumb-option">
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="breadcrumb__text">
-                <h4>Chi Tiết Sản Phẩm</h4>
-                <div className="breadcrumb__links">
-                  <Link style={{ textDecoration: "none" }} to={"/"}>
-                    Trang chủ
-                  </Link>
-                  <Link style={{ textDecoration: "none" }} to={"/products"}>
-                    Sản phẩm
-                  </Link>
-                  <span>iPhone 16 Pro Max</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Breadcrumb
+        title={"Chi Tiết Sản Phẩm"}
+        mainItem={"Trang chủ"}
+        mainItem2={"Sản phẩm"}
+        secondaryItem={"iPhone 16 Pro Max"}
+        linkMainItem={"/"}
+        linkMainItem2={"/products"}
+      />
 
       <div className="container-fluid py-5">
         <div className="row">

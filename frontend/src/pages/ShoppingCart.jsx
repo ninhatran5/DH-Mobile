@@ -1,30 +1,19 @@
 import { Link } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
 import TableShoppingCart from "../components/TableShoppingCart";
+import Breadcrumb from "../components/Breadcrumb";
 
 const ShoppingCart = () => {
   return (
     <>
-      <section className="breadcrumb-option">
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="breadcrumb__text">
-                <h4>Giỏ Hàng</h4>
-                <div className="breadcrumb__links">
-                  <Link style={{ textDecoration: "none" }} to={"/"}>
-                    Trang chủ
-                  </Link>
-                  <Link style={{ textDecoration: "none" }} to={"/products"}>
-                    Sản phẩm
-                  </Link>
-                  <span>Giỏ hàng</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Breadcrumb
+        title={"Giỏ Hàng"}
+        mainItem={"Trang chủ"}
+        mainItem2={"Sản phẩm"}
+        secondaryItem={"Giỏ hàng"}
+        linkMainItem={"/"}
+        linkMainItem2={"/products"}
+      />
 
       <section className="shopping-cart spad-cart">
         <div className="container-fluid">
