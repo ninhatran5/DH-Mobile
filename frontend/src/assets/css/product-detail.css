@@ -1,4 +1,12 @@
-/* --- GIỮ NGUYÊN CÁC STYLE CŨ CỦA BẠN --- */
+@font-face {
+  font-family: PopinsBold;
+  src: url(../../frontend/src/assets/font/Poppins_Bold.ttf);
+}
+@font-face {
+  font-family: PoppinsRegular;
+  src: url(../../frontend/src/assets/font/Poppins_Regular.ttf);
+} /* --- GIỮ NGUYÊN CÁC STYLE CŨ CỦA BẠN --- */
+
 .text-price {
   color: rgb(228, 3, 3);
 }

@@ -20,12 +20,13 @@ import CheckImei from "./pages/CheckImei";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
-import SetNewPassword from "./pages/ChangePassword";
 import ChangePassword from "./pages/ChangePassword";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import ProductDetail from "./pages/ProductDetail";
 import FavoriteProducts from "./pages/FavoriteProducts";
+import OrderTable from "./components/OrderTable";
+import OrderDetail from "./components/OrderDetail";
 
 const withLayoutClient = (Component) => {
   return (
@@ -53,7 +54,7 @@ const routerConfig = [
     element: withLayoutClient(Introduce),
   },
   {
-    path: "/blogdetails",
+    path: "/blogdetails/:id",
     element: withLayoutClient(BlogDetail),
   },
   {
@@ -107,6 +108,14 @@ const routerConfig = [
   {
     path: "/favorite-products",
     element: withLayoutClient(FavoriteProducts),
+  },
+  {
+    path: "/order-history",
+    element: withLayoutClient(OrderTable),
+  },
+  {
+    path: "/order-detail/:id",
+    element: withLayoutClient(OrderDetail),
   },
   {
     path: "/login",

@@ -12,7 +12,14 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
+@font-face {
+  font-family: PopinsBold;
+  src: url(../../frontend/src/assets/font/Poppins_Bold.ttf);
+}
+@font-face {
+  font-family: PoppinsRegular;
+  src: url(../../frontend/src/assets/font/Poppins_Regular.ttf);
+}
 a {
   font-weight: 500;
   color: #646cff;

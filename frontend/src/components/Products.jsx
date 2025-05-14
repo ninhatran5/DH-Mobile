@@ -6,6 +6,7 @@ import { LuHeartOff } from "react-icons/lu";
 
 import "../assets/css/products.css";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 export default function Products({
   title,
@@ -14,23 +15,24 @@ export default function Products({
   filter = true,
   unfavorite = true,
 }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const nextProductDetail = () => {
     navigate("/product-detail/:id");
   };
   const addToFavorites = () => {
     console.log("added");
-    toast.success("Đã thêm vào yêu thích");
+    toast.success(t("products.addedToFavorites"));
   };
 
   const handleUnFavorites = () => {
     console.log("un");
-    toast.success("Đã xóa khỏi yêu thích");
+    toast.success(t("products.removeFavorites"));
   };
 
   const addToShoppingCart = () => {
     console.log("added");
-    toast.success("Đã thêm vào giỏ hàng");
+    toast.success(t("products.addedToCart"));
     navigate("/shopping-cart");
   };
   const products = [
@@ -93,18 +95,18 @@ export default function Products({
             <div className="filter-bar-wrapper">
               <div className="filter-extended">
                 <div className="filter-group">
-                  <label>Thương hiệu:</label>
+                  <label>{t("products.trademark")}:</label>
                   <select>
-                    <option value="">Tất cả</option>
+                    <option value="">{t("products.all")}</option>
                     <option value="iphone">iPhone</option>
                     <option value="samsung">Samsung</option>
                     <option value="xiaomi">Xiaomi</option>
                   </select>
                 </div>
                 <div className="filter-group">
-                  <label>Khoảng giá:</label>
+                  <label>{t("products.price")}:</label>
                   <select>
-                    <option value="">Tất cả</option>
+                    <option value="">{t("products.all")}</option>
                     <option value="duoi-10tr">Dưới 10 triệu</option>
                     <option value="10-20tr">10 - 20 triệu</option>
                     <option value="tren-20tr">Trên 20 triệu</option>
@@ -116,19 +118,19 @@ export default function Products({
                   <span>
                     <FaArrowUpWideShort />
                   </span>
-                  Giá Thấp - Cao
+                  {t("products.lowToHigh")}
                 </button>
                 <button>
                   <span>
                     <FaArrowDownShortWide />
                   </span>
-                  Giá Cao - Thấp
+                  {t("products.highToLow")}
                 </button>
                 <button>
                   <span>
                     <FaShippingFast />
                   </span>
-                  Sẵn hàng
+                  {t("products.readyStock")}
                 </button>
               </div>
             </div>
@@ -145,7 +147,7 @@ export default function Products({
                           to={"/products"}
                           className="nav-link text-uppercase fs-6 active"
                         >
-                          Đi đến shop →
+                          {t("home.goToShop")}
                         </Link>
                       </div>
                     </nav>
@@ -204,7 +206,8 @@ export default function Products({
                                 style={{ cursor: "pointer" }}
                                 className="nav-link"
                               >
-                                Add to Cart
+                                {t("products.addToCart")}
+
                                 <iconify-icon icon="uil:shopping-cart" />
                               </a>
                             </div>
