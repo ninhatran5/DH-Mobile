@@ -24,6 +24,15 @@ import ChangePassword from "./pages/ChangePassword";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import ProductDetail from "./pages/ProductDetail";
+
+import HomeAdmin from "./pages/admin/HomeAdmin";
+import Chart from "./pages/admin/Chart";
+import AddProduct from "./pages/admin/AddProduct";
+import ProductList from "./pages/admin/ProductList";
+import Categories from "./pages/admin/Categories";
+import AddCategories from "./pages/admin/AddCategory";
+import ChatBotAdmin from "./pages/admin/Chatbot";
+import AcccountList from './pages/admin/AccountsList';
 import FavoriteProducts from "./pages/FavoriteProducts";
 import OrderTable from "./components/OrderTable";
 import OrderDetail from "./components/OrderDetail";
@@ -133,6 +142,44 @@ const routerConfig = [
     path: "/change-password",
     element: <ChangePassword />,
   },
+
+  {
+    path:"/admin",
+    element:<HomeAdmin/>,
+    children:[
+      {
+        path:"",
+        element:<Chart/>
+      },
+      {
+        path:"product",
+        element:<ProductList/>
+      },
+      {
+        path:"addproduct",
+        element:<AddProduct/>
+      },
+      {
+        path:"categories",
+        element:<Categories/>
+      },
+      {
+        path:"Addcategories",
+        element:<AddCategories/>
+      },
+      {
+        path:"chatbot",
+        element:<ChatBotAdmin/>
+      },
+      {
+        path:"accounts",
+        element:<AcccountList/>
+      },
+      
+    ]
+  },
+  
+
   {
     path: "*",
     element: <ErrorPage />,

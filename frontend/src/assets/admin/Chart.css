@@ -1,0 +1,1603 @@
+/* Chart - macOS Style */
+
+:root {
+  --admin_thongke-chart-blue: #0071e3;
+  --admin_thongke-chart-indigo: #5856d6;
+  --admin_thongke-chart-green: #28cd41;
+  --admin_thongke-chart-yellow: #ff9f0a;
+  --admin_thongke-chart-orange: #ff9f0a;
+  --admin_thongke-chart-red: #ff453a;
+  --admin_thongke-chart-purple: #bf5af2;
+  --admin_thongke-chart-teal: #64d2ff;
+  --admin_thongke-primary: #0071e3;
+  --admin_thongke-secondary: #6e6e73;
+  --admin_thongke-success: #28cd41;
+  --admin_thongke-danger: #ff453a;
+  --admin_thongke-warning: #ff9f0a;
+  --admin_thongke-info: #5ac8fa;
+  --admin_thongke-text: #1d1d1f;
+  --admin_thongke-text-secondary: #86868b;
+  --admin_thongke-bg: #f5f5f7;
+  --admin_thongke-card-bg: #ffffff;
+  --admin_thongke-border: #d2d2d7;
+  --admin_thongke-transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --admin_thongke-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  --admin_thongke-box-shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.1);
+  --admin_thongke-radius: 10px;
+  --admin_thongke-radius-sm: 6px;
+  --admin_thongke-radius-lg: 16px;
+  --admin_thongke-spacing-xs: 4px;
+  --admin_thongke-spacing-sm: 8px;
+  --admin_thongke-spacing-md: 16px;
+  --admin_thongke-spacing-lg: 24px;
+  --admin_thongke-spacing-xl: 32px;
+}
+
+/* Dark Mode Variables */
+.dark-mode {
+  --admin_thongke-text: #f5f5f7;
+  --admin_thongke-text-secondary: #a1a1a6;
+  --admin_thongke-bg: #1d1d1f;
+  --admin_thongke-card-bg: #2c2c2e;
+  --admin_thongke-border: #3a3a3c;
+  --admin_thongke-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  --admin_thongke-box-shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.admin_thongke-dashboard {
+  padding: var(--admin_thongke-spacing-lg);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.admin_thongke-dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--admin_thongke-spacing-xl);
+}
+
+.admin_thongke-dashboard-header h4 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--admin_thongke-text);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.admin_thongke-chart-container {
+  background-color: var(--admin_thongke-card-bg);
+  border-radius: var(--admin_thongke-radius);
+  box-shadow: var(--admin_thongke-box-shadow);
+  border: 1px solid var(--admin_thongke-border);
+  padding: var(--admin_thongke-spacing-xl);
+  margin-bottom: var(--admin_thongke-spacing-xl);
+  transition: var(--admin_thongke-transition);
+}
+
+.admin_thongke-chart-container:hover {
+  box-shadow: var(--admin_thongke-box-shadow-hover);
+  transform: translateY(-2px);
+}
+
+.admin_thongke-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--admin_thongke-spacing-xl);
+}
+
+.admin_thongke-chart-title-container {
+  margin-right: 1rem;
+}
+
+.admin_thongke-chart-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--admin_thongke-text);
+  margin: 0 0 0.25rem 0;
+  letter-spacing: -0.01em;
+}
+
+.admin_thongke-chart-subtitle {
+  font-size: 0.9rem;
+  color: var(--admin_thongke-text-secondary);
+  margin: 0;
+}
+
+.admin_thongke-chart-actions {
+  display: flex;
+  gap: var(--admin_thongke-spacing-md);
+  align-items: center;
+}
+
+.admin_thongke-chart-period-selector {
+  display: flex;
+  background-color: rgba(142, 142, 147, 0.1);
+  border-radius: var(--admin_thongke-radius-sm);
+  padding: 3px;
+}
+
+.admin_thongke-chart-period-btn {
+  padding: 0.5rem 0.875rem;
+  font-size: 0.85rem;
+  background: none;
+  border: none;
+  border-radius: var(--admin_thongke-radius-sm);
+  color: var(--admin_thongke-text-secondary);
+  cursor: pointer;
+  transition: var(--admin_thongke-transition);
+  font-weight: 500;
+}
+
+.admin_thongke-chart-period-btn:hover {
+  color: var(--admin_thongke-text);
+}
+
+.admin_thongke-chart-period-btn-active {
+  background-color: var(--admin_thongke-card-bg);
+  color: var(--admin_thongke-primary);
+  box-shadow: var(--admin_thongke-box-shadow);
+}
+
+.admin_thongke-chart-options-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--admin_thongke-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--admin_thongke-transition);
+  background: transparent;
+  border: 1px solid var(--admin_thongke-border);
+  color: var(--admin_thongke-text);
+}
+
+.admin_thongke-chart-options-btn:hover {
+  background-color: rgba(142, 142, 147, 0.1);
+}
+
+.admin_thongke-chart-content {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  margin-bottom: var(--admin_thongke-spacing-md);
+}
+
+.admin_thongke-chart-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.7);
+  z-index: 10;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: var(--admin_thongke-radius-sm);
+}
+
+.dark-mode .admin_thongke-chart-loading {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.admin_thongke-chart-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(0, 113, 227, 0.2);
+  border-radius: 50%;
+  border-top-color: var(--admin_thongke-primary);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Stats Row */
+.stats-row {
+  margin-bottom: var(--admin_thongke-spacing-xl);
+}
+
+.admin_thongke-stat-card {
+  padding: var(--admin_thongke-spacing-lg);
+  display: flex;
+  align-items: center;
+  height: 100%;
+  border: none;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.admin_thongke-stat-card:hover {
+  transform: translateY(-4px);
+}
+
+.admin_thongke-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--admin_thongke-spacing-md);
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.admin_thongke-revenue-card .admin_thongke-card-icon {
+  background-color: rgba(40, 205, 65, 0.15);
+  color: var(--admin_thongke-chart-green);
+}
+
+.admin_thongke-orders-card .admin_thongke-card-icon {
+  background-color: rgba(0, 113, 227, 0.15);
+  color: var(--admin_thongke-chart-blue);
+}
+
+.admin_thongke-users-card .admin_thongke-card-icon {
+  background-color: rgba(255, 159, 10, 0.15);
+  color: var(--admin_thongke-chart-orange);
+}
+
+.admin_thongke-products-card .admin_thongke-card-icon {
+  background-color: rgba(191, 90, 242, 0.15);
+  color: var(--admin_thongke-chart-purple);
+}
+
+.admin_thongke-card-content {
+  flex: 1;
+}
+
+.admin_thongke-card-content h5 {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--admin_thongke-text-secondary);
+  margin: 0 0 0.25rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.admin_thongke-stat-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--admin_thongke-text);
+  margin: 0 0 0.25rem 0;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.admin_thongke-stat-change {
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.admin_thongke-stat-change i {
+  margin-right: 4px;
+}
+
+.admin_thongke-positive {
+  color: var(--admin_thongke-success);
+}
+
+.admin_thongke-negative {
+  color: var(--admin_thongke-danger);
+}
+
+/* Table Card */
+.admin_thongke-table-card {
+  border: 1px solid var(--admin_thongke-border);
+  border-radius: var(--admin_thongke-radius);
+}
+
+.admin_thongke-card-header {
+  padding: var(--admin_thongke-spacing-lg);
+  border-bottom: 1px solid var(--admin_thongke-border);
+}
+
+.admin_thongke-card-body {
+  padding: 0;
+}
+
+.admin_thongke-card-header h5 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--admin_thongke-text);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.admin_thongke-card-actions {
+  display: flex;
+  align-items: center;
+}
+
+/* Standard Table */
+.admin_thongke-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.85rem;
+  margin-bottom: 0;
+  background-color: var(--admin_thongke-card-bg);
+  border-radius: var(--admin_thongke-radius);
+}
+
+.admin_thongke-table th {
+  background-color: rgba(142, 142, 147, 0.06);
+  color: var(--admin_thongke-text-secondary);
+  font-weight: 500;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--admin_thongke-border);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.admin_thongke-table tr {
+  transition: background-color 0.2s ease;
+}
+
+.admin_thongke-table tr:last-child {
+  border-bottom: none;
+}
+
+.admin_thongke-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--admin_thongke-border);
+  color: var(--admin_thongke-text);
+}
+
+.admin_thongke-table tr:hover td {
+  background-color: rgba(142, 142, 147, 0.05);
+}
+
+.admin_thongke-transaction-id {
+  font-weight: 500;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  color: var(--admin_thongke-primary);
+  background-color: rgba(0, 113, 227, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.admin_thongke-avatar-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: #ffffff;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  background-color: var(--admin_thongke-secondary);
+}
+
+.admin_thongke-bg-primary-soft {
+  background-color: rgba(0, 113, 227, 0.9);
+  color: white;
+}
+
+.admin_thongke-bg-success-soft {
+  background-color: rgba(40, 205, 65, 0.9);
+  color: white;
+}
+
+.admin_thongke-bg-info-soft {
+  background-color: rgba(90, 200, 250, 0.9);
+  color: white;
+}
+
+.admin_thongke-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.admin_thongke-status-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.admin_thongke-active {
+  color: var(--admin_thongke-success);
+}
+
+.admin_thongke-warning {
+  color: var(--admin_thongke-warning);
+}
+
+.admin_thongke-danger {
+  color: var(--admin_thongke-danger);
+}
+
+.admin_thongke-status-text {
+  margin-left: 0.25rem;
+}
+
+.admin_thongke-completed {
+  color: var(--admin_thongke-success);
+}
+
+.admin_thongke-processing {
+  color: var(--admin_thongke-warning);
+}
+
+.admin_thongke-failed {
+  color: var(--admin_thongke-danger);
+}
+
+.admin_thongke-action-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background-color: transparent;
+  color: var(--admin_thongke-text-secondary);
+  margin-right: 0.5rem;
+  cursor: pointer;
+  transition: var(--admin_thongke-transition);
+}
+
+.admin_thongke-action-btn:hover {
+  background-color: rgba(142, 142, 147, 0.1);
+}
+
+.admin_thongke-dropdown {
+  border-radius: var(--admin_thongke-radius-sm);
+  border: 1px solid var(--admin_thongke-border);
+  box-shadow: var(--admin_thongke-box-shadow-hover);
+  overflow: hidden;
+  padding: var(--admin_thongke-spacing-xs) 0;
+  min-width: 180px;
+}
+
+.admin_thongke-dropdown .dropdown-item {
+  padding: var(--admin_thongke-spacing-sm) var(--admin_thongke-spacing-lg);
+  color: var(--admin_thongke-text);
+  font-size: 0.9rem;
+  transition: var(--admin_thongke-transition);
+}
+
+.admin_thongke-dropdown .dropdown-item:hover {
+  background-color: rgba(142, 142, 147, 0.1);
+}
+
+.admin_thongke-dropdown .dropdown-divider {
+  border-top: 1px solid var(--admin_thongke-border);
+  margin: var(--admin_thongke-spacing-xs) 0;
+}
+
+.admin_thongke-table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--admin_thongke-spacing-md) var(--admin_thongke-spacing-lg);
+  border-top: 1px solid var(--admin_thongke-border);
+  font-size: 0.9rem;
+}
+
+.admin_thongke-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid var(--admin_thongke-border);
+  font-size: 0.85rem;
+}
+
+.admin_thongke-pagination-info {
+  color: var(--admin_thongke-text-secondary);
+  font-size: 0.85rem;
+}
+
+.admin_thongke-pagination-controls {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.admin_thongke-pagination-input {
+  width: 50px;
+  height: 32px;
+  border: 1px solid var(--admin_thongke-border);
+  border-radius: var(--admin_thongke-radius-sm);
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--admin_thongke-text);
+  background-color: transparent;
+  margin: 0 6px;
+}
+
+.admin_thongke-pagination-text {
+  color: var(--admin_thongke-text-secondary);
+  font-size: 0.85rem;
+}
+
+.admin_thongke-pagination-go {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--admin_thongke-primary);
+  border-radius: var(--admin_thongke-radius-sm);
+  background-color: var(--admin_thongke-primary);
+  color: white;
+  font-weight: 500;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: var(--admin_thongke-transition);
+  margin-left: 6px;
+}
+
+.admin_thongke-pagination-go:hover {
+  background-color: rgba(0, 113, 227, 0.9);
+}
+
+/* Specific Chart Types */
+
+/* Line Chart */
+.admin_thongke-line-chart .admin_thongke-chart-line {
+  stroke-width: 2;
+  fill: none;
+}
+
+.admin_thongke-line-chart .admin_thongke-chart-area {
+  opacity: 0.1;
+}
+
+.admin_thongke-line-chart .admin_thongke-chart-dot {
+  stroke-width: 2;
+  r: 4;
+}
+
+.admin_thongke-line-chart .admin_thongke-chart-grid line {
+  stroke: var(--admin_thongke-border);
+  stroke-opacity: 0.1;
+  shape-rendering: crispEdges;
+}
+
+.admin_thongke-line-chart .admin_thongke-chart-axis path,
+.admin_thongke-line-chart .admin_thongke-chart-axis line {
+  stroke: var(--admin_thongke-border);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.admin_thongke-line-chart .admin_thongke-chart-axis text {
+  fill: var(--admin_thongke-text-secondary);
+  font-size: 0.8rem;
+}
+
+/* Bar Chart */
+.admin_thongke-bar-chart .admin_thongke-chart-bar {
+  transition: var(--admin_thongke-transition);
+}
+
+.admin_thongke-bar-chart .admin_thongke-chart-bar:hover {
+  opacity: 0.8;
+}
+
+.admin_thongke-bar-chart .admin_thongke-chart-grid line {
+  stroke: var(--admin_thongke-border);
+  stroke-opacity: 0.1;
+  shape-rendering: crispEdges;
+}
+
+.admin_thongke-bar-chart .admin_thongke-chart-axis path,
+.admin_thongke-bar-chart .admin_thongke-chart-axis line {
+  stroke: var(--admin_thongke-border);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.admin_thongke-bar-chart .admin_thongke-chart-axis text {
+  fill: var(--admin_thongke-text-secondary);
+  font-size: 0.8rem;
+}
+
+/* Pie Chart */
+.admin_thongke-pie-chart .admin_thongke-chart-slice {
+  transition: var(--admin_thongke-transition);
+}
+
+.admin_thongke-pie-chart .admin_thongke-chart-slice:hover {
+  opacity: 0.8;
+  transform: scale(1.02);
+}
+
+.admin_thongke-pie-chart .admin_thongke-chart-label {
+  font-size: 0.8rem;
+  fill: var(--admin_thongke-text);
+  text-anchor: middle;
+}
+
+.admin_thongke-pie-chart .admin_thongke-chart-value {
+  font-size: 0.7rem;
+  fill: var(--admin_thongke-text-secondary);
+  text-anchor: middle;
+}
+
+/* Mobile Transaction Cards */
+.admin_thongke-mobile-transactions {
+  padding: var(--admin_thongke-spacing-md);
+}
+
+.admin_thongke-transaction-card {
+  background-color: var(--admin_thongke-card-bg);
+  border-radius: var(--admin_thongke-radius);
+  border: 1px solid var(--admin_thongke-border);
+  overflow: hidden;
+  margin-bottom: var(--admin_thongke-spacing-md);
+  transition: var(--admin_thongke-transition);
+}
+
+.admin_thongke-transaction-card:hover {
+  box-shadow: var(--admin_thongke-box-shadow-hover);
+  transform: translateY(-2px);
+}
+
+.admin_thongke-transaction-card-header {
+  padding: var(--admin_thongke-spacing-md);
+  border-bottom: 1px solid var(--admin_thongke-border);
+  background-color: rgba(142, 142, 147, 0.05);
+}
+
+.admin_thongke-transaction-card-body {
+  padding: var(--admin_thongke-spacing-md);
+}
+
+.admin_thongke-transaction-details {
+  margin-top: var(--admin_thongke-spacing-md);
+}
+
+.admin_thongke-transaction-detail-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--admin_thongke-spacing-xs);
+  font-size: 0.9rem;
+}
+
+.admin_thongke-detail-label {
+  color: var(--admin_thongke-text-secondary);
+  font-weight: 500;
+}
+
+.admin_thongke-detail-value {
+  color: var(--admin_thongke-text);
+}
+
+.admin_thongke-transaction-card-footer {
+  padding: var(--admin_thongke-spacing-md);
+  border-top: 1px solid var(--admin_thongke-border);
+}
+
+.admin_thongke-btn {
+  border-radius: var(--admin_thongke-radius-sm);
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: var(--admin_thongke-transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.admin_thongke-btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+.admin_thongke-btn-outline {
+  background-color: transparent;
+  border: 1px solid var(--admin_thongke-border);
+  color: var(--admin_thongke-text);
+}
+
+.admin_thongke-btn-outline:hover {
+  background-color: rgba(142, 142, 147, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin_thongke-dashboard {
+    padding: var(--admin_thongke-spacing-md);
+  }
+  
+  .admin_thongke-dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .admin_thongke-chart-period-selector {
+    margin-top: var(--admin_thongke-spacing-md);
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: var(--admin_thongke-spacing-xs);
+  }
+  
+  .admin_thongke-chart-period-btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .admin_thongke-card-actions {
+    margin-top: var(--admin_thongke-spacing-sm);
+  }
+  
+  .admin_thongke-table-footer {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--admin_thongke-spacing-md);
+  }
+  
+  .admin_thongke-pagination {
+    margin-top: var(--admin_thongke-spacing-sm);
+  }
+
+  /* Responsive table for mobile devices */
+  .admin_thongke-table {
+    display: block;
+    width: 100%;
+  }
+
+  .admin_thongke-table thead {
+    display: none;
+  }
+
+  .admin_thongke-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .admin_thongke-table tr {
+    display: block;
+    width: 100%;
+    margin-bottom: var(--admin_thongke-spacing-lg);
+    border: 1px solid var(--admin_thongke-border);
+    border-radius: var(--admin_thongke-radius-sm);
+    padding: var(--admin_thongke-spacing-md);
+    background-color: var(--admin_thongke-card-bg);
+    box-shadow: var(--admin_thongke-box-shadow);
+  }
+
+  .admin_thongke-table td {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: var(--admin_thongke-spacing-md) var(--admin_thongke-spacing-md);
+    border-bottom: 1px solid rgba(210, 210, 215, 0.3);
+    align-items: center;
+    text-align: right;
+  }
+
+  .admin_thongke-table td:last-child {
+    border-bottom: none;
+  }
+
+  .admin_thongke-table td:before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--admin_thongke-text-secondary);
+    margin-right: var(--admin_thongke-spacing-md);
+    text-align: left;
+    flex: 1;
+  }
+}
+
+/* CSS cho bảng sản phẩm */
+.admin_thongke-product-list {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.admin_thongke-product-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.85rem;
+  margin-bottom: 0;
+  background-color: var(--admin_thongke-card-bg);
+  border-radius: var(--admin_thongke-radius);
+}
+
+.admin_thongke-product-table th {
+  background-color: rgba(142, 142, 147, 0.06);
+  color: var(--admin_thongke-text-secondary);
+  font-weight: 600;
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--admin_thongke-border);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.admin_thongke-product-table tr {
+  transition: background-color 0.2s ease;
+}
+
+.admin_thongke-product-table tr:not(:last-child) {
+  border-bottom: 1px solid var(--admin_thongke-border);
+}
+
+.admin_thongke-product-table td {
+  padding: 12px 16px;
+  color: var(--admin_thongke-text);
+  vertical-align: middle;
+  transition: background-color 0.2s ease;
+}
+
+.admin_thongke-product-table tr:hover {
+  background-color: rgba(142, 142, 147, 0.05);
+}
+
+.admin_thongke-product-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: transform 0.2s ease;
+}
+
+.admin_thongke-status-active {
+  background-color: rgba(40, 205, 65, 0.1);
+  color: var(--admin_thongke-success);
+}
+
+.admin_thongke-status-processing {
+  background-color: rgba(255, 159, 10, 0.1);
+  color: var(--admin_thongke-warning);
+}
+
+.admin_thongke-status-inactive {
+  background-color: rgba(255, 69, 58, 0.1);
+  color: var(--admin_thongke-danger);
+}
+
+.admin_thongke-product-actions-col {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.admin_thongke-action-btn {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  background-color: rgba(142, 142, 147, 0.08);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--admin_thongke-text-secondary);
+  transition: var(--admin_thongke-transition);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.admin_thongke-action-btn:hover {
+  background-color: rgba(142, 142, 147, 0.15);
+  transform: translateY(-2px);
+}
+
+.admin_thongke-delete-btn:hover {
+  background-color: rgba(255, 69, 58, 0.1);
+}
+
+/* Pagination */
+.admin_thongke-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid var(--admin_thongke-border);
+  font-size: 0.85rem;
+}
+
+.admin_thongke-pagination-info {
+  color: var(--admin_thongke-text-secondary);
+  font-size: 0.85rem;
+}
+
+.admin_thongke-pagination-controls {
+  display: flex;
+  gap: 6px;
+}
+
+.admin_thongke-page-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--admin_thongke-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid var(--admin_thongke-border);
+  color: var(--admin_thongke-text);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--admin_thongke-transition);
+  font-size: 0.8rem;
+}
+
+.admin_thongke-page-btn:hover:not(.admin_thongke-page-btn-disabled) {
+  background-color: rgba(142, 142, 147, 0.1);
+  transform: translateY(-2px);
+}
+
+.admin_thongke-page-btn-active {
+  background-color: var(--admin_thongke-primary);
+  color: white;
+  border-color: var(--admin_thongke-primary);
+}
+
+.admin_thongke-page-btn-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Button Styles */
+.admin_thongke-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  border-radius: var(--admin_thongke-radius-sm);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.admin_thongke-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.admin_thongke-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin_thongke-dashboard {
+    padding: var(--admin_thongke-spacing-md);
+  }
+  
+  .admin_thongke-dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .admin_thongke-chart-period-selector {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: var(--admin_thongke-spacing-md);
+    justify-content: space-between;
+  }
+  
+  .admin_thongke-chart-period-btn {
+    padding: 0.4rem 0.75rem;
+  }
+  
+  .admin_thongke-card-actions {
+    margin-top: var(--admin_thongke-spacing-sm);
+  }
+  
+  .admin_thongke-table-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .admin_thongke-pagination {
+    margin-top: var(--admin_thongke-spacing-sm);
+  }
+
+  /* Responsive table for mobile devices */
+  .admin_thongke-table {
+    display: block;
+    width: 100%;
+  }
+
+  .admin_thongke-table thead {
+    display: none;
+  }
+
+  .admin_thongke-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .admin_thongke-table tr {
+    display: block;
+    width: 100%;
+    margin-bottom: var(--admin_thongke-spacing-lg);
+    border: 1px solid var(--admin_thongke-border);
+    border-radius: var(--admin_thongke-radius-sm);
+    padding: var(--admin_thongke-spacing-md);
+    background-color: var(--admin_thongke-card-bg);
+    box-shadow: var(--admin_thongke-box-shadow);
+  }
+
+  .admin_thongke-table td {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: var(--admin_thongke-spacing-md) var(--admin_thongke-spacing-md);
+    border-bottom: 1px solid rgba(210, 210, 215, 0.3);
+    align-items: center;
+    text-align: right;
+  }
+
+  .admin_thongke-table td:last-child {
+    border-bottom: none;
+  }
+
+  .admin_thongke-table td:before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--admin_thongke-text-secondary);
+    margin-right: var(--admin_thongke-spacing-md);
+    text-align: left;
+    flex: 1;
+  }
+  
+  /* Product table on mobile */
+  .admin_thongke-product-table {
+    display: block;
+    width: 100%;
+  }
+
+  .admin_thongke-product-table thead {
+    display: none;
+  }
+
+  .admin_thongke-product-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .admin_thongke-product-table tr {
+    display: block;
+    width: 100%;
+    margin-bottom: 16px;
+    border: 1px solid var(--admin_thongke-border);
+    border-radius: var(--admin_thongke-radius-sm);
+    padding: 10px;
+    background-color: var(--admin_thongke-card-bg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .admin_thongke-product-table tr:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  .admin_thongke-product-table td {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(210, 210, 215, 0.3);
+    align-items: center;
+    text-align: right;
+    font-size: 0.85rem;
+  }
+
+  .admin_thongke-product-table td:last-child {
+    border-bottom: none;
+  }
+
+  .admin_thongke-product-table td:before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--admin_thongke-text-secondary);
+    margin-right: 1rem;
+    text-align: left;
+    flex: 1;
+  }
+  
+  /* Mobile pagination */
+  .admin_thongke-pagination {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .admin_thongke-pagination-controls {
+    margin-top: 10px;
+    align-self: center;
+  }
+  
+  /* Mobile stat cards */
+  .stats-row .col-md-3 {
+    margin-bottom: 16px;
+  }
+  
+  .admin_thongke-stat-card {
+    margin-bottom: 0;
+  }
+  
+  .admin_thongke-card-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+  
+  .admin_thongke-stat-value {
+    font-size: 1.3rem;
+  }
+}
+
+/* Additional Responsive Enhancements */
+@media (max-width: 576px) {
+  .admin_thongke-dashboard {
+    padding: var(--admin_thongke-spacing-sm);
+  }
+  
+  .admin_thongke-dashboard-header h4 {
+    font-size: 1.2rem;
+  }
+  
+  .admin_thongke-chart-period-btn {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .admin_thongke-card-header h5 {
+    font-size: 1rem;
+  }
+  
+  .admin_thongke-btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .admin_thongke-btn-sm {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.7rem;
+  }
+  
+  .admin_thongke-action-btn {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* Enhanced Loading Animation */
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+}
+
+.admin_thongke-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--admin_thongke-spacing-xl);
+  min-height: 200px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.admin_thongke-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(0, 113, 227, 0.2);
+  border-radius: 50%;
+  border-top-color: var(--admin_thongke-primary);
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--admin_thongke-spacing-md);
+}
+
+.admin_thongke-loading-container p {
+  color: var(--admin_thongke-text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Enhanced Card Styles */
+.admin_thongke-card {
+  background: var(--admin_thongke-card-bg);
+  border-radius: var(--admin_thongke-radius);
+  box-shadow: var(--admin_thongke-box-shadow);
+  transition: var(--admin_thongke-transition);
+  overflow: hidden;
+  height: 100%;
+}
+
+.admin_thongke-card:hover {
+  box-shadow: var(--admin_thongke-box-shadow-hover);
+  transform: translateY(-2px);
+}
+
+/* Enhanced Card Icons */
+.admin_thongke-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--admin_thongke-spacing-md);
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.admin_thongke-stat-card:hover .admin_thongke-card-icon {
+  transform: scale(1.1);
+}
+
+/* Enhanced Table Styles */
+.admin_thongke-product-table th {
+  font-weight: 600;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--admin_thongke-border);
+  position: sticky;
+  top: 0;
+  background-color: var(--admin_thongke-card-bg);
+  z-index: 10;
+}
+
+.admin_thongke-product-table td {
+  padding: 12px 16px;
+  transition: background-color 0.2s ease;
+}
+
+/* Status Badge Animation */
+.admin_thongke-product-status {
+  transition: transform 0.2s ease;
+}
+
+.admin_thongke-product-status:hover {
+  transform: scale(1.05);
+}
+
+/* Enhanced Button Styles */
+.admin_thongke-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  border-radius: var(--admin_thongke-radius-sm);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.admin_thongke-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.admin_thongke-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Enhanced Avatar Styles */
+.admin_thongke-avatar-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #ffffff;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 2px solid white;
+  transition: transform 0.2s ease;
+}
+
+.admin_thongke-avatar-circle:hover {
+  transform: scale(1.1);
+}
+
+/* Enhanced Mobile Styles */
+@media (max-width: 768px) {
+  .admin_thongke-product-table tr {
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .admin_thongke-product-table tr:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+  
+  .admin_thongke-product-table td {
+    padding: 12px 16px;
+  }
+  
+  .admin_thongke-product-table td:before {
+    font-weight: 600;
+    color: var(--admin_thongke-text-secondary);
+  }
+  
+  /* Enhanced Loading on Mobile */
+  .admin_thongke-loading-container {
+    min-height: 160px;
+  }
+  
+  .admin_thongke-loading-spinner {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .admin_thongke-dashboard {
+    padding: 0;
+  }
+  
+  .admin_thongke-chart-period-selector,
+  .admin_thongke-card-actions,
+  .admin_thongke-product-actions-col,
+  .admin_thongke-pagination {
+    display: none !important;
+  }
+  
+  .admin_thongke-card {
+    box-shadow: none !important;
+    border: 1px solid #eee !important;
+    margin-bottom: 20px !important;
+  }
+  
+  .admin_thongke-product-table {
+    width: 100% !important;
+  }
+  
+  .admin_thongke-product-table th,
+  .admin_thongke-product-table td {
+    padding: 8px !important;
+  }
+}
+
+/* Enhanced Icon Sizes */
+.admin_thongke-icon-larger {
+  transform: scale(1.15);
+}
+
+.admin_thongke-icon-larger i {
+  font-size: 1.75rem;
+}
+
+.admin_thongke-action-btn.admin_thongke-icon-larger {
+  width: 36px;
+  height: 36px;
+}
+
+.admin_thongke-action-btn.admin_thongke-icon-larger i {
+  font-size: 1rem;
+}
+
+.admin_thongke-stat-card:hover .admin_thongke-icon-larger {
+  transform: scale(1.25);
+}
+
+/* Scrollable Table */
+.admin_thongke-scrollable-table {
+  max-height: 500px;
+  overflow-y: auto;
+  border-radius: var(--admin_thongke-radius);
+  padding-right: 3px;
+}
+
+.admin_thongke-scrollable-table::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin_thongke-scrollable-table::-webkit-scrollbar-track {
+  background: rgba(142, 142, 147, 0.1);
+  border-radius: 10px;
+}
+
+.admin_thongke-scrollable-table::-webkit-scrollbar-thumb {
+  background: rgba(142, 142, 147, 0.3);
+  border-radius: 10px;
+}
+
+.admin_thongke-scrollable-table::-webkit-scrollbar-thumb:hover {
+  background: rgba(142, 142, 147, 0.5);
+}
+
+.admin_thongke-product-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.85rem;
+  margin-bottom: 0;
+  background-color: var(--admin_thongke-card-bg);
+  border-radius: var(--admin_thongke-radius);
+}
+
+.admin_thongke-product-table thead tr {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.admin_thongke-product-table th {
+  background-color: var(--admin_thongke-card-bg);
+  box-shadow: 0 1px 0 0 var(--admin_thongke-border);
+  color: var(--admin_thongke-text-secondary);
+  font-weight: 600;
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Enhanced Mobile Styles */
+@media (max-width: 768px) {
+  .admin_thongke-scrollable-table {
+    max-height: 450px;
+  }
+  
+  .admin_thongke-icon-larger i {
+    font-size: 1.5rem;
+  }
+  
+  .admin_thongke-action-btn.admin_thongke-icon-larger {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 576px) {
+  .admin_thongke-scrollable-table {
+    max-height: 400px;
+  }
+}
+
+/* Filter Styles */
+.admin_thongke-filter-panel {
+  background-color: rgba(142, 142, 147, 0.05);
+  border-radius: var(--admin_thongke-radius-sm);
+  padding: 16px;
+  margin-top: 16px;
+  border: 1px solid var(--admin_thongke-border);
+}
+
+.admin_thongke-filter-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+}
+
+.admin_thongke-filter-group label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--admin_thongke-text-secondary);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.admin_thongke-filter-input {
+  border: 1px solid var(--admin_thongke-border);
+  border-radius: var(--admin_thongke-radius-sm);
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  color: var(--admin_thongke-text);
+  background-color: var(--admin_thongke-card-bg);
+  transition: var(--admin_thongke-transition);
+}
+
+.admin_thongke-filter-input:focus {
+  outline: none;
+  border-color: var(--admin_thongke-primary);
+  box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.2);
+}
+
+.admin_thongke-filter-select {
+  border: 1px solid var(--admin_thongke-border);
+  border-radius: var(--admin_thongke-radius-sm);
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  color: var(--admin_thongke-text);
+  background-color: var(--admin_thongke-card-bg);
+  transition: var(--admin_thongke-transition);
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 1em;
+}
+
+.admin_thongke-filter-select:focus {
+  outline: none;
+  border-color: var(--admin_thongke-primary);
+  box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.2);
+}
+
+.admin_thongke-btn-active {
+  background-color: rgba(0, 113, 227, 0.1);
+  border-color: var(--admin_thongke-primary);
+  color: var(--admin_thongke-primary);
+}
+
+.admin_thongke-btn-sm {
+  padding: 0.3rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+.admin_thongke-no-results {
+  padding: 24px;
+  text-align: center;
+  color: var(--admin_thongke-text-secondary);
+}
+
+/* Responsive Filter Styles */
+@media (max-width: 768px) {
+  .admin_thongke-filter-panel {
+    padding: 12px;
+  }
+  
+  .admin_thongke-filter-group {
+    margin-bottom: 12px;
+  }
+  
+  .admin_thongke-filter-input,
+  .admin_thongke-filter-select {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+}

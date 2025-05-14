@@ -1,0 +1,622 @@
+/* Account List - macOS Style */
+
+.admin_account-container {
+  background-color: var(--admin_dh-card-bg);
+  border-radius: var(--admin_dh-radius);
+  box-shadow: var(--admin_dh-box-shadow);
+  border: 1px solid var(--admin_dh-border);
+  padding: var(--admin_dh-spacing-lg);
+  margin-bottom: var(--admin_dh-spacing-md);
+  transition: var(--admin_dh-transition);
+  width: 100%;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  overflow-x: hidden;
+}
+
+.admin_account-container:hover {
+  box-shadow: var(--admin_dh-box-shadow-hover);
+}
+
+.admin_account-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--admin_dh-spacing-lg);
+  padding-bottom: var(--admin_dh-spacing-sm);
+  border-bottom: 1px solid var(--admin_dh-border);
+}
+
+.admin_account-title {
+  margin: 0;
+}
+
+.admin_account-title h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--admin_dh-text);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.admin_account-title p {
+  font-size: 0.9rem;
+  color: var(--admin_dh-text-secondary);
+  margin: var(--admin_dh-spacing-xs) 0 0;
+}
+
+.admin_account-actions {
+  display: flex;
+  gap: var(--admin_dh-spacing-md);
+}
+
+.admin_account-top-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--admin_dh-spacing-md);
+  margin-bottom: var(--admin_dh-spacing-lg);
+  align-items: center;
+}
+
+.admin_account-search-box {
+  flex-grow: 1;
+  max-width: 400px;
+  position: relative;
+}
+
+.admin_account-search-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border-radius: var(--admin_dh-radius-sm);
+  border: 1px solid var(--admin_dh-border);
+  background-color: rgba(142, 142, 147, 0.06);
+  color: var(--admin_dh-text);
+  font-size: 0.95rem;
+  transition: var(--admin_dh-transition);
+}
+
+.admin_account-search-input:focus {
+  outline: none;
+  border-color: var(--admin_dh-primary);
+  background-color: rgba(142, 142, 147, 0.1);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
+}
+
+.admin_account-search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--admin_dh-text-secondary);
+  font-size: 1rem;
+}
+
+.admin_account-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--admin_dh-spacing-md);
+}
+
+/* Filter Panel */
+.admin_account-filter-panel {
+  background-color: var(--admin_dh-glass-bg);
+  border: 1px solid var(--admin_dh-border);
+  border-radius: var(--admin_dh-radius-sm);
+  padding: var(--admin_dh-spacing-md);
+  margin-bottom: var(--admin_dh-spacing-lg);
+  box-shadow: var(--admin_dh-box-shadow);
+}
+
+.admin_account-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--admin_dh-spacing-xl);
+}
+
+.admin_account-filter-column {
+  flex: 1;
+  min-width: 200px;
+}
+
+.admin_account-filter-group {
+  margin-bottom: var(--admin_dh-spacing-md);
+}
+
+.admin_account-filter-label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--admin_dh-text);
+  margin-bottom: var(--admin_dh-spacing-xs);
+}
+
+.admin_account-filter-select {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  border-radius: var(--admin_dh-radius-sm);
+  border: 1px solid var(--admin_dh-border);
+  background-color: rgba(142, 142, 147, 0.06);
+  color: var(--admin_dh-text);
+  font-size: 0.95rem;
+  transition: var(--admin_dh-transition);
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px 12px;
+}
+
+.admin_account-filter-select:focus {
+  outline: none;
+  border-color: var(--admin_dh-primary);
+  background-color: rgba(142, 142, 147, 0.1);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
+}
+
+/* List View */
+.admin_account-list {
+  border: 1px solid var(--admin_dh-border);
+  border-radius: var(--admin_dh-radius-sm);
+  overflow: hidden;
+  position: relative;
+  background-color: var(--admin_dh-card-bg);
+  box-shadow: var(--admin_dh-box-shadow);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+.admin_account-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.9rem;
+  min-width: 800px;
+}
+
+.admin_account-table th {
+  background-color: rgba(142, 142, 147, 0.08);
+  color: var(--admin_dh-text);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--admin_dh-border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.admin_account-table th:first-child {
+  border-top-left-radius: var(--admin_dh-radius-sm);
+}
+
+.admin_account-table th:last-child {
+  border-top-right-radius: var(--admin_dh-radius-sm);
+}
+
+.admin_account-table td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--admin_dh-border);
+  color: var(--admin_dh-text);
+  vertical-align: middle;
+}
+
+.admin_account-table tr:last-child td {
+  border-bottom: none;
+}
+
+.admin_account-table tr {
+  transition: var(--admin_dh-transition);
+}
+
+.admin_account-table tr:hover td {
+  background-color: rgba(142, 142, 147, 0.05);
+}
+
+.admin_account-table tr.selected td {
+  background-color: rgba(0, 113, 227, 0.05);
+}
+
+.admin_account-checkbox {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--admin_dh-border);
+  border-radius: 4px;
+  background-color: rgba(142, 142, 147, 0.06);
+  cursor: pointer;
+  position: relative;
+  vertical-align: middle;
+  transition: var(--admin_dh-transition);
+}
+
+.admin_account-checkbox:checked {
+  background-color: var(--admin_dh-primary);
+  border-color: var(--admin_dh-primary);
+}
+
+.admin_account-checkbox:checked::after {
+  content: '\2714';
+  color: white;
+  font-size: 12px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.admin_account-avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid var(--admin_dh-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.admin_account-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin_account-name {
+  font-weight: 500;
+  color: var(--admin_dh-text);
+  transition: var(--admin_dh-transition);
+  font-size: 0.9rem;
+}
+
+tr:hover .admin_account-name {
+  color: var(--admin_dh-primary);
+}
+
+.admin_account-email {
+  color: var(--admin_dh-text-secondary);
+  font-size: 0.85rem;
+}
+
+.admin_account-role {
+  display: inline-block;
+  padding: 0.3rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.admin_account-role-admin {
+  background-color: rgba(191, 90, 242, 0.15);
+  color: #bf5af2; /* Purple */
+}
+
+.admin_account-role-staff {
+  background-color: rgba(10, 132, 255, 0.15);
+  color: #0a84ff; /* Blue */
+}
+
+.admin_account-role-customer {
+  background-color: rgba(90, 200, 250, 0.15);
+  color: #5ac8fa; /* Light blue */
+}
+
+.admin_account-status {
+  display: inline-block;
+  padding: 0.3rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.admin_account-status-active {
+  background-color: rgba(52, 199, 89, 0.15);
+  color: var(--admin_dh-success);
+}
+
+.admin_account-status-locked {
+  background-color: rgba(255, 59, 48, 0.15);
+  color: var(--admin_dh-danger);
+}
+
+.admin_account-actions-col {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.admin_account-action-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--admin_dh-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--admin_dh-transition);
+  background: transparent;
+  border: 1px solid var(--admin_dh-border);
+  color: var(--admin_dh-text);
+}
+
+.admin_account-action-btn:hover {
+  background-color: rgba(142, 142, 147, 0.1);
+}
+
+.admin_account-edit-btn:hover {
+  color: var(--admin_dh-primary);
+  border-color: var(--admin_dh-primary);
+}
+
+.admin_account-delete-btn:hover {
+  color: var(--admin_dh-danger);
+  border-color: var(--admin_dh-danger);
+}
+
+/* Bulk Actions */
+.admin_account-bulk-actions {
+  padding: 0.7rem 1rem;
+  background-color: rgba(0, 122, 255, 0.08);
+  border-radius: var(--admin_dh-radius-sm);
+  margin-bottom: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin_account-bulk-actions-info {
+  font-size: 0.9rem;
+  color: var(--admin_dh-primary);
+}
+
+.admin_account-bulk-actions-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Buttons */
+.admin_account-btn {
+  padding: 0.5rem 1rem;
+  border-radius: var(--admin_dh-radius-sm);
+  font-weight: 500;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: var(--admin_dh-transition);
+  cursor: pointer;
+  border: none;
+}
+
+.admin_account-btn-primary {
+  background-color: var(--admin_dh-primary);
+  color: white;
+}
+
+.admin_account-btn-primary:hover {
+  background-color: var(--admin_dh-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 113, 227, 0.4) !important;
+}
+
+.admin_account-btn-outline {
+  background-color: transparent;
+  color: var(--admin_dh-text);
+  border: 1px solid var(--admin_dh-border);
+}
+
+.admin_account-btn-outline:hover {
+  background-color: rgba(142, 142, 147, 0.1);
+}
+
+.admin_account-btn-danger {
+  background-color: var(--admin_dh-danger);
+  color: white;
+}
+
+.admin_account-btn-danger:hover {
+  background-color: rgba(255, 59, 48, 0.9);
+}
+
+/* Pagination */
+.admin_account-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.25rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--admin_dh-border);
+}
+
+.admin_account-pagination-info {
+  color: var(--admin_dh-text-secondary);
+  font-size: 0.85rem;
+}
+
+.admin_account-pagination-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.admin_account-page-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--admin_dh-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: var(--admin_dh-transition);
+  background: transparent;
+  border: 1px solid var(--admin_dh-border);
+  color: var(--admin_dh-text);
+}
+
+.admin_account-page-btn:hover {
+  background-color: rgba(142, 142, 147, 0.1);
+}
+
+.admin_account-page-btn-active {
+  background-color: var(--admin_dh-primary);
+  color: white;
+  border-color: var(--admin_dh-primary);
+}
+
+.admin_account-page-btn-active:hover {
+  background-color: var(--admin_dh-primary);
+}
+
+.admin_account-page-btn-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin_account-page-btn-disabled:hover {
+  background-color: transparent;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .admin_account-container {
+    padding: var(--admin_dh-spacing-lg) var(--admin_dh-spacing-md);
+  }
+  
+  .admin_account-top-row {
+    flex-direction: column;
+  }
+  
+  .admin_account-search-box {
+    max-width: 100%;
+  }
+  
+  .admin_account-filter-row {
+    flex-direction: column;
+    gap: var(--admin_dh-spacing-md);
+  }
+  
+  .admin_account-table th,
+  .admin_account-table td {
+    padding: 0.75rem 1rem;
+  }
+  
+  .admin_account-avatar {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin_account-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .admin_account-actions {
+    width: 100%;
+  }
+  
+  .admin_account-filters {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .admin_account-table {
+    min-width: 650px;
+  }
+  
+  .admin_account-bulk-actions {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .admin_account-pagination {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .admin_account-hide-sm {
+    display: none;
+  }
+  
+  .admin_account-list:before,
+  .admin_account-list:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    pointer-events: none;
+    z-index: 2;
+  }
+  
+  .admin_account-list:before {
+    left: 0;
+    background: linear-gradient(to right, rgba(0,0,0,0.05), transparent);
+  }
+  
+  .admin_account-list:after {
+    right: 0;
+    background: linear-gradient(to left, rgba(0,0,0,0.05), transparent);
+  }
+}
+
+@media (max-width: 576px) {
+  .admin_account-container {
+    padding: var(--admin_dh-spacing-md) var(--admin_dh-spacing-sm);
+    border-radius: 0;
+    box-shadow: none;
+  }
+  
+  .admin_account-table {
+    min-width: 500px;
+    font-size: 0.85rem;
+  }
+  
+  .admin_account-table th,
+  .admin_account-table td {
+    padding: 0.6rem 0.75rem;
+  }
+  
+  .admin_account-role,
+  .admin_account-status {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .admin_account-action-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 0.9rem;
+  }
+}
+
+.admin_account-list::-webkit-scrollbar {
+  height: 6px;
+}
+
+.admin_account-list::-webkit-scrollbar-track {
+  background: rgba(142, 142, 147, 0.1);
+  border-radius: 3px;
+}
+
+.admin_account-list::-webkit-scrollbar-thumb {
+  background: rgba(142, 142, 147, 0.3);
+  border-radius: 3px;
+}
+
+.admin_account-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(142, 142, 147, 0.5);
+} 
