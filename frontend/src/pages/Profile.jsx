@@ -1,5 +1,6 @@
 import "../assets/css/profile.css";
 import { Link } from "react-router-dom";
+import OrderHistory from "../components/OrderHistory";
 
 const Profile = () => {
   const personalInformations = [
@@ -88,11 +89,16 @@ const Profile = () => {
     },
     {
       id: 2,
-      name: "Lịch sử đơn hàng",
-      links: "/",
+      name: "Sản phẩm đã thích",
+      links: "/favorite-products",
     },
     {
       id: 3,
+      name: "Đơn hàng",
+      links: "/",
+    },
+    {
+      id: 4,
       name: "Đăng xuất",
     },
   ];
@@ -199,40 +205,18 @@ const Profile = () => {
 
               <div className="profile-card">
                 <div className="d-flex col-12">
-                  <h4 className="profile-title mb-3 col-9">Lịch sử đơn hàng</h4>
-                  <Link className="text-decoration-none  col-3">
+                  <h4 className="profile-title mb-3 col-9">Lịch sử mua hàng</h4>
+                  <Link
+                    to={"/favorite-products"}
+                    className="text-decoration-none  col-3"
+                  >
                     <h4 className="text-end profile-title mb-3">
                       Xem tất cả →
                     </h4>
                   </Link>
                 </div>
                 <div className="profile-table-wrapper">
-                  <table className="profile-table">
-                    <thead>
-                      <tr>
-                        <th>Tên đơn hàng</th>
-                        <th>Giá tiền</th>
-                        <th>Địa chỉ</th>
-                        <th>Phương thức thanh toán</th>
-                        <th>Trạng thái</th>
-                        <th>Chi tiết</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {orders.map((order) => (
-                        <tr key={order.id}>
-                          <td>{order.product}</td>
-                          <td>{order.price}</td>
-                          <td>{order.location}</td>
-                          <td>{order.paymentMethod}</td>
-                          <td>{order.status}</td>
-                          <td>
-                            <span className="profile-label">Xem chi tiết</span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  <OrderHistory orders={orders} />
                 </div>
               </div>
             </div>

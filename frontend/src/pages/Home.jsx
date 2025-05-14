@@ -1,8 +1,8 @@
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Autoplay, Navigation } from "swiper/modules"; // Nhập Navigation
+import { Pagination, Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-import "swiper/css/navigation"; // Nhập CSS cho Navigation
+import "swiper/css/navigation";
 
 import banner1 from "../assets/images/banner1.jpg";
 import banner2 from "../assets/images/banner2.jpg";
@@ -22,7 +22,7 @@ import nokiaLogo from "../assets/images/nokia-new-logo-2023-png-vector.svg";
 import asusLogo from "../assets/images/AsusTek-black-logo.png";
 import sonyLogo from "../assets/images/sony.png";
 import masstelLogo from "../assets/images/Masstel-logo.png";
-import phone from "../assets/images/phone.png";
+import phone from "../assets/images/phone3x.png";
 import backgroundPhone from "../assets/images/bg-pattern-2.png";
 
 import iphone from "../assets/images/iphone-16-pro-max.webp";
@@ -30,7 +30,7 @@ import Products from "../components/Products";
 import CardProduct from "../components/CardProducts";
 import Blogs from "../components/Blogs";
 import SliderLogoBrand from "../components/SliderLogoBrand";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -318,11 +318,16 @@ const Home = () => {
       <section className="py-5 overflow-hidden">
         <div className="container-fluid">
           <div className="d-flex justify-content-between flex-wrap mb-4">
-            <h2 className="section-title">Sản Phẩm Bạn Đã Thích</h2>
+            <h2 className="section-title cursor-pointer">
+              Sản Phẩm Bạn Đã Thích
+            </h2>
             <div className="d-flex align-items-center gap-3">
-              <a href="#" className="btn-link text-decoration-none">
+              <Link
+                to={"/favorite-products"}
+                className="btn-link text-decoration-none"
+              >
                 Xem tất cả sản phẩm →
-              </a>
+              </Link>
               <div className="swiper-buttons">
                 <button className="swiper-prev brand-carousel-prev btn btn-yellow">
                   ❮
@@ -451,7 +456,7 @@ const Home = () => {
               backgroundImage: `url('images/${backgroundPhone}') no-repeat`,
             }}
           >
-            <div className="container">
+            <div className="container mb-4">
               <div className="row">
                 <div className="col-md-4">
                   <img
@@ -460,15 +465,27 @@ const Home = () => {
                     className="image-float img-fluid"
                   />
                 </div>
-                <div className="col-md-8">
-                  <h2 className="my-5">Shop faster with foodmart App</h2>
+                <div
+                  className="col-md-8"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    marginBottom: 50
+                  }}
+                >
+                  <h2 className="my-5">
+                    Khám Phá Thế Giới Di Động Tại DH Mobile!
+                  </h2>
                   <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Sagittis sed ptibus liberolectus nonet psryroin. Amet sed
-                    lorem posuere sit iaculis amet, ac urna. Adipiscing fames
-                    semper erat ac in suspendisse iaculis. Amet blandit tortor
-                    praesent ante vitae. A, enim pretiummi senectus magna.
-                    Sagittis sed ptibus liberolectus non et psryroin.
+                    Chào mừng bạn đến với DH Mobile – điểm đến lý tưởng cho
+                    những tín đồ yêu thích công nghệ! Chúng tôi cung cấp một bộ
+                    sưu tập đa dạng các mẫu điện thoại thông minh từ những
+                    thương hiệu nổi tiếng như Samsung, Apple, Xiaomi và nhiều
+                    hơn nữa. Với giá cả hợp lý và dịch vụ tận tâm, chúng tôi cam
+                    kết mang đến trải nghiệm mua sắm tuyệt vời nhất cho bạn. Hãy
+                    tải ngay ứng dụng của chúng tôi để khám phá các ưu đãi hấp
+                    dẫn và sản phẩm mới nhất!
                   </p>
                 </div>
               </div>
