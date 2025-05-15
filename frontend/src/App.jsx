@@ -36,6 +36,14 @@ import AcccountList from "./pages/admin/AccountsList";
 import FavoriteProducts from "./pages/FavoriteProducts";
 import OrderTable from "./components/OrderTable";
 import OrderDetail from "./components/OrderDetail";
+import AddAccount from "./pages/admin/AddAccount";
+import OrdersList from "./pages/admin/OrdersList";
+import OrdersCompleted from "./pages/admin/OrdersCompleted";
+import OrdersCancelled from "./pages/admin/OrdersCancelled";
+import VoucherList from "./pages/admin/VoucherList";
+import AddVoucher from "./pages/admin/AddVoucher";
+import ListBanner from "./pages/admin/ListBanner";
+import CommentsList from "./pages/admin/CommentsList";
 
 const withLayoutClient = (Component) => {
   return (
@@ -175,8 +183,45 @@ const routerConfig = [
         path: "accounts",
         element: <AcccountList />,
       },
+
+      {
+        path:"addaccount",
+        element:<AddAccount/>
+      },
+      {
+        path:"orders",
+        element:<OrdersList/>
+      },
+      {
+        path:"orders-completed",
+        element:<OrdersCompleted/>
+      },
+      {
+        path:"orders-cancelled",
+        element:<OrdersCancelled/>
+      },
+      {
+        path:"vouchers",
+        element:<VoucherList/>
+      },
+      {
+        path:"addvoucher",
+        element:<AddVoucher/>
+      },
+      {
+        path:"banners",
+        element:<ListBanner/>
+      },
+      {
+        path:"comments",
+        element:<CommentsList/>
+      }
+    ]         
+  },
+
     ],
   },
+
 
   {
     path: "*",

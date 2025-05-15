@@ -1,0 +1,523 @@
+/* Add Voucher Page Styles */
+
+/* Container */
+.adminaddvoucher-container {
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Header Styles */
+.adminaddvoucher-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.adminaddvoucher-title h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.adminaddvoucher-title p {
+  margin: 0.3rem 0 0 0;
+  font-size: 0.825rem;
+}
+
+.adminaddvoucher-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Content Layout */
+.adminaddvoucher-content {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.adminaddvoucher-form-container {
+  flex: 3;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+.adminaddvoucher-preview-container {
+  flex: 1;
+  position: sticky;
+  top: 2rem;
+  align-self: flex-start;
+}
+
+/* Sections */
+.adminaddvoucher-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.adminaddvoucher-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.adminaddvoucher-section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 1.2rem 0;
+  color: #333;
+}
+
+/* Form Elements */
+.adminaddvoucher-form {
+  width: 100%;
+}
+
+.adminaddvoucher-form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.adminaddvoucher-form-group {
+  flex: 1;
+  margin-bottom: 1.2rem;
+}
+
+.adminaddvoucher-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #444;
+}
+
+.adminaddvoucher-input,
+.adminaddvoucher-textarea,
+.adminaddvoucher-select {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: border-color 0.15s ease-in-out;
+}
+
+.adminaddvoucher-input:focus,
+.adminaddvoucher-textarea:focus,
+.adminaddvoucher-select:focus {
+  border-color: #0071e3;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+}
+
+.adminaddvoucher-input-error {
+  border-color: #ff3b30;
+}
+
+.adminaddvoucher-input-error:focus {
+  box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.1);
+}
+
+.adminaddvoucher-error {
+  color: #ff3b30;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+.adminaddvoucher-hint {
+  color: #8e8e93;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+/* Input Group */
+.adminaddvoucher-input-group {
+  display: flex;
+  align-items: center;
+}
+
+.adminaddvoucher-input-group .adminaddvoucher-input {
+  flex: 1;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.adminaddvoucher-generate-btn {
+  height: 42px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border: 1px solid #ddd;
+  border-left: none;
+  background-color: #f8f9fa;
+}
+
+.adminaddvoucher-generate-btn:hover {
+  background-color: #eaeaea;
+}
+
+.adminaddvoucher-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Input with suffix */
+.adminaddvoucher-input-wrapper {
+  position: relative;
+}
+
+.adminaddvoucher-input-suffix {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+
+.adminaddvoucher-input-wrapper .adminaddvoucher-input {
+  padding-right: 30px;
+}
+
+/* Datepicker */
+.adminaddvoucher-date-input {
+  background-color: white;
+  cursor: pointer;
+}
+
+/* Radio Cards */
+.adminaddvoucher-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.adminaddvoucher-radio-card {
+  flex: 1;
+  min-width: 100px;
+  position: relative;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.adminaddvoucher-radio-card input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.adminaddvoucher-radio-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.adminaddvoucher-radio-content i {
+  font-size: 1.5rem;
+  color: #666;
+}
+
+.adminaddvoucher-radio-card.active {
+  border-color: #0071e3;
+  background-color: #f0f7ff;
+}
+
+.adminaddvoucher-radio-card.active .adminaddvoucher-radio-content i {
+  color: #0071e3;
+}
+
+/* Switch Toggles */
+.adminaddvoucher-switch-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.adminaddvoucher-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+}
+
+.adminaddvoucher-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.adminaddvoucher-switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 24px;
+}
+
+.adminaddvoucher-switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+.adminaddvoucher-switch input:checked + .adminaddvoucher-switch-slider {
+  background-color: #0071e3;
+}
+
+.adminaddvoucher-switch input:checked + .adminaddvoucher-switch-slider:before {
+  transform: translateX(24px);
+}
+
+.adminaddvoucher-switch-label {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+/* Indented Form */
+.adminaddvoucher-indented-form {
+  margin-top: 1rem;
+  margin-left: 3.5rem;
+  padding-left: 1rem;
+  border-left: 2px solid #f2f2f2;
+}
+
+/* Form Actions */
+.adminaddvoucher-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* Buttons */
+.adminaddvoucher-btn {
+  border: none;
+  background-color: transparent;
+  padding: 0.6rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.adminaddvoucher-btn-primary {
+  background-color: #0071e3;
+  color: white;
+}
+
+.adminaddvoucher-btn-primary:hover {
+  background-color: #0058b0;
+}
+
+.adminaddvoucher-btn-outline {
+  border: 1px solid #ccc;
+  background-color: white;
+  color: #333;
+}
+
+.adminaddvoucher-btn-outline:hover {
+  background-color: #f2f2f2;
+}
+
+.adminaddvoucher-btn-secondary {
+  background-color: #f8f9fa;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.adminaddvoucher-btn-secondary:hover {
+  background-color: #e9ecef;
+}
+
+.adminaddvoucher-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Preview Styles */
+.adminaddvoucher-preview-title {
+  margin-bottom: 1rem;
+}
+
+.adminaddvoucher-preview-title h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.adminaddvoucher-preview {
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+}
+
+/* Voucher Card */
+.adminaddvoucher-voucher-card {
+  position: relative;
+  border: 1px dashed #0071e3;
+  border-radius: 8px;
+  padding: 1rem;
+  background-color: #f8f9ff;
+  overflow: hidden;
+}
+
+.adminaddvoucher-voucher-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: 100%;
+  width: 20px;
+  background-color: white;
+  transform: translateX(-50%);
+  opacity: 0.1;
+}
+
+.adminaddvoucher-voucher-top {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.adminaddvoucher-voucher-logo {
+  width: 40px;
+  height: 40px;
+  background-color: #0071e3;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.adminaddvoucher-voucher-logo i {
+  color: white;
+  font-size: 1.2rem;
+}
+
+.adminaddvoucher-voucher-info {
+  flex: 1;
+}
+
+.adminaddvoucher-voucher-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0071e3;
+  margin-bottom: 0.2rem;
+}
+
+.adminaddvoucher-voucher-type {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #666;
+  letter-spacing: 0.5px;
+}
+
+.adminaddvoucher-voucher-middle {
+  margin-bottom: 1rem;
+}
+
+.adminaddvoucher-voucher-code {
+  font-family: monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #111;
+  margin-bottom: 0.4rem;
+}
+
+.adminaddvoucher-voucher-description {
+  font-size: 0.85rem;
+  color: #666;
+  line-height: 1.4;
+}
+
+.adminaddvoucher-voucher-bottom {
+  font-size: 0.75rem;
+  color: #888;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  padding-top: 0.8rem;
+}
+
+.adminaddvoucher-voucher-validity {
+  margin-bottom: 0.3rem;
+}
+
+.adminaddvoucher-voucher-usage {
+  font-style: italic;
+}
+
+.adminaddvoucher-voucher-private {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #666;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .adminaddvoucher-content {
+    flex-direction: column;
+  }
+  
+  .adminaddvoucher-form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .adminaddvoucher-preview-container {
+    position: static;
+  }
+  
+  .adminaddvoucher-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .adminaddvoucher-actions {
+    margin-top: 1rem;
+    width: 100%;
+  }
+  
+  .adminaddvoucher-radio-group {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+} 

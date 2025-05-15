@@ -303,7 +303,7 @@ const Homeadmin =()=>{
                     style={isSidebarCollapsed && isDropdownActive('accounts') ? sidebarCollapsedStyles.submenu : {}}
                   >
                     <div><Link to="/admin/accounts">Danh sách tài khoản</Link></div>
-                    <div><Link to="/admin/accounts/roles">Phân quyền</Link></div>
+                    <div><Link to="/admin/addaccount">Thêm tài khoản</Link></div>
                   </div>
                 </div>
               </div>
@@ -312,12 +312,7 @@ const Homeadmin =()=>{
             <div className="admin_dh-nav-section">
               <div className="admin_dh-nav-section-title">Sales Management</div>
               <div className="admin_dh-components">
-                <div className={location.pathname.includes('/admin/transactions') ? 'active' : ''}>
-                  <Link to="/admin/transactions" className="admin_dh-nav-link" data-title="Giao dịch">
-                    <i className="bi bi-credit-card" style={{ color: '#0071e3' }} />
-                    <span>Giao dịch</span>
-                  </Link>
-                </div>
+               
                 
                 <div className={location.pathname.includes('/admin/orders') ? 'active' : ''}>
                   <a
@@ -339,8 +334,8 @@ const Homeadmin =()=>{
                     style={isSidebarCollapsed && isDropdownActive('orders') ? sidebarCollapsedStyles.submenu : {}}
                   >
                     <div><Link to="/admin/orders">Tất cả đơn hàng</Link></div>
-                    <div><Link to="/admin/orders/completed">Đơn đã hoàn thành</Link></div>
-                    <div><Link to="/admin/orders/cancelled">Đơn đã hủy</Link></div>
+                    <div><Link to="/admin/orders-completed">Đơn đã hoàn thành</Link></div>
+                    <div><Link to="/admin/orders-cancelled">Đơn đã hủy</Link></div>
                   </div>
                 </div>
 
@@ -364,8 +359,7 @@ const Homeadmin =()=>{
                     style={isSidebarCollapsed && isDropdownActive('vouchers') ? sidebarCollapsedStyles.submenu : {}}
                   >
                     <div><Link to="/admin/vouchers">Danh sách voucher</Link></div>
-                    <div><Link to="/admin/vouchers/add">Thêm voucher</Link></div>
-                    <div><Link to="/admin/vouchers/reports">Báo cáo sử dụng</Link></div>
+                    <div><Link to="/admin/addvoucher">Thêm voucher</Link></div>
                   </div>
                 </div>
               </div>
@@ -429,7 +423,6 @@ const Homeadmin =()=>{
                   <div className={`admin_dh-submenu ${isDropdownActive('comments') ? 'show' : ''}`}>
                     <div><Link to="/admin/comments">Tất cả bình luận</Link></div>
                     <div><Link to="/admin/comments/pending">Chờ duyệt</Link></div>
-                    <div><Link to="/admin/comments/reported">Bị báo cáo</Link></div>
                   </div>
                 </div>
               </div>
