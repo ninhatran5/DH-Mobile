@@ -2,13 +2,14 @@ import { RiShoppingBag3Fill } from "react-icons/ri";
 import { FaCopy } from "react-icons/fa6";
 import { useRef } from "react";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const Coupon = ({ voucher }) => {
   const inputRef = useRef(null);
-
+  const { t } = useTranslation();
   const handleCopyVoucher = () => {
     inputRef.current.select();
-    inputRef.current.setSelectionRange(0, 99999); // For mobile devices
+    inputRef.current.setSelectionRange(0, 99999);
 
     navigator.clipboard
       .writeText(inputRef.current.value)
@@ -36,7 +37,6 @@ const Coupon = ({ voucher }) => {
             <span className="tooltip">Copy</span>
           </div>
 
-          {/* Hiển thị mã + input ẩn để copy */}
           <small className="fw-bold">{voucher.code}</small>
           <input
             ref={inputRef}
@@ -47,7 +47,7 @@ const Coupon = ({ voucher }) => {
 
           <h5 className="voucher-heading">{voucher.title}</h5>
           <div className="voucher-info">
-            <span>Copy mã và sử dụng</span>
+            <span>{t("breadcrumbVoucher.breadcrumbDesc")}</span>
           </div>
         </div>
       </div>
