@@ -14,8 +14,4 @@ class Attribute extends Model
         'name',
         'deleted_at',
     ];
-    public function product()
-    {
-        return $this->belongsTo(Product::class, 'product_id', 'product_id');
-    }
 }

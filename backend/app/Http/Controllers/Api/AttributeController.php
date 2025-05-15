@@ -82,14 +82,59 @@ class AttributeController extends Controller
     {
         //
         $attribute = Attribute::find($id);
-        if ($attribute) {
-            $attribute->delete();
+        if (!$attribute) {
             return response()->json([
-                'message' => 'Xóa thuộc tính thành công',
-                'status' => 200,
-            ])->setStatusCode(200, 'OK');
-        } else {
-            return response()->json(['message' => 'Không tìm thấy thuộc tính'], 404);
+                'message' => 'Không tìm thấy thuộc tính',
+                'status' => 404,
+            ],404);
         }
+        $attribute->delete();
+        return response()->json([
+            'message' => 'Đã bỏ vào thùng rác thành công',
+            'status' => 200,
+        ])->setStatusCode(200, 'OK');
+    }
+    public function trashed()
+    {
+        //
+        $attribute = Attribute::onlyTrashed()->get();
+        return response()->json([
+            'message' => 'Lấy danh sách thuộc tính đã xóa thành công',
+            'data' => $attribute,
+            'status' => 200,
+        ])->setStatusCode(200, 'OK');
+    }
+    public function restore($id)
+    {
+        //
+        $attribute = Attribute::withTrashed()->find($id);
+        if (!$attribute) {
+            return response()->json([
+                'message' => 'Không tìm thấy thuộc tính đã xóa',
+                'status' => 404,
+            ], 404);
+        }
+        $attribute->restore();
+        return response()->json([
+            'message' => 'Khôi phục thuộc tính thành công',
+            'data' => $attribute,
+            'status' => 200,
+        ])->setStatusCode(200, 'OK');
+    }
+    public function forceDelete($id)
+    {
+        //
+        $attribute = Attribute::withTrashed()->find($id);
+        if (!$attribute) {
+            return response()->json([
+                'message' => 'Không tìm thấy thuộc tính đã xóa',
+                'status' => 404,
+            ], 404);
+        }
+        $attribute->forceDelete();
+        return response()->json([
+            'message' => 'Xóa thuộc tính vĩnh viễn thành công',
+            'status' => 200,
+        ])->setStatusCode(200, 'OK');
     }
 }
