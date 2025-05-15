@@ -327,5 +327,39 @@
       "delivering": "Delivering",
       "delivered": "Delivered"
     }
+  },
+  "auth": {
+    "titleLogin": "Welcome to DH Mobile, please Login!",
+    "titleRegister": "Welcome to DH Mobile, please Register!",
+    "register": "Don't have an account?",
+    "forgot_password": "Forgot Password",
+    "login_button": "Log In",
+    "password": "Password",
+    "username": "Full Name",
+    "login": "Have an account?",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "register_button": "Register",
+    "send": "Send",
+    "loginNotificationSuccess": "Login successful! Welcome back.",
+    "loginNotificationError": "Incorrect email or password. Please try again.",
+    "registerNotificationSuccess": "Registration successful! You can log in now.",
+    "registerNotificationError": "This account has already been registered. Please use a different email.",
+    "forgotPasswordNotificationSucces": "Please check your email to reset your password.",
+    "forgotPasswordNotificationError": "The email you entered does not exist in our system.",
+    "changePasswordNotificationSuccess": "Password reset successful! You can log in now.",
+    "validation": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email address",
+      "passwordRequired": "Password is required",
+      "passwordInvalid": "Password: 8–16 chars, include uppercase, digit & special.",
+      "usernameRequired": "Full name is required",
+      "usernameMinLength": "Full name must be at least 3 characters",
+      "newPasswordRequired": "New password is required",
+      "newPasswordInvalid": "Password: 8–16 chars, include uppercase, digit & special.",
+      "confirmPasswordRequired": "Confirm password is required",
+      "confirmPasswordInvalid": "Passwords do not match",
+      "newPasswordCannotMatchOld": "New password must not be the same as the old password"
+    }
   }
 }

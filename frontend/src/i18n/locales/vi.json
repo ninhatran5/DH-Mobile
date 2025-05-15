@@ -323,5 +323,39 @@
       "delivering": "Đang giao hàng",
       "delivered": "Giao hàng thành công"
     }
+  },
+  "auth": {
+    "titleLogin": "Chào mừng bạn đến DH Moblie, hãy đăng nhập nhé!",
+    "titleRegister": "Chào mừng bạn đến DH Moblie, hãy đăng ký nhé!",
+    "register": "Bạn chưa có tài khoản?",
+    "forgot_password": "Quên mật khẩu",
+    "login_button": "Đăng nhập",
+    "password": "Mật khẩu",
+    "username": "Họ tên",
+    "login": "Bạn đã có tài khoản?",
+    "newPassword": "Mật khẩu mới",
+    "confirmPassword": "Mật khẩu mới",
+    "register_button": "Đăng ký",
+    "send": "Gửi",
+    "loginNotificationSuccess": "Đăng nhập thành công! Chào mừng bạn trở lại.",
+    "loginNotificationError": "Email hoặc mật khẩu không chính xác. Vui lòng thử lại.",
+    "registerNotificationSuccess": "Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.",
+    "registerNotificationError": "Tài khoản này đã được đăng ký. Vui lòng sử dụng email khác.",
+    "forgotPasswordNotificationSucces": "Vui lòng kiểm tra email để lấy lại mật khẩu.",
+    "forgotPasswordNotificationError": "Email bạn nhập không tồn tại trong hệ thống.",
+    "changePasswordNotificationSuccess": "Đặt lại mật khẩu thành công! Bạn có thể đăng nhập ngay bây giờ.",
+    "validation": {
+      "emailRequired": "Không được bỏ trống Email",
+      "emailInvalid": "Địa chỉ Email không hợp lệ",
+      "passwordRequired": "Không được bỏ trống Mật Khẩu",
+      "passwordInvalid": "Mật khẩu 8–16 ký tự, có chữ hoa, số, ký tự đặc biệt",
+      "usernameRequired": "Không được bỏ trống Họ tên",
+      "usernameMinLength": "Họ tên ít nhất 3 kí tự",
+      "newPasswordRequired": "Không được bỏ trống Mật Khẩu Mới",
+      "newPasswordInvalid": "Mật khẩu 8–16 ký tự, có chữ hoa, số, ký tự đặc biệt",
+      "confirmPasswordRequired": "Không được bỏ trống Xác Nhận Mật Khẩu",
+      "confirmPasswordInvalid": "Mật khẩu không khớp",
+      "newPasswordCannotMatchOld": "Mật khẩu mới không được trùng mật khẩu cũ"
+    }
   }
 }

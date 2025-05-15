@@ -1,8 +1,14 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import loginImage from "../assets/images/login.jpg";
 import logo from "../assets/images/logo3.png";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
+
 const ForgotPassword = () => {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+
   const {
     register,
     handleSubmit,
@@ -10,98 +16,105 @@ const ForgotPassword = () => {
   } = useForm();
 
   const onSubmit = () => {
-    console.log("onSubmit");
+    toast.success(t("auth.forgotPasswordNotificationSucces"));
+    navigate("/change-password");
   };
   return (
     <>
-      <section className="bg-light p-3">
-        <div className="container">
-          <div className="row justify-content-center">
-            <div className="col-12 col-xxl-11">
-              <div className="card border-light-subtle shadow-sm">
-                <div className="row g-0">
-                  <div className="col-12 col-md-6">
-                    <img
-                      className="img-fluid rounded-start w-100 h-100 object-fit-cover"
-                      loading="lazy"
-                      src={loginImage}
-                      alt="Welcome back you've been missed!"
-                    />
-                  </div>
-                  <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
-                    <div className="col-12 col-lg-11 col-xl-10">
-                      <div className="card-body p-3 p-md-4 p-xl-5">
-                        <div className="row">
-                          <div className="col-12">
-                            <div className="mb-5">
-                              <div className="text-center mb-4">
-                                <a href="#!">
-                                  <img
-                                    src={logo}
-                                    alt="BootstrapBrain Logo"
-                                    width={200}
-                                    height={80}
-                                  />
-                                </a>
+      <div style={{ background: "#f8f8f8", width: "100vw", height: "100vh" }}>
+        <section className="p-3">
+          <div className="container mt-3">
+            <div className="row justify-content-center">
+              <div className="col-12 col-xxl-11">
+                <div className="card border-light-subtle shadow-sm">
+                  <div className="row g-0">
+                    <div className="col-12 col-md-6">
+                      <img
+                        className="img-fluid rounded-start w-100 h-100 object-fit-cover"
+                        loading="lazy"
+                        src={loginImage}
+                        alt="Welcome back you've been missed!"
+                      />
+                    </div>
+                    <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
+                      <div className="col-12 col-lg-11 col-xl-10">
+                        <div className="card-body p-3 p-md-4 p-xl-5">
+                          <div className="row">
+                            <div className="col-12">
+                              <div className="mb-5">
+                                <div className="text-center mb-4">
+                                  <a href="#!">
+                                    <img
+                                      src={logo}
+                                      alt="BootstrapBrain Logo"
+                                      width={200}
+                                      height={80}
+                                    />
+                                  </a>
+                                </div>
+                                <h4 className="text-center">
+                                  {t("auth.titleRegister")}
+                                </h4>
                               </div>
-                              <h4 className="text-center">
-                                Chào mừng bạn đến DH Moblie, hãy đăng ký nhé!
-                              </h4>
                             </div>
                           </div>
-                        </div>
-                        <form onSubmit={handleSubmit(onSubmit)} noValidate>
-                          <div className="row gy-3 overflow-hidden">
-                            <div className="col-12">
-                              <div className="form-floating mb-3">
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  name="email"
-                                  id="email"
-                                  spellCheck={false}
-                                  placeholder="name@example.com"
-                                  {...register("email", {
-                                    required: "Không được bỏ trống Email",
-                                    pattern: {
-                                      value:
-                                        /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                      message: "Địa chỉ email không hợp lệ",
-                                    },
-                                  })}
-                                />
-                                {errors?.email && (
-                                  <small
-                                    className="mt-2"
-                                    style={{ color: "red" }}
-                                  >
-                                    {errors.email.message}
-                                  </small>
-                                )}
-                                <label htmlFor="email" className="form-label">
-                                  Email
-                                </label>
-                              </div>
-                            </div>
-                            <div className="col-12 d-flex">
+                          <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                            <div className="row gy-3 overflow-hidden">
                               <div className="col-12">
-                                <Link
-                                  style={{ textDecoration: "none" }}
-                                  to={"/login"}
-                                >
-                                  <h6>Bạn đã có tài khoản?</h6>
-                                </Link>
+                                <div className="form-floating mb-3">
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    name="email"
+                                    id="email"
+                                    spellCheck={false}
+                                    placeholder="name@example.com"
+                                    {...register("email", {
+                                      required: t(
+                                        "auth.validation.emailRequired"
+                                      ),
+                                      pattern: {
+                                        value:
+                                          /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                        message: t(
+                                          "auth.validation.emailInvalid"
+                                        ),
+                                      },
+                                    })}
+                                  />
+                                  {errors?.email && (
+                                    <small
+                                      className="mt-2"
+                                      style={{ color: "red" }}
+                                    >
+                                      {errors.email.message}
+                                    </small>
+                                  )}
+                                  <label htmlFor="email" className="form-label">
+                                    Email
+                                  </label>
+                                </div>
+                              </div>
+                              <div className="col-12 d-flex">
+                                <div className="col-12">
+                                  <Link
+                                    style={{ textDecoration: "none" }}
+                                    to={"/login"}
+                                  >
+                                    <h6>{t("auth.login")}</h6>
+                                  </Link>
+                                </div>
+                              </div>
+                              <div className="col-12">
+                                <div className="d-grid">
+                                  <button className="btn btn-dark btn-lg">
+                                    {t("auth.send")}
+                                  </button>
+                                </div>
                               </div>
                             </div>
-                            <div className="col-12">
-                              <div className="d-grid">
-                                <button className="btn btn-dark btn-lg">
-                                  Gửi
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </form>
+                          </form>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -109,8 +122,8 @@ const ForgotPassword = () => {
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </>
   );
 };
