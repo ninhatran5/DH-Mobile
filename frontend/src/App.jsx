@@ -183,6 +183,7 @@ const routerConfig = [
         path: "accounts",
         element: <AcccountList />,
       },
+
       {
         path:"addaccount",
         element:<AddAccount/>
@@ -217,6 +218,11 @@ const routerConfig = [
       }
     ]         
   },
+
+    ],
+  },
+
+
   {
     path: "*",
     element: <ErrorPage />,
