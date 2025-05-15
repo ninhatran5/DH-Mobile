@@ -215,10 +215,8 @@ const routerConfig = [
         path:"comments",
         element:<CommentsList/>
       }
-    ]
-    ],
+    ]         
   },
-
   {
     path: "*",
     element: <ErrorPage />,
