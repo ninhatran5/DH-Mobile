@@ -50,7 +50,7 @@ Route::middleware('auth:sanctum')->prefix('products')->controller(ProductControl
 Route::get('products', [ProductController::class, 'index']); // lấy danh sách sản phẩm
 Route::get('products/{id}', [ProductController::class, 'show']); // lấy sản phẩm theo id
 
-
+// Apo Attributes
 
 
 
