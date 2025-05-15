@@ -59,7 +59,10 @@
     "addedToCart": "Đã thêm vào giỏ hàng",
     "removeFavorites": "Đã xóa khỏi yêu thích",
     "errorSpecialCharacters": "Không thể nhập kí tự đặc biệt",
-    "errorMin": "Giá trị tối thiểu là 1"
+    "errorMin": "Giá trị tối thiểu là 1",
+    "duoi10tr": "Dưới 10 triệu",
+    "10-20trieu": "10-20 triệu",
+    "tren20trieu": "Trên 20 triệu"
   },
   "blog": {
     "poster": "Người đăng"

@@ -113,8 +113,8 @@ const Home = () => {
           />
         </svg>
       ),
-      title: t("home.productLikedViewAllBrands"),
-      description: t("home.servicesFreeShipping"),
+      title: t("home.servicesFreeShipping"),
+      description: t("home.servicesFreeShippingDesc"),
     },
     {
       id: 2,
@@ -131,8 +131,8 @@ const Home = () => {
           />
         </svg>
       ),
-      title: t("home.servicesFreeShippingDesc"),
-      description: t("home.servicesSecurePayment"),
+      title: t("home.servicesSecurePayment"),
+      description: t("home.servicesSecurePaymentDesc"),
     },
     {
       id: 3,
@@ -149,8 +149,8 @@ const Home = () => {
           />
         </svg>
       ),
-      title: t("home.servicesSecurePaymentDesc"),
-      description: t("home.servicesGuaranteedSavings"),
+      title: t("home.servicesGuaranteedSavings"),
+      description: t("home.servicesGuaranteedSavingsDesc"),
     },
     {
       id: 4,
@@ -232,7 +232,6 @@ const Home = () => {
                   <a className="btn-link text-decoration-none">
                     {t("home.brandViewAllBrands")}
                   </a>
-                  {/* Custom buttons */}
                   <div className="swiper-buttons">
                     <button className="swiper-prev category-carousel-prev btn btn-yellow">
                       ❮
