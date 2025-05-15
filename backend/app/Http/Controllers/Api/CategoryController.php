@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
@@ -32,9 +33,15 @@ class CategoryController extends Controller
         $request->validate([
             'name' => 'required|string|max:200',
             'description' => 'nullable|string|max:255',
-            'image_url' => 'nullable|url',
+            'image_url' => 'nullable',
         ]);
         $category = Category::create($request->only(['name', 'description', 'image_url']));
+        if ($request->hasFile('image_url')) {
+            // Lưu ảnh vào thư mục public/category
+            $path = $request->file('image_url')->store('category', 'public');
+            $category->image_url = $path;
+            $category->save();
+        }
         return response()->json([
             'message' => 'Thêm danh mục thành công',
             'data' => $category,
@@ -65,12 +72,21 @@ class CategoryController extends Controller
         $request->validate([
             'name' => 'required|string|max:200',
             'description' => 'nullable|string|max:255',
-            'image_url' => 'nullable|url',
+            'image_url' => 'nullable',
         ]);
 
         // Bước 2: Tìm danh mục theo ID
         $category = Category::find($id);
+        if ($request->hasFile('image_url')) {
+            // Xoá ảnh cũ nếu có
+            if ($category->image_url) {
+                Storage::disk('public')->delete($category->image_url);
+            }
 
+            // Lưu ảnh mới
+            $path = $request->file('image_url')->store('category', 'public');
+            $validatedData['image_url'] = $path;
+        }
         if (!$category) {
             return response()->json([
                 'message' => 'Danh mục không tồn tại',
