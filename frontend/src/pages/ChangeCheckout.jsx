@@ -295,7 +295,7 @@ const ChangeCheckout = () => {
                         Tổng tiền <span>1000000đ</span>
                       </li>
                     </ul>
-                    <Link to={"/thanksyou"}>
+                    <Link to={"/thank-you"}>
                       <button className="site-btn">THANH TOÁN</button>
                     </Link>
                   </div>

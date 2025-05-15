@@ -46,22 +46,22 @@ export default function Header() {
     {
       id: 1,
       nameService: t("header.warrantyPolicy"),
-      link: "/guarantee",
+      link: "/warranty-policy",
     },
     {
       id: 2,
       nameService: t("header.returnPolicy"),
-      link: "/returnpolicy",
+      link: "/return-policy",
     },
     {
       id: 3,
       nameService: t("header.deliveryPolicy"),
-      link: "/deliverypolicy",
+      link: "/delivery-policy",
     },
     {
       id: 4,
       nameService: t("header.checkImei"),
-      link: "/checkimei",
+      link: "/check-imei",
     },
   ];
   const languages = [
@@ -92,7 +92,7 @@ export default function Header() {
     {
       id: 3,
       name: t("header.voucher"),
-      link: "/voucher",
+      link: "/vouchers",
     },
     {
       id: 4,

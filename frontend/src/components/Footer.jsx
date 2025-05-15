@@ -45,9 +45,9 @@ export default function Footer() {
       id: 2,
       title: t("header.customer_support"),
       information: [
-        { label: t("header.warrantyPolicy"), url: "/guarantee" },
-        { label: t("header.returnPolicy"), url: "/returnpolicy" },
-        { label: t("header.deliveryPolicy"), url: "/deliverypolicy" },
+        { label: t("header.warrantyPolicy"), url: "/warranty-policy" },
+        { label: t("header.returnPolicy"), url: "/return-policy" },
+        { label: t("header.deliveryPolicy"), url: "/delivery-policy" },
         { label: t("header.checkImei"), url: "/checkimei" },
       ],
     },
@@ -57,7 +57,7 @@ export default function Footer() {
       information: [
         { label: "Hotline: 0396 180 619" },
         { label: t("header.chat") },
-        { label: t("header.voucher"), url: "/voucher" },
+        { label: t("header.voucher"), url: "/vouchers" },
       ],
     },
   ];
