@@ -177,6 +177,6 @@ class CategoryController extends Controller
             'status' => 200,
         ])->setStatusCode(200, 'OK');
     }
-    // lấy danh sách danh mục đã xóa mềm
+
 
 }
