@@ -10,17 +10,16 @@ use App\Http\Middleware\CheckAdmin;
 
 // API Auth     
 Route::post('/login', [AuthController::class, 'login']);
-
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/register', [AuthController::class, 'register']);
 });
+
 
 
 // API Banner
 Route::get('/getbanners', [BannerController::class, 'index']); // lấy toàn bộ danh sách banner
-
 Route::get('/getbanners/{id}', [BannerController::class, 'show']); // lấy banner theo id
-
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('updatebanners/{id}', [BannerController::class, 'update']); // cập nhật banner theo id
 });

@@ -57,4 +57,38 @@ class AuthController extends Controller
         ]);
     }
 
+    public function register(Request $request)
+    {
+        // Validate dữ liệu đầu vào
+        $request->validate([
+            'username' => 'required|string|max:255',
+            'full_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8',
+            'phone' => 'nullable|string|max:15',
+            'address' => 'nullable|string|max:255',
+        ]);
+
+        // Tạo user mới
+        $user = User::create([
+            'username' => $request->username,
+            'full_name' => $request->full_name,
+            'email' => $request->email,
+            'password_hash' => Hash::make($request->password),
+            'phone' => $request->phone,
+            'address' => $request->address,
+        ]);
+
+        return response()->json([
+            'message' => 'Đăng ký thành công.',
+            'user' => [
+                'id' => $user->user_id,
+                'username' => $user->username,
+                'full_name' => $user->full_name,
+                'email' => $user->email,
+                'role' => $user->role, 
+            ]
+        ]);
+    }
+
 }
