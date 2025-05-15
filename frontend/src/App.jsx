@@ -219,8 +219,6 @@ const routerConfig = [
     ]         
   },
 
-    ],
-  },
 
 
   {
