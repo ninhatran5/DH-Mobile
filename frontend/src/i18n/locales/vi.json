@@ -62,7 +62,8 @@
     "errorMin": "Giá trị tối thiểu là 1",
     "duoi10tr": "Dưới 10 triệu",
     "10-20trieu": "10-20 triệu",
-    "tren20trieu": "Trên 20 triệu"
+    "tren20trieu": "Trên 20 triệu",
+    "noProductFound": "Không tìm thấy sản phẩm"
   },
   "blog": {
     "poster": "Người đăng"
