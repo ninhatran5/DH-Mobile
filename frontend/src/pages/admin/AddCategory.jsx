@@ -111,25 +111,7 @@ const AddCategory = () => {
           />
         </div>
 
-        <div className="admin_dh-form-group">
-          <label className="admin_dh-form-label">Image</label>
-          <div className="admin_dh-image-upload">
-            <input
-              type="file"
-              className="admin_dh-form-control"
-              name="image"
-              onChange={handleImageChange}
-              accept="image/*"
-            />
-            {preview && (
-              <div className="admin_dh-preview-container">
-                <div className="admin_dh-image-preview">
-                  <img src={preview} alt="Preview" />
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        
 
         <div className="admin_dh-form-group">
           <label className="admin_dh-form-label">Parent Category</label>
