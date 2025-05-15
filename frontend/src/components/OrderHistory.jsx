@@ -1,22 +1,26 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const OrderHistory = ({ orders }) => {
   const navigate = useNavigate();
-  const handleNextPageOrderDetail = () => {
-    navigate(`/order-detail/:id`);
+  const { t } = useTranslation();
+
+  const handleNextPageOrderDetail = (id) => {
+    navigate(`/order-detail/${id}`);
   };
+
   return (
     <div className="profile-table-wrapper">
       <table className="profile-table">
         <thead>
           <tr>
-            <th>Mã đơn hàng</th>
-            <th>Tên đơn hàng</th>
-            <th>Giá tiền</th>
-            <th>Địa chỉ</th>
-            <th>Phương thức thanh toán</th>
-            <th>Trạng thái</th>
-            <th>Chi tiết</th>
+            <th>{t("orderHistory.orderCode")}</th>
+            <th>{t("orderHistory.orderName")}</th>
+            <th>{t("orderHistory.price")}</th>
+            <th>{t("orderHistory.address")}</th>
+            <th>{t("orderHistory.paymentMethod")}</th>
+            <th>{t("orderHistory.status")}</th>
+            <th>{t("orderHistory.detail")}</th>
           </tr>
         </thead>
         <tbody>
@@ -28,8 +32,10 @@ const OrderHistory = ({ orders }) => {
               <td>{order.location}</td>
               <td>{order.paymentMethod}</td>
               <td>{order.status}</td>
-              <td onClick={handleNextPageOrderDetail}>
-                <span className="profile-label">Xem chi tiết</span>
+              <td onClick={() => handleNextPageOrderDetail(order.id)}>
+                <span className="profile-label" style={{ cursor: "pointer" }}>
+                  {t("orderHistory.viewDetail")}
+                </span>
               </td>
             </tr>
           ))}

@@ -1,10 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const ThanksYou = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+
   const handleNextPageOrderHistory = () => {
     navigate("/order-history");
   };
+
   return (
     <>
       <div className="container-fluid">
@@ -33,14 +37,15 @@ const ThanksYou = () => {
             </svg>
           </div>
           <div className="text-center">
-            <h1>Thanh toán thành công</h1>
+            <h1>{t("thanksYou.paymentSuccess")}</h1>
             <p>
-              Cảm ơn bạn đã đặt hàng tại cửa hàng của chúng tôi! <br /> Đơn hàng
-              của bạn đã được xác nhận và sẽ sớm được giao đến bạn.
+              {t("thanksYou.thankYouMessage")}
+              <br/>
+              {t("thanksYou.thankYouMessage2")}
             </p>
             <Link to={"/"}>
               <button className="btn btn-outline-success mt-3">
-                Trở lại trang chủ
+                {t("thanksYou.backToHome")}
               </button>
             </Link>
             <button
@@ -48,7 +53,7 @@ const ThanksYou = () => {
               className="btn btn-outline-danger mt-3"
               onClick={handleNextPageOrderHistory}
             >
-              Theo dõi đơn hàng
+              {t("thanksYou.trackOrder")}
             </button>
           </div>
         </div>
@@ -56,4 +61,5 @@ const ThanksYou = () => {
     </>
   );
 };
+
 export default ThanksYou;

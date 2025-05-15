@@ -13,8 +13,8 @@ const Coupon = ({ voucher }) => {
 
     navigator.clipboard
       .writeText(inputRef.current.value)
-      .then(() => toast.success("Đã sao chép mã voucher!"))
-      .catch((err) => console.error("Lỗi khi sao chép:", err));
+      .then(() => toast.success(t("breadcrumbVoucher.success")))
+      .catch((err) => console.error(t("breadcrumbVoucher.err"), err));
   };
 
   return (

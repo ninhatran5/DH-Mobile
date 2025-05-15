@@ -85,7 +85,9 @@
   "breadcrumbVoucher": {
     "breadcrumbHeader": "Vouchers",
     "breadcrumbTitleHome": "Home",
-    "breadcrumbTitleMain": "Vouchers"
+    "breadcrumbTitleMain": "Vouchers",
+    "success": "Voucher code copied",
+    "err": "Error copying:"
   },
   "introduce": {
     "title": "Introduction to DH Mobile",
@@ -195,6 +197,135 @@
       "simlockCheck": "Click to check SIM lock status!",
       "provider": "Results provided by",
       "timestamp": "Check time"
+    }
+  },
+  "shoppingCart": {
+    "title": "Shopping Cart",
+    "continueShopping": "Continue Shopping",
+    "delete": "Delete",
+    "discountCode": "Discount Code",
+    "discountPlaceholder": "Enter your discount code...",
+    "apply": "Apply",
+    "cartTotal": "Cart Total",
+    "discount": "Discount",
+    "totalPrice": "Total Price",
+    "checkout": "Proceed to Checkout"
+  },
+  "tableHeaders": {
+    "product": "Product",
+    "quantity": "Quantity",
+    "color": "Color",
+    "version": "Version",
+    "totalPrice": "Total Price"
+  },
+  "checkout": {
+    "checkInfo": "Verify payment information",
+    "backAddress": "Back to Checkout",
+    "titleChange": "Change Payment Information",
+    "title": "Checkout",
+    "enterInfo": "Please enter your payment information",
+    "fullName": "Full Name",
+    "phone": "Phone Number",
+    "ward": "Ward/Commune",
+    "district": "District",
+    "city": "City/Province",
+    "addressDetail": "Detailed Address",
+    "changeAddress": "Change Shipping Address",
+    "payOnDelivery": "Pay on Delivery",
+    "payViaVNPAY": "Pay via VNPAY",
+    "cartTotal": "CART TOTAL",
+    "product": "Product",
+    "quantity": "Quantity",
+    "totalPrice": "Total Price",
+    "discount": "Discount Code",
+    "totalMoney": "Total Amount",
+    "payNow": "PAY NOW"
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "cart": "Shopping Cart"
+  },
+  "thanksYou": {
+    "paymentSuccess": "Payment Successful",
+    "thankYouMessage": "Thank you for ordering from our store!",
+    "thankYouMessage2": "Your order has been confirmed and will be delivered to you soon.",
+    "backToHome": "Back to Home",
+    "trackOrder": "Track Order"
+  },
+  "profile": {
+    "title": "Personal Profile",
+    "home": "Home",
+    "editProfile": "Edit",
+    "introduction": "Introduction",
+    "description": "Hello",
+    "personalInfo": "Personal Information",
+    "personalInformations": {
+      "name": "Full Name:",
+      "phone": "Phone Number:",
+      "email": "Email:",
+      "hometown": "Hometown:"
+    },
+    "features": "Features",
+    "featuresList": {
+      "adminLogin": "Admin Login",
+      "favoriteProducts": "Favorite Products",
+      "orders": "Orders",
+      "logout": "Log Out"
+    },
+    "statisticals": {
+      "orders": "Your Orders",
+      "wallet": "Wallet Balance",
+      "likedProducts": "Liked Products"
+    },
+    "orderStats": "Based on your usage statistics",
+    "orderHistoryTitle": "Purchase History",
+    "seeAll": "See All →"
+  },
+  "breadcrumbLiked": {
+    "breadcrumbHeader": "Favorite Products"
+  },
+  "orderHistory": {
+    "orderCode": "Order Code",
+    "orderName": "Order Name",
+    "price": "Price",
+    "address": "Address",
+    "paymentMethod": "Payment Method",
+    "status": "Status",
+    "detail": "Detail",
+    "viewDetail": "View Details"
+  },
+  "breadcrumbOrder": {
+    "breadcrumbHeader": "Purchase History"
+  },
+  "orderDetail": {
+    "image": "Image",
+    "title": "Order Details",
+    "home": "Home",
+    "orderList": "Orders",
+    "order": "Order",
+    "orderDate": "Order Date",
+    "info": "Order Information",
+    "receiver": "Receiver",
+    "phone": "Phone Number",
+    "address": "Address",
+    "paymentMethod": "Payment Method",
+    "cod": "Cash on Delivery (COD)",
+    "note": "Note",
+    "productDetail": "Product Details",
+    "product": "Product name",
+    "quantity": "Quantity",
+    "color": "Color",
+    "version": "Version",
+    "unitPrice": "Unit Price",
+    "totalPrice": "Total Price",
+    "back": "Back to Purchase History",
+    "total": "Total:",
+    "status": {
+      "pending": "Pending Confirmation",
+      "confirmed": "Confirmed",
+      "waitingPickup": "Awaiting Pickup ",
+      "delivering": "Delivering",
+      "delivered": "Delivered"
     }
   }
 }
