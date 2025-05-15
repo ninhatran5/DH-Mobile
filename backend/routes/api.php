@@ -52,6 +52,17 @@ Route::get('products', [ProductController::class, 'index']); // lấy danh sách
 Route::get('products/{id}', [ProductController::class, 'show']); // lấy sản phẩm theo id
 
 // Api Attributes
+// http://127.0.0.1:8000/api/attributes
+Route::middleware('auth:sanctum')->prefix('attributes')->controller(AttributeController::class)->group(function () {
+    Route::post('/', 'store');                    // Thêm thuộc tính
+    Route::post('/{id}', 'update');               // Cập nhật thuộc tính theo ID
+    Route::get('/trashed',  'trashed');         // Lấy danh sách thuộc tính đã xóa mềm
+    Route::delete('/{id}', 'destroy');           // Xóa mềm thuộc tính
+    Route::put('/restore/{id}', 'restore');      // Khôi phục thuộc tính đã xóa mềm
+    Route::delete('/forceDelete/{id}', 'forceDelete'); // Xóa vĩnh viễn
+});
+Route::get('attributes', [AttributeController::class, 'index']); // lấy danh sách thuộc tính
+Route::get('attributes/{id}', [AttributeController::class, 'show']); // lấy thuộc tính theo id
 
 
 
