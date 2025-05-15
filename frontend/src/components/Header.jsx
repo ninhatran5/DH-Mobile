@@ -8,10 +8,14 @@ import VietNam from "../assets/images/vietnam.png";
 import Anh from "../assets/images/england.png";
 import "../assets/css/header.css";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
+import iphone from "../assets/images/iphone-16-pro-max.webp";
 
 export default function Header() {
   const location = useLocation();
   const { i18n } = useTranslation();
+  const [searchItem, setSearchItem] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
@@ -33,7 +37,7 @@ export default function Header() {
     {
       id: 3,
       icon: <IoMdHeartEmpty />,
-      link: "/",
+      link: "/favorite-products",
     },
     {
       id: 4,
@@ -105,6 +109,101 @@ export default function Header() {
       link: "/introduce",
     },
   ];
+  const products = [
+    {
+      id: 1,
+      name: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
+      price: "27.890.000đ",
+      image: iphone,
+    },
+    {
+      id: 2,
+      name: "Samsung Galaxy S22 Ultra 512GB",
+      price: "29.990.000đ",
+      image: iphone,
+    },
+    {
+      id: 3,
+      name: "Samsung Galaxy S22 Ultra 512GB",
+      price: "29.990.000đ",
+      image: iphone,
+    },
+    {
+      id: 4,
+      name: "Samsung Galaxy S22 Ultra 512GB",
+      price: "29.990.000đ",
+      image: iphone,
+    },
+    {
+      id: 5,
+      name: "Samsung Galaxy S22 Ultra 512GB",
+      price: "29.990.000đ",
+      image: iphone,
+    },
+    {
+      id: 6,
+      name: "Samsung Galaxy S22 Ultra 512GB",
+      price: "29.990.000đ",
+      image: iphone,
+    },
+    {
+      id: 7,
+      name: "Samsung Galaxy S22 Ultra 512GB",
+      price: "29.990.000đ",
+      image: iphone,
+    },
+    {
+      id: 8,
+      name: "Samsung Galaxy S22 Ultra 512GB",
+      price: "29.990.000đ",
+      image: iphone,
+    },
+    {
+      id: 9,
+      name: "Samsung Galaxy S22 Ultra 512GB",
+      price: "29.990.000đ",
+      image: iphone,
+    },
+    {
+      id: 10,
+      name: "Samsung Galaxy S22 Ultra 512GB",
+      price: "29.990.000đ",
+      image: iphone,
+    },
+  ];
+
+  const changeInputSearch = (event) => {
+    const value = event.target.value;
+    setSearchItem(value);
+
+    if (value.trim()) {
+      const results = products.filter((product) =>
+        product.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setSearchResults(results);
+    } else {
+      setSearchResults([]);
+    }
+  };
+
+  const handleSearch = () => {
+    if (!searchItem.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    const results = products.filter((product) =>
+      product.name.toLowerCase().includes(searchItem.toLowerCase())
+    );
+    setSearchResults(results);
+    setSearchItem("");
+  };
+
+  const handleEnterSearch = (event) => {
+    if (event.key == "Enter") {
+      event.preventDefault();
+      handleSearch();
+    }
+  };
   return (
     <>
       <div>
@@ -126,7 +225,7 @@ export default function Header() {
               aria-label="Close"
             />
           </div>
-          <div className="offcanvas-body">
+          {/* <div className="offcanvas-body">
             <div className="order-md-last">
               <h4 className="d-flex justify-content-between align-items-center mb-3">
                 <span className="text-primary">{t("header.searchIcon")}</span>
@@ -151,7 +250,7 @@ export default function Header() {
                 </button>
               </form>
             </div>
-          </div>
+          </div> */}
         </div>
         <header>
           <div className="container-fluid">
@@ -169,17 +268,23 @@ export default function Header() {
                     <form
                       id="search-form"
                       className="text-center"
-                      action="index.html"
                       method="post"
                     >
                       <input
                         type="text"
+                        value={searchItem}
+                        onKeyDown={handleEnterSearch}
+                        onChange={changeInputSearch}
                         className="header_search form-control border-0 bg-transparent"
                         placeholder={t("header.search")}
                       />
                     </form>
                   </div>
-                  <div className="col-1">
+                  <div
+                    onClick={handleSearch}
+                    className="col-2 col-md-1 d-flex align-items-center justify-content-center"
+                    style={{ cursor: "pointer" }}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width={24}
@@ -194,8 +299,9 @@ export default function Header() {
                   </div>
                 </div>
               </div>
+
               <div className="col-sm-8 col-lg-4 d-flex justify-content-end gap-5 align-items-center mt-4 mt-sm-0 justify-content-center justify-content-sm-end">
-                <div className="support-box text-end d-none d-xl-block">
+                <div className="support-box text-end d-none d-xxl-block">
                   <span className="fs-6 text-muted">Hotline</span>
                   <h5 className="mb-0">0396180619</h5>
                 </div>
@@ -203,7 +309,7 @@ export default function Header() {
                   {iconNavbars.map((item, index) => (
                     <li
                       key={item.id}
-                      className={`${index > 1 ? "d-md-none" : ""}`}
+                      className={`${index > 1 ? "d-lg-none" : ""}`}
                     >
                       <Link
                         to={item.link}
@@ -222,6 +328,8 @@ export default function Header() {
                       </Link>
                     </li>
                   ))}
+
+                  <li className="d-xxl-none"></li>
                 </ul>
 
                 <div className="cart text-end d-none d-lg-block">
@@ -339,6 +447,37 @@ export default function Header() {
           </div>
         </header>
       </div>
+      {/* Hiển thị kết quả tìm kiếm */}
+      {searchResults.length > 0 && (
+        <ul
+          className="search-results list-group position-absolute bg-white border rounded w-100"
+          style={{ maxHeight: "200px", overflowY: "auto", zIndex: 1000 }}
+        >
+          {searchResults.map((product) => (
+            <li
+              key={product.id}
+              className="list-group-item list-group-item-action"
+              onClick={() => {
+                setSearchItem(product.name);
+                setSearchResults([]);
+              }}
+              style={{ cursor: "pointer" }}
+            >
+              {product.name}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {/* Nếu không tìm thấy */}
+      {searchItem.trim() !== "" && searchResults.length === 0 && (
+        <div
+          className="no-results position-absolute bg-white border rounded w-100 p-2"
+          style={{ zIndex: 1000 }}
+        >
+          Không tìm thấy sản phẩm
+        </div>
+      )}
     </>
   );
 }
