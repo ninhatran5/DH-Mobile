@@ -527,7 +527,7 @@ export default function Header() {
       {searchResults.length > 0 && (
         <div
           className="search-results position-absolute bg-white border rounded w-100 d-none d-lg-block p-3"
-          style={{ height: "100vh", overflowY: "auto", zIndex: 1000 }}
+          style={{ height: "100vh", overflowY: "auto", zIndex: 10 }}
         >
           <div className="container-fluid">
             <div className="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
