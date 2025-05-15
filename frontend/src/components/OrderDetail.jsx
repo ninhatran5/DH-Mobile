@@ -1,25 +1,33 @@
+import { Link } from "react-router-dom";
 import "../assets/css/order_detail.css";
 import iphone from "../assets/images/iphone-16-pro-max.webp";
 import Breadcrumb from "./Breadcrumb";
+import { useTranslation } from "react-i18next";
+import { RiArrowGoBackFill } from "react-icons/ri";
 
 const OrderDetail = () => {
+  const { t } = useTranslation();
+
   const statusSteps = [
-    { label: "Chờ xác nhận", active: true },
-    { label: "Đã xác nhận", active: true },
-    { label: "Chờ lấy hàng", active: true },
-    { label: "Đang giao hàng", active: false },
-    { label: "Giao hàng thành công", active: false },
+    { label: t("orderDetail.status.pending"), active: true },
+    { label: t("orderDetail.status.confirmed"), active: true },
+    { label: t("orderDetail.status.waitingPickup"), active: true },
+    { label: t("orderDetail.status.delivering"), active: false },
+    { label: t("orderDetail.status.delivered"), active: false },
   ];
 
   const orderInfo = [
-    { label: "Người nhận", value: "Nguyễn Văn A" },
-    { label: "Số điện thoại", value: "0123456789" },
-    { label: "Địa chỉ", value: "123 Đường ABC, Phường XYZ, Quận 1, TP.HCM" },
+    { label: t("orderDetail.receiver"), value: "Nguyễn Văn A" },
+    { label: t("orderDetail.phone"), value: "0123456789" },
     {
-      label: "Phương thức thanh toán",
-      value: "Thanh toán khi nhận hàng (COD)",
+      label: t("orderDetail.address"),
+      value: "123 Đường ABC, Phường XYZ, Quận 1, TP.HCM",
     },
-    { label: "Ghi chú", value: "Giao hàng giờ hành chính" },
+    {
+      label: t("orderDetail.paymentMethod"),
+      value: t("orderDetail.cod"),
+    },
+    { label: t("orderDetail.note"), value: "Giao hàng giờ hành chính" },
   ];
 
   const products = [
@@ -39,10 +47,10 @@ const OrderDetail = () => {
   return (
     <>
       <Breadcrumb
-        title={"Chi Tiết Đơn Hàng"}
-        mainItem={"Trang chủ"}
-        mainItem2={"Đơn hàng"}
-        secondaryItem={"Chi tiết đơn hàng"}
+        title={t("orderDetail.title")}
+        mainItem={t("orderDetail.home")}
+        mainItem2={t("orderDetail.orderList")}
+        secondaryItem={t("orderDetail.title")}
         linkMainItem={"/"}
         linkMainItem2={"/order-history"}
       />
@@ -50,7 +58,7 @@ const OrderDetail = () => {
         <div className="row d-flex justify-content-between px-3">
           <div className="d-flex">
             <h5>
-              ĐƠN HÀNG:
+              {t("orderDetail.order")}:
               <span
                 className="text-primary font-weight-bold"
                 style={{ marginLeft: 8 }}
@@ -61,7 +69,7 @@ const OrderDetail = () => {
           </div>
           <div className="d-flex flex-column text-sm-right">
             <p className="mb-0">
-              Ngày đặt hàng: <span>01/12/19</span>
+              {t("orderDetail.orderDate")}: <span>01/12/19</span>
             </p>
           </div>
         </div>
@@ -84,7 +92,7 @@ const OrderDetail = () => {
         <div className="row px-3 mt-4">
           <div className="col-12">
             <div className="order-info-table">
-              <h5 className="mb-3">Thông tin đặt hàng</h5>
+              <h5 className="mb-3">{t("orderDetail.info")}</h5>
               <table className="table table-bordered">
                 <tbody>
                   {orderInfo.map((item, index) => (
@@ -101,21 +109,21 @@ const OrderDetail = () => {
           </div>
         </div>
 
-        {/* Chi tiết sản phẩm */}
         <div className="row px-3 mt-4">
           <div className="col-12">
             <div className="product-table">
-              <h5 className="mb-3">Chi tiết sản phẩm</h5>
+              <h5 className="mb-3">{t("orderDetail.productDetail")}</h5>
               <div className="table-responsive">
                 <table className="table table-bordered">
                   <thead className="bg-light">
                     <tr>
-                      <th>Sản Phẩm</th>
-                      <th>Số Lượng</th>
-                      <th>Màu sắc</th>
-                      <th>Phiên bản</th>
-                      <th>Đơn giá</th>
-                      <th>Tổng tiền</th>
+                      <th>{t("orderDetail.image")}</th>
+                      <th>{t("orderDetail.product")}</th>
+                      <th>{t("orderDetail.quantity")}</th>
+                      <th>{t("orderDetail.color")}</th>
+                      <th>{t("orderDetail.version")}</th>
+                      <th>{t("orderDetail.unitPrice")}</th>
+                      <th>{t("orderDetail.totalPrice")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -133,8 +141,10 @@ const OrderDetail = () => {
                                 objectFit: "cover",
                               }}
                             />
-                            <div className="fw-bold">{p.name}</div>
                           </div>
+                        </td>
+                        <td>
+                          <div className="fw-bold">{p.name}</div>
                         </td>
                         <td className="align-middle">{p.quantity}</td>
                         <td className="align-middle">{p.color}</td>
@@ -146,13 +156,18 @@ const OrderDetail = () => {
                   </tbody>
                   <tfoot className="bg-light">
                     <tr>
-                      <td colSpan="5" className="text-end fw-bold">
-                        Tổng cộng
+                      <td colSpan="6" className="text-end fw-bold">
+                        {t("orderDetail.total")}
                       </td>
                       <td className="fw-bold text-primary">{totalAmount}</td>
                     </tr>
                   </tfoot>
                 </table>
+
+                <Link to={"/order-history"} className="btn btn-secondary mt-3">
+                  <RiArrowGoBackFill />
+                  <span style={{ marginLeft: 5 }}>{t("orderDetail.back")}</span>
+                </Link>
               </div>
             </div>
           </div>

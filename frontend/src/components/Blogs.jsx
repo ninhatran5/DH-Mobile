@@ -56,7 +56,7 @@ export default function Blogs({ showHeader = true, padding }) {
               <div className="card-products col-md-4" key={item.id}>
                 <article className="post-item card border-0 shadow-sm d-flex flex-column">
                   <div className="image-holder zoom-effect">
-                    <Link to={"/blogdetails/:id"}>
+                    <Link to={`/blog-detail/${item.id}`}>
                       <img
                         src={item.image}
                         alt="post"
@@ -71,7 +71,7 @@ export default function Blogs({ showHeader = true, padding }) {
                     <div className="post-header">
                       <h3 className="post-title">
                         <Link
-                          to={"/blogdetails/:id"}
+                          to={`/blog-detail/${item.id}`}
                           className="text-decoration-none fw-bold"
                           style={{ color: "black" }}
                         >
@@ -82,7 +82,10 @@ export default function Blogs({ showHeader = true, padding }) {
                     </div>
                   </div>
                   <div className="card-footer text-end">
-                    <small>Đăng bởi: {item.author}</small>
+                    <small>
+                      {" "}
+                      {t("blog.poster")}: {item.author}
+                    </small>
                   </div>
                 </article>
               </div>

@@ -10,10 +10,13 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Comment from "../components/Comment";
 import Breadcrumb from "../components/Breadcrumb";
+import { useTranslation } from "react-i18next";
 
 const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
   const productImages = [
     { id: 1, image: iphone },
     { id: 2, image: iphone2 },
@@ -96,7 +99,7 @@ const ProductDetail = () => {
     } else if (Number(value) >= 1 && !isNaN(value)) {
       setQuantity(Number(value));
     } else if (Number(value) === 0) {
-      toast.warn("Giá trị tổi thiếu là 1  ");
+      toast.warn(t("products.errorMin"));
       setQuantity(1);
     } else {
       setQuantity(1);
@@ -106,33 +109,33 @@ const ProductDetail = () => {
   const handleKeyDown = (e) => {
     if (e.key === "-" || e.key === "e") {
       e.preventDefault();
-      toast.warn("Không thể nhập kí tự đặc biệt");
+      toast.warn(t("products.errorSpecialCharacters"));
     }
   };
 
   const addToFavorites = () => {
     console.log("added");
-    toast.success("Đã thêm vào yêu thích");
+    toast.success(t("products.addedToFavorites"));
   };
 
   const addToShoppingCart = () => {
     console.log("added");
-    toast.success("Đã thêm vào giỏ hàng");
+    toast.success(t("products.addedToCart"));
     navigate("/shopping-cart");
   };
 
   return (
     <>
       <Breadcrumb
-        title={"Chi Tiết Sản Phẩm"}
-        mainItem={"Trang chủ"}
-        mainItem2={"Sản phẩm"}
+        title={t("breadcrumbProductDetail.breadcrumbHeader")}
+        mainItem={t("breadcrumbProductDetail.breadcrumbTitleHome")}
+        mainItem2={t("breadcrumbProductDetail.breadcrumbTitleProduct")}
         secondaryItem={"iPhone 16 Pro Max"}
         linkMainItem={"/"}
         linkMainItem2={"/products"}
       />
 
-      <div className="container-fluid">
+      <div className="container-fluid" style={{ marginBottom: 80 }}>
         <div className="row">
           <div className="col-md-6 mb-5 position-relative">
             <div className="border rounded mb-3 p-3 text-center position-relative">
@@ -172,7 +175,6 @@ const ProductDetail = () => {
             </div>
           </div>
 
-          {/* Modal ảnh */}
           <Modal show={showModal} onHide={handleCloseModal} centered size="lg">
             <Modal.Body className="text-center">
               <Carousel data-bs-theme="dark">
@@ -199,7 +201,9 @@ const ProductDetail = () => {
             ))}
 
             <div className="mb-3">
-              <label className="font-weight-bold mb-2">Chọn phiên bản</label>
+              <label className="font-weight-bold mb-2">
+                {t("productDetail.selectVersion")}:
+              </label>
               <div className="d-flex justify-content-start version-button-group">
                 {phoneVersions.map((phoneVersion) => (
                   <button
@@ -213,7 +217,9 @@ const ProductDetail = () => {
             </div>
 
             <div className="mb-4">
-              <label className="font-weight-bold mb-2">Chọn màu</label>
+              <label className="font-weight-bold mb-2">
+                {t("productDetail.selectColor")}:
+              </label>
               <div className="d-flex justify-content-start">
                 {phoneColors.map((phoneColor) => (
                   <div
@@ -247,15 +253,18 @@ const ProductDetail = () => {
                 onClick={addToFavorites}
                 className="btn-custom btn-favorite px-4"
               >
-                Thêm vào yêu thích
+                {t("productDetail.addToFavorites")}
               </button>
               <button onClick={addToShoppingCart} className="btn-custom px-4">
-                Thêm vào giỏ hàng
+                {t("products.addToCart")}
               </button>
             </div>
           </div>
         </div>
-        <div className="card_introducde_product_detail mt-5">
+        <div
+          className="card_introducde_product_detail"
+          style={{ marginTop: 80 }}
+        >
           <ul className="introduce_productdetail nav">
             <li className="nav-item">
               <button
@@ -265,7 +274,7 @@ const ProductDetail = () => {
                 }`}
                 onClick={() => setActiveTab("description")}
               >
-                Mô tả
+                {t("productDetail.describe")}
               </button>
             </li>
             <li className="nav-item">
@@ -274,7 +283,7 @@ const ProductDetail = () => {
                 className={`nav-link ${activeTab === "info" ? "active" : ""}`}
                 onClick={() => setActiveTab("info")}
               >
-                Thông số kỹ thuật
+                {t("productDetail.parameter")}
               </button>
             </li>
             <li className="nav-item">
@@ -285,7 +294,7 @@ const ProductDetail = () => {
                 }`}
                 onClick={() => setActiveTab("reviews")}
               >
-                Bình luận
+                {t("productDetail.comment")}
               </button>
             </li>
           </ul>

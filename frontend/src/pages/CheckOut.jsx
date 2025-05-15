@@ -2,8 +2,11 @@ import { Link } from "react-router-dom";
 import iphone from "../assets/images/iphone-16-pro-max.webp";
 import { TbExchange } from "react-icons/tb";
 import Breadcrumb from "../components/Breadcrumb";
+import { useTranslation } from "react-i18next";
 
 const CheckOut = () => {
+  const { t } = useTranslation();
+
   const purchaseInformation = [
     {
       id: 1,
@@ -20,15 +23,16 @@ const CheckOut = () => {
       total: "14.890.000đ",
     },
   ];
+
   return (
     <>
       <Breadcrumb
-        title={"Thanh Toán"}
-        mainItem={"Trang chủ"}
-        mainItem2={"Giỏ hàng"}
-        secondaryItem={"Thanh toán"}
-        linkMainItem={"/"}
-        linkMainItem2={"/shopping-cart"}
+        title={t("checkout.title")}
+        mainItem={t("breadcrumb.home")}
+        mainItem2={t("breadcrumb.cart")}
+        secondaryItem={t("checkout.title")}
+        linkMainItem="/"
+        linkMainItem2="/shopping-cart"
       />
       <div className="container-fluid">
         <section className="checkout" style={{ marginTop: 60 }}>
@@ -37,13 +41,14 @@ const CheckOut = () => {
               <div className="row">
                 <div className="col-lg-8 col-md-6 mb-5">
                   <h5 className="checkout__title">
-                    Vui lòng nhập thông tin thanh toán
+                    {t("checkout.checkInfo")}{" "}
                   </h5>
                   <div className="row">
                     <div className="col-lg-6">
                       <div className="checkout__input">
                         <p>
-                          Họ tên<span>*</span>
+                          {t("checkout.fullName")}
+                          <span>*</span>
                         </p>
                         <input type="text" value={"Lê Nguyên Tùng"} disabled />
                       </div>
@@ -51,7 +56,8 @@ const CheckOut = () => {
                     <div className="col-lg-6">
                       <div className="checkout__input">
                         <p>
-                          Số điện thoại<span>*</span>
+                          {t("checkout.phone")}
+                          <span>*</span>
                         </p>
                         <input
                           type="number"
@@ -64,25 +70,29 @@ const CheckOut = () => {
                   </div>
                   <div className="checkout__input">
                     <p>
-                      Phường/Xã<span>*</span>
+                      {t("checkout.ward")}
+                      <span>*</span>
                     </p>
                     <input type="text" value={"Thị Trấn Thiệu Hóa"} disabled />
                   </div>
                   <div className="checkout__input">
                     <p>
-                      Quận/Huyện<span>*</span>
+                      {t("checkout.district")}
+                      <span>*</span>
                     </p>
                     <input type="text" value={"Thiệu Hóa"} disabled />
                   </div>
                   <div className="checkout__input">
                     <p>
-                      Tỉnh/Thành Phố<span>*</span>
+                      {t("checkout.city")}
+                      <span>*</span>
                     </p>
                     <input type="text" value={"Thanh Hóa"} disabled />
                   </div>
                   <div className="checkout__input">
                     <p>
-                      Địa chỉ cụ thể<span>*</span>
+                      {t("checkout.addressDetail")}
+                      <span>*</span>
                     </p>
                     <input
                       type="text"
@@ -105,7 +115,7 @@ const CheckOut = () => {
                             fontSize: 20,
                           }}
                         />
-                        Thay đổi địa chỉ mua hàng
+                        {t("checkout.changeAddress")}
                       </h6>
                     </Link>
                   </div>
@@ -113,7 +123,7 @@ const CheckOut = () => {
                     <div className="checkout__input__checkbox">
                       <label htmlFor="acc">
                         <h4 className="checkout-text">
-                          Thanh Toán khi nhận hàng
+                          {t("checkout.payOnDelivery")}
                         </h4>
                         <input type="radio" name="checkout" id="acc" />
                         <span className="checkmark" />
@@ -121,7 +131,9 @@ const CheckOut = () => {
                     </div>
                     <div className="checkout__input__checkbox">
                       <label htmlFor="vnpay">
-                        <h4 className="checkout-text">Thanh Toán qua VNPAY</h4>
+                        <h4 className="checkout-text">
+                          {t("checkout.payViaVNPAY")}
+                        </h4>
                         <input type="radio" name="checkout" id="vnpay" />
                         <span className="checkmark" />
                       </label>
@@ -130,17 +142,17 @@ const CheckOut = () => {
                 </div>
                 <div className="col-lg-4 col-md-6">
                   <div className="checkout__order">
-                    <h4 className="order__title">TỔNG GIỎ HÀNG</h4>
+                    <h4 className="order__title">{t("checkout.cartTotal")}</h4>
                     <div className="checkout__order__products">
                       <div className="checkout_title_card">
                         <p className="checkout_title_card_name_product">
-                          Sản phẩm
+                          {t("checkout.product")}
                         </p>
                         <p className="checkout_title_card_name_quantity">
-                          Số lượng
+                          {t("checkout.quantity")}
                         </p>
                         <p className="checkout_title_card_name_total">
-                          Tổng tiền
+                          {t("checkout.totalPrice")}
                         </p>
                       </div>
                     </div>
@@ -149,7 +161,7 @@ const CheckOut = () => {
                         <li>
                           <div className="checkout_card">
                             <div className="checkout_card_image">
-                              <img src={item.image} alt="" />
+                              <img src={item.image} alt={item.name} />
                             </div>
                             <p className="checkout_card_name">{item.name}</p>
                             <p className="checkout_card_quantity">
@@ -162,17 +174,18 @@ const CheckOut = () => {
                         </li>
                       </ul>
                     ))}
-
                     <ul className="checkout__total__all">
                       <li>
-                        Mã giảm giá <span>- 750đ</span>
+                        {t("checkout.discount")}: <span>- 750đ</span>
                       </li>
                       <li>
-                        Tổng tiền <span>1000000đ</span>
+                        {t("checkout.totalMoney")}: <span>1000000đ</span>
                       </li>
                     </ul>
-                    <Link to={"/thanksyou"}>
-                      <button className="site-btn">THANH TOÁN</button>
+                    <Link to={"/thank-you"}>
+                      <button className="site-btn">
+                        {t("checkout.payNow")}
+                      </button>
                     </Link>
                   </div>
                 </div>

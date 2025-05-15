@@ -32,7 +32,7 @@ import ProductList from "./pages/admin/ProductList";
 import Categories from "./pages/admin/Categories";
 import AddCategories from "./pages/admin/AddCategory";
 import ChatBotAdmin from "./pages/admin/Chatbot";
-import AcccountList from './pages/admin/AccountsList';
+import AcccountList from "./pages/admin/AccountsList";
 import FavoriteProducts from "./pages/FavoriteProducts";
 import OrderTable from "./components/OrderTable";
 import OrderDetail from "./components/OrderDetail";
@@ -63,7 +63,7 @@ const routerConfig = [
     element: withLayoutClient(Introduce),
   },
   {
-    path: "/blogdetails/:id",
+    path: "/blog-detail/:id",
     element: withLayoutClient(BlogDetail),
   },
   {
@@ -79,27 +79,27 @@ const routerConfig = [
     element: withLayoutClient(ChangeCheckout),
   },
   {
-    path: "/thanksyou",
+    path: "/thank-you",
     element: withLayoutClient(ThanksYou),
   },
   {
-    path: "/voucher",
+    path: "/vouchers",
     element: withLayoutClient(Voucher),
   },
   {
-    path: "/checkimei",
+    path: "/check-imei",
     element: withLayoutClient(CheckImei),
   },
   {
-    path: "/guarantee",
+    path: "/warranty-policy",
     element: withLayoutClient(Guarantee),
   },
   {
-    path: "/returnpolicy",
+    path: "/return-policy",
     element: withLayoutClient(ReturnPolicy),
   },
   {
-    path: "/deliverypolicy",
+    path: "/delivery-policy",
     element: withLayoutClient(DeliveryPolicy),
   },
   {
@@ -144,41 +144,39 @@ const routerConfig = [
   },
 
   {
-    path:"/admin",
-    element:<HomeAdmin/>,
-    children:[
+    path: "/admin",
+    element: <HomeAdmin />,
+    children: [
       {
-        path:"",
-        element:<Chart/>
+        path: "",
+        element: <Chart />,
       },
       {
-        path:"product",
-        element:<ProductList/>
+        path: "product",
+        element: <ProductList />,
       },
       {
-        path:"addproduct",
-        element:<AddProduct/>
+        path: "addproduct",
+        element: <AddProduct />,
       },
       {
-        path:"categories",
-        element:<Categories/>
+        path: "categories",
+        element: <Categories />,
       },
       {
-        path:"Addcategories",
-        element:<AddCategories/>
+        path: "Addcategories",
+        element: <AddCategories />,
       },
       {
-        path:"chatbot",
-        element:<ChatBotAdmin/>
+        path: "chatbot",
+        element: <ChatBotAdmin />,
       },
       {
-        path:"accounts",
-        element:<AcccountList/>
+        path: "accounts",
+        element: <AcccountList />,
       },
-      
-    ]
+    ],
   },
-  
 
   {
     path: "*",

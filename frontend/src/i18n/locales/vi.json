@@ -57,6 +57,305 @@
     "all": "Tất cả",
     "addedToFavorites": "Đã thêm vào yêu thích",
     "addedToCart": "Đã thêm vào giỏ hàng",
-    "removeFavorites": "Đã xóa khỏi yêu thích"
+    "removeFavorites": "Đã xóa khỏi yêu thích",
+    "errorSpecialCharacters": "Không thể nhập kí tự đặc biệt",
+    "errorMin": "Giá trị tối thiểu là 1"
+  },
+  "blog": {
+    "poster": "Người đăng"
+  },
+  "chatBot": {
+    "chat": "Trò chuyện",
+    "message": "Gõ tin nhắn của bạn..."
+  },
+  "breadcrumbProductDetail": {
+    "breadcrumbHeader": "Chi Tiết Sản Phẩm",
+    "breadcrumbTitleHome": "Trang chủ",
+    "breadcrumbTitleProduct": "Sản phẩm"
+  },
+  "productDetail": {
+    "selectVersion": "Chọn phiên bản",
+    "selectColor": "Chọn màu",
+    "addToFavorites": "Thêm vào yêu thích",
+    "describe": "Mô tả",
+    "parameter": "Thông số kỹ thuật",
+    "comment": "Bình luận"
+  },
+  "breadcrumbVoucher": {
+    "breadcrumbHeader": "Mã Giảm Giá",
+    "breadcrumbTitleHome": "Trang chủ",
+    "breadcrumbDesc": "Copy mã và sử dụng",
+    "success": "Đã sao chép mã voucher",
+    "err": "Lỗi khi sao chép:"
+  },
+  "breadcrumbLiked": {
+    "breadcrumbHeader": "Sản Phẩm Yêu Thích"
+  },
+  "introduce": {
+    "title": "Giới thiệu về DH Mobile",
+    "smallTitle": "DH Mobile là hệ thống bán lẻ điện thoại thông minh chính hãng với sứ mệnh mang đến những sản phẩm công nghệ chất lượng cao, dịch vụ khách hàng tận tâm và trải nghiệm mua sắm tiện lợi, minh bạch cho người tiêu dùng Việt Nam.",
+    "smallTitle2": "Được thành lập với mong muốn trở thành cầu nối giữa công nghệ tiên tiến và người dùng, DH Mobile luôn đặt chữ 'Tín' làm kim chỉ nam trong mọi hoạt động kinh doanh. Chúng tôi hiểu rằng mỗi chiếc điện thoại không chỉ là công cụ liên lạc mà còn là phương tiện giúp bạn kết nối với thế giới, học tập, làm việc và giải trí mỗi ngày.",
+    "titleCard1": "Sản phẩm chính hãng - Chất lượng đảm bảo",
+    "descCard1": "Tất cả sản phẩm tại DH Mobile đều là hàng chính hãng 100%, có nguồn gốc rõ ràng và đầy đủ hóa đơn VAT, bảo hành điện tử. Chúng tôi cam kết tuyệt đối không kinh doanh hàng xách tay, hàng trôi nổi hay hàng kém chất lượng. Mỗi sản phẩm khi đến tay khách hàng đều được kiểm tra kỹ lưỡng, đảm bảo nguyên seal, nguyên kiện và đầy đủ phụ kiện từ nhà sản xuất.",
+    "titleCard2": "Dịch vụ khách hàng tận tâm",
+    "descCard2": "DH Mobile xây dựng đội ngũ tư vấn viên chuyên nghiệp, được đào tạo bài bản để sẵn sàng hỗ trợ khách hàng trong mọi tình huống – từ tư vấn sản phẩm phù hợp nhu cầu, hỗ trợ kỹ thuật, cho đến giải quyết bảo hành và khiếu nại. Chúng tôi tin rằng, sự hài lòng của khách hàng không chỉ đến từ sản phẩm tốt mà còn đến từ dịch vụ chu đáo, tận tình.",
+    "titleCard3": "Chính sách minh bạch – Hậu mãi rõ ràng",
+    "descCard3": "Tại DH Mobile, mọi chính sách về đổi trả, bảo hành, trả góp hay ưu đãi đều được công khai minh bạch trên website và hệ thống cửa hàng. Khách hàng có thể dễ dàng tra cứu, nắm rõ quyền lợi và được hỗ trợ xử lý nhanh chóng. Đặc biệt, chúng tôi có chính sách “1 đổi 1 trong 7 ngày” dành cho các sản phẩm bị lỗi từ nhà sản xuất, cùng chế độ bảo hành mở rộng và hỗ trợ kỹ thuật trọn đời.",
+    "titleCard4": "Tầm nhìn và sứ mệnh",
+    "descCard4": "DH Mobile hướng đến việc trở thành chuỗi bán lẻ điện thoại thông minh đáng tin cậy hàng đầu tại Việt Nam. Chúng tôi không chỉ bán điện thoại – chúng tôi đồng hành cùng người dùng trên hành trình khám phá công nghệ. Sứ mệnh của chúng tôi là đem lại giá trị bền vững, nơi khách hàng luôn cảm thấy yên tâm, tin tưởng và hài lòng khi lựa chọn DH Mobile.",
+    "titleCard5": "Cảm ơn quý khách hàng",
+    "descCard5": "DH Mobile xin chân thành cảm ơn sự tin tưởng và ủng hộ của quý khách hàng trong suốt thời gian qua. Mỗi đơn hàng, mỗi lời góp ý và mỗi lần quay lại chính là động lực để chúng tôi tiếp tục hoàn thiện, phát triển và phục vụ tốt hơn từng ngày."
+  },
+  "guaranteePolicy": {
+    "title": "Chính Sách Bảo Hành",
+    "intro": "DH Mobile cam kết mang đến cho khách hàng những sản phẩm chất lượng cùng dịch vụ hậu mãi uy tín. Dưới đây là các điều khoản về chính sách bảo hành:",
+    "titleSmall1": "1. Thời gian bảo hành",
+    "content1": "Điện thoại mới: Bảo hành chính hãng 12 tháng.",
+    "content2": "Điện thoại likenew (99%): Bảo hành DH Mobile 6 tháng.",
+    "content3": "Phụ kiện đi kèm: Bảo hành 1 tháng (nếu có).",
+
+    "titleSmall2": "2. Điều kiện bảo hành",
+    "content2_1": "Sản phẩm còn thời hạn bảo hành và có tem/phiếu bảo hành.",
+    "content2_2": "Lỗi kỹ thuật do nhà sản xuất (không do tác động ngoại lực).",
+    "content2_3": "Không bị can thiệp phần cứng, mở máy ngoài trung tâm ủy quyền.",
+
+    "titleSmall3": "3. Trường hợp từ chối bảo hành",
+    "content3_1": "Sản phẩm bị rơi vỡ, vào nước, cháy nổ do dùng sai cách.",
+    "content3_2": "Mất tem bảo hành, phiếu bảo hành hoặc serial không trùng khớp.",
+    "content3_3": "Tự ý sửa chữa tại nơi không được DH Mobile ủy quyền.",
+
+    "titleSmall4": "4. Hỗ trợ sau bảo hành",
+    "content4_1": "Sau thời gian bảo hành, DH Mobile vẫn hỗ trợ sửa chữa với chi phí ưu đãi.",
+    "footer": "Mọi thắc mắc xin liên hệ hotline: 1900 1234 hoặc đến trực tiếp cửa hàng DH Mobile."
+  },
+  "returnPolicy": {
+    "title": "Chính Sách Đổi Trả",
+    "intro": "DH Mobile cam kết đảm bảo quyền lợi của khách hàng với chính sách đổi trả linh hoạt. Dưới đây là các điều khoản về chính sách đổi trả:",
+
+    "titleSmall1": "1. Điều Kiện Đổi Trả",
+    "content1_1": "Sản phẩm còn nguyên vẹn, không có dấu hiệu đã sử dụng.",
+    "content1_2": "Sản phẩm phải có hóa đơn mua hàng và tem bảo hành đi kèm.",
+    "content1_3": "Sản phẩm phải được đổi trả trong vòng 7 ngày kể từ ngày mua.",
+
+    "titleSmall2": "2. Quy Trình Đổi Trả",
+    "content2_1": "Liên hệ với DH Mobile qua hotline hoặc đến cửa hàng.",
+    "content2_2": "Cung cấp hóa đơn mua hàng và lý do đổi trả.",
+    "content2_3": "Chờ xử lý đổi trả trong vòng 3-5 ngày làm việc.",
+
+    "titleSmall3": "3. Điều Kiện Không Được Đổi Trả",
+    "content3_1": "Sản phẩm đã qua sử dụng, bị trầy xước hoặc hư hỏng do lỗi của người sử dụng.",
+    "content3_2": "Sản phẩm không có hóa đơn hoặc tem bảo hành.",
+    "content3_3": "Sản phẩm bị lỗi do tác động ngoại lực (rơi vỡ, vào nước, v.v.).",
+
+    "titleSmall4": "4. Chính Sách Hoàn Tiền",
+    "content4_1": "Nếu sản phẩm không thể đổi trả được, DH Mobile sẽ hoàn tiền theo hình thức chuyển khoản hoặc hoàn tiền tại cửa hàng.",
+
+    "footer": "Mọi thắc mắc xin liên hệ hotline: 1900 1234 hoặc đến trực tiếp cửa hàng DH Mobile."
+  },
+  "deliveryPolicy": {
+    "title": "Chính Sách Giao Hàng",
+    "intro": "DH Mobile cam kết giao hàng nhanh chóng và an toàn đến tay khách hàng. Dưới đây là các điều khoản về chính sách giao hàng:",
+
+    "titleSmall1": "1. Phương Thức Giao Hàng",
+    "content1_1": "Giao hàng tận nơi qua dịch vụ chuyển phát nhanh.",
+    "content1_2": "Giao hàng tại cửa hàng DH Mobile theo yêu cầu của khách hàng.",
+
+    "titleSmall2": "2. Thời Gian Giao Hàng",
+    "content2_1": "Đơn hàng trong nội thành: Giao trong vòng 1-2 ngày làm việc.",
+    "content2_2": "Đơn hàng ngoài thành: Giao trong vòng 3-5 ngày làm việc.",
+    "content2_3": "Thời gian giao hàng có thể thay đổi tùy vào khu vực và tình trạng đơn hàng.",
+
+    "titleSmall3": "3. Phí Giao Hàng",
+    "content3_1": "Phí giao hàng sẽ được tính dựa trên khu vực và trọng lượng của đơn hàng. Phí giao hàng sẽ được thông báo rõ ràng trước khi khách hàng thanh toán.",
+
+    "titleSmall4": "4. Chính Sách Giao Hàng Miễn Phí",
+    "content4_1": "DH Mobile miễn phí giao hàng cho đơn hàng có giá trị trên 1,000,000 VNĐ hoặc khi có các chương trình khuyến mãi đặc biệt.",
+
+    "titleSmall5": "5. Trường Hợp Hủy Đơn Hàng",
+    "content5_1": "Khách hàng có thể hủy đơn hàng trước khi sản phẩm được giao đi.",
+    "content5_2": "Đơn hàng đã giao không thể hủy trừ khi có lỗi từ phía DH Mobile.",
+
+    "footer": "Mọi thắc mắc xin liên hệ hotline: 1900 1234 hoặc đến trực tiếp cửa hàng DH Mobile."
+  },
+  "checkimei": {
+    "badge": "Kiểm tra thông tin",
+    "title": {
+      "line1": "XÁC MINH",
+      "line2": "THÔNG TIN THIẾT BỊ",
+      "highlight": "NHANH CHÓNG"
+    },
+    "description": "Chúng tôi cung cấp giải pháp tối ưu cho nhu cầu di động của bạn. Khám phá những dịch vụ chất lượng và hỗ trợ tận tâm từ DH Mobile.",
+    "searchPlaceholder": "Tìm kiếm...",
+    "review": "Kiểm tra IMEI nhanh chóng và chính xác trên DH Mobile.",
+    "result": {
+      "model": "iPhone 12 64GB White",
+      "blacklist": "GSMA Blacklist Status",
+      "icloud": "iCloud Lock / iCloud Status",
+      "icloudCheck": "Kiểm tra tại đây",
+      "simlock": "Carrier/SIM Lock",
+      "simlockCheck": "Bấm để kiểm tra khoá mạng!",
+      "provider": "Kết quả cung cấp bởi",
+      "timestamp": "Thời gian kiểm tra"
+    }
+  },
+  "shoppingCart": {
+    "title": "Giỏ Hàng",
+    "continueShopping": "Tiếp tục mua sắm",
+    "delete": "Xóa",
+    "discountCode": "Mã giảm giá",
+    "discountPlaceholder": "Nhập mã giảm giá của bạn...",
+    "apply": "Áp dụng",
+    "cartTotal": "Tổng giỏ hàng",
+    "discount": "Mã giảm giá",
+    "totalPrice": "Tổng tiền",
+    "checkout": "Tiến hành thanh toán"
+  },
+  "tableHeaders": {
+    "product": "Sản Phẩm",
+    "quantity": "Số Lượng",
+    "color": "Màu sắc",
+    "version": "Phiên bản",
+    "totalPrice": "Tổng tiền"
+  },
+  "checkout": {
+    "title": "Thanh Toán",
+    "titleChange": "Thay Đổi Thông Tin Thanh Toán",
+    "enterInfo": "Vui lòng nhập thông tin thanh toán",
+    "checkInfo": "Kiểm tra thông tin thanh toán",
+    "fullName": "Họ tên",
+    "phone": "Số điện thoại",
+    "ward": "Phường/Xã",
+    "district": "Quận/Huyện",
+    "city": "Tỉnh/Thành Phố",
+    "addressDetail": "Địa chỉ cụ thể",
+    "changeAddress": "Thay đổi địa chỉ mua hàng",
+    "backAddress": "Quay lại trang thanh toán",
+    "payOnDelivery": "Thanh Toán khi nhận hàng",
+    "payViaVNPAY": "Thanh Toán qua VNPAY",
+    "cartTotal": "TỔNG GIỎ HÀNG",
+    "product": "Sản phẩm",
+    "quantity": "Số lượng",
+    "totalPrice": "Tổng tiền",
+    "discount": "Mã giảm giá",
+    "totalMoney": "Tổng tiền",
+    "payNow": "THANH TOÁN"
+  },
+  "breadcrumb": {
+    "home": "Trang chủ",
+    "cart": "Giỏ hàng"
+  },
+  "thanksYou": {
+    "paymentSuccess": "Thanh toán thành công",
+    "thankYouMessage": "Cảm ơn bạn đã đặt hàng tại cửa hàng của chúng tôi!",
+    "thankYouMessage2": "Đơn hàng của bạn đã được xác nhận và sẽ sớm được giao đến bạn.",
+    "backToHome": "Trở lại trang chủ",
+    "trackOrder": "Theo dõi đơn hàng"
+  },
+  "profile": {
+    "title": "Hồ Sơ Cá Nhân",
+    "home": "Trang chủ",
+    "editProfile": "Chỉnh sửa",
+    "introduction": "Giới thiệu",
+    "description": "Xin chào",
+    "personalInfo": "Thông tin cá nhân",
+    "personalInformations": {
+      "name": "Họ tên:",
+      "phone": "Số điện thoại:",
+      "email": "Email:",
+      "hometown": "Quê quán:"
+    },
+    "features": "Các tính năng",
+    "featuresList": {
+      "adminLogin": "Đăng nhập vào admin",
+      "favoriteProducts": "Sản phẩm đã thích",
+      "orders": "Đơn hàng",
+      "logout": "Đăng xuất"
+    },
+    "statisticals": {
+      "orders": "Đơn hàng của bạn",
+      "wallet": "Số dư ví",
+      "likedProducts": "Sản phẩm đã thích"
+    },
+    "orderStats": "Theo thống kê bạn đã sử dụng",
+    "orderHistoryTitle": "Lịch sử mua hàng",
+    "seeAll": "Xem tất cả →"
+  },
+  "orderHistory": {
+    "orderCode": "Mã đơn hàng",
+    "orderName": "Tên đơn hàng",
+    "price": "Giá tiền",
+    "address": "Địa chỉ",
+    "paymentMethod": "Phương thức thanh toán",
+    "status": "Trạng thái",
+    "detail": "Chi tiết",
+    "viewDetail": "Xem chi tiết"
+  },
+  "breadcrumbOrder": {
+    "breadcrumbHeader": "Lịch Sử Mua Hàng"
+  },
+  "orderDetail": {
+    "image": "Hình ảnh",
+    "title": "Chi tiết đơn hàng",
+    "home": "Trang chủ",
+    "orderList": "Đơn hàng",
+    "order": "Đơn hàng",
+    "orderDate": "Ngày đặt hàng",
+    "info": "Thông tin đặt hàng",
+    "receiver": "Người nhận",
+    "phone": "Số điện thoại",
+    "address": "Địa chỉ",
+    "paymentMethod": "Phương thức thanh toán",
+    "cod": "Thanh toán khi nhận hàng (COD)",
+    "note": "Ghi chú",
+    "productDetail": "Chi tiết sản phẩm",
+    "product": "Tên sản phẩm",
+    "quantity": "Số lượng",
+    "color": "Màu sắc",
+    "version": "Phiên bản",
+    "unitPrice": "Đơn giá",
+    "totalPrice": "Tổng tiền",
+    "total": "Tổng cộng:",
+    "back": "Quay lại lịch sử mua hàng ",
+    "status": {
+      "pending": "Chờ xác nhận",
+      "confirmed": "Đã xác nhận",
+      "waitingPickup": "Chờ lấy hàng",
+      "delivering": "Đang giao hàng",
+      "delivered": "Giao hàng thành công"
+    }
+  },
+  "auth": {
+    "titleLogin": "Chào mừng bạn đến DH Moblie, hãy đăng nhập nhé!",
+    "titleRegister": "Chào mừng bạn đến DH Moblie, hãy đăng ký nhé!",
+    "register": "Bạn chưa có tài khoản?",
+    "forgot_password": "Quên mật khẩu",
+    "login_button": "Đăng nhập",
+    "password": "Mật khẩu",
+    "username": "Họ tên",
+    "login": "Bạn đã có tài khoản?",
+    "newPassword": "Mật khẩu mới",
+    "confirmPassword": "Mật khẩu mới",
+    "register_button": "Đăng ký",
+    "send": "Gửi",
+    "loginNotificationSuccess": "Đăng nhập thành công! Chào mừng bạn trở lại.",
+    "loginNotificationError": "Email hoặc mật khẩu không chính xác. Vui lòng thử lại.",
+    "registerNotificationSuccess": "Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.",
+    "registerNotificationError": "Tài khoản này đã được đăng ký. Vui lòng sử dụng email khác.",
+    "forgotPasswordNotificationSucces": "Vui lòng kiểm tra email để lấy lại mật khẩu.",
+    "forgotPasswordNotificationError": "Email bạn nhập không tồn tại trong hệ thống.",
+    "changePasswordNotificationSuccess": "Đặt lại mật khẩu thành công! Bạn có thể đăng nhập ngay bây giờ.",
+    "validation": {
+      "emailRequired": "Không được bỏ trống Email",
+      "emailInvalid": "Địa chỉ Email không hợp lệ",
+      "passwordRequired": "Không được bỏ trống Mật Khẩu",
+      "passwordInvalid": "Mật khẩu 8–16 ký tự, có chữ hoa, số, ký tự đặc biệt",
+      "usernameRequired": "Không được bỏ trống Họ tên",
+      "usernameMinLength": "Họ tên ít nhất 3 kí tự",
+      "newPasswordRequired": "Không được bỏ trống Mật Khẩu Mới",
+      "newPasswordInvalid": "Mật khẩu 8–16 ký tự, có chữ hoa, số, ký tự đặc biệt",
+      "confirmPasswordRequired": "Không được bỏ trống Xác Nhận Mật Khẩu",
+      "confirmPasswordInvalid": "Mật khẩu không khớp",
+      "newPasswordCannotMatchOld": "Mật khẩu mới không được trùng mật khẩu cũ"
+    }
   }
 }

@@ -57,6 +57,309 @@
     "all": "All",
     "addedToFavorites": "Added to Favorites",
     "addedToCart": "Added to Cart",
-    "removeFavorites": "Removed from Favorites"
+    "removeFavorites": "Removed from Favorites",
+    "errorSpecialCharacters": "Special characters are not allowed",
+    "errorMin": "The minimum value is 1"
+  },
+  "blog": {
+    "poster": "Posted by"
+  },
+  "chatBot": {
+    "chat": "Chat",
+    "message": "Type your message..."
+  },
+  "breadcrumbProductDetail": {
+    "breadcrumbHeader": "Product Details",
+    "breadcrumbTitleHome": "Home",
+    "breadcrumbTitleProduct": "Products",
+    "breadcrumbTitleMain": "Product Details"
+  },
+  "productDetail": {
+    "selectVersion": "Select Version",
+    "selectColor": "Select Color",
+    "addToFavorites": "Add to Favorites",
+    "describe": "Description",
+    "parameter": "Specifications",
+    "comment": "Comments"
+  },
+  "breadcrumbVoucher": {
+    "breadcrumbHeader": "Vouchers",
+    "breadcrumbTitleHome": "Home",
+    "breadcrumbTitleMain": "Vouchers",
+    "success": "Voucher code copied",
+    "err": "Error copying:"
+  },
+  "introduce": {
+    "title": "Introduction to DH Mobile",
+    "smallTitle": "DH Mobile is a genuine smartphone retail system with a mission to deliver high-quality technology products, dedicated customer service, and a convenient, transparent shopping experience for Vietnamese consumers.",
+    "smallTitle2": "Founded with the desire to bridge the gap between advanced technology and users, DH Mobile always upholds 'Trust' as the guiding principle in all business activities. We understand that each phone is not just a communication tool, but a means to connect with the world, to study, work, and be entertained every day.",
+    "titleCard1": "Genuine Products – Guaranteed Quality",
+    "descCard1": "All products at DH Mobile are 100% genuine, with clear origin and full VAT invoices and electronic warranty. We are committed to never selling hand-carried goods, floating stock, or low-quality products. Each item delivered to customers is carefully inspected to ensure it remains sealed, intact, and includes all original accessories from the manufacturer.",
+    "titleCard2": "Dedicated Customer Service",
+    "descCard2": "DH Mobile has built a team of professional consultants, well-trained to assist customers in every situation – from product recommendations to technical support, warranty processing, and complaint resolution. We believe that customer satisfaction comes not only from quality products but also from thoughtful and attentive service.",
+    "titleCard3": "Transparent Policies – Clear After-Sales Support",
+    "descCard3": "At DH Mobile, all policies on returns, warranties, installment plans, and promotions are clearly published on our website and in-store systems. Customers can easily look up information, understand their rights, and receive prompt assistance. Especially, we offer a '1-for-1 exchange within 7 days' policy for manufacturer defects, along with extended warranty and lifetime technical support.",
+    "titleCard4": "Vision and Mission",
+    "descCard4": "DH Mobile aims to become the most trusted smartphone retail chain in Vietnam. We don't just sell phones – we accompany users on their journey to explore technology. Our mission is to deliver sustainable value, where customers always feel secure, trusted, and satisfied when choosing DH Mobile.",
+    "titleCard5": "Thank You to Our Valued Customers",
+    "descCard5": "DH Mobile sincerely thanks our valued customers for their trust and support throughout the years. Every order, every piece of feedback, and every return visit is the motivation for us to improve, grow, and serve better every day."
+  },
+
+  "guaranteePolicy": {
+    "title": "Warranty Policy",
+    "intro": "DH Mobile is committed to providing customers with high-quality products and reputable after-sales service. Below are the terms of our warranty policy:",
+
+    "titleSmall1": "1. Warranty Period",
+    "content1": "New phones: 12-month official manufacturer warranty.",
+    "content2": "Like-new phones (99%): 6-month DH Mobile warranty.",
+    "content3": "Included accessories: 1-month warranty (if applicable).",
+
+    "titleSmall2": "2. Warranty Conditions",
+    "content2_1": "Product must be within the warranty period and have a warranty seal/card.",
+    "content2_2": "Technical faults caused by the manufacturer (not by external impact).",
+    "content2_3": "No hardware interference or disassembly outside authorized service centers.",
+
+    "titleSmall3": "3. Warranty Exclusions",
+    "content3_1": "Product damaged by dropping, water, or misuse (causing fire/explosion).",
+    "content3_2": "Missing warranty seal/card or mismatched serial number.",
+    "content3_3": "Unauthorized repairs not approved by DH Mobile.",
+
+    "titleSmall4": "4. Post-Warranty Support",
+    "content4_1": "After the warranty period, DH Mobile still offers repair services at a preferential cost.",
+
+    "footer": "For inquiries, please contact our hotline: 1900 1234 or visit any DH Mobile store directly."
+  },
+  "returnPolicy": {
+    "title": "Return Policy",
+    "intro": "DH Mobile is committed to protecting customers' rights with a flexible return policy. Below are the terms and conditions:",
+
+    "titleSmall1": "1. Return Conditions",
+    "content1_1": "The product must be intact and show no signs of use.",
+    "content1_2": "The product must be accompanied by a purchase invoice and warranty seal.",
+    "content1_3": "Returns must be made within 7 days from the date of purchase.",
+
+    "titleSmall2": "2. Return Process",
+    "content2_1": "Contact DH Mobile via hotline or visit the store.",
+    "content2_2": "Provide the purchase invoice and reason for the return.",
+    "content2_3": "Wait for the return to be processed within 3–5 working days.",
+
+    "titleSmall3": "3. Non-returnable Conditions",
+    "content3_1": "The product has been used, scratched, or damaged due to user error.",
+    "content3_2": "The product is missing the invoice or warranty seal.",
+    "content3_3": "The product is damaged due to external impact (dropped, water damage, etc.).",
+
+    "titleSmall4": "4. Refund Policy",
+    "content4_1": "If the product cannot be returned, DH Mobile will issue a refund via bank transfer or in-store refund.",
+
+    "footer": "For any questions, please contact our hotline: 1900 1234 or visit DH Mobile store directly."
+  },
+  "deliveryPolicy": {
+    "title": "Delivery Policy",
+    "intro": "DH Mobile is committed to fast and secure delivery to customers. Below are the terms of our delivery policy:",
+
+    "titleSmall1": "1. Delivery Methods",
+    "content1_1": "Home delivery via express shipping service.",
+    "content1_2": "In-store pickup at DH Mobile upon customer request.",
+
+    "titleSmall2": "2. Delivery Time",
+    "content2_1": "Orders within the city: Delivered within 1–2 working days.",
+    "content2_2": "Orders outside the city: Delivered within 3–5 working days.",
+    "content2_3": "Delivery time may vary depending on location and order status.",
+
+    "titleSmall3": "3. Delivery Fees",
+    "content3_1": "Delivery fees are calculated based on the delivery area and order weight. The fees will be clearly communicated before payment.",
+
+    "titleSmall4": "4. Free Delivery Policy",
+    "content4_1": "DH Mobile offers free delivery for orders valued over 1,000,000 VND or during special promotional programs.",
+
+    "titleSmall5": "5. Order Cancellation",
+    "content5_1": "Customers may cancel their order before it is shipped.",
+    "content5_2": "Shipped orders cannot be canceled unless the issue is caused by DH Mobile.",
+
+    "footer": "For any questions, please contact our hotline: 1900 1234 or visit DH Mobile store directly."
+  },
+  "checkimei": {
+    "badge": "Check Info",
+    "title": {
+      "line1": "VERIFY",
+      "line2": "DEVICE INFORMATION",
+      "highlight": "FAST"
+    },
+    "description": "We provide the optimal solution for your mobile needs. Discover high-quality services and dedicated support from DH Mobile.",
+    "searchPlaceholder": "Search...",
+    "review": "Quick and accurate IMEI check on DH Mobile.",
+    "result": {
+      "model": "iPhone 12 64GB White",
+      "blacklist": "GSMA Blacklist Status",
+      "icloud": "iCloud Lock / iCloud Status",
+      "icloudCheck": "Check here",
+      "simlock": "Carrier/SIM Lock",
+      "simlockCheck": "Click to check SIM lock status!",
+      "provider": "Results provided by",
+      "timestamp": "Check time"
+    }
+  },
+  "shoppingCart": {
+    "title": "Shopping Cart",
+    "continueShopping": "Continue Shopping",
+    "delete": "Delete",
+    "discountCode": "Discount Code",
+    "discountPlaceholder": "Enter your discount code...",
+    "apply": "Apply",
+    "cartTotal": "Cart Total",
+    "discount": "Discount",
+    "totalPrice": "Total Price",
+    "checkout": "Proceed to Checkout"
+  },
+  "tableHeaders": {
+    "product": "Product",
+    "quantity": "Quantity",
+    "color": "Color",
+    "version": "Version",
+    "totalPrice": "Total Price"
+  },
+  "checkout": {
+    "checkInfo": "Verify payment information",
+    "backAddress": "Back to Checkout",
+    "titleChange": "Change Payment Information",
+    "title": "Checkout",
+    "enterInfo": "Please enter your payment information",
+    "fullName": "Full Name",
+    "phone": "Phone Number",
+    "ward": "Ward/Commune",
+    "district": "District",
+    "city": "City/Province",
+    "addressDetail": "Detailed Address",
+    "changeAddress": "Change Shipping Address",
+    "payOnDelivery": "Pay on Delivery",
+    "payViaVNPAY": "Pay via VNPAY",
+    "cartTotal": "CART TOTAL",
+    "product": "Product",
+    "quantity": "Quantity",
+    "totalPrice": "Total Price",
+    "discount": "Discount Code",
+    "totalMoney": "Total Amount",
+    "payNow": "PAY NOW"
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "cart": "Shopping Cart"
+  },
+  "thanksYou": {
+    "paymentSuccess": "Payment Successful",
+    "thankYouMessage": "Thank you for ordering from our store!",
+    "thankYouMessage2": "Your order has been confirmed and will be delivered to you soon.",
+    "backToHome": "Back to Home",
+    "trackOrder": "Track Order"
+  },
+  "profile": {
+    "title": "Personal Profile",
+    "home": "Home",
+    "editProfile": "Edit",
+    "introduction": "Introduction",
+    "description": "Hello",
+    "personalInfo": "Personal Information",
+    "personalInformations": {
+      "name": "Full Name:",
+      "phone": "Phone Number:",
+      "email": "Email:",
+      "hometown": "Hometown:"
+    },
+    "features": "Features",
+    "featuresList": {
+      "adminLogin": "Admin Login",
+      "favoriteProducts": "Favorite Products",
+      "orders": "Orders",
+      "logout": "Log Out"
+    },
+    "statisticals": {
+      "orders": "Your Orders",
+      "wallet": "Wallet Balance",
+      "likedProducts": "Liked Products"
+    },
+    "orderStats": "Based on your usage statistics",
+    "orderHistoryTitle": "Purchase History",
+    "seeAll": "See All →"
+  },
+  "breadcrumbLiked": {
+    "breadcrumbHeader": "Favorite Products"
+  },
+  "orderHistory": {
+    "orderCode": "Order Code",
+    "orderName": "Order Name",
+    "price": "Price",
+    "address": "Address",
+    "paymentMethod": "Payment Method",
+    "status": "Status",
+    "detail": "Detail",
+    "viewDetail": "View Details"
+  },
+  "breadcrumbOrder": {
+    "breadcrumbHeader": "Purchase History"
+  },
+  "orderDetail": {
+    "image": "Image",
+    "title": "Order Details",
+    "home": "Home",
+    "orderList": "Orders",
+    "order": "Order",
+    "orderDate": "Order Date",
+    "info": "Order Information",
+    "receiver": "Receiver",
+    "phone": "Phone Number",
+    "address": "Address",
+    "paymentMethod": "Payment Method",
+    "cod": "Cash on Delivery (COD)",
+    "note": "Note",
+    "productDetail": "Product Details",
+    "product": "Product name",
+    "quantity": "Quantity",
+    "color": "Color",
+    "version": "Version",
+    "unitPrice": "Unit Price",
+    "totalPrice": "Total Price",
+    "back": "Back to Purchase History",
+    "total": "Total:",
+    "status": {
+      "pending": "Pending Confirmation",
+      "confirmed": "Confirmed",
+      "waitingPickup": "Awaiting Pickup ",
+      "delivering": "Delivering",
+      "delivered": "Delivered"
+    }
+  },
+  "auth": {
+    "titleLogin": "Welcome to DH Mobile, please Login!",
+    "titleRegister": "Welcome to DH Mobile, please Register!",
+    "register": "Don't have an account?",
+    "forgot_password": "Forgot Password",
+    "login_button": "Log In",
+    "password": "Password",
+    "username": "Full Name",
+    "login": "Have an account?",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "register_button": "Register",
+    "send": "Send",
+    "loginNotificationSuccess": "Login successful! Welcome back.",
+    "loginNotificationError": "Incorrect email or password. Please try again.",
+    "registerNotificationSuccess": "Registration successful! You can log in now.",
+    "registerNotificationError": "This account has already been registered. Please use a different email.",
+    "forgotPasswordNotificationSucces": "Please check your email to reset your password.",
+    "forgotPasswordNotificationError": "The email you entered does not exist in our system.",
+    "changePasswordNotificationSuccess": "Password reset successful! You can log in now.",
+    "validation": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email address",
+      "passwordRequired": "Password is required",
+      "passwordInvalid": "Password: 8–16 chars, include uppercase, digit & special.",
+      "usernameRequired": "Full name is required",
+      "usernameMinLength": "Full name must be at least 3 characters",
+      "newPasswordRequired": "New password is required",
+      "newPasswordInvalid": "Password: 8–16 chars, include uppercase, digit & special.",
+      "confirmPasswordRequired": "Confirm password is required",
+      "confirmPasswordInvalid": "Passwords do not match",
+      "newPasswordCannotMatchOld": "New password must not be the same as the old password"
+    }
   }
 }

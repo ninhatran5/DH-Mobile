@@ -35,14 +35,14 @@ export default function CardProduct({ title }) {
   ];
   const addToFavorites = () => {
     console.log("added");
-    toast.success("Đã thêm vào yêu thích");
+    toast.success(t("products.addedToFavorites"));
   };
-  const nextProductDetail = () => {
-    navigate("/product-detail/:id");
+  const nextProductDetail = (id) => {
+    navigate(`/product-detail/${id}`);
   };
   const addToShoppingCart = () => {
     console.log("added");
-    toast.success("Đã thêm vào giỏ hàng");
+    toast.success(t("products.addedToCart"));
     navigate("/shopping-cart");
   };
 
@@ -104,7 +104,7 @@ export default function CardProduct({ title }) {
                       <a title={product.title}>
                         <img
                           style={{ cursor: "pointer" }}
-                          onClick={nextProductDetail}
+                          onClick={() => nextProductDetail(product.id)}
                           src={product.image}
                           className="tab-image"
                           alt={product.title}
@@ -113,7 +113,7 @@ export default function CardProduct({ title }) {
                     </figure>
                     <h3
                       style={{ cursor: "pointer" }}
-                      onClick={nextProductDetail}
+                      onClick={() => nextProductDetail(product.id)}
                     >
                       {product.title}
                     </h3>
@@ -124,7 +124,7 @@ export default function CardProduct({ title }) {
                         onClick={addToShoppingCart}
                         className="nav-link"
                       >
-                        Add to Cart
+                        {t("products.addToCart")}
                       </a>
                     </div>
                   </div>

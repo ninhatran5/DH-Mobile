@@ -1,13 +1,15 @@
+import { useTranslation } from "react-i18next";
 import Breadcrumb from "../components/Breadcrumb";
 import Products from "../components/Products";
 
 const FavoriteProducts = () => {
+  const { t } = useTranslation();
   return (
     <>
       <Breadcrumb
-        title={"Sản Phẩm Yêu Thích"}
-        mainItem={"Trang chủ"}
-        secondaryItem={"Sản phẩm bạn đã thích"}
+        title={t('breadcrumbLiked.breadcrumbHeader')}
+        mainItem={t('breadcrumbVoucher.breadcrumbTitleHome')}
+        secondaryItem={t('breadcrumbLiked.breadcrumbHeader')}
         linkMainItem={"/"}
         showMainItem2={false}
       />
