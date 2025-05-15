@@ -222,93 +222,7 @@ export default function Header() {
         {/* <div className="preloader-wrapper">
           <div className="preloader"></div>
         </div> */}
-        <div
-          className="offcanvas offcanvas-end"
-          data-bs-scroll="true"
-          tabIndex={-1}
-          id="offcanvasSearch"
-          aria-labelledby="Search"
-        >
-          <div className="offcanvas-header justify-content-center">
-            <button
-              type="button"
-              className="btn-close"
-              data-bs-dismiss="offcanvas"
-              aria-label="Close"
-            />
-          </div>
-          <div className="offcanvas-body">
-            <div className="order-md-last">
-              <h4 className="d-flex justify-content-between align-items-center mb-3">
-                <span className="text-primary">{t("header.searchIcon")}</span>
-              </h4>
-              <form
-                role="search"
-                className="d-flex mt-3 gap-0"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleSearch();
-                }}
-              >
-                <input
-                  className="header_search form-control rounded-start rounded-0 bg-light"
-                  type="text"
-                  value={searchItem}
-                  onChange={changeInputSearch}
-                  onKeyDown={handleEnterSearch}
-                  placeholder={t("header.search")}
-                />
-                <button
-                  className="btn btn-dark rounded-end rounded-0"
-                  type="submit"
-                >
-                  Search
-                </button>
-              </form>
-              {/* Show search results in offcanvas */}
-              {searchResults.length > 0 && (
-                <ul className="search-results list-group mt-3">
-                  {searchResults.map((product) => (
-                    <li
-                      key={product.id}
-                      className="list-group-item list-group-item-action"
-                      onClick={() => {
-                        setSearchResults([]);
-                        setSearchItem("");
-                        handleNextProductDetail(product.id);
-                      }}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <div className="d-flex align-items-center gap-2">
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            objectFit: "cover",
-                          }}
-                        />
-                        <div>
-                          <div className="fw-bold">{product.name}</div>
-                          <div style={{ color: "#e74c3c" }} className="fw-bold">
-                            {product.price}
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {searchItem.trim() !== "" && searchResults.length === 0 && (
-                <div className="no-results mt-3 p-2">
-                  Không tìm thấy sản phẩm
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-        <header>
+        <header className={searchResults.length > 0 ? "position-fixed w-100 bg-white" : ""} style={searchResults.length > 0 ? { top: 0, left: 0, zIndex: 1000 } : {}}>
           <div className="container-fluid">
             <div className="row py-3 border-bottom">
               <div className="col-sm-4 col-lg-3 text-center text-sm-start">
@@ -522,12 +436,105 @@ export default function Header() {
             </div>
           </div>
         </header>
+        {searchResults.length > 0 && <div style={{ height: "180px" }}></div>}
+        <div
+          className="offcanvas offcanvas-end"
+          data-bs-scroll="true"
+          tabIndex={-1}
+          id="offcanvasSearch"
+          aria-labelledby="Search"
+        >
+          <div className="offcanvas-header justify-content-center">
+            <button
+              type="button"
+              className="btn-close"
+              data-bs-dismiss="offcanvas"
+              aria-label="Close"
+            />
+          </div>
+          <div className="offcanvas-body">
+            <div className="order-md-last">
+              <h4 className="d-flex justify-content-between align-items-center mb-3">
+                <span className="text-primary">{t("header.searchIcon")}</span>
+              </h4>
+              <form
+                role="search"
+                className="d-flex mt-3 gap-0"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSearch();
+                }}
+              >
+                <input
+                  className="header_search form-control rounded-start rounded-0 bg-light"
+                  type="text"
+                  value={searchItem}
+                  onChange={changeInputSearch}
+                  onKeyDown={handleEnterSearch}
+                  placeholder={t("header.search")}
+                />
+                <button
+                  className="btn btn-dark rounded-end rounded-0"
+                  type="submit"
+                >
+                  Search
+                </button>
+              </form>
+              {/* Show search results in offcanvas */}
+              {searchResults.length > 0 && (
+                <ul className="search-results list-group mt-3">
+                  {searchResults.map((product) => (
+                    <li
+                      key={product.id}
+                      className="list-group-item list-group-item-action"
+                      onClick={() => {
+                        setSearchResults([]);
+                        setSearchItem("");
+                        handleNextProductDetail(product.id);
+                      }}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <div className="d-flex align-items-center gap-2">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            objectFit: "cover",
+                          }}
+                        />
+                        <div>
+                          <div className="fw-bold">{product.name}</div>
+                          <div style={{ color: "#e74c3c" }} className="fw-bold">
+                            {product.price}
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {searchItem.trim() !== "" && searchResults.length === 0 && (
+                <div className="no-results mt-3 p-2">
+                  Không tìm thấy sản phẩm
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
       {/* Desktop search results */}
       {searchResults.length > 0 && (
         <div
-          className="search-results position-absolute bg-white border rounded w-100 d-none d-lg-block p-3"
-          style={{ height: "100vh", overflowY: "auto", zIndex: 10 }}
+          className="search-results position-fixed bg-white border rounded w-100 d-none d-lg-block p-3"
+          style={{ 
+            height: "calc(100vh - 180px)", 
+            top: "180px",
+            left: 0,
+            overflowY: "auto", 
+            zIndex: 999
+          }}
         >
           <div className="container-fluid">
             <div className="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
@@ -593,8 +600,14 @@ export default function Header() {
 
       {searchItem.trim() !== "" && searchResults.length === 0 && (
         <div
-          className="no-results position-absolute bg-white border rounded w-100 p-2 d-none d-lg-block"
-          style={{ height: "100vh", overflowY: "auto", zIndex: 1000 }}
+          className="no-results position-fixed bg-white border rounded w-100 p-2 d-none d-lg-block"
+          style={{ 
+            height: "calc(100vh - 180px)", 
+            top: "180px",
+            left: 0,
+            overflowY: "auto", 
+            zIndex: 999
+          }}
         >
           <div className="container-fluid">
             <div className="text-center mt-5">

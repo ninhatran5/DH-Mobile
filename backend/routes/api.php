@@ -8,7 +8,8 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Middleware\CheckAdmin;
 
-// API Auth     
+// API Auth  
+// http://127.0.0.1:8000/api  
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -23,6 +24,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 // API Banner
+// http://127.0.0.1:8000/api/banners
 Route::get('/getbanners', [BannerController::class, 'index']); // lấy toàn bộ danh sách banner
 Route::get('/getbanners/{id}', [BannerController::class, 'show']); // lấy banner theo id
 Route::middleware('auth:sanctum')->group(function () {
@@ -31,9 +33,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 // API Category
+// http://127.0.0.1:8000/api/categories
 Route::middleware('auth:sanctum')->prefix('categories')->controller(CategoryController::class)->group(function () {
     Route::post('/', 'store');                    // Thêm danh mục
-    Route::post('/{id}', 'update');               // Cập nhật danh mục theo ID
+    Route::put('/{id}', 'update');               // Cập nhật danh mục theo ID
     Route::get('/trashed',  'trashed');         // Lấy danh sách danh mục đã xóa mềm
     Route::delete('/{id}', 'destroy');           // Xóa mềm danh mục    
     Route::put('/restore/{id}', 'restore');      // Khôi phục danh mục đã xóa mềm
@@ -44,9 +47,10 @@ Route::get('categories/{id}', [CategoryController::class, 'show']); // lấy dan
 
 
 // Api Product
+// http://127.0.0.1:8000/api/products
 Route::middleware('auth:sanctum')->prefix('products')->controller(ProductController::class)->group(function () {
     Route::post('/', 'store');                    // Thêm sản phẩm
-    Route::post('/{id}', 'update');               // Cập nhật sản phẩm theo ID
+    Route::put('/{id}', 'update');               // Cập nhật sản phẩm theo ID
     Route::get('/trashed',  'trashed');         // Lấy danh sách sản phẩm đã xóa mềm
     Route::delete('/{id}', 'destroy');           // Xóa mềm sản phẩm
     Route::put('/restore/{id}', 'restore');      // Khôi phục sản phẩm đã xóa mềm
@@ -59,7 +63,7 @@ Route::get('products/{id}', [ProductController::class, 'show']); // lấy sản 
 // http://127.0.0.1:8000/api/attributes
 Route::middleware('auth:sanctum')->prefix('attributes')->controller(AttributeController::class)->group(function () {
     Route::post('/', 'store');                    // Thêm thuộc tính
-    Route::post('/{id}', 'update');               // Cập nhật thuộc tính theo ID
+    Route::put('/{id}', 'update');               // Cập nhật thuộc tính theo ID
     Route::get('/trashed',  'trashed');         // Lấy danh sách thuộc tính đã xóa mềm
     Route::delete('/{id}', 'destroy');           // Xóa mềm thuộc tính
     Route::put('/restore/{id}', 'restore');      // Khôi phục thuộc tính đã xóa mềm
