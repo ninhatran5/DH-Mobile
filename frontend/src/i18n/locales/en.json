@@ -57,6 +57,34 @@
     "all": "All",
     "addedToFavorites": "Added to Favorites",
     "addedToCart": "Added to Cart",
-    "removeFavorites": "Removed from Favorites"
+    "removeFavorites": "Removed from Favorites",
+    "errorSpecialCharacters": "Special characters are not allowed",
+    "errorMin": "The minimum value is 1"
+  },
+  "blog": {
+    "poster": "Posted by"
+  },
+  "chatBot": {
+    "chat": "Chat",
+    "message": "Type your message..."
+  },
+  "breadcrumbProductDetail": {
+    "breadcrumbHeader": "Product Details",
+    "breadcrumbTitleHome": "Home",
+    "breadcrumbTitleProduct": "Products",
+    "breadcrumbTitleMain": "Product Details"
+  },
+  "productDetail": {
+    "selectVersion": "Select Version",
+    "selectColor": "Select Color",
+    "addToFavorites": "Add to Favorites",
+    "describe": "Description",
+    "parameter": "Specifications",
+    "comment": "Comments"
+  },
+  "breadcrumbVoucher": {
+    "breadcrumbHeader": "Vouchers",
+    "breadcrumbTitleHome": "Home",
+    "breadcrumbTitleMain": "Vouchers"
   }
 }
