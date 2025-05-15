@@ -3,19 +3,27 @@ import { RiUserLine } from "react-icons/ri";
 import { CgSearch } from "react-icons/cg";
 import { IoMdHeartEmpty } from "react-icons/io";
 import { FiShoppingCart } from "react-icons/fi";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import VietNam from "../assets/images/vietnam.png";
 import Anh from "../assets/images/england.png";
 import "../assets/css/header.css";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import iphone from "../assets/images/iphone-16-pro-max.webp";
+import { FaRegHeart } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 export default function Header() {
   const location = useLocation();
   const { i18n } = useTranslation();
   const [searchItem, setSearchItem] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setSearchResults([]);
+    setSearchItem("");
+  }, [location]);
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
@@ -204,6 +212,10 @@ export default function Header() {
       handleSearch();
     }
   };
+
+  const handleNextProductDetail = (id) => {
+    navigate(`/product-detail/${id}`);
+  };
   return (
     <>
       <div>
@@ -225,22 +237,26 @@ export default function Header() {
               aria-label="Close"
             />
           </div>
-          {/* <div className="offcanvas-body">
+          <div className="offcanvas-body">
             <div className="order-md-last">
               <h4 className="d-flex justify-content-between align-items-center mb-3">
                 <span className="text-primary">{t("header.searchIcon")}</span>
               </h4>
               <form
                 role="search"
-                action="index.html"
-                method="get"
                 className="d-flex mt-3 gap-0"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSearch();
+                }}
               >
                 <input
                   className="header_search form-control rounded-start rounded-0 bg-light"
-                  type="email"
+                  type="text"
+                  value={searchItem}
+                  onChange={changeInputSearch}
+                  onKeyDown={handleEnterSearch}
                   placeholder={t("header.search")}
-                  aria-label="What are you looking for?"
                 />
                 <button
                   className="btn btn-dark rounded-end rounded-0"
@@ -249,8 +265,48 @@ export default function Header() {
                   Search
                 </button>
               </form>
+              {/* Show search results in offcanvas */}
+              {searchResults.length > 0 && (
+                <ul className="search-results list-group mt-3">
+                  {searchResults.map((product) => (
+                    <li
+                      key={product.id}
+                      className="list-group-item list-group-item-action"
+                      onClick={() => {
+                        setSearchResults([]);
+                        setSearchItem("");
+                        handleNextProductDetail(product.id);
+                      }}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <div className="d-flex align-items-center gap-2">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            objectFit: "cover",
+                          }}
+                        />
+                        <div>
+                          <div className="fw-bold">{product.name}</div>
+                          <div style={{ color: "#e74c3c" }} className="fw-bold">
+                            {product.price}
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {searchItem.trim() !== "" && searchResults.length === 0 && (
+                <div className="no-results mt-3 p-2">
+                  Không tìm thấy sản phẩm
+                </div>
+              )}
             </div>
-          </div> */}
+          </div>
         </div>
         <header>
           <div className="container-fluid">
@@ -311,21 +367,41 @@ export default function Header() {
                       key={item.id}
                       className={`${index > 1 ? "d-lg-none" : ""}`}
                     >
-                      <Link
-                        to={item.link}
-                        className="rounded-circle bg-light p-2 mx-1"
-                        style={{
-                          width: "40px",
-                          height: "40px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: 23,
-                          color: "black",
-                        }}
-                      >
-                        {item.icon}
-                      </Link>
+                      {item.id === 4 ? (
+                        <a
+                          href="#"
+                          className="rounded-circle bg-light p-2 mx-1 d-lg-none"
+                          data-bs-toggle="offcanvas"
+                          data-bs-target="#offcanvasSearch"
+                          style={{
+                            width: "40px",
+                            height: "40px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: 23,
+                            color: "black",
+                          }}
+                        >
+                          {item.icon}
+                        </a>
+                      ) : (
+                        <Link
+                          to={item.link}
+                          className="rounded-circle bg-light p-2 mx-1"
+                          style={{
+                            width: "40px",
+                            height: "40px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: 23,
+                            color: "black",
+                          }}
+                        >
+                          {item.icon}
+                        </Link>
+                      )}
                     </li>
                   ))}
 
@@ -447,35 +523,89 @@ export default function Header() {
           </div>
         </header>
       </div>
-      {/* Hiển thị kết quả tìm kiếm */}
+      {/* Desktop search results */}
       {searchResults.length > 0 && (
-        <ul
-          className="search-results list-group position-absolute bg-white border rounded w-100"
-          style={{ maxHeight: "200px", overflowY: "auto", zIndex: 1000 }}
+        <div
+          className="search-results position-absolute bg-white border rounded w-100 d-none d-lg-block p-3"
+          style={{ height: "100vh", overflowY: "auto", zIndex: 1000 }}
         >
-          {searchResults.map((product) => (
-            <li
-              key={product.id}
-              className="list-group-item list-group-item-action"
-              onClick={() => {
-                setSearchItem(product.name);
-                setSearchResults([]);
-              }}
-              style={{ cursor: "pointer" }}
-            >
-              {product.name}
-            </li>
-          ))}
-        </ul>
+          <div className="container-fluid">
+            <div className="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
+              {searchResults.map((product) => (
+                <div className="col" key={product.id}>
+                  <div className="product-item">
+                    <a
+                      onClick={() => {
+                        toast.success(t("products.addedToFavorites"));
+                      }}
+                      style={{ cursor: "pointer" }}
+                      className="btn-wishlist"
+                    >
+                      <FaRegHeart style={{ fontSize: 20 }} />
+                    </a>
+                    <figure>
+                      <Link
+                        to={`/product-detail/${product.id}`}
+                        title={product.name}
+                      >
+                        <img src={product.image} className="tab-image" />
+                      </Link>
+                    </figure>
+                    <h3>
+                      <Link
+                        to={`/product-detail/${product.id}`}
+                        onClick={() => {
+                          setSearchResults([]);
+                          setSearchItem("");
+                        }}
+                        style={{
+                          cursor: "pointer",
+                          color: "inherit",
+                          textDecoration: "none",
+                        }}
+                      >
+                        {product.name}
+                      </Link>
+                    </h3>
+                    <span className="price">{product.price}</span>
+                    <div className="d-flex align-items-center justify-content-between">
+                      <a
+                        onClick={() => {
+                          toast.success(t("products.addedToCart"));
+                          setSearchResults([]);
+                          setSearchItem("");
+                          navigate('/shopping-cart')
+                        }}
+                        style={{ cursor: "pointer" }}
+                        className="nav-link"
+                      >
+                        {t("products.addToCart")}
+                        <iconify-icon icon="uil:shopping-cart" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       )}
 
-      {/* Nếu không tìm thấy */}
       {searchItem.trim() !== "" && searchResults.length === 0 && (
         <div
-          className="no-results position-absolute bg-white border rounded w-100 p-2"
-          style={{ zIndex: 1000 }}
+          className="no-results position-absolute bg-white border rounded w-100 p-2 d-none d-lg-block"
+          style={{ height: "100vh", overflowY: "auto", zIndex: 1000 }}
         >
-          Không tìm thấy sản phẩm
+          <div className="container-fluid">
+            <div className="text-center mt-5">
+              <img
+                src="https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/assets/a60759ad1dabe909c46a817ecbf71878.png"
+                alt="No results"
+                style={{ width: "100px" }}
+              />
+              <h4 className="mt-4">{t("products.noProductFound")}</h4>
+            </div>
+          </div>
         </div>
       )}
     </>
