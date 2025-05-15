@@ -2,8 +2,11 @@ import { Link } from "react-router-dom";
 import "../assets/css/voucher.css";
 import Coupon from "../components/Coupon";
 import Breadcrumb from "../components/Breadcrumb";
+import { useTranslation } from "react-i18next";
 
 const Voucher = () => {
+  const { t } = useTranslation();
+
   const vouchers = [
     {
       id: 1,
@@ -30,9 +33,9 @@ const Voucher = () => {
   return (
     <>
       <Breadcrumb
-        title={"Mã Giảm Giá"}
-        mainItem={"Trang chủ"}
-        secondaryItem={"Mã giảm giá"}
+        title={t("breadcrumbVoucher.breadcrumbHeader")}
+        mainItem={t("breadcrumbVoucher.breadcrumbTitleHome")}
+        secondaryItem={t("breadcrumbVoucher.breadcrumbHeader")}
         linkMainItem={"/"}
         showMainItem2={false}
       />
