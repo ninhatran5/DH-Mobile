@@ -82,7 +82,10 @@ export default function Blogs({ showHeader = true, padding }) {
                     </div>
                   </div>
                   <div className="card-footer text-end">
-                    <small>Đăng bởi: {item.author}</small>
+                    <small>
+                      {" "}
+                      {t("blog.poster")}: {item.author}
+                    </small>
                   </div>
                 </article>
               </div>
