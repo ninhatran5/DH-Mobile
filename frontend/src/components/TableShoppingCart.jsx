@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import iphone from "../assets/images/iphone-16-pro-max.webp";
 import { MdOutlineNavigateNext } from "react-icons/md";
 import { GrFormPrevious } from "react-icons/gr";
+import { useTranslation } from "react-i18next";
 
 const TableShoppingCart = () => {
   const [cartItems, setCartItems] = useState([
@@ -36,6 +37,7 @@ const TableShoppingCart = () => {
   ]);
 
   const [selectAll, setSelectAll] = useState(false);
+  const { t } = useTranslation();
 
   const handleSelectAll = () => {
     const newValue = !selectAll;
@@ -105,11 +107,11 @@ const TableShoppingCart = () => {
               onChange={handleSelectAll}
             />
           </th>
-          <th>Sản Phẩm</th>
-          <th>Số Lượng</th>
-          <th>Màu sắc</th>
-          <th>Phiên bản</th>
-          <th>Tổng tiền</th>
+          <th>{t("tableHeaders.product")}</th>
+          <th>{t("tableHeaders.quantity")}</th>
+          <th>{t("tableHeaders.color")}</th>
+          <th>{t("tableHeaders.version")}</th>
+          <th>{t("tableHeaders.totalPrice")}</th>
           <th />
         </tr>
       </thead>

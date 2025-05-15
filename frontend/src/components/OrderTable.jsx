@@ -1,5 +1,6 @@
 import OrderHistory from "./OrderHistory";
 import Breadcrumb from "../components/Breadcrumb";
+import { useTranslation } from "react-i18next";
 
 const OrderTable = () => {
   const orders = [
@@ -49,12 +50,14 @@ const OrderTable = () => {
       status: "Đang giao hàng",
     },
   ];
+  const { t } = useTranslation();
+
   return (
     <>
       <Breadcrumb
-        title={"Lịch Sử Mua Hàng"}
-        mainItem={"Trang chủ"}
-        secondaryItem={"Lịch sử mua hàng"}
+        title={t("breadcrumbOrder.breadcrumbHeader")}
+        mainItem={t("header.home")}
+        secondaryItem={t("breadcrumbOrder.breadcrumbHeader")}
         linkMainItem={"/"}
         showMainItem2={false}
       />

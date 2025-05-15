@@ -2,8 +2,11 @@ import { Link } from "react-router-dom";
 import iphone from "../assets/images/iphone-16-pro-max.webp";
 import { IoReturnDownBack } from "react-icons/io5";
 import Breadcrumb from "../components/Breadcrumb";
+import { useTranslation } from "react-i18next";
 
 const ChangeCheckout = () => {
+  const { t } = useTranslation();
+
   const purchaseInformation = [
     {
       id: 1,
@@ -26,112 +29,49 @@ const ChangeCheckout = () => {
       id: 1,
       name: "Phường Tràng Tiền",
       value: "phuong-trang-tien",
-      districtId: 1, // Quận Hoàn Kiếm
+      districtId: 1,
     },
     {
       id: 2,
       name: "Phường Khâm Thiên",
       value: "phuong-kham-thien",
-      districtId: 2, // Quận Đống Đa
+      districtId: 2,
     },
     {
       id: 3,
       name: "Phường Bạch Đằng",
       value: "phuong-bach-dang",
-      districtId: 3, // Quận Hai Bà Trưng
+      districtId: 3,
     },
-    {
-      id: 4,
-      name: "Phường Nghĩa Đô",
-      value: "phuong-nghia-do",
-      districtId: 4, // Quận Cầu Giấy
-    },
-    {
-      id: 5,
-      name: "Phường Tứ Liên",
-      value: "phuong-tu-lien",
-      districtId: 5, // Quận Tây Hồ
-    },
-    {
-      id: 6,
-      name: "Phường Ngọc Lâm",
-      value: "phuong-ngoc-lam",
-      districtId: 6, // Quận Long Biên
-    },
-    {
-      id: 7,
-      name: "Phường Mộ Lao",
-      value: "phuong-mo-lao",
-      districtId: 7, // Quận Hà Đông
-    },
+    { id: 4, name: "Phường Nghĩa Đô", value: "phuong-nghia-do", districtId: 4 },
+    { id: 5, name: "Phường Tứ Liên", value: "phuong-tu-lien", districtId: 5 },
+    { id: 6, name: "Phường Ngọc Lâm", value: "phuong-ngoc-lam", districtId: 6 },
+    { id: 7, name: "Phường Mộ Lao", value: "phuong-mo-lao", districtId: 7 },
   ];
   const districts = [
-    {
-      id: 1,
-      name: "Quận Hoàn Kiếm",
-      value: "quan-hoan-kiem",
-    },
-    {
-      id: 2,
-      name: "Quận Đống Đa",
-      value: "quan-dong-da",
-    },
-    {
-      id: 3,
-      name: "Quận Hai Bà Trưng",
-      value: "quan-hai-ba-trung",
-    },
-    {
-      id: 4,
-      name: "Quận Cầu Giấy",
-      value: "quan-cau-giay",
-    },
-    {
-      id: 5,
-      name: "Quận Tây Hồ",
-      value: "quan-tay-ho",
-    },
-    {
-      id: 6,
-      name: "Quận Long Biên",
-      value: "quan-long-bien",
-    },
-    {
-      id: 7,
-      name: "Quận Hà Đông",
-      value: "quan-ha-dong",
-    },
+    { id: 1, name: "Quận Hoàn Kiếm", value: "quan-hoan-kiem" },
+    { id: 2, name: "Quận Đống Đa", value: "quan-dong-da" },
+    { id: 3, name: "Quận Hai Bà Trưng", value: "quan-hai-ba-trung" },
+    { id: 4, name: "Quận Cầu Giấy", value: "quan-cau-giay" },
+    { id: 5, name: "Quận Tây Hồ", value: "quan-tay-ho" },
+    { id: 6, name: "Quận Long Biên", value: "quan-long-bien" },
+    { id: 7, name: "Quận Hà Đông", value: "quan-ha-dong" },
   ];
 
   const cities = [
-    {
-      id: 1,
-      name: "Hà Nội",
-      value: "ha-noi",
-    },
-    {
-      id: 2,
-      name: "Hải Phòng",
-      value: "hai-phong",
-    },
-    {
-      id: 3,
-      name: "Đà Nẵng",
-      value: "da-nang",
-    },
-    {
-      id: 4,
-      name: "Hồ Chí Minh",
-      value: "ho-chi-minh",
-    },
+    { id: 1, name: "Hà Nội", value: "ha-noi" },
+    { id: 2, name: "Hải Phòng", value: "hai-phong" },
+    { id: 3, name: "Đà Nẵng", value: "da-nang" },
+    { id: 4, name: "Hồ Chí Minh", value: "ho-chi-minh" },
   ];
+
   return (
     <>
       <Breadcrumb
-        title={"Thay Đổi Thông Tin Thanh Toán"}
-        mainItem={"Trang chủ"}
-        mainItem2={"Giỏ hàng"}
-        secondaryItem={"Thanh toán"}
+        title={t("checkout.titleChange")}
+        mainItem={t("breadcrumb.home")}
+        mainItem2={t("breadcrumb.cart")}
+        secondaryItem={t("checkout.titleChange")}
         linkMainItem={"/"}
         linkMainItem2={"/shopping-cart"}
       />
@@ -141,14 +81,13 @@ const ChangeCheckout = () => {
             <form action="#">
               <div className="row">
                 <div className="col-lg-8 col-md-6 mb-5">
-                  <h5 className="checkout__title">
-                    Vui lòng nhập thông tin thanh toán
-                  </h5>
+                  <h5 className="checkout__title">{t("checkout.enterInfo")}</h5>
                   <div className="row">
                     <div className="col-lg-6">
                       <div className="checkout__input">
                         <p>
-                          Họ tên<span>*</span>
+                          {t("checkout.fullName")}
+                          <span>*</span>
                         </p>
                         <input type="text" />
                       </div>
@@ -156,7 +95,8 @@ const ChangeCheckout = () => {
                     <div className="col-lg-6">
                       <div className="checkout__input">
                         <p>
-                          Số điện thoại<span>*</span>
+                          {t("checkout.phone")}
+                          <span>*</span>
                         </p>
                         <input type="number" min={0} />
                       </div>
@@ -164,13 +104,14 @@ const ChangeCheckout = () => {
                   </div>
                   <div className="checkout__input">
                     <p>
-                      Phường/Xã<span>*</span>
+                      {t("checkout.ward")}
+                      <span>*</span>
                     </p>
                     <select
                       className="checkout_change_select form-select"
                       aria-label="Default select example"
                     >
-                      <option selected>Chọn phường/xã</option>
+                      <option selected>{t("checkout.ward")}</option>
                       {wards.map((item) => (
                         <option key={item.id} value={item.value}>
                           {item.name}
@@ -180,13 +121,14 @@ const ChangeCheckout = () => {
                   </div>
                   <div className="checkout__input">
                     <p>
-                      Quận/Huyện<span>*</span>
+                      {t("checkout.district")}
+                      <span>*</span>
                     </p>
                     <select
                       className="checkout_change_select form-select"
                       aria-label="Default select example"
                     >
-                      <option selected>Chọn quận/huyện</option>
+                      <option selected>{t("checkout.district")}</option>
                       {districts.map((item) => (
                         <option key={item.id} value={item.value}>
                           {item.name}
@@ -196,13 +138,14 @@ const ChangeCheckout = () => {
                   </div>
                   <div className="checkout__input">
                     <p>
-                      Tỉnh/Thành Phố<span>*</span>
+                      {t("checkout.city")}
+                      <span>*</span>
                     </p>
                     <select
                       className="checkout_change_select form-select"
                       aria-label="Default select example"
                     >
-                      <option selected>Chọn tỉnh/thành phố</option>
+                      <option selected>{t("checkout.city")}</option>
                       {cities.map((item) => (
                         <option key={item.id} value={item.value}>
                           {item.name}
@@ -212,7 +155,8 @@ const ChangeCheckout = () => {
                   </div>
                   <div className="checkout__input">
                     <p>
-                      Địa chỉ cụ thể<span>*</span>
+                      {t("checkout.addressDetail")}
+                      <span>*</span>
                     </p>
                     <input type="text" />
                   </div>
@@ -229,7 +173,7 @@ const ChangeCheckout = () => {
                             fontSize: 23,
                           }}
                         />
-                        Quay lại trang thanh toán
+                        {t("checkout.backAddress")}
                       </h6>
                     </Link>
                   </div>
@@ -237,7 +181,7 @@ const ChangeCheckout = () => {
                     <div className="checkout__input__checkbox">
                       <label htmlFor="acc">
                         <h4 className="checkout-text">
-                          Thanh Toán khi nhận hàng
+                          {t("checkout.payOnDelivery")}
                         </h4>
                         <input type="radio" name="checkout" id="acc" />
                         <span className="checkmark" />
@@ -245,26 +189,29 @@ const ChangeCheckout = () => {
                     </div>
                     <div className="checkout__input__checkbox">
                       <label htmlFor="vnpay">
-                        <h4 className="checkout-text">Thanh Toán qua VNPAY</h4>
+                        <h4 className="checkout-text">
+                          {t("checkout.payViaVNPAY")}
+                        </h4>
                         <input type="radio" name="checkout" id="vnpay" />
                         <span className="checkmark" />
                       </label>
                     </div>
                   </div>
                 </div>
+
                 <div className="col-lg-4 col-md-6">
                   <div className="checkout__order">
-                    <h4 className="order__title">TỔNG GIỎ HÀNG</h4>
+                    <h4 className="order__title">{t("checkout.cartTotal")}</h4>
                     <div className="checkout__order__products">
                       <div className="checkout_title_card">
                         <p className="checkout_title_card_name_product">
-                          Sản phẩm
+                          {t("checkout.product")}
                         </p>
                         <p className="checkout_title_card_name_quantity">
-                          Số lượng
+                          {t("checkout.quantity")}
                         </p>
                         <p className="checkout_title_card_name_total">
-                          Tổng tiền
+                          {t("checkout.totalPrice")}
                         </p>
                       </div>
                     </div>
@@ -286,17 +233,18 @@ const ChangeCheckout = () => {
                         </li>
                       </ul>
                     ))}
-
                     <ul className="checkout__total__all">
                       <li>
-                        Mã giảm giá <span>- 750đ</span>
+                        {t("checkout.discount")} <span>- 750đ</span>
                       </li>
                       <li>
-                        Tổng tiền <span>1000000đ</span>
+                        {t("checkout.totalMoney")} <span>1.000.000đ</span>
                       </li>
                     </ul>
                     <Link to={"/thank-you"}>
-                      <button className="site-btn">THANH TOÁN</button>
+                      <button className="site-btn">
+                        {t("checkout.payNow")}
+                      </button>
                     </Link>
                   </div>
                 </div>
@@ -308,4 +256,5 @@ const ChangeCheckout = () => {
     </>
   );
 };
+
 export default ChangeCheckout;

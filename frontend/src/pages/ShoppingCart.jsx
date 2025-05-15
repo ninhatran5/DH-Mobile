@@ -2,15 +2,18 @@ import { Link } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
 import TableShoppingCart from "../components/TableShoppingCart";
 import Breadcrumb from "../components/Breadcrumb";
+import { useTranslation } from "react-i18next";
 
 const ShoppingCart = () => {
+  const { t } = useTranslation();
+
   return (
     <>
       <Breadcrumb
-        title={"Giỏ Hàng"}
-        mainItem={"Trang chủ"}
-        mainItem2={"Sản phẩm"}
-        secondaryItem={"Giỏ hàng"}
+        title={t("shoppingCart.title")}
+        mainItem={t("breadcrumbProductDetail.breadcrumbTitleHome")}
+        mainItem2={t("breadcrumbProductDetail.breadcrumbTitleProduct")}
+        secondaryItem={t("shoppingCart.title")}
         linkMainItem={"/"}
         linkMainItem2={"/products"}
       />
@@ -28,7 +31,7 @@ const ShoppingCart = () => {
                 <div className="col-lg-6 col-md-6 col-sm-6">
                   <div className="continue__btn">
                     <Link style={{ textDecoration: "none" }} to={"/products"}>
-                      Tiếp tục mua sắm
+                      {t("shoppingCart.continueShopping")}
                     </Link>
                   </div>
                 </div>
@@ -36,7 +39,7 @@ const ShoppingCart = () => {
                   <div className="continue__btn update__btn">
                     <button type="button">
                       <FaTrash />
-                      Xóa
+                      {t("shoppingCart.delete")}
                     </button>
                   </div>
                 </div>
@@ -44,23 +47,23 @@ const ShoppingCart = () => {
             </div>
             <div className="col-lg-3">
               <div className="cart__discount">
-                <h6>Mã giảm giá</h6>
+                <h6>{t("shoppingCart.discountCode")}</h6>
                 <form action="#">
                   <input
                     type="text"
-                    placeholder="Nhập mã giảm giá của bạn..."
+                    placeholder={t("shoppingCart.discountPlaceholder")}
                   />
-                  <button type="submit">Áp dụng</button>
+                  <button type="submit">{t("shoppingCart.apply")}</button>
                 </form>
               </div>
               <div className="cart__total">
-                <h6>Tổng giỏ hàng</h6>
+                <h6>{t("shoppingCart.cartTotal")}</h6>
                 <ul style={{ marginLeft: -30 }}>
                   <li>
-                    Mã giảm giá <span>- 0đ</span>
+                    {t("shoppingCart.discount")} <span>- 0đ</span>
                   </li>
                   <li>
-                    Tổng tiền: <span>10đ</span>
+                    {t("shoppingCart.totalPrice")}: <span>10đ</span>
                   </li>
                 </ul>
                 <Link
@@ -68,7 +71,7 @@ const ShoppingCart = () => {
                   style={{ textDecoration: "none" }}
                   className="primary-btn"
                 >
-                  Tiến hành thanh toán
+                  {t("shoppingCart.checkout")}
                 </Link>
               </div>
             </div>

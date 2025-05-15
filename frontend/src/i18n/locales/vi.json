@@ -84,7 +84,12 @@
   "breadcrumbVoucher": {
     "breadcrumbHeader": "Mã Giảm Giá",
     "breadcrumbTitleHome": "Trang chủ",
-    "breadcrumbDesc": "Copy mã và sử dụng"
+    "breadcrumbDesc": "Copy mã và sử dụng",
+    "success": "Đã sao chép mã voucher",
+    "err": "Lỗi khi sao chép:"
+  },
+  "breadcrumbLiked": {
+    "breadcrumbHeader": "Sản Phẩm Yêu Thích"
   },
   "introduce": {
     "title": "Giới thiệu về DH Mobile",
@@ -191,6 +196,132 @@
       "simlockCheck": "Bấm để kiểm tra khoá mạng!",
       "provider": "Kết quả cung cấp bởi",
       "timestamp": "Thời gian kiểm tra"
+    }
+  },
+  "shoppingCart": {
+    "title": "Giỏ Hàng",
+    "continueShopping": "Tiếp tục mua sắm",
+    "delete": "Xóa",
+    "discountCode": "Mã giảm giá",
+    "discountPlaceholder": "Nhập mã giảm giá của bạn...",
+    "apply": "Áp dụng",
+    "cartTotal": "Tổng giỏ hàng",
+    "discount": "Mã giảm giá",
+    "totalPrice": "Tổng tiền",
+    "checkout": "Tiến hành thanh toán"
+  },
+  "tableHeaders": {
+    "product": "Sản Phẩm",
+    "quantity": "Số Lượng",
+    "color": "Màu sắc",
+    "version": "Phiên bản",
+    "totalPrice": "Tổng tiền"
+  },
+  "checkout": {
+    "title": "Thanh Toán",
+    "titleChange": "Thay Đổi Thông Tin Thanh Toán",
+    "enterInfo": "Vui lòng nhập thông tin thanh toán",
+    "checkInfo": "Kiểm tra thông tin thanh toán",
+    "fullName": "Họ tên",
+    "phone": "Số điện thoại",
+    "ward": "Phường/Xã",
+    "district": "Quận/Huyện",
+    "city": "Tỉnh/Thành Phố",
+    "addressDetail": "Địa chỉ cụ thể",
+    "changeAddress": "Thay đổi địa chỉ mua hàng",
+    "backAddress": "Quay lại trang thanh toán",
+    "payOnDelivery": "Thanh Toán khi nhận hàng",
+    "payViaVNPAY": "Thanh Toán qua VNPAY",
+    "cartTotal": "TỔNG GIỎ HÀNG",
+    "product": "Sản phẩm",
+    "quantity": "Số lượng",
+    "totalPrice": "Tổng tiền",
+    "discount": "Mã giảm giá",
+    "totalMoney": "Tổng tiền",
+    "payNow": "THANH TOÁN"
+  },
+  "breadcrumb": {
+    "home": "Trang chủ",
+    "cart": "Giỏ hàng"
+  },
+  "thanksYou": {
+    "paymentSuccess": "Thanh toán thành công",
+    "thankYouMessage": "Cảm ơn bạn đã đặt hàng tại cửa hàng của chúng tôi!",
+    "thankYouMessage2": "Đơn hàng của bạn đã được xác nhận và sẽ sớm được giao đến bạn.",
+    "backToHome": "Trở lại trang chủ",
+    "trackOrder": "Theo dõi đơn hàng"
+  },
+  "profile": {
+    "title": "Hồ Sơ Cá Nhân",
+    "home": "Trang chủ",
+    "editProfile": "Chỉnh sửa",
+    "introduction": "Giới thiệu",
+    "description": "Xin chào",
+    "personalInfo": "Thông tin cá nhân",
+    "personalInformations": {
+      "name": "Họ tên:",
+      "phone": "Số điện thoại:",
+      "email": "Email:",
+      "hometown": "Quê quán:"
+    },
+    "features": "Các tính năng",
+    "featuresList": {
+      "adminLogin": "Đăng nhập vào admin",
+      "favoriteProducts": "Sản phẩm đã thích",
+      "orders": "Đơn hàng",
+      "logout": "Đăng xuất"
+    },
+    "statisticals": {
+      "orders": "Đơn hàng của bạn",
+      "wallet": "Số dư ví",
+      "likedProducts": "Sản phẩm đã thích"
+    },
+    "orderStats": "Theo thống kê bạn đã sử dụng",
+    "orderHistoryTitle": "Lịch sử mua hàng",
+    "seeAll": "Xem tất cả →"
+  },
+  "orderHistory": {
+    "orderCode": "Mã đơn hàng",
+    "orderName": "Tên đơn hàng",
+    "price": "Giá tiền",
+    "address": "Địa chỉ",
+    "paymentMethod": "Phương thức thanh toán",
+    "status": "Trạng thái",
+    "detail": "Chi tiết",
+    "viewDetail": "Xem chi tiết"
+  },
+  "breadcrumbOrder": {
+    "breadcrumbHeader": "Lịch Sử Mua Hàng"
+  },
+  "orderDetail": {
+    "image": "Hình ảnh",
+    "title": "Chi tiết đơn hàng",
+    "home": "Trang chủ",
+    "orderList": "Đơn hàng",
+    "order": "Đơn hàng",
+    "orderDate": "Ngày đặt hàng",
+    "info": "Thông tin đặt hàng",
+    "receiver": "Người nhận",
+    "phone": "Số điện thoại",
+    "address": "Địa chỉ",
+    "paymentMethod": "Phương thức thanh toán",
+    "cod": "Thanh toán khi nhận hàng (COD)",
+    "note": "Ghi chú",
+    "productDetail": "Chi tiết sản phẩm",
+    "product": "Tên sản phẩm",
+    "quantity": "Số lượng",
+    "color": "Màu sắc",
+    "version": "Phiên bản",
+    "unitPrice": "Đơn giá",
+    "totalPrice": "Tổng tiền",
+    "total": "Tổng cộng:",
+    "back": "Quay lại lịch sử mua hàng ",
+    "status": {
+      "pending": "Chờ xác nhận",
+      "confirmed": "Đã xác nhận",
+      "waitingPickup": "Chờ lấy hàng",
+      "delivering": "Đang giao hàng",
+      "delivered": "Giao hàng thành công"
     }
   }
 }

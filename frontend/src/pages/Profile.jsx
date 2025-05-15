@@ -2,42 +2,49 @@ import "../assets/css/profile.css";
 import { Link } from "react-router-dom";
 import OrderHistory from "../components/OrderHistory";
 import Breadcrumb from "../components/Breadcrumb";
+import { useTranslation } from "react-i18next";
 
 const Profile = () => {
+  const { t } = useTranslation();
+
   const personalInformations = [
     {
       id: 1,
-      title: "Họ tên:",
+      title: t("profile.personalInformations.name"),
       content: "Lê Nguyên Tùng",
     },
     {
       id: 2,
-      title: "Số điện thoại:",
+      title: t("profile.personalInformations.phone"),
       content: "0396180619",
     },
     {
       id: 3,
-      title: "Email:",
+      title: t("profile.personalInformations.email"),
       content: "tung.ln@mor.com.vn",
     },
     {
       id: 4,
-      title: "Quê quán:",
+      title: t("profile.personalInformations.hometown"),
       content: "Thanh Hóa",
     },
   ];
   const statisticals = [
     {
       id: 1,
-      label: "Đơn hàng của bạn",
+      label: t("profile.statisticals.orders"),
       value: "5 đơn hàng",
     },
     {
       id: 2,
-      label: "Số dư ví",
+      label: t("profile.statisticals.wallet"),
       value: "10.000VND",
     },
-    { id: 3, label: "Sản phẩm đã thích", value: "10 sản phẩm" },
+    {
+      id: 3,
+      label: t("profile.statisticals.likedProducts"),
+      value: "10 sản phẩm",
+    },
   ];
   const orders = [
     {
@@ -51,7 +58,7 @@ const Profile = () => {
     },
     {
       id: 2,
-      orderCode: "ORD002",
+      orderCode: "ORD001",
       product: "ÁKDFJK",
       price: "1.000.000₫",
       location: "Thanh Hóa",
@@ -60,7 +67,7 @@ const Profile = () => {
     },
     {
       id: 3,
-      orderCode: "ORD003",
+      orderCode: "ORD001",
       product: "ÁKDFJK",
       price: "1.000.000₫",
       location: "Thanh Hóa",
@@ -69,16 +76,7 @@ const Profile = () => {
     },
     {
       id: 4,
-      orderCode: "ORD004",
-      product: "ÁKDFJK",
-      price: "1.000.000₫",
-      location: "Thanh Hóa",
-      paymentMethod: "Thanh toán online",
-      status: "Đang giao hàng",
-    },
-    {
-      id: 5,
-      orderCode: "ORD005",
+      orderCode: "ORD001",
       product: "ÁKDFJK",
       price: "1.000.000₫",
       location: "Thanh Hóa",
@@ -90,30 +88,31 @@ const Profile = () => {
   const features = [
     {
       id: 1,
-      name: "Đăng nhập vào admin",
-      links: "/",
+      name: t("profile.featuresList.adminLogin"),
+      links: "/admin",
     },
     {
       id: 2,
-      name: "Sản phẩm đã thích",
+      name: t("profile.featuresList.favoriteProducts"),
       links: "/favorite-products",
     },
     {
       id: 3,
-      name: "Đơn hàng",
+      name: t("profile.featuresList.orders"),
       links: "/order-history",
     },
     {
       id: 4,
-      name: "Đăng xuất",
+      name: t("profile.featuresList.logout"),
     },
   ];
+
   return (
     <>
       <Breadcrumb
-        title={"Hồ Sơ Cá Nhân"}
-        mainItem={"Trang chủ"}
-        secondaryItem={"Hồ sơ cá nhân"}
+        title={t("profile.title")}
+        mainItem={t("profile.home")}
+        secondaryItem={t("profile.title")}
         linkMainItem={"/"}
         showMainItem2={false}
       />
@@ -140,7 +139,7 @@ const Profile = () => {
                     <div className="profile-edit-wrapper">
                       <Link to={"/edit-profile"} className="profile-btn-edit">
                         <i className="mdi mdi-account-settings-variant" />
-                        Chỉnh sửa
+                        {t("profile.editProfile")}
                       </Link>
                     </div>
                   </div>
@@ -152,13 +151,15 @@ const Profile = () => {
           <div className="profile-row">
             <div className="profile-col-4">
               <div className="profile-card">
-                <h4 className="profile-title">Giới thiệu</h4>
+                <h4 className="profile-title">{t("profile.introduction")}</h4>
                 <div className="profile-body">
                   <p className="profile-description">
-                    Xin chào, tôi là Lê Nguyên Tùng...
+                    {t("profile.description")} Lê Nguyên Tùng...
                   </p>
                   <hr />
-                  <h4 className="profile-title mb-2">Thông tin cá nhân</h4>
+                  <h4 className="profile-title mb-2">
+                    {t("profile.personalInfo")}
+                  </h4>
                   <div className="profile-info-list">
                     {personalInformations.map((personalInformation) => (
                       <p key={personalInformation.id}>
@@ -171,14 +172,22 @@ const Profile = () => {
               </div>
 
               <div className="profile-card profile-ribbon">
-                <div className="profile-ribbon-title">Các tính năng</div>
+                <div className="profile-ribbon-title">
+                  {t("profile.features")}
+                </div>
                 {features.map((feature) => (
                   <div key={feature.id} className="profile-messages">
-                    <Link to={feature.links} className="profile-message-item">
+                    {feature.links ? (
+                      <Link to={feature.links} className="profile-message-item">
+                        <button className="profile-btn-reply">
+                          {feature.name}
+                        </button>
+                      </Link>
+                    ) : (
                       <button className="profile-btn-reply">
                         {feature.name}
                       </button>
-                    </Link>
+                    )}
                   </div>
                 ))}
               </div>
@@ -192,7 +201,7 @@ const Profile = () => {
                       <h2 className="profile-stat-value">{item.value}</h2>
 
                       <span className="profile-muted-text">
-                        Theo thống kê bạn đã sử dụng
+                        {t("profile.orderStats")}
                       </span>
                     </div>
                   </div>
@@ -201,13 +210,15 @@ const Profile = () => {
 
               <div className="profile-card">
                 <div className="d-flex col-12">
-                  <h4 className="profile-title mb-3 col-9">Lịch sử mua hàng</h4>
+                  <h4 className="profile-title mb-3 col-9">
+                    {t("profile.orderHistoryTitle")}
+                  </h4>
                   <Link
                     to={"/order-history"}
                     className="text-decoration-none  col-3"
                   >
                     <h4 className="text-end profile-title mb-3">
-                      Xem tất cả →
+                      {t("profile.seeAll")}
                     </h4>
                   </Link>
                 </div>
