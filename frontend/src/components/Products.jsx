@@ -17,8 +17,8 @@ export default function Products({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const nextProductDetail = () => {
-    navigate("/product-detail/:id");
+  const nextProductDetail = (id) => {
+    navigate(`/product-detail/${id}`);
   };
   const addToFavorites = () => {
     console.log("added");
@@ -37,56 +37,67 @@ export default function Products({
   };
   const products = [
     {
+      id: 1,
       name: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
       price: "27.890.000đ",
       image: iphone,
     },
     {
+      id: 2,
       name: "Samsung Galaxy S22 Ultra 512GB",
       price: "29.990.000đ",
       image: iphone,
     },
     {
+      id: 3,
       name: "Samsung Galaxy S22 Ultra 512GB",
       price: "29.990.000đ",
       image: iphone,
     },
     {
+      id: 4,
       name: "Samsung Galaxy S22 Ultra 512GB",
       price: "29.990.000đ",
       image: iphone,
     },
     {
+      id: 5,
       name: "Samsung Galaxy S22 Ultra 512GB",
       price: "29.990.000đ",
       image: iphone,
     },
     {
+      id: 6,
       name: "Samsung Galaxy S22 Ultra 512GB",
       price: "29.990.000đ",
       image: iphone,
     },
     {
+      id: 7,
       name: "Samsung Galaxy S22 Ultra 512GB",
       price: "29.990.000đ",
       image: iphone,
     },
     {
+      id: 8,
       name: "Samsung Galaxy S22 Ultra 512GB",
       price: "29.990.000đ",
       image: iphone,
     },
     {
+      id: 9,
       name: "Samsung Galaxy S22 Ultra 512GB",
       price: "29.990.000đ",
       image: iphone,
     },
     {
+      id: 10,
       name: "Samsung Galaxy S22 Ultra 512GB",
       price: "29.990.000đ",
       image: iphone,
     },
   ];
+
   return (
     <>
       <section className={padding}>
@@ -161,8 +172,8 @@ export default function Products({
                     aria-labelledby="nav-all-tab"
                   >
                     <div className="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
-                      {products.map((product, index) => (
-                        <div className="col" key={index}>
+                      {products.map((product) => (
+                        <div className="col" key={product.id}>
                           <div className="product-item">
                             {unfavorite ? (
                               <a
@@ -184,7 +195,7 @@ export default function Products({
 
                             <figure>
                               <Link
-                                to={"/product-detail/:id"}
+                                to={`/product-detail/${product.id}`}
                                 title={product.name}
                               >
                                 <img
@@ -194,7 +205,7 @@ export default function Products({
                               </Link>
                             </figure>
                             <h3
-                              onClick={nextProductDetail}
+                              onClick={() => nextProductDetail(product.id)}
                               style={{ cursor: "pointer" }}
                             >
                               {product.name}

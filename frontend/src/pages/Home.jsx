@@ -174,8 +174,8 @@ const Home = () => {
 
   const bannerAdvertisement = [banner4, banner5];
 
-  const nextProductDetail = () => {
-    navigate("/product-detail/:id");
+  const nextProductDetail = (id) => {
+    navigate(`/product-detail/${id}`);
   };
   const nextShop = () => {
     navigate("/products");
@@ -366,7 +366,7 @@ const Home = () => {
                   <div className="row g-0">
                     <div className="col-md-4">
                       <img
-                        onClick={nextProductDetail}
+                        onClick={() => nextProductDetail(item.id)}
                         src={item.image}
                         className="img-fluid rounded"
                         alt={item.title}
@@ -374,7 +374,10 @@ const Home = () => {
                     </div>
                     <div className="col-md-8">
                       <div className="card-body py-0">
-                        <h5 onClick={nextProductDetail} className="card-title">
+                        <h5
+                          onClick={() => nextProductDetail(item.id)}
+                          className="card-title"
+                        >
                           {item.title}
                         </h5>
                         <h6 style={{ color: "#e40303" }} className=" mb-0">
