@@ -100,5 +100,97 @@
     "descCard4": "DH Mobile hướng đến việc trở thành chuỗi bán lẻ điện thoại thông minh đáng tin cậy hàng đầu tại Việt Nam. Chúng tôi không chỉ bán điện thoại – chúng tôi đồng hành cùng người dùng trên hành trình khám phá công nghệ. Sứ mệnh của chúng tôi là đem lại giá trị bền vững, nơi khách hàng luôn cảm thấy yên tâm, tin tưởng và hài lòng khi lựa chọn DH Mobile.",
     "titleCard5": "Cảm ơn quý khách hàng",
     "descCard5": "DH Mobile xin chân thành cảm ơn sự tin tưởng và ủng hộ của quý khách hàng trong suốt thời gian qua. Mỗi đơn hàng, mỗi lời góp ý và mỗi lần quay lại chính là động lực để chúng tôi tiếp tục hoàn thiện, phát triển và phục vụ tốt hơn từng ngày."
+  },
+  "guaranteePolicy": {
+    "title": "Chính Sách Bảo Hành",
+    "intro": "DH Mobile cam kết mang đến cho khách hàng những sản phẩm chất lượng cùng dịch vụ hậu mãi uy tín. Dưới đây là các điều khoản về chính sách bảo hành:",
+    "titleSmall1": "1. Thời gian bảo hành",
+    "content1": "Điện thoại mới: Bảo hành chính hãng 12 tháng.",
+    "content2": "Điện thoại likenew (99%): Bảo hành DH Mobile 6 tháng.",
+    "content3": "Phụ kiện đi kèm: Bảo hành 1 tháng (nếu có).",
+
+    "titleSmall2": "2. Điều kiện bảo hành",
+    "content2_1": "Sản phẩm còn thời hạn bảo hành và có tem/phiếu bảo hành.",
+    "content2_2": "Lỗi kỹ thuật do nhà sản xuất (không do tác động ngoại lực).",
+    "content2_3": "Không bị can thiệp phần cứng, mở máy ngoài trung tâm ủy quyền.",
+
+    "titleSmall3": "3. Trường hợp từ chối bảo hành",
+    "content3_1": "Sản phẩm bị rơi vỡ, vào nước, cháy nổ do dùng sai cách.",
+    "content3_2": "Mất tem bảo hành, phiếu bảo hành hoặc serial không trùng khớp.",
+    "content3_3": "Tự ý sửa chữa tại nơi không được DH Mobile ủy quyền.",
+
+    "titleSmall4": "4. Hỗ trợ sau bảo hành",
+    "content4_1": "Sau thời gian bảo hành, DH Mobile vẫn hỗ trợ sửa chữa với chi phí ưu đãi.",
+    "footer": "Mọi thắc mắc xin liên hệ hotline: 1900 1234 hoặc đến trực tiếp cửa hàng DH Mobile."
+  },
+  "returnPolicy": {
+    "title": "Chính Sách Đổi Trả",
+    "intro": "DH Mobile cam kết đảm bảo quyền lợi của khách hàng với chính sách đổi trả linh hoạt. Dưới đây là các điều khoản về chính sách đổi trả:",
+
+    "titleSmall1": "1. Điều Kiện Đổi Trả",
+    "content1_1": "Sản phẩm còn nguyên vẹn, không có dấu hiệu đã sử dụng.",
+    "content1_2": "Sản phẩm phải có hóa đơn mua hàng và tem bảo hành đi kèm.",
+    "content1_3": "Sản phẩm phải được đổi trả trong vòng 7 ngày kể từ ngày mua.",
+
+    "titleSmall2": "2. Quy Trình Đổi Trả",
+    "content2_1": "Liên hệ với DH Mobile qua hotline hoặc đến cửa hàng.",
+    "content2_2": "Cung cấp hóa đơn mua hàng và lý do đổi trả.",
+    "content2_3": "Chờ xử lý đổi trả trong vòng 3-5 ngày làm việc.",
+
+    "titleSmall3": "3. Điều Kiện Không Được Đổi Trả",
+    "content3_1": "Sản phẩm đã qua sử dụng, bị trầy xước hoặc hư hỏng do lỗi của người sử dụng.",
+    "content3_2": "Sản phẩm không có hóa đơn hoặc tem bảo hành.",
+    "content3_3": "Sản phẩm bị lỗi do tác động ngoại lực (rơi vỡ, vào nước, v.v.).",
+
+    "titleSmall4": "4. Chính Sách Hoàn Tiền",
+    "content4_1": "Nếu sản phẩm không thể đổi trả được, DH Mobile sẽ hoàn tiền theo hình thức chuyển khoản hoặc hoàn tiền tại cửa hàng.",
+
+    "footer": "Mọi thắc mắc xin liên hệ hotline: 1900 1234 hoặc đến trực tiếp cửa hàng DH Mobile."
+  },
+  "deliveryPolicy": {
+    "title": "Chính Sách Giao Hàng",
+    "intro": "DH Mobile cam kết giao hàng nhanh chóng và an toàn đến tay khách hàng. Dưới đây là các điều khoản về chính sách giao hàng:",
+
+    "titleSmall1": "1. Phương Thức Giao Hàng",
+    "content1_1": "Giao hàng tận nơi qua dịch vụ chuyển phát nhanh.",
+    "content1_2": "Giao hàng tại cửa hàng DH Mobile theo yêu cầu của khách hàng.",
+
+    "titleSmall2": "2. Thời Gian Giao Hàng",
+    "content2_1": "Đơn hàng trong nội thành: Giao trong vòng 1-2 ngày làm việc.",
+    "content2_2": "Đơn hàng ngoài thành: Giao trong vòng 3-5 ngày làm việc.",
+    "content2_3": "Thời gian giao hàng có thể thay đổi tùy vào khu vực và tình trạng đơn hàng.",
+
+    "titleSmall3": "3. Phí Giao Hàng",
+    "content3_1": "Phí giao hàng sẽ được tính dựa trên khu vực và trọng lượng của đơn hàng. Phí giao hàng sẽ được thông báo rõ ràng trước khi khách hàng thanh toán.",
+
+    "titleSmall4": "4. Chính Sách Giao Hàng Miễn Phí",
+    "content4_1": "DH Mobile miễn phí giao hàng cho đơn hàng có giá trị trên 1,000,000 VNĐ hoặc khi có các chương trình khuyến mãi đặc biệt.",
+
+    "titleSmall5": "5. Trường Hợp Hủy Đơn Hàng",
+    "content5_1": "Khách hàng có thể hủy đơn hàng trước khi sản phẩm được giao đi.",
+    "content5_2": "Đơn hàng đã giao không thể hủy trừ khi có lỗi từ phía DH Mobile.",
+
+    "footer": "Mọi thắc mắc xin liên hệ hotline: 1900 1234 hoặc đến trực tiếp cửa hàng DH Mobile."
+  },
+  "checkimei": {
+    "badge": "Kiểm tra thông tin",
+    "title": {
+      "line1": "XÁC MINH",
+      "line2": "THÔNG TIN THIẾT BỊ",
+      "highlight": "NHANH CHÓNG"
+    },
+    "description": "Chúng tôi cung cấp giải pháp tối ưu cho nhu cầu di động của bạn. Khám phá những dịch vụ chất lượng và hỗ trợ tận tâm từ DH Mobile.",
+    "searchPlaceholder": "Tìm kiếm...",
+    "review": "Kiểm tra IMEI nhanh chóng và chính xác trên DH Mobile.",
+    "result": {
+      "model": "iPhone 12 64GB White",
+      "blacklist": "GSMA Blacklist Status",
+      "icloud": "iCloud Lock / iCloud Status",
+      "icloudCheck": "Kiểm tra tại đây",
+      "simlock": "Carrier/SIM Lock",
+      "simlockCheck": "Bấm để kiểm tra khoá mạng!",
+      "provider": "Kết quả cung cấp bởi",
+      "timestamp": "Thời gian kiểm tra"
+    }
   }
 }

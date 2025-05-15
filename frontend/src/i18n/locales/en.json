@@ -101,5 +101,100 @@
     "descCard4": "DH Mobile aims to become the most trusted smartphone retail chain in Vietnam. We don't just sell phones – we accompany users on their journey to explore technology. Our mission is to deliver sustainable value, where customers always feel secure, trusted, and satisfied when choosing DH Mobile.",
     "titleCard5": "Thank You to Our Valued Customers",
     "descCard5": "DH Mobile sincerely thanks our valued customers for their trust and support throughout the years. Every order, every piece of feedback, and every return visit is the motivation for us to improve, grow, and serve better every day."
+  },
+
+  "guaranteePolicy": {
+    "title": "Warranty Policy",
+    "intro": "DH Mobile is committed to providing customers with high-quality products and reputable after-sales service. Below are the terms of our warranty policy:",
+
+    "titleSmall1": "1. Warranty Period",
+    "content1": "New phones: 12-month official manufacturer warranty.",
+    "content2": "Like-new phones (99%): 6-month DH Mobile warranty.",
+    "content3": "Included accessories: 1-month warranty (if applicable).",
+
+    "titleSmall2": "2. Warranty Conditions",
+    "content2_1": "Product must be within the warranty period and have a warranty seal/card.",
+    "content2_2": "Technical faults caused by the manufacturer (not by external impact).",
+    "content2_3": "No hardware interference or disassembly outside authorized service centers.",
+
+    "titleSmall3": "3. Warranty Exclusions",
+    "content3_1": "Product damaged by dropping, water, or misuse (causing fire/explosion).",
+    "content3_2": "Missing warranty seal/card or mismatched serial number.",
+    "content3_3": "Unauthorized repairs not approved by DH Mobile.",
+
+    "titleSmall4": "4. Post-Warranty Support",
+    "content4_1": "After the warranty period, DH Mobile still offers repair services at a preferential cost.",
+
+    "footer": "For inquiries, please contact our hotline: 1900 1234 or visit any DH Mobile store directly."
+  },
+  "returnPolicy": {
+    "title": "Return Policy",
+    "intro": "DH Mobile is committed to protecting customers' rights with a flexible return policy. Below are the terms and conditions:",
+
+    "titleSmall1": "1. Return Conditions",
+    "content1_1": "The product must be intact and show no signs of use.",
+    "content1_2": "The product must be accompanied by a purchase invoice and warranty seal.",
+    "content1_3": "Returns must be made within 7 days from the date of purchase.",
+
+    "titleSmall2": "2. Return Process",
+    "content2_1": "Contact DH Mobile via hotline or visit the store.",
+    "content2_2": "Provide the purchase invoice and reason for the return.",
+    "content2_3": "Wait for the return to be processed within 3–5 working days.",
+
+    "titleSmall3": "3. Non-returnable Conditions",
+    "content3_1": "The product has been used, scratched, or damaged due to user error.",
+    "content3_2": "The product is missing the invoice or warranty seal.",
+    "content3_3": "The product is damaged due to external impact (dropped, water damage, etc.).",
+
+    "titleSmall4": "4. Refund Policy",
+    "content4_1": "If the product cannot be returned, DH Mobile will issue a refund via bank transfer or in-store refund.",
+
+    "footer": "For any questions, please contact our hotline: 1900 1234 or visit DH Mobile store directly."
+  },
+  "deliveryPolicy": {
+    "title": "Delivery Policy",
+    "intro": "DH Mobile is committed to fast and secure delivery to customers. Below are the terms of our delivery policy:",
+
+    "titleSmall1": "1. Delivery Methods",
+    "content1_1": "Home delivery via express shipping service.",
+    "content1_2": "In-store pickup at DH Mobile upon customer request.",
+
+    "titleSmall2": "2. Delivery Time",
+    "content2_1": "Orders within the city: Delivered within 1–2 working days.",
+    "content2_2": "Orders outside the city: Delivered within 3–5 working days.",
+    "content2_3": "Delivery time may vary depending on location and order status.",
+
+    "titleSmall3": "3. Delivery Fees",
+    "content3_1": "Delivery fees are calculated based on the delivery area and order weight. The fees will be clearly communicated before payment.",
+
+    "titleSmall4": "4. Free Delivery Policy",
+    "content4_1": "DH Mobile offers free delivery for orders valued over 1,000,000 VND or during special promotional programs.",
+
+    "titleSmall5": "5. Order Cancellation",
+    "content5_1": "Customers may cancel their order before it is shipped.",
+    "content5_2": "Shipped orders cannot be canceled unless the issue is caused by DH Mobile.",
+
+    "footer": "For any questions, please contact our hotline: 1900 1234 or visit DH Mobile store directly."
+  },
+  "checkimei": {
+    "badge": "Check Info",
+    "title": {
+      "line1": "VERIFY",
+      "line2": "DEVICE INFORMATION",
+      "highlight": "FAST"
+    },
+    "description": "We provide the optimal solution for your mobile needs. Discover high-quality services and dedicated support from DH Mobile.",
+    "searchPlaceholder": "Search...",
+    "review": "Quick and accurate IMEI check on DH Mobile.",
+    "result": {
+      "model": "iPhone 12 64GB White",
+      "blacklist": "GSMA Blacklist Status",
+      "icloud": "iCloud Lock / iCloud Status",
+      "icloudCheck": "Check here",
+      "simlock": "Carrier/SIM Lock",
+      "simlockCheck": "Click to check SIM lock status!",
+      "provider": "Results provided by",
+      "timestamp": "Check time"
+    }
   }
 }
