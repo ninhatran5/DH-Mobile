@@ -57,6 +57,42 @@
     "all": "Tất cả",
     "addedToFavorites": "Đã thêm vào yêu thích",
     "addedToCart": "Đã thêm vào giỏ hàng",
-    "removeFavorites": "Đã xóa khỏi yêu thích"
+    "removeFavorites": "Đã xóa khỏi yêu thích",
+    "errorSpecialCharacters": "Không thể nhập kí tự đặc biệt",
+    "errorMin": "Giá trị tối thiểu là 1"
+  },
+  "blog": {
+    "poster": "Người đăng"
+  },
+  "chatBot": {
+    "chat": "Trò chuyện",
+    "message": "Gõ tin nhắn của bạn..."
+  },
+  "breadcrumbProductDetail": {
+    "breadcrumbHeader": "Chi Tiết Sản Phẩm",
+    "breadcrumbTitleHome": "Trang chủ",
+    "breadcrumbTitleProduct": "Sản phẩm"
+  },
+  "productDetail": {
+    "selectVersion": "Chọn phiên bản",
+    "selectColor": "Chọn màu",
+    "addToFavorites": "Thêm vào yêu thích",
+    "describe": "Mô tả",
+    "parameter": "Thông số kỹ thuật",
+    "comment": "Bình luận"
+  },
+  "breadcrumbVoucher": {
+    "breadcrumbHeader": "Mã Giảm Giá",
+    "breadcrumbTitleHome": "Trang chủ",
+    "breadcrumbDesc": "Copy mã và sử dụng"
+  },
+  "introduce": {
+    "title": "Giới thiệu về DH Mobile",
+    "smallTitle": "DH Mobile là hệ thống bán lẻ điện thoại thông minh chính hãng với sứ mệnh mang đến những sản phẩm công nghệ chất lượng cao, dịch vụ khách hàng tận tâm và trải nghiệm mua sắm tiện lợi, minh bạch cho người tiêu dùng Việt Nam.",
+    "smalltitle2": "Được thành lập với mong muốn trở thành cầu nối giữa công nghệ tiên tiến và người dùng, DH Mobile luôn đặt chữ 'Tín' làm kim chỉ nam trong mọi hoạt động kinh doanh. Chúng tôi hiểu rằng mỗi chiếc điện thoại không chỉ là công cụ liên lạc mà còn là phương tiện giúp bạn kết nối với thế giới, học tập, làm việc và giải trí mỗi ngày.",
+    "titleCard1": "Sản phẩm chính hãng - Chất lượng đảm bảo",
+    "descCard1": "Tất cả sản phẩm tại DH Mobile đều là hàng chính hãng 100%, có nguồn gốc rõ ràng và đầy đủ hóa đơn VAT, bảo hành điện tử. Chúng tôi cam kết tuyệt đối không kinh doanh hàng xách tay, hàng trôi nổi hay hàng kém chất lượng. Mỗi sản phẩm khi đến tay khách hàng đều được kiểm tra kỹ lưỡng, đảm bảo nguyên seal, nguyên kiện và đầy đủ phụ kiện từ nhà sản xuất.",
+    "titleCard2": "Dịch vụ khách hàng tận tâm",
+    "descCard3": "DH Mobile xây dựng đội ngũ tư vấn viên chuyên nghiệp, được đào tạo bài bản để sẵn sàng hỗ trợ khách hàng trong mọi tình huống – từ tư vấn sản phẩm phù hợp nhu cầu, hỗ trợ kỹ thuật, cho đến giải quyết bảo hành và khiếu nại. Chúng tôi tin rằng, sự hài lòng của khách hàng không chỉ đến từ sản phẩm tốt mà còn đến từ dịch vụ chu đáo, tận tình."
   }
 }
