@@ -4,6 +4,7 @@ import chatbotLogo2 from "../assets/images/logochat.png";
 import { FaPaperPlane, FaTimes } from "react-icons/fa";
 import { GoPaperclip } from "react-icons/go";
 import { Modal } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 const messagesData = [
   { sender: "user", text: "Xin chào", time: "10:00 AM" },
@@ -40,6 +41,7 @@ export default function ChatWindow() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [visible, setVisible] = useState(true);
+  const { t } = useTranslation();
 
   return (
     <div className="chatbot-container">
@@ -52,7 +54,7 @@ export default function ChatWindow() {
       {visible && (
         <div className="chat-window">
           <div className="chat-header">
-            <h2>Trò chuyện</h2>
+            <h2>{t("chatBot.chat")}</h2>
             <button className="close-button" onClick={() => setVisible(false)}>
               <FaTimes />
             </button>
@@ -125,7 +127,7 @@ export default function ChatWindow() {
           </Modal>
 
           <div className="input-container">
-            <input type="text" placeholder="Gõ tin nhắn của bạn..." />
+            <input type="text" placeholder={t("chatBot.message")} />
             <input
               type="file"
               id="file-input"
