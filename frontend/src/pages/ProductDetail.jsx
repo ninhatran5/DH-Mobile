@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Modal } from "react-bootstrap";
 import iphone from "../assets/images/iphone-16-pro-max.webp";
 import iphone2 from "../assets/images/iphone-15-pro_2__2_1_1_1.webp";
@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import Comment from "../components/Comment";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
+import { useSwipeable } from "react-swipeable";
 
 const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
@@ -77,13 +78,24 @@ const ProductDetail = () => {
   const [currentImage, setCurrentImage] = useState(iphone);
   const [showModal, setShowModal] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const handleThumbnailClick = (image) => {
     setCurrentImage(image);
+    const index = productImages.findIndex((item) => item.image === image);
+    setActiveIndex(index);
   };
 
-  const handleShowModal = () => setShowModal(true);
+  const handleShowModal = () => {
+    const index = productImages.findIndex(
+      (item) => item.image === currentImage
+    );
+    setActiveIndex(index);
+    setShowModal(true);
+  };
+
   const handleCloseModal = () => setShowModal(false);
+
   const handleUpQuantity = () => {
     setQuantity((prev) => prev + 1);
   };
@@ -124,6 +136,32 @@ const ProductDetail = () => {
     navigate("/shopping-cart");
   };
 
+  const handleSelect = useCallback(
+    (index) => {
+      setActiveIndex(index);
+      setCurrentImage(productImages[index].image);
+    },
+    [productImages]
+  );
+
+  const handlers = useSwipeable({
+    onSwipedLeft: () => {
+      const nextIndex = (activeIndex + 1) % productImages.length;
+      handleSelect(nextIndex);
+    },
+    onSwipedRight: () => {
+      const prevIndex =
+        activeIndex === 0 ? productImages.length - 1 : activeIndex - 1;
+      handleSelect(prevIndex);
+    },
+    trackMouse: true,
+    preventScrollOnSwipe: true,
+    delta: 5,
+    swipeDuration: 250,
+    touchEventOptions: { passive: true },
+    rotationAngle: 0,
+  });
+
   return (
     <>
       <Breadcrumb
@@ -143,7 +181,8 @@ const ProductDetail = () => {
                 src={currentImage}
                 alt="iPhone"
                 className="img-fluid"
-                style={{ maxHeight: "400px" }}
+                style={{ maxHeight: "400px", cursor: "pointer" }}
+                onClick={handleShowModal}
               />
               <button
                 className="btn-zoom btn position-absolute"
@@ -168,7 +207,9 @@ const ProductDetail = () => {
                   key={item.id}
                   src={item.image}
                   alt="thumbnail"
-                  className="img-thumbnail mx-1"
+                  className={`img-thumbnail mx-1 ${
+                    item.image === currentImage ? "active" : ""
+                  }`}
                   onClick={() => handleThumbnailClick(item.image)}
                 />
               ))}
@@ -176,18 +217,31 @@ const ProductDetail = () => {
           </div>
 
           <Modal show={showModal} onHide={handleCloseModal} centered size="lg">
-            <Modal.Body className="text-center">
-              <Carousel data-bs-theme="dark">
-                {productImages.map((item) => (
-                  <Carousel.Item key={item.id}>
-                    <img
-                      className="d-block w-100"
-                      src={item.image}
-                      alt="First slide"
-                    />
-                  </Carousel.Item>
-                ))}
-              </Carousel>
+            <Modal.Header closeButton className="border-0"></Modal.Header>
+            <Modal.Body className="text-center p-0">
+              <div {...handlers} className="carousel-swipeable-container">
+                <Carousel
+                  data-bs-theme="dark"
+                  interval={null}
+                  activeIndex={activeIndex}
+                  onSelect={handleSelect}
+                  indicators={false}
+                  touch={false}
+                  slide={true}
+                >
+                  {productImages.map((item) => (
+                    <Carousel.Item key={item.id}>
+                      <img
+                        className="d-block w-100"
+                        src={item.image}
+                        alt="Product image"
+                        draggable={false}
+                        loading="eager"
+                      />
+                    </Carousel.Item>
+                  ))}
+                </Carousel>
+              </div>
             </Modal.Body>
           </Modal>
 
@@ -201,7 +255,7 @@ const ProductDetail = () => {
             ))}
 
             <div className="mb-3">
-              <label className="font-weight-bold mb-2">
+              <label className="font-weight-bold">
                 {t("productDetail.selectVersion")}:
               </label>
               <div className="d-flex justify-content-start version-button-group">
