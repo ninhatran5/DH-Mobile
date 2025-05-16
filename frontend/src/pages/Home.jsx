@@ -32,10 +32,12 @@ import Blogs from "../components/Blogs";
 import SliderLogoBrand from "../components/SliderLogoBrand";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 const Home = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [isPercentDecrease, setIsPercentDecrease] = useState(true);
   const banners = [banner1, banner2, banner3];
   const logoBrand = [
     { id: 1, name: "Apple", logo: appleLogo },
@@ -56,6 +58,7 @@ const Home = () => {
     {
       id: 1,
       price: "27.890.000đ",
+      priceOriginal: "30.500.000đ",
       title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
       image: iphone,
     },
@@ -68,12 +71,14 @@ const Home = () => {
     {
       id: 3,
       price: "27.890.000đ",
+      priceOriginal: "30.500.000đ",
       title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
       image: iphone,
     },
     {
       id: 4,
       price: "27.890.000đ",
+      priceOriginal: "30.500.000đ",
       title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
       image: iphone,
     },
@@ -96,6 +101,21 @@ const Home = () => {
       image: iphone,
     },
   ];
+
+  const convertPriceToNumber = (priceString) => {
+    return Number(priceString.replace(/\./g, "").replace("đ", ""));
+  };
+
+  const getDiscountPercent = (product) => {
+    if (!product.price || !product.priceOriginal) return null;
+
+    const original = convertPriceToNumber(product.priceOriginal);
+    const sale = convertPriceToNumber(product.price);
+
+    if (isNaN(original) || isNaN(sale) || sale >= original) return null;
+
+    return Math.round(((original - sale) / original) * 100);
+  };
 
   const services = [
     {
@@ -356,38 +376,65 @@ const Home = () => {
               1200: { slidesPerView: 4 },
             }}
           >
-            {products.map((item) => (
-              <SwiperSlide key={item.id}>
-                <div
-                  className="card mb-3 p-3 rounded-4 shadow border-0"
-                  style={{ cursor: "pointer" }}
-                >
-                  <div className="row g-0">
-                    <div className="col-md-4">
-                      <img
-                        onClick={() => nextProductDetail(item.id)}
-                        src={item.image}
-                        className="img-fluid rounded"
-                        alt={item.title}
-                      />
-                    </div>
-                    <div className="col-md-8">
-                      <div className="card-body py-0">
-                        <h5
+            {products.map((item) => {
+              const discountPercent = isPercentDecrease
+                ? getDiscountPercent(item)
+                : null;
+              return (
+                <SwiperSlide key={item.id}>
+                  <div
+                    className="card mb-3 p-3 rounded-4 shadow border-0"
+                    style={{ cursor: "pointer" }}
+                  >
+                    {discountPercent !== null && (
+                      <span className="badge bg-success position-absolute mt-1">
+                        -{discountPercent}%
+                      </span>
+                    )}
+                    <div className="row g-0">
+                      <div className="col-md-4">
+                        <img
                           onClick={() => nextProductDetail(item.id)}
-                          className="card-title"
-                        >
-                          {item.title}
-                        </h5>
-                        <h6 style={{ color: "#e40303" }} className=" mb-0">
-                          {item.price}
-                        </h6>
+                          src={item.image}
+                          className="img-fluid rounded"
+                          alt={item.title}
+                        />
+                      </div>
+                      <div className="col-md-8">
+                        <div className="card-body py-0">
+                          <h5
+                            onClick={() => nextProductDetail(item.id)}
+                            className="card-title"
+                          >
+                            {item.title}
+                          </h5>
+                          <div style={{ display: "flex", gap: 7 }}>
+                            <h6
+                              onClick={() => nextProductDetail(item.id)}
+                              style={{ color: "#e40303" }}
+                              className=" mb-0"
+                            >
+                              {item.price}
+                            </h6>
+                            <h6
+                              onClick={() => nextProductDetail(item.id)}
+                              style={{
+                                color: "#e40303",
+                                fontSize: 13,
+                                textDecoration: "line-through",
+                              }}
+                              className=" mb-0"
+                            >
+                              {item.priceOriginal}
+                            </h6>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </SwiperSlide>
-            ))}
+                </SwiperSlide>
+              );
+            })}
           </Swiper>
         </div>
       </section>

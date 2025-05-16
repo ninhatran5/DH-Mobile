@@ -70,7 +70,9 @@ const ProductDetail = () => {
     {
       id: 1,
       name: "iPhone 16 Pro Max",
-      price: "24.000.000đ",
+      priceSale: "24.000.000đ",
+      priceOriginal: "24.500.000đ",
+      quantity: 1000,
       desc: "iPhone 16 Pro Max mang đến thiết kế sang trọng với khung thép không gỉ và mặt lưng kính cường lực. Màn hình Super Retina XDR với công nghệ ProMotion cung cấp trải nghiệm hình ảnh mượt mà. Được trang bị chip A17 Bionic, nó mạnh mẽ và tiết kiệm năng lượng. Hệ thống camera cải tiến cho khả năng chụp ảnh và quay video ấn tượng, bao gồm chế độ ban đêm và video 4K. Hỗ trợ kết nối 5G, thời lượng pin lâu dài và chạy trên iOS mới nhất, iPhone 16 Pro Max là lựa chọn hoàn hảo cho những người yêu công nghệ.",
     },
   ];
@@ -249,7 +251,14 @@ const ProductDetail = () => {
             {machineInformation.map((item) => (
               <div key={item.id}>
                 <h2 className="mb-3">{item.name}</h2>
-                <h4 className="text-price mb-3">{item.price}</h4>
+                <div className="price">
+                  <h4 className="text-price_sale mb-3">{item.priceSale}</h4>
+                  <p className="text-price_original">{item.priceOriginal}</p>
+                </div>
+                <p className="text-muted">
+                  Số lượng: <span className="fw-bold">{item.quantity}</span> Sản
+                  Phẩm
+                </p>
                 <p className="text-muted">{item.desc}</p>
               </div>
             ))}
