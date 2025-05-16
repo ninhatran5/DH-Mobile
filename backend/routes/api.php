@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AttributeController;
+use App\Http\Controllers\Api\attributevalueController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BannerController;
@@ -72,6 +73,18 @@ Route::middleware('auth:sanctum')->prefix('attributes')->controller(AttributeCon
 Route::get('attributes', [AttributeController::class, 'index']); // lấy danh sách thuộc tính
 Route::get('attributes/{id}', [AttributeController::class, 'show']); // lấy thuộc tính theo id
 
+// Api AttributeValue
+// http://127.0.0.1:8000/api/attributevalue
+Route::middleware('auth:sanctum')->prefix('attributevalue')->controller(attributevalueController::class)->group(function () {
+    Route::post('/', 'store');                    // Thêm thuộc tính con
+    Route::put('/{id}', 'update');               // Cập nhật thuộc tính con theo ID
+    Route::get('/trashed',  'trashed');         // Lấy danh sách thuộc tính con đã xóa mềm
+    Route::delete('/{id}', 'destroy');           // Xóa mềm thuộc tính con
+    Route::put('/restore/{id}', 'restore');      // Khôi phục thuộc tính con đã xóa mềm
+    Route::delete('/forceDelete/{id}', 'forceDelete'); // Xóa vĩnh viễn
+});
+Route::get('attributevalue', [attributevalueController::class, 'index']); // lấy danh sách thuộc tính con
+Route::get('attributevalue/{id}', [attributevalueController::class, 'show']); // lấy thuộc tính con theo id
 
 
 
