@@ -1,58 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Reset CSS */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif !important; /* Force font for all elements */
+}
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-@font-face {
-  font-family: PopinsBold;
-  src: url(../../frontend/src/assets/font/Poppins_Bold.ttf);
+
+body {
+  font-family: 'Inter', sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
 }
-@font-face {
-  font-family: PoppinsRegular;
-  src: url(../../frontend/src/assets/font/Poppins_Regular.ttf);
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
+
+h1 { font-size: 2.5rem; line-height: 1.2; margin-bottom: 1rem; }
+h2 { font-size: 2rem; line-height: 1.3; margin-bottom: 0.875rem; }
+h3 { font-size: 1.75rem; line-height: 1.4; margin-bottom: 0.75rem; }
+h4 { font-size: 1.5rem; line-height: 1.4; margin-bottom: 0.625rem; }
+h5 { font-size: 1.25rem; line-height: 1.4; margin-bottom: 0.5rem; }
+h6 { font-size: 1rem; line-height: 1.4; margin-bottom: 0.5rem; }
+
+/* Links */
 a {
+  font-family: 'Inter', sans-serif !important;
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
 
-
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
+/* Buttons */
+button, .btn {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 600;
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* Form elements */
+input, textarea, select {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 400;
+}
+
+/* Table elements */
+table, th, td {
+  font-family: 'Inter', sans-serif !important;
+}
+
+th {
+  font-weight: 600;
+}
+
+/* Navigation */
+nav, .nav-link, .navbar-brand {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 500;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 400;
+}
+
+/* Card and section titles */
+.card-title, .section-title {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 600;
+}
+
+/* Regular text content */
+p, span, div {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 400;
 }
 
 @media (prefers-color-scheme: light) {
