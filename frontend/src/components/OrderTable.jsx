@@ -63,7 +63,14 @@ const OrderTable = () => {
       />
       <div
         className="container-fluid"
-        style={{ marginTop: "-1.5rem", marginBottom: "4rem" }}
+        style={{
+          marginTop: "-1.5rem",
+          marginBottom: "4rem",
+          backgroundColor: "#ffffff",
+          borderRadius: "8px",
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+          padding: "1.5rem",
+        }}
       >
         <OrderHistory orders={orders} />
       </div>
