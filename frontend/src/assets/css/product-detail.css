@@ -318,7 +318,7 @@
 }
 
 .introduce_productdetail .nav-link:hover {
-  color: #ecac15;
+  color: #0056b3;
 }
 
 .introduce_productdetail .nav-link::after {
@@ -328,12 +328,12 @@
   left: 0;
   height: 2px;
   width: 0%;
-  background-color: #ffc43f;
+  background-color: #0056b3;
   transition: width 0.3s ease-in-out;
 }
 
 .introduce_productdetail .nav-link.active {
-  color: #ecac15;
+  color: #0056b3;
 }
 
 .introduce_productdetail .nav-link.active::after {
