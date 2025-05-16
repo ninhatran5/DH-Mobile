@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Middleware\CheckAdmin;
 
 // API Auth  
@@ -16,10 +17,8 @@ Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/register', [AuthController::class, 'register']);
-// 
+    // 
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
-  
-
 });
 
 
@@ -74,8 +73,8 @@ Route::get('attributes', [AttributeController::class, 'index']); // lấy danh s
 Route::get('attributes/{id}', [AttributeController::class, 'show']); // lấy thuộc tính theo id
 
 // Api AttributeValue
-// http://127.0.0.1:8000/api/attributevalue
-Route::middleware('auth:sanctum')->prefix('attributevalue')->controller(attributevalueController::class)->group(function () {
+// http://127.0.0.1:8000/api/attributevalues
+Route::middleware('auth:sanctum')->prefix('attributevalues')->controller(attributevalueController::class)->group(function () {
     Route::post('/', 'store');                    // Thêm thuộc tính con
     Route::put('/{id}', 'update');               // Cập nhật thuộc tính con theo ID
     Route::get('/trashed',  'trashed');         // Lấy danh sách thuộc tính con đã xóa mềm
@@ -86,7 +85,18 @@ Route::middleware('auth:sanctum')->prefix('attributevalue')->controller(attribut
 Route::get('attributevalue', [attributevalueController::class, 'index']); // lấy danh sách thuộc tính con
 Route::get('attributevalue/{id}', [attributevalueController::class, 'show']); // lấy thuộc tính con theo id
 
-
+// Api ProductVariants
+// http://127.0.0.1:8000/api/productvariants
+Route::middleware('auth:sanctum')->prefix('productvariants')->controller(ProductVariantsController::class)->group(function () {
+    Route::post('/', 'store');                    // Thêm biến thể sản phẩm
+    Route::put('/{id}', 'update');               // Cập nhật biến thể sản phẩm theo ID
+    Route::get('/trashed',  'trashed');         // Lấy danh sách biến thể đã xóa mềm
+    Route::delete('/{id}', 'destroy');           // Xóa mềm biến thể sản phẩm
+    Route::put('/restore/{id}', 'restore');      // Khôi phục biến thể đã xóa mềm
+    Route::delete('/forceDelete/{id}', 'forceDelete'); // Xóa vĩnh viễn
+});
+Route::get('productvariants', [ProductVariantsController::class, 'index']); // lấy danh sách biến thể sản phẩm
+Route::get('productvariants/{id}', [ProductVariantsController::class, 'show']); // lấy biến thể sản phẩm theo id
 
 // Route::middleware(CheckAdmin::class)->group(function () {  
 // });
