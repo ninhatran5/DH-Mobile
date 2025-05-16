@@ -84,7 +84,9 @@
     "addToFavorites": "Add to Favorites",
     "describe": "Description",
     "parameter": "Specifications",
-    "comment": "Comments"
+    "comment": "Comments",
+    "quantity": "Quantity",
+    "product": "Products"
   },
   "breadcrumbVoucher": {
     "breadcrumbHeader": "Vouchers",

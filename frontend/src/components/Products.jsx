@@ -240,7 +240,6 @@ export default function Products({
                               </span>
                             )}
 
-                            {/* Yêu thích */}
                             {unfavorite ? (
                               <a
                                 onClick={addToFavorites}
@@ -259,7 +258,6 @@ export default function Products({
                               </a>
                             )}
 
-                            {/* Ảnh và tên */}
                             <figure>
                               <Link
                                 to={`/product-detail/${product.id}`}
