@@ -6,6 +6,10 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use App\Mail\ResetPasswordMail;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -90,5 +94,40 @@ class AuthController extends Controller
             ]
         ]);
     }
+
+
+    public function forgotPassword(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+    ]);
+
+    $user = User::where('email', $request->email)->first();
+
+    if (!$user) {
+        return response()->json([
+            'message' => 'Email không tồn tại.',
+        ], 404);
+    }
+
+    // Tạo token
+    $token = Str::random(60);
+
+    // Lưu token vào bảng password_resets
+    DB::table('password_resets')->updateOrInsert(
+        ['email' => $user->email],
+        [
+            'token' => $token,
+            'created_at' => now(),
+        ]
+    );
+
+    // Gửi mail
+    Mail::to($user->email)->send(new ResetPasswordMail($user, $token));
+
+    return response()->json([
+        'message' => 'Đã gửi email đặt lại mật khẩu.',
+    ]);
+}
 
 }
