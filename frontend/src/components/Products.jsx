@@ -233,7 +233,7 @@ export default function Products({
 
                       return (
                         <div className="col" key={product.id}>
-                          <div className="product-item position-relative">
+                          <div className="product-item position-relative h-100 d-flex flex-column">
                             {discountPercent !== null && (
                               <span className="badge bg-success position-absolute mt-1 ms-1">
                                 -{discountPercent}%
@@ -258,7 +258,7 @@ export default function Products({
                               </a>
                             )}
 
-                            <figure>
+                            <figure className="mb-3">
                               <Link
                                 to={`/product-detail/${product.id}`}
                                 title={product.name}
@@ -270,31 +270,36 @@ export default function Products({
                               </Link>
                             </figure>
 
-                            <h3
-                              onClick={() => nextProductDetail(product.id)}
-                              style={{ cursor: "pointer" }}
-                            >
-                              {product.name}
-                            </h3>
-
-                            {/* Giá */}
-                            <div className="price_products_sale">
-                              <span className="price">{product.price}</span>
-                              <span className="price_original">
-                                {product.priceOriginal}
-                              </span>
-                            </div>
-
-                            {/* Thêm vào giỏ */}
-                            <div className="d-flex align-items-center justify-content-between">
-                              <a
-                                onClick={addToShoppingCart}
+                            <div className="product-details flex-grow-1 d-flex flex-column">
+                              <h3
+                                onClick={() => nextProductDetail(product.id)}
                                 style={{ cursor: "pointer" }}
-                                className="nav-link"
+                                className="text-truncate mb-2"
                               >
-                                {t("products.addToCart")}
-                                <iconify-icon icon="uil:shopping-cart" />
-                              </a>
+                                {product.name}
+                              </h3>
+
+                              {/* Giá */}
+                              <div className="d-flex flex-wrap gap-2 mb-2">
+                                <span className="price">{product.price}</span>
+                                {product.priceOriginal && (
+                                  <span className="price_original text-decoration-line-through">
+                                    {product.priceOriginal}
+                                  </span>
+                                )}
+                              </div>
+
+                              {/* Thêm vào giỏ */}
+                              <div className="mt-auto">
+                                <a
+                                  onClick={addToShoppingCart}
+                                  style={{ cursor: "pointer" }}
+                                  className="nav-link"
+                                >
+                                  {t("products.addToCart")}
+                                  <iconify-icon icon="uil:shopping-cart" />
+                                </a>
+                              </div>
                             </div>
                           </div>
                         </div>

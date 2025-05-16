@@ -404,29 +404,31 @@ const Home = () => {
                         <div className="card-body py-0">
                           <h5
                             onClick={() => nextProductDetail(item.id)}
-                            className="card-title"
+                            className="card-title text-truncate"
                           >
                             {item.title}
                           </h5>
-                          <div style={{ display: "flex", gap: 7 }}>
+                          <div className="d-flex flex-wrap gap-2">
                             <h6
                               onClick={() => nextProductDetail(item.id)}
                               style={{ color: "#e40303" }}
-                              className=" mb-0"
+                              className="mb-0"
                             >
                               {item.price}
                             </h6>
-                            <h6
-                              onClick={() => nextProductDetail(item.id)}
-                              style={{
-                                color: "#e40303",
-                                fontSize: 13,
-                                textDecoration: "line-through",
-                              }}
-                              className=" mb-0"
-                            >
-                              {item.priceOriginal}
-                            </h6>
+                            {item.priceOriginal && (
+                              <h6
+                                onClick={() => nextProductDetail(item.id)}
+                                style={{
+                                  color: "#e40303",
+                                  fontSize: 13,
+                                  textDecoration: "line-through",
+                                }}
+                                className="mb-0"
+                              >
+                                {item.priceOriginal}
+                              </h6>
+                            )}
                           </div>
                         </div>
                       </div>
