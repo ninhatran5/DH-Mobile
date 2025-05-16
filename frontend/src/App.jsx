@@ -111,11 +111,11 @@ const routerConfig = [
     element: withLayoutClient(DeliveryPolicy),
   },
   {
-    path: "/profile",
+    path: "/profile/:id",
     element: withLayoutClient(Profile),
   },
   {
-    path: "/edit-profile",
+    path: "/edit-profile/:id",
     element: withLayoutClient(EditProfile),
   },
   {
@@ -185,41 +185,39 @@ const routerConfig = [
       },
 
       {
-        path:"addaccount",
-        element:<AddAccount/>
+        path: "addaccount",
+        element: <AddAccount />,
       },
       {
-        path:"orders",
-        element:<OrdersList/>
+        path: "orders",
+        element: <OrdersList />,
       },
       {
-        path:"orders-completed",
-        element:<OrdersCompleted/>
+        path: "orders-completed",
+        element: <OrdersCompleted />,
       },
       {
-        path:"orders-cancelled",
-        element:<OrdersCancelled/>
+        path: "orders-cancelled",
+        element: <OrdersCancelled />,
       },
       {
-        path:"vouchers",
-        element:<VoucherList/>
+        path: "vouchers",
+        element: <VoucherList />,
       },
       {
-        path:"addvoucher",
-        element:<AddVoucher/>
+        path: "addvoucher",
+        element: <AddVoucher />,
       },
       {
-        path:"banners",
-        element:<ListBanner/>
+        path: "banners",
+        element: <ListBanner />,
       },
       {
-        path:"comments",
-        element:<CommentsList/>
-      }
-    ]         
+        path: "comments",
+        element: <CommentsList />,
+      },
+    ],
   },
-
-
 
   {
     path: "*",
