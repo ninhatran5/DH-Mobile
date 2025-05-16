@@ -9,15 +9,11 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 const ChangePassword = () => {
-  const [isShowPassword, setIsShowPassword] = useState(false);
   const [isShowPasswordNew, setIsShowPasswordNew] = useState(false);
   const [isShowConfirmPassword, setIsShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const handleShowPassword = () => {
-    setIsShowPassword(!isShowPassword);
-  };
   const handleShowPasswordNew = () => {
     setIsShowPasswordNew(!isShowPasswordNew);
   };
@@ -82,64 +78,6 @@ const ChangePassword = () => {
                           </div>
                           <form onSubmit={handleSubmit(onSubmit)} noValidate>
                             <div className="row gy-3 overflow-hidden">
-                              {/* Mật khẩu cũ */}
-                              <div className="col-12">
-                                <div className="form-floating mb-3 position-relative">
-                                  <input
-                                    type={`${
-                                      isShowPassword ? "text" : "password"
-                                    }`}
-                                    className="form-control position-relative"
-                                    name="password"
-                                    id="password"
-                                    placeholder="Password"
-                                    spellCheck={false}
-                                    {...register("password", {
-                                      required: t(
-                                        "auth.validation.passwordRequired"
-                                      ),
-                                      pattern: {
-                                        value:
-                                          /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/,
-                                        message: t(
-                                          "auth.validation.passwordInvalid"
-                                        ),
-                                      },
-                                    })}
-                                  />
-                                  {errors?.password && (
-                                    <small
-                                      className="mt-2"
-                                      style={{ color: "red" }}
-                                    >
-                                      {errors?.password?.message}
-                                    </small>
-                                  )}
-                                  <div
-                                    style={{
-                                      fontSize: 20,
-                                      cursor: "pointer",
-                                      top: "8px",
-                                      left: "90%",
-                                    }}
-                                    onClick={handleShowPassword}
-                                    className="position-absolute"
-                                  >
-                                    {isShowPassword ? (
-                                      <FaEyeSlash />
-                                    ) : (
-                                      <IoEyeSharp />
-                                    )}
-                                  </div>
-                                  <label
-                                    htmlFor="password"
-                                    className="form-label"
-                                  >
-                                    {t("auth.password")}
-                                  </label>
-                                </div>
-                              </div>
-
                               {/* Mật khẩu mới */}
                               <div className="col-12">
                                 <div className="form-floating mb-3 position-relative">

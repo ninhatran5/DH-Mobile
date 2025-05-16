@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { Modal } from "react-bootstrap";
 import iphone from "../assets/images/iphone-16-pro-max.webp";
 import iphone2 from "../assets/images/iphone-15-pro_2__2_1_1_1.webp";
@@ -79,17 +79,17 @@ const ProductDetail = () => {
   const [showModal, setShowModal] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [slideDirection, setSlideDirection] = useState(null);
-  const [isAnimating, setIsAnimating] = useState(false);
 
   const handleThumbnailClick = (image) => {
     setCurrentImage(image);
-    const index = productImages.findIndex(item => item.image === image);
+    const index = productImages.findIndex((item) => item.image === image);
     setActiveIndex(index);
   };
 
   const handleShowModal = () => {
-    const index = productImages.findIndex(item => item.image === currentImage);
+    const index = productImages.findIndex(
+      (item) => item.image === currentImage
+    );
     setActiveIndex(index);
     setShowModal(true);
   };
@@ -136,10 +136,13 @@ const ProductDetail = () => {
     navigate("/shopping-cart");
   };
 
-  const handleSelect = useCallback((index) => {
-    setActiveIndex(index);
-    setCurrentImage(productImages[index].image);
-  }, [productImages]);
+  const handleSelect = useCallback(
+    (index) => {
+      setActiveIndex(index);
+      setCurrentImage(productImages[index].image);
+    },
+    [productImages]
+  );
 
   const handlers = useSwipeable({
     onSwipedLeft: () => {
@@ -147,7 +150,8 @@ const ProductDetail = () => {
       handleSelect(nextIndex);
     },
     onSwipedRight: () => {
-      const prevIndex = activeIndex === 0 ? productImages.length - 1 : activeIndex - 1;
+      const prevIndex =
+        activeIndex === 0 ? productImages.length - 1 : activeIndex - 1;
       handleSelect(prevIndex);
     },
     trackMouse: true,
@@ -155,7 +159,7 @@ const ProductDetail = () => {
     delta: 5,
     swipeDuration: 250,
     touchEventOptions: { passive: true },
-    rotationAngle: 0
+    rotationAngle: 0,
   });
 
   return (
@@ -216,9 +220,9 @@ const ProductDetail = () => {
             <Modal.Header closeButton className="border-0"></Modal.Header>
             <Modal.Body className="text-center p-0">
               <div {...handlers} className="carousel-swipeable-container">
-                <Carousel 
-                  data-bs-theme="dark" 
-                  interval={null} 
+                <Carousel
+                  data-bs-theme="dark"
+                  interval={null}
                   activeIndex={activeIndex}
                   onSelect={handleSelect}
                   indicators={false}
