@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 const Profile = () => {
   const { t } = useTranslation();
-
+  const id = 123;
   const personalInformations = [
     {
       id: 1,
@@ -137,7 +137,10 @@ const Profile = () => {
                   </div>
                   <div className="profile-col-half">
                     <div className="profile-edit-wrapper">
-                      <Link to={"/edit-profile"} className="profile-btn-edit">
+                      <Link
+                        to={`/edit-profile/${id}`}
+                        className="profile-btn-edit"
+                      >
                         <i className="mdi mdi-account-settings-variant" />
                         {t("profile.editProfile")}
                       </Link>

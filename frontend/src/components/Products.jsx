@@ -20,7 +20,8 @@ export default function Products({
   const navigate = useNavigate();
 
   const [priceFilter, setPriceFilter] = useState("");
-  const [sortOrder, setSortOrder] = useState(""); // '' | 'lowToHigh' | 'highToLow'
+  const [sortOrder, setSortOrder] = useState("");
+  const [isPercentDecrease, setIsPercentDecrease] = useState(true);
 
   const nextProductDetail = (id) => {
     navigate(`/product-detail/${id}`);
@@ -53,6 +54,8 @@ export default function Products({
       id: 2,
       name: "Samsung Galaxy S22 Ultra 512GB",
       price: "29.990.000đ",
+      priceOriginal: "32.500.000đ",
+
       image: iphone,
     },
     {
@@ -65,12 +68,14 @@ export default function Products({
       id: 4,
       name: "iPhone 15 Pro Max",
       price: "34.990.000đ",
+      priceOriginal: "39.500.000đ",
       image: iphone,
     },
     {
       id: 5,
       name: "Samsung Galaxy A14",
       price: "4.690.000đ",
+      priceOriginal: "7.500.000đ",
       image: iphone,
     },
     {
@@ -95,6 +100,7 @@ export default function Products({
       id: 9,
       name: "iPhone 14 128GB",
       price: "19.990.000đ",
+      priceOriginal: "20.500.000đ",
       image: iphone,
     },
     {
@@ -104,6 +110,21 @@ export default function Products({
       image: iphone,
     },
   ];
+
+  const convertPriceToNumber = (priceString) => {
+    return Number(priceString.replace(/\./g, "").replace("đ", ""));
+  };
+
+  const getDiscountPercent = (product) => {
+    if (!product.price || !product.priceOriginal) return null;
+
+    const original = convertPriceToNumber(product.priceOriginal);
+    const sale = convertPriceToNumber(product.price);
+
+    if (isNaN(original) || isNaN(sale) || sale >= original) return null;
+
+    return Math.round(((original - sale) / original) * 100);
+  };
 
   // Chuyển chuỗi giá thành số nguyên
   const parsePrice = (priceStr) => parseInt(priceStr.replace(/[^\d]/g, ""));
@@ -205,56 +226,82 @@ export default function Products({
                   aria-labelledby="nav-all-tab"
                 >
                   <div className="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
-                    {sortedProducts.map((product) => (
-                      <div className="col" key={product.id}>
-                        <div className="product-item">
-                          {unfavorite ? (
-                            <a
-                              onClick={addToFavorites}
-                              style={{ cursor: "pointer" }}
-                              className="btn-wishlist"
-                            >
-                              <FaRegHeart style={{ fontSize: 20 }} />
-                            </a>
-                          ) : (
-                            <a
-                              onClick={handleUnFavorites}
-                              style={{ cursor: "pointer" }}
-                              className="btn-wishlist"
-                            >
-                              <LuHeartOff style={{ fontSize: 20 }} />
-                            </a>
-                          )}
+                    {sortedProducts.map((product) => {
+                      const discountPercent = isPercentDecrease
+                        ? getDiscountPercent(product)
+                        : null;
 
-                          <figure>
-                            <Link
-                              to={`/product-detail/${product.id}`}
-                              title={product.name}
-                            >
-                              <img src={product.image} className="tab-image" />
-                            </Link>
-                          </figure>
-                          <h3
-                            onClick={() => nextProductDetail(product.id)}
-                            style={{ cursor: "pointer" }}
-                          >
-                            {product.name}
-                          </h3>
-                          <span className="price">{product.price}</span>
-                          <div className="d-flex align-items-center justify-content-between">
-                            <a
-                              onClick={addToShoppingCart}
+                      return (
+                        <div className="col" key={product.id}>
+                          <div className="product-item position-relative">
+                            {discountPercent !== null && (
+                              <span className="badge bg-success position-absolute mt-1 ms-1">
+                                -{discountPercent}%
+                              </span>
+                            )}
+
+                            {unfavorite ? (
+                              <a
+                                onClick={addToFavorites}
+                                style={{ cursor: "pointer" }}
+                                className="btn-wishlist"
+                              >
+                                <FaRegHeart style={{ fontSize: 20 }} />
+                              </a>
+                            ) : (
+                              <a
+                                onClick={handleUnFavorites}
+                                style={{ cursor: "pointer" }}
+                                className="btn-wishlist"
+                              >
+                                <LuHeartOff style={{ fontSize: 20 }} />
+                              </a>
+                            )}
+
+                            <figure>
+                              <Link
+                                to={`/product-detail/${product.id}`}
+                                title={product.name}
+                              >
+                                <img
+                                  src={product.image}
+                                  className="tab-image"
+                                />
+                              </Link>
+                            </figure>
+
+                            <h3
+                              onClick={() => nextProductDetail(product.id)}
                               style={{ cursor: "pointer" }}
-                              className="nav-link"
                             >
-                              {t("products.addToCart")}
-                              <iconify-icon icon="uil:shopping-cart" />
-                            </a>
+                              {product.name}
+                            </h3>
+
+                            {/* Giá */}
+                            <div className="price_products_sale">
+                              <span className="price">{product.price}</span>
+                              <span className="price_original">
+                                {product.priceOriginal}
+                              </span>
+                            </div>
+
+                            {/* Thêm vào giỏ */}
+                            <div className="d-flex align-items-center justify-content-between">
+                              <a
+                                onClick={addToShoppingCart}
+                                style={{ cursor: "pointer" }}
+                                className="nav-link"
+                              >
+                                {t("products.addToCart")}
+                                <iconify-icon icon="uil:shopping-cart" />
+                              </a>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
+
                   {sortedProducts.length === 0 && (
                     <p className="text-center mt-5">
                       {t("products.noProductFound")}

@@ -83,7 +83,9 @@
     "addToFavorites": "Thêm vào yêu thích",
     "describe": "Mô tả",
     "parameter": "Thông số kỹ thuật",
-    "comment": "Bình luận"
+    "comment": "Bình luận",
+    "quantity": "Số lượng",
+    "product": "Sản Phẩm"
   },
   "breadcrumbVoucher": {
     "breadcrumbHeader": "Mã Giảm Giá",

@@ -15,6 +15,8 @@ import { useSwipeable } from "react-swipeable";
 
 const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
+  const [selectedVersion, setSelectedVersion] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(null);
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -70,7 +72,9 @@ const ProductDetail = () => {
     {
       id: 1,
       name: "iPhone 16 Pro Max",
-      price: "24.000.000đ",
+      priceSale: "24.000.000đ",
+      priceOriginal: "24.500.000đ",
+      quantity: 1000,
       desc: "iPhone 16 Pro Max mang đến thiết kế sang trọng với khung thép không gỉ và mặt lưng kính cường lực. Màn hình Super Retina XDR với công nghệ ProMotion cung cấp trải nghiệm hình ảnh mượt mà. Được trang bị chip A17 Bionic, nó mạnh mẽ và tiết kiệm năng lượng. Hệ thống camera cải tiến cho khả năng chụp ảnh và quay video ấn tượng, bao gồm chế độ ban đêm và video 4K. Hỗ trợ kết nối 5G, thời lượng pin lâu dài và chạy trên iOS mới nhất, iPhone 16 Pro Max là lựa chọn hoàn hảo cho những người yêu công nghệ.",
     },
   ];
@@ -249,67 +253,116 @@ const ProductDetail = () => {
             {machineInformation.map((item) => (
               <div key={item.id}>
                 <h2 className="mb-3">{item.name}</h2>
-                <h4 className="text-price mb-3">{item.price}</h4>
+                <div className="price">
+                  <h4 className="text-price_sale mb-3">{item.priceSale}</h4>
+                  <p className="text-price_original">{item.priceOriginal}</p>
+                </div>
+                <p className="text-muted">
+                  {t("productDetail.quantity")}:{" "}
+                  <span className="fw-bold">{item.quantity}</span>{" "}
+                  {t("productDetail.product")}
+                </p>
                 <p className="text-muted">{item.desc}</p>
               </div>
             ))}
-
             <div className="mb-3">
               <label className="font-weight-bold">
                 {t("productDetail.selectVersion")}:
+                {!selectedVersion && <span className="text-danger">*</span>}
               </label>
               <div className="d-flex justify-content-start version-button-group">
                 {phoneVersions.map((phoneVersion) => (
                   <button
                     key={phoneVersion.id}
-                    className="btn btn-outline-secondary mx-1"
+                    className={`btn btn-outline-secondary mx-1 ${
+                      selectedVersion === phoneVersion.id ? "active" : ""
+                    }`}
+                    onClick={() =>
+                      setSelectedVersion(
+                        selectedVersion === phoneVersion.id
+                          ? null
+                          : phoneVersion.id
+                      )
+                    }
                   >
                     {phoneVersion.version}
                   </button>
                 ))}
               </div>
             </div>
-
             <div className="mb-4">
               <label className="font-weight-bold mb-2">
                 {t("productDetail.selectColor")}:
+                {!selectedColor && <span className="text-danger">*</span>}
               </label>
               <div className="d-flex justify-content-start">
                 {phoneColors.map((phoneColor) => (
                   <div
                     key={phoneColor.id}
-                    className="color-circle mx-1"
-                    style={{ backgroundColor: phoneColor.colors }}
-                    onClick={() => console.log(phoneColor.values)}
+                    className={`color-circle mx-1 ${
+                      selectedColor === phoneColor.id ? "active" : ""
+                    }`}
+                    style={{
+                      backgroundColor: phoneColor.colors,
+                      border:
+                        selectedColor === phoneColor.id
+                          ? `1px solid ${phoneColor.colors}`
+                          : "1px solid #e0e0e0",
+                      transform:
+                        selectedColor === phoneColor.id
+                          ? "scale(1.08)"
+                          : "scale(1)",
+                      boxShadow:
+                        selectedColor === phoneColor.id
+                          ? `0 0 0 1px #fff, 0 0 0 2px ${phoneColor.colors}`
+                          : "none",
+                      transition: "all 0.2s ease-in-out",
+                      cursor: "pointer",
+                    }}
+                    onClick={() =>
+                      setSelectedColor(
+                        selectedColor === phoneColor.id ? null : phoneColor.id
+                      )
+                    }
                   ></div>
                 ))}
               </div>
             </div>
-            <div className="quantity-group mb-4">
-              <button onClick={handleDownQuantity} className="btn-quantity">
-                -
-              </button>
-              <input
-                type="number"
-                className="input-quantity hide-spinner"
-                onChange={handleChangQuantity}
-                min={1}
-                value={quantity}
-                onKeyDown={handleKeyDown}
-              />
-              <button onClick={handleUpQuantity} className="btn-quantity">
-                +
-              </button>
-            </div>
 
+            <div style={{ marginTop: 30 }}>
+              <label className="font-weight-bold mb-2 me-3">
+                {t("productDetail.quantity")}:
+              </label>
+              <div className="quantity-group mb-4">
+                <button onClick={handleDownQuantity} className="btn-quantity">
+                  -
+                </button>
+                <input
+                  type="number"
+                  className="input-quantity hide-spinner"
+                  onChange={handleChangQuantity}
+                  min={1}
+                  value={quantity}
+                  onKeyDown={handleKeyDown}
+                />
+                <button onClick={handleUpQuantity} className="btn-quantity">
+                  +
+                </button>
+              </div>
+            </div>
             <div style={{ display: "flex", gap: 5 }}>
               <button
                 onClick={addToFavorites}
                 className="btn-custom btn-favorite px-4"
+                disabled={!selectedVersion || !selectedColor}
               >
                 {t("productDetail.addToFavorites")}
               </button>
-              <button onClick={addToShoppingCart} className="btn-custom px-4">
+              <button
+                onClick={addToShoppingCart}
+                className="btn-custom px-4"
+                disabled={!selectedVersion || !selectedColor}
+              >
                 {t("products.addToCart")}
               </button>
             </div>

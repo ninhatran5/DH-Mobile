@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import "../assets/css/editprofile.css";
 import { FaEyeSlash } from "react-icons/fa";
 import { IoEyeSharp } from "react-icons/io5";
@@ -9,6 +9,8 @@ const EditProfile = () => {
   const [isShowPassword, setIsShowPassword] = useState(false);
   const [isShowPasswordNew, setIsShowPasswordNew] = useState(false);
   const [isShowConfirmPassword, setIsShowConfirmPassword] = useState(false);
+  const { id } = useParams();
+  console.log("🚀 ~ EditProfile ~ id:", id);
   const handleShowPassword = () => {
     setIsShowPassword(!isShowPassword);
   };

@@ -29,7 +29,7 @@
 .border.rounded:hover {
   border-color: #d0d0d0 !important;
 }
-.carousel-indicators{
+.carousel-indicators {
   display: none !important;
 }
 .border.rounded img {
@@ -88,10 +88,20 @@
 .product-detail-section {
   padding: 20px 0;
 }
-.text-price {
+.price {
+  display: flex;
+  gap: 12px;
+}
+.text-price_sale {
   color: #e74c3c;
   font-size: 24px;
   font-weight: bold;
+}
+.text-price_original {
+  color: #e74c3c;
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: line-through;
 }
 .version-button-group {
   display: flex;
@@ -137,13 +147,13 @@
 }
 .color-circle:hover {
   transform: scale(1.1);
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 .color-circle.active {
   border-color: #007bff;
 }
 .color-circle::after {
-  content: '';
+  content: "";
   position: absolute;
   top: -4px;
   left: -4px;
@@ -297,7 +307,7 @@
     padding: 12px 15px;
     font-size: 12px;
   }
-  
+
   .product-actions {
     display: flex;
     flex-direction: column;
@@ -466,9 +476,6 @@
 
 /* Close button */
 .modal .btn-close {
-  position: absolute;
-  top: -50px;
-  right: -50px;
   width: 40px;
   height: 40px;
   background-color: transparent;
@@ -504,7 +511,7 @@
   .carousel .carousel-inner {
     height: 70vh;
   }
-  
+
   .carousel-item {
     padding: 15px;
   }
@@ -516,7 +523,7 @@
   .carousel-control-next {
     right: -45px !important;
   }
-  
+
   .carousel-control-prev-icon,
   .carousel-control-next-icon {
     width: 40px;
@@ -534,11 +541,11 @@
   .carousel .carousel-inner {
     height: 60vh;
   }
-  
+
   .carousel-item {
     padding: 10px;
   }
-  
+
   .carousel-control-prev-icon,
   .carousel-control-next-icon {
     width: 35px;

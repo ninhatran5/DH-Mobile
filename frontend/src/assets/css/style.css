@@ -627,17 +627,27 @@ h6 {
 .product-item .rating iconify-icon {
   color: #ffc43f;
 }
+.product-item .price_products_sale {
+  display: flex;
+  gap: 7px;
+}
 .product-item .price {
   margin-top: 5px;
-  margin-bottom: 15px;
-  display: block;
-  width: 100%;
   font-weight: 600;
   font-size: 18px;
   color: rgb(228, 3, 3);
   line-height: 30px;
   text-transform: capitalize;
-  /* color: #222222; */
+}
+.product-item .price_original {
+  margin-bottom: 15px;
+  font-weight: 600;
+  font-size: 13px;
+  color: rgb(228, 3, 3);
+  line-height: 30px;
+  text-decoration: line-through;
+  text-transform: capitalize;
+  margin-top: 3px;
 }
 .product-item .product-qty {
   width: 85px;
