@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductVariant extends Model
 {
-    //
+    use SoftDeletes;
+
     protected $table = 'product_variants';
     protected $primaryKey = 'variant_id';
     protected $fillable = [
@@ -14,7 +16,7 @@ class ProductVariant extends Model
         'sku',
         'price',
         'image_url',
-        'stock_quantity	',
+        'stock_quantity',
         'deleted_at',
         'created_at',
         'updated_at',
