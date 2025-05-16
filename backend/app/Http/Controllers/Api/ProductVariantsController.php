@@ -14,7 +14,7 @@ class ProductVariantsController extends Controller
      */
     public function index()
     {
-        $variants = ProductVariant::with(['product', 'attributeValues', 'attributes'])->get();
+        $variants = ProductVariant::with(['product', 'attributeValues'])->get();
         return response()->json([
             'message' => 'Lấy danh sách biến thể sản phẩm thành công',
             'data' => $variants,
@@ -56,7 +56,7 @@ class ProductVariantsController extends Controller
      */
     public function show(string $id)
     {
-        $variant = ProductVariant::with(['product', 'attributeValues', 'attributes'])->find($id);
+        $variant = ProductVariant::with(['product', 'attributeValues'])->find($id);
         if ($variant) {
             return response()->json($variant, 200);
         } else {
@@ -127,7 +127,7 @@ class ProductVariantsController extends Controller
      */
     public function trashed()
     {
-        $variants = ProductVariant::onlyTrashed()->get();
+        $variants = ProductVariant::onlyTrashed()->orderBy('deleted_at', 'DESC')->get();
         return response()->json([
             'message' => 'Lấy danh sách biến thể đã xóa thành công',
             'data' => $variants,
