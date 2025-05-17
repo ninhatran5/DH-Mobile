@@ -1,19 +1,19 @@
 import { useTranslation } from "react-i18next";
 import Breadcrumb from "../components/Breadcrumb";
-import Products from "../components/Products";
+import ListProducts from "../components/ListProducts";
 
 const FavoriteProducts = () => {
   const { t } = useTranslation();
   return (
     <>
       <Breadcrumb
-        title={t('breadcrumbLiked.breadcrumbHeader')}
-        mainItem={t('breadcrumbVoucher.breadcrumbTitleHome')}
-        secondaryItem={t('breadcrumbLiked.breadcrumbHeader')}
+        title={t("breadcrumbLiked.breadcrumbHeader")}
+        mainItem={t("breadcrumbVoucher.breadcrumbTitleHome")}
+        secondaryItem={t("breadcrumbLiked.breadcrumbHeader")}
         linkMainItem={"/"}
         showMainItem2={false}
       />
-      <Products showHeader={false} filter={false} unfavorite={false} />
+      <ListProducts showHeader={false} filter={false} />
     </>
   );
 };
