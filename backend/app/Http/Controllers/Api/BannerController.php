@@ -9,6 +9,14 @@ use Illuminate\Support\Facades\Storage;
 
 class BannerController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/api/getbanners",
+     *     summary="Lấy toàn bộ danh sách banner",
+     *     tags={"Banner"},
+     *     @OA\Response(response=200, description="Thành công")
+     * )
+     */
     public function index()
     {
         $banners = Banner::all();
@@ -16,6 +24,21 @@ class BannerController extends Controller
     }
 
 
+    /**
+     * @OA\Get(
+     *     path="/api/getbanners/{id}",
+     *     summary="Lấy banner theo id",
+     *     tags={"Banner"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
+     */
     public function show($id)
     {
         $banner = Banner::find($id);
@@ -27,6 +50,30 @@ class BannerController extends Controller
     }
 
 
+    /**
+     * @OA\Post(
+     *     path="/api/updatebanners/{id}",
+     *     summary="Cập nhật banner theo id",
+     *     tags={"Banner"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="title", type="string"),
+     *             @OA\Property(property="link_url", type="string"),
+     *             @OA\Property(property="image_url", type="string", format="binary"),
+     *             @OA\Property(property="is_active", type="boolean")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Cập nhật thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
+     */
     public function update(Request $request, $id)
     {
         $banner = Banner::find($id);
