@@ -11,8 +11,40 @@ use Illuminate\Support\Str;
 use App\Mail\ResetPasswordMail;
 use Illuminate\Support\Facades\DB;
 
+/**
+ *    @OA\Info(
+ *    title="APIs For Thrift Store",
+ *    version="1.0.0",
+ *    ),
+ *    @OA\SecurityScheme(
+ *   securityScheme="bearerAuth",
+ *    in="header",
+ *    name="bearerAuth",
+ *    type="http",
+ *    scheme="bearer",
+ *    bearerFormat="JWT",
+ *    ),
+ */
 class AuthController extends Controller
 {
+
+    /**
+     * @OA\Post(
+     *     path="/api/login",
+     *     summary="Đăng nhập",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email","password"},
+     *             @OA\Property(property="email", type="string", format="email"),
+     *             @OA\Property(property="password", type="string", format="password")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Đăng nhập thành công"),
+     *     @OA\Response(response=401, description="Sai thông tin đăng nhập")
+     * )
+     */
     public function login(Request $request)
     {
         // Validate dữ liệu đầu vào
@@ -49,6 +81,15 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/logout",
+     *     summary="Đăng xuất",
+     *     tags={"Auth"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(response=200, description="Đăng xuất thành công")
+     * )
+     */
     public function logout(Request $request)
     {
         // Xóa token hiện tại
@@ -61,6 +102,26 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/register",
+     *     summary="Đăng ký tài khoản mới",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"username","full_name","email","password"},
+     *             @OA\Property(property="username", type="string"),
+     *             @OA\Property(property="full_name", type="string"),
+     *             @OA\Property(property="email", type="string", format="email"),
+     *             @OA\Property(property="password", type="string", format="password"),
+     *             @OA\Property(property="phone", type="string"),
+     *             @OA\Property(property="address", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Đăng ký thành công")
+     * )
+     */
     public function register(Request $request)
     {
         // Validate dữ liệu đầu vào
@@ -95,7 +156,22 @@ class AuthController extends Controller
         ]);
     }
 
-
+    /**
+     * @OA\Post(
+     *     path="/api/forgot-password",
+     *     summary="Gửi email đặt lại mật khẩu",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email"},
+     *             @OA\Property(property="email", type="string", format="email")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Gửi email thành công"),
+     *     @OA\Response(response=404, description="Email không tồn tại")
+     * )
+     */
     public function forgotPassword(Request $request)
     {
         $request->validate([
@@ -129,6 +205,27 @@ class AuthController extends Controller
             'message' => 'Đã gửi email đặt lại mật khẩu.',
         ]);
     }
+
+    /**
+     * @OA\Post(
+     *     path="/api/resetpassword",
+     *     summary="Đặt lại mật khẩu mới",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email","token","password","password_confirmation"},
+     *             @OA\Property(property="email", type="string", format="email"),
+     *             @OA\Property(property="token", type="string"),
+     *             @OA\Property(property="password", type="string", format="password"),
+     *             @OA\Property(property="password_confirmation", type="string", format="password")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Đặt lại mật khẩu thành công"),
+     *     @OA\Response(response=400, description="Token không hợp lệ hoặc đã hết hạn"),
+     *     @OA\Response(response=404, description="Email không tồn tại")
+     * )
+     */
     public function resetPassword(Request $request)
     {
         $request->validate([

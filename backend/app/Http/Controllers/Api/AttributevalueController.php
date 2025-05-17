@@ -9,8 +9,14 @@ use Illuminate\Http\Request;
 
 class attributevalueController extends Controller
 {
+
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/attributevalue",
+     *     summary="Lấy danh sách thuộc tính con",
+     *     tags={"AttributeValue"},
+     *     @OA\Response(response=200, description="Thành công")
+     * )
      */
     public function index()
     {
@@ -24,7 +30,20 @@ class attributevalueController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/attributevalues",
+     *     summary="Thêm thuộc tính con mới",
+     *     tags={"AttributeValue"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"attribute_id","value"},
+     *             @OA\Property(property="attribute_id", type="integer"),
+     *             @OA\Property(property="value", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Tạo thành công")
+     * )
      */
     public function store(Request $request)
     {
@@ -42,7 +61,19 @@ class attributevalueController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/attributevalue/{id}",
+     *     summary="Lấy thuộc tính con theo id",
+     *     tags={"AttributeValue"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
      */
     public function show(string $id)
     {
@@ -58,7 +89,27 @@ class attributevalueController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/api/attributevalues/{id}",
+     *     summary="Cập nhật thuộc tính con theo id",
+     *     tags={"AttributeValue"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"attribute_id","value"},
+     *             @OA\Property(property="attribute_id", type="integer"),
+     *             @OA\Property(property="value", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Cập nhật thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
      */
     public function update(Request $request, string $id)
     {
@@ -81,7 +132,19 @@ class attributevalueController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/attributevalues/{id}",
+     *     summary="Xóa mềm thuộc tính con theo id",
+     *     tags={"AttributeValue"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Xóa thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
      */
     public function destroy(string $id)
     {
@@ -91,7 +154,7 @@ class attributevalueController extends Controller
             return response()->json([
                 'message' => 'Không tìm thấy thuộc tính con ',
                 'status' => 404,
-            ],404);
+            ], 404);
         }
         $attributevalue->delete();
         return response()->json([
@@ -99,7 +162,7 @@ class attributevalueController extends Controller
             'status' => 200,
         ])->setStatusCode(200, 'OK');
     }
-        public function trashed()
+    public function trashed()
     {
         //
         $attributevalue = AttributeValue::onlyTrashed()->get();
@@ -140,5 +203,4 @@ class attributevalueController extends Controller
             'status' => 200,
         ])->setStatusCode(200, 'OK');
     }
-    
 }

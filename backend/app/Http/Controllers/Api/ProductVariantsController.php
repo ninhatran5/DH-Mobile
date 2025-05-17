@@ -10,7 +10,12 @@ use Illuminate\Http\Request;
 class ProductVariantsController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/productvariants",
+     *     summary="Lấy danh sách biến thể sản phẩm",
+     *     tags={"ProductVariants"},
+     *     @OA\Response(response=200, description="Thành công")
+     * )
      */
     public function index()
     {
@@ -23,7 +28,22 @@ class ProductVariantsController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/productvariants",
+     *     summary="Thêm biến thể sản phẩm mới",
+     *     tags={"ProductVariants"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"product_id","sku","price","stock_quantity"},
+     *             @OA\Property(property="product_id", type="integer"),
+     *             @OA\Property(property="sku", type="string"),
+     *             @OA\Property(property="price", type="number"),
+     *             @OA\Property(property="stock_quantity", type="integer")
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Tạo thành công")
+     * )
      */
     public function store(Request $request)
     {
@@ -52,7 +72,19 @@ class ProductVariantsController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/productvariants/{id}",
+     *     summary="Lấy chi tiết biến thể sản phẩm",
+     *     tags={"ProductVariants"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
      */
     public function show(string $id)
     {
@@ -65,7 +97,28 @@ class ProductVariantsController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/api/productvariants/{id}",
+     *     summary="Cập nhật biến thể sản phẩm",
+     *     tags={"ProductVariants"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"sku","price","stock_quantity"},
+     *             @OA\Property(property="sku", type="string"),
+     *             @OA\Property(property="price", type="number"),
+     *             @OA\Property(property="stock_quantity", type="integer")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Cập nhật thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
      */
     public function update(Request $request, string $id)
     {
@@ -104,7 +157,19 @@ class ProductVariantsController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/productvariants/{id}",
+     *     summary="Xóa mềm biến thể sản phẩm",
+     *     tags={"ProductVariants"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Xóa thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
      */
     public function destroy(string $id)
     {

@@ -9,7 +9,12 @@ use Illuminate\Http\Request;
 class ProductController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/products",
+     *     summary="Lấy danh sách sản phẩm",
+     *     tags={"Product"},
+     *     @OA\Response(response=200, description="Thành công")
+     * )
      */
     public function index()
     {
@@ -23,7 +28,22 @@ class ProductController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/products",
+     *     summary="Thêm sản phẩm mới",
+     *     tags={"Product"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name","category_id"},
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="category_id", type="integer"),
+     *             @OA\Property(property="description", type="string"),
+     *             @OA\Property(property="image_url", type="string", format="binary")
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Tạo thành công")
+     * )
      */
     public function store(Request $request)
     {
@@ -49,7 +69,19 @@ class ProductController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/products/{id}",
+     *     summary="Lấy sản phẩm theo id",
+     *     tags={"Product"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
      */
     public function show(string $id)
     {
@@ -66,7 +98,29 @@ class ProductController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/api/products/{id}",
+     *     summary="Cập nhật sản phẩm theo id",
+     *     tags={"Product"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name","category_id"},
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="category_id", type="integer"),
+     *             @OA\Property(property="description", type="string"),
+     *             @OA\Property(property="image_url", type="string", format="binary")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Cập nhật thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
      */
     public function update(Request $request, string $id)
     {
@@ -100,7 +154,19 @@ class ProductController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/products/{id}",
+     *     summary="Xóa mềm sản phẩm theo id",
+     *     tags={"Product"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Xóa thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
      */
     public function destroy(string $id)
     {
