@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 /**
  *    @OA\Info(
- *    title="APIs For Thrift Store",
+ *    title="APIs For DH Mobile ",
  *    version="1.0.0",
  *    ),
  *    @OA\SecurityScheme(
