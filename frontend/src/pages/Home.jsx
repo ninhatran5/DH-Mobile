@@ -408,11 +408,22 @@ const Home = () => {
                           >
                             {item.title}
                           </h5>
-                          <div style={{ display: "flex", gap: 7 }}>
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: 7,
+                              flexWrap: "wrap",
+                            }}
+                          >
                             <h6
                               onClick={() => nextProductDetail(item.id)}
-                              style={{ color: "#e40303" }}
-                              className=" mb-0"
+                              style={{
+                                color: "#e40303",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}
+                              className="mb-0"
                             >
                               {item.price}
                             </h6>
@@ -422,8 +433,11 @@ const Home = () => {
                                 color: "#e40303",
                                 fontSize: 13,
                                 textDecoration: "line-through",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
                               }}
-                              className=" mb-0"
+                              className="mb-0"
                             >
                               {item.priceOriginal}
                             </h6>
