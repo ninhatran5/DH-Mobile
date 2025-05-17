@@ -44,7 +44,7 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'phone' => $user->phone,
                 'address' => $user->address,
-                'role' => $user->role, 
+                'role' => $user->role,
             ]
         ]);
     }
@@ -90,44 +90,74 @@ class AuthController extends Controller
                 'username' => $user->username,
                 'full_name' => $user->full_name,
                 'email' => $user->email,
-                'role' => $user->role, 
+                'role' => $user->role,
             ]
         ]);
     }
 
 
     public function forgotPassword(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-    ]);
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
 
-    $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->first();
 
-    if (!$user) {
+        if (!$user) {
+            return response()->json([
+                'message' => 'Email không tồn tại.',
+            ], 404);
+        }
+
+        // Tạo token
+        $token = Str::random(60);
+
+        // Lưu token vào bảng password_resets
+        DB::table('password_resets')->updateOrInsert(
+            ['email' => $user->email],
+            [
+                'token' => $token,
+                'created_at' => now(),
+            ]
+        );
+
+        // Gửi mail
+        Mail::to($user->email)->send(new ResetPasswordMail($user, $token));
+
         return response()->json([
-            'message' => 'Email không tồn tại.',
-        ], 404);
+            'message' => 'Đã gửi email đặt lại mật khẩu.',
+        ]);
     }
-
-    // Tạo token
-    $token = Str::random(60);
-
-    // Lưu token vào bảng password_resets
-    DB::table('password_resets')->updateOrInsert(
-        ['email' => $user->email],
-        [
-            'token' => $token,
-            'created_at' => now(),
-        ]
-    );
-
-    // Gửi mail
-    Mail::to($user->email)->send(new ResetPasswordMail($user, $token));
-
-    return response()->json([
-        'message' => 'Đã gửi email đặt lại mật khẩu.',
-    ]);
-}
-
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'token' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+        $reset = DB::table('password_resets')
+            ->where('email', $request->email)
+            ->where('token', $request->token)
+            ->first();
+        if (!$reset) {
+            return response()->json([
+                'message' => 'Token không hợp lệ hoặc đã hết hạn.',
+            ], 400);
+        }
+        // Cập nhật mật khẩu
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json([
+                'message' => 'Email không tồn tại.',
+            ], 404);
+        }
+        $user->password_hash = Hash::make($request->password);
+        $user->save();
+        // Xóa token
+        DB::table('password_resets')->where('email', $request->email)->delete();
+        return response()->json([
+            'message' => 'Mật khẩu đã được đặt lại thành công.',
+        ]);
+    }
 }
