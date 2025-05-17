@@ -278,9 +278,36 @@ export default function Products({
                             </h3>
 
                             {/* Giá */}
-                            <div className="price_products_sale">
-                              <span className="price">{product.price}</span>
-                              <span className="price_original">
+                            <div
+                              className="price_products_sale"
+                              style={{
+                                display: "flex",
+                                flexWrap: "wrap",
+                                gap: 7,
+                              }}
+                            >
+                              <span
+                                className="price"
+                                style={{
+                                  color: "#e40303",
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                }}
+                              >
+                                {product.price}
+                              </span>
+                              <span
+                                className="price_original"
+                                style={{
+                                  color: "#e40303",
+                                  fontSize: 13,
+                                  textDecoration: "line-through",
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                }}
+                              >
                                 {product.priceOriginal}
                               </span>
                             </div>
