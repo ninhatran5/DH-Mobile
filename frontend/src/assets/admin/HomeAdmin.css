@@ -1584,174 +1584,58 @@ html {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  padding-bottom: 40px !important;
+  padding-bottom: 20px !important;
 }
 
 @media (max-width: 768px) {
   .admin_dh-sidebar-nav {
     padding-bottom: 40px !important;
   }
-}
-
-.admin_dh-nav-section::after {
-  content: "";
-  display: block;
-  height: 1px;
-  background: linear-gradient(90deg, var(--admin_dh-border) 0%, transparent 100%);
-  margin-top: var(--admin_dh-spacing-lg);
-  opacity: 0.5;
-}
-
-/* Điều chỉnh caret trên mobile */
-@media (max-width: 768px) {
-  .admin_dh-dropdown-toggle i:last-child {
-    right: 20px;
+  
+  /* Add extra padding at the bottom of the sidebar for mobile to prevent content from being cut off */
+  #admin_dh-sidebar {
+    padding-bottom: 60px;
+  }
+  
+  /* Fix mobile menu button alignment */
+  #admin_dh-sidebarOpen {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  /* Ensure button content is centered */
+  #admin_dh-sidebarOpen i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
-/* ===== CSS Cải thiện cho desktop và mobile ===== */
-
-/* Thêm khoảng cách đáy cho nội dung chính */
-.admin_dh-main-content {
-  padding-bottom: 80px !important;
-  min-height: calc(100vh - 70px);
+/* Fix for the sidebar toggle button in mobile view */
+.admin_dh-sidebar-header .admin_dh-sidebar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Thêm khoảng trắng cuối trang website */
-.admin_dh-footer-space {
-  height: 60px;
-  width: 100%;
-  clear: both;
-}
+
 
 @media (max-width: 768px) {
   .admin_dh-footer-space {
-    height: 80px;
+    height: 40px;
   }
 }
 
-/* Cải thiện khả năng đọc của dropdown menu trên mobile */
+/* Additional spacing for smaller mobile screens */
 @media (max-width: 480px) {
-  .admin_dh-notification-dropdown,
-  .admin_dh-user-menu {
-    width: 280px !important;
-    right: -10px !important;
-  }
-}
-
-/* Đảm bảo rằng nội dung không bị che khuất bởi thanh cuộn */
-html, body {
-  overflow-x: hidden;
-  scroll-padding-bottom: 80px;
-}
-
-/* ===== Bổ sung cải thiện cho trải nghiệm mobile ===== */
-
-/* Cải thiện trải nghiệm touch trên thiết bị di động */
-@media (max-width: 768px) {
-  /* Tăng kích thước vùng touch */
-  .admin_dh-nav-link, 
-  .admin_dh-dropdown-toggle, 
-  .admin_dh-submenu a,
-  .admin_dh-btn,
-  .admin_dh-sidebar-footer-item,
-  .dropdown-item {
-    min-height: 44px; /* Apple khuyến nghị 44px làm khu vực touch tối thiểu */
-    display: flex;
-    align-items: center;
-  }
-  
-  /* Tăng font size trên mobile */
-  .admin_dh-nav-link, 
-  .admin_dh-dropdown-toggle, 
-  .admin_dh-submenu a {
-    font-size: 15px;
-  }
-  
-  /* Thêm không gian giữa các mục menu */
-  .admin_dh-components li {
-    margin-bottom: 4px;
-  }
-  
-  /* Cải thiện giao diện trên màn hình nhỏ */
-  .admin_dh-card {
-    margin-bottom: 20px;
-  }
-  
-  /* Tăng kích thước của icons để dễ nhấn hơn */
-  .admin_dh-nav-link i,
-  .admin_dh-dropdown-toggle i:first-child,
-  .admin_dh-sidebar-footer-item i {
-    font-size: 1.35rem;
-  }
-  
-  /* Tối ưu thanh search trên mobile */
-  .admin_dh-search-bar input {
-    height: 42px;
-  }
-  
-  /* Tăng kích thước các nút trên navbar */
-  #admin_dh-sidebarOpen, 
-  .admin_dh-theme-toggle, 
-  .admin_dh-notifications-nav .nav-link,
-  .admin_dh-user-avatar {
-    width: 40px !important;
-    height: 40px !important;
-  }
-  
-  /* Cải thiện không gian khi scroll trên mobile */
-  .admin_dh-scroll-to-top {
-    width: 48px;
-    height: 48px;
-    bottom: 25px;
-    right: 15px;
-  }
-  
-  /* Tăng cỡ chữ cho phần tin nhắn thông báo */
-  .admin_dh-notification-item p {
-    font-size: 14px;
-  }
-}
-
-/* Cải thiện cho màn hình siêu nhỏ */
-@media (max-width: 360px) {
-  .admin_dh-navbar-left, .admin_dh-navbar-right {
-    gap: 4px;
-  }
-  
-  .admin_dh-search-bar {
-    max-width: 120px;
-  }
-  
-  /* Thu gọn sidebar hơn nữa trên màn hình rất nhỏ */
   #admin_dh-sidebar {
-    width: 90% !important;
+    padding-bottom: 80px;
   }
-}
-
-/* Remove spacing between toggle button and search bar */
-#admin_dh-sidebarCollapse + #admin_dh-sidebarOpen,
-#admin_dh-sidebarCollapse + .admin_dh-search-bar,
-#admin_dh-sidebarOpen + .admin_dh-search-bar {
-  margin-left: 10px;
-  padding-left: 0;
-}
-
-.admin_dh-sidebar-collapsed .admin_dh-nav-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.admin_dh-sidebar-collapsed .admin_dh-components {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: var(--admin_dh-spacing-xs);
-}
-
-.admin_dh-sidebar-collapsed .admin_dh-sidebar-header {
-  justify-content: center;
-  height: 50px;
-  padding: 8px;
+  
+  /* Ensure last menu items are visible */
+  .admin_dh-sidebar-nav {
+    padding-bottom: 60px !important;
+  }
 }

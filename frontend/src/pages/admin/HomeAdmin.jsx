@@ -211,7 +211,10 @@ const Homeadmin =()=>{
                 color: 'var(--admin_dh-danger)',
                 boxShadow: '0 2px 10px rgba(255, 69, 58, 0.2)',
                 width: '40px',
-                height: '40px'
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
             >
               <i className="bi bi-x-lg"></i>
@@ -429,18 +432,11 @@ const Homeadmin =()=>{
             </div>
           </div>
 
-          <div style={{ height: '60px' }}></div>
-
-          <div className="admin_dh-sidebar-footer">
-            <div className="admin_dh-sidebar-footer-item" onClick={toggleDarkMode} data-title={isDarkMode ? 'Chế độ sáng' : 'Chế độ tối'}>
-              <i className={`bi bi-${isDarkMode ? 'sun' : 'moon'}`}></i>
-              <span>{isDarkMode ? 'Chế độ sáng' : 'Chế độ tối'}</span>
-            </div>
-            <div className="admin_dh-sidebar-footer-item" data-title="Cài đặt">
-              <i className="bi bi-gear"></i>
-              <span>Cài đặt</span>
-            </div>
-          </div>
+          <div style={{ height: '20px' }}></div>
+          
+          {/* Extra space for mobile view */}
+          <div className="d-md-none" style={{ height: '60px' }}></div>
+          
         </nav>
         {/* Page Content */}
         <div 
@@ -451,7 +447,7 @@ const Homeadmin =()=>{
           {/* Top Navigation */}
           <nav className="admin_dh-navbar navbar-expand-lg">
             <div className="container-fluid">
-              <div className="admin_dh-navbar-left" style={{ gap: 10 }}>
+              <div className="admin_dh-navbar-left" style={{ gap: 10, alignItems: 'center' }}>
                 {/* Nút menu cho desktop - giống với mobile */}
                 <button 
                   type="button" 
@@ -469,7 +465,7 @@ const Homeadmin =()=>{
                   className="btn admin_dh-btn d-md-none"
                   onClick={toggleMobileSidebar}
                   ref={sidebarOpenRef}
-                  style={{ backgroundColor: 'var(--admin_dh-primary)', color: 'white' }}
+                  style={{ backgroundColor: 'var(--admin_dh-primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 ><i className="bi bi-layout-sidebar" /></button>
                 <div className={`admin_dh-search-bar ${isSearchFocused ? 'focused' : ''}`}>
                   <i className="bi bi-search admin_dh-search-icon"></i>
