@@ -26,7 +26,7 @@ import phone from "../assets/images/phone3x.png";
 import backgroundPhone from "../assets/images/bg-pattern-2.png";
 
 import iphone from "../assets/images/iphone-16-pro-max.webp";
-import Products from "../components/Products";
+import Products from "../components/ListProducts";
 import CardProduct from "../components/CardProducts";
 import Blogs from "../components/Blogs";
 import SliderLogoBrand from "../components/SliderLogoBrand";
