@@ -44,6 +44,7 @@ import VoucherList from "./pages/admin/VoucherList";
 import AddVoucher from "./pages/admin/AddVoucher";
 import ListBanner from "./pages/admin/ListBanner";
 import CommentsList from "./pages/admin/CommentsList";
+import ShowProduct from "./pages/admin/ShowProduct";
 
 const withLayoutClient = (Component) => {
   return (
@@ -162,6 +163,10 @@ const routerConfig = [
       {
         path: "product",
         element: <ProductList />,
+      },
+      {
+        path: "product/:id",
+        element: <ShowProduct />,
       },
       {
         path: "addproduct",

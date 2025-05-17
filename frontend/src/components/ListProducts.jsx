@@ -3,18 +3,16 @@ import { FaRegHeart, FaShippingFast } from "react-icons/fa";
 import iphone from "../assets/images/iphone-16-pro-max.webp";
 import { Link, useNavigate } from "react-router-dom";
 import { FaArrowDownShortWide, FaArrowUpWideShort } from "react-icons/fa6";
-import { LuHeartOff } from "react-icons/lu";
 
 import "../assets/css/products.css";
-import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import Product from "./Product";
 
-export default function Products({
+export default function ListProducts({
   title,
   showHeader = true,
   padding,
   filter = true,
-  unfavorite = true,
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -27,35 +25,20 @@ export default function Products({
     navigate(`/product-detail/${id}`);
   };
 
-  const addToFavorites = () => {
-    console.log("added");
-    toast.success(t("products.addedToFavorites"));
-  };
-
-  const handleUnFavorites = () => {
-    console.log("un");
-    toast.success(t("products.removeFavorites"));
-  };
-
-  const addToShoppingCart = () => {
-    console.log("added");
-    toast.success(t("products.addedToCart"));
-    navigate("/shopping-cart");
-  };
-
   const products = [
     {
       id: 1,
       name: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
       price: "27.890.000đ",
       image: iphone,
+      favorite: true,
     },
     {
       id: 2,
       name: "Samsung Galaxy S22 Ultra 512GB",
       price: "29.990.000đ",
       priceOriginal: "32.500.000đ",
-
+      favorite: true,
       image: iphone,
     },
     {
@@ -63,6 +46,7 @@ export default function Products({
       name: "Xiaomi Redmi Note 12",
       price: "6.990.000đ",
       image: iphone,
+      favorite: false,
     },
     {
       id: 4,
@@ -70,6 +54,7 @@ export default function Products({
       price: "34.990.000đ",
       priceOriginal: "39.500.000đ",
       image: iphone,
+      favorite: true,
     },
     {
       id: 5,
@@ -77,24 +62,28 @@ export default function Products({
       price: "4.690.000đ",
       priceOriginal: "7.500.000đ",
       image: iphone,
+      favorite: false,
     },
     {
       id: 6,
       name: "iPhone SE 2022",
       price: "9.990.000đ",
       image: iphone,
+      favorite: true,
     },
     {
       id: 7,
       name: "Xiaomi 13T Pro",
       price: "13.990.000đ",
       image: iphone,
+      favorite: true,
     },
     {
       id: 8,
       name: "Samsung Galaxy S21 FE",
       price: "12.490.000đ",
       image: iphone,
+      favorite: true,
     },
     {
       id: 9,
@@ -102,12 +91,14 @@ export default function Products({
       price: "19.990.000đ",
       priceOriginal: "20.500.000đ",
       image: iphone,
+      favorite: true,
     },
     {
       id: 10,
       name: "iPhone 11 64GB",
       price: "10.490.000đ",
       image: iphone,
+      favorite: false,
     },
   ];
 
@@ -232,99 +223,12 @@ export default function Products({
                         : null;
 
                       return (
-                        <div className="col" key={product.id}>
-                          <div className="product-item position-relative">
-                            {discountPercent !== null && (
-                              <span className="badge bg-success position-absolute mt-1 ms-1">
-                                -{discountPercent}%
-                              </span>
-                            )}
-
-                            {unfavorite ? (
-                              <a
-                                onClick={addToFavorites}
-                                style={{ cursor: "pointer" }}
-                                className="btn-wishlist"
-                              >
-                                <FaRegHeart style={{ fontSize: 20 }} />
-                              </a>
-                            ) : (
-                              <a
-                                onClick={handleUnFavorites}
-                                style={{ cursor: "pointer" }}
-                                className="btn-wishlist"
-                              >
-                                <LuHeartOff style={{ fontSize: 20 }} />
-                              </a>
-                            )}
-
-                            <figure>
-                              <Link
-                                to={`/product-detail/${product.id}`}
-                                title={product.name}
-                              >
-                                <img
-                                  src={product.image}
-                                  className="tab-image"
-                                />
-                              </Link>
-                            </figure>
-
-                            <h3
-                              onClick={() => nextProductDetail(product.id)}
-                              style={{ cursor: "pointer" }}
-                            >
-                              {product.name}
-                            </h3>
-
-                            {/* Giá */}
-                            <div
-                              className="price_products_sale"
-                              style={{
-                                display: "flex",
-                                flexWrap: "wrap",
-                                gap: 7,
-                              }}
-                            >
-                              <span
-                                className="price"
-                                style={{
-                                  color: "#e40303",
-                                  whiteSpace: "nowrap",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                }}
-                              >
-                                {product.price}
-                              </span>
-                              <span
-                                className="price_original"
-                                style={{
-                                  color: "#e40303",
-                                  fontSize: 13,
-                                  textDecoration: "line-through",
-                                  whiteSpace: "nowrap",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                }}
-                              >
-                                {product.priceOriginal}
-                              </span>
-                            </div>
-
-                            {/* Thêm vào giỏ */}
-                            <div className="d-flex align-items-center justify-content-between">
-                              <a
-                                onClick={addToShoppingCart}
-                                style={{ cursor: "pointer" }}
-                                className="nav-link"
-                              >
-                                {t("products.addToCart")}
-                                <iconify-icon icon="uil:shopping-cart" />
-                              </a>
-                            </div>
-                          </div>
-                        </div>
+                        <Product
+                          key={product.id}
+                          product={product}
+                          discountPercent={discountPercent}
+                          nextProductDetail={nextProductDetail}
+                        />
                       );
                     })}
                   </div>
