@@ -45,6 +45,7 @@ import AddVoucher from "./pages/admin/AddVoucher";
 import ListBanner from "./pages/admin/ListBanner";
 import CommentsList from "./pages/admin/CommentsList";
 import ShowProduct from "./pages/admin/ShowProduct";
+import ScrollToTop from "../utils/ScrollToTop";
 
 const withLayoutClient = (Component) => {
   return (
@@ -232,7 +233,12 @@ const routerConfig = [
 
 function App() {
   const routers = useRoutes(routerConfig);
-  return <>{routers}</>;
+  return (
+    <>
+      <ScrollToTop />
+      {routers}
+    </>
+  );
 }
 
 export default App;
