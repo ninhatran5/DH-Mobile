@@ -129,7 +129,13 @@ class AuthController extends Controller
             'username' => 'required|string|max:255',
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:28',
+                'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,28}$/'
+            ],
             'phone' => 'nullable|string|max:15',
             'address' => 'nullable|string|max:255',
         ]);
@@ -231,7 +237,13 @@ class AuthController extends Controller
         $request->validate([
             'email' => 'required|email',
             'token' => 'required|string',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:28',
+                'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,28}$/'
+            ],
         ]);
         $reset = DB::table('password_resets')
             ->where('email', $request->email)
