@@ -23,14 +23,14 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
-
-
 // API Banner
 // http://127.0.0.1:8000/api/banners
 Route::get('/getbanners', [BannerController::class, 'index']); // lấy toàn bộ danh sách banner
 Route::get('/getbanners/{id}', [BannerController::class, 'show']); // lấy banner theo id
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('updatebanners/{id}', [BannerController::class, 'update']); // cập nhật banner theo id
+    Route::middleware(CheckAdmin::class)->group(function () {
+        Route::post('updatebanners/{id}', [BannerController::class, 'update']); // cập nhật banner theo id
+    });
 });
 
 
@@ -125,5 +125,3 @@ Route::middleware('auth:sanctum')->prefix('variantattributevalues')->controller(
 });
 Route::get('variantattributevalues', [VariantAttributeValuesController::class, 'index']); // lấy danh sách liên kết
 Route::get('variantattributevalues/{id}', [VariantAttributeValuesController::class, 'show']); // lấy liên kết theo id
-
-
