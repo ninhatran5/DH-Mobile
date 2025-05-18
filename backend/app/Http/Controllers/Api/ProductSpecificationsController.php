@@ -192,7 +192,19 @@ class ProductSpecificationsController extends Controller
     }
 
     /**
-     * Khôi phục thông số kỹ thuật đã xóa mềm
+     * @OA\Post(
+     *     path="/api/product-specifications/restore/{id}",
+     *     summary="Khôi phục thông số kỹ thuật đã xóa mềm",
+     *     tags={"ProductSpecifications"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Khôi phục thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
      */
     public function restore($id)
     {
@@ -212,7 +224,19 @@ class ProductSpecificationsController extends Controller
     }
 
     /**
-     * Xóa vĩnh viễn thông số kỹ thuật đã xóa mềm
+     * @OA\Delete(
+     *     path="/api/product-specifications/force-delete/{id}",
+     *     summary="Xóa vĩnh viễn thông số kỹ thuật đã xóa mềm",
+     *     tags={"ProductSpecifications"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Xóa vĩnh viễn thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
      */
     public function forceDelete($id)
     {

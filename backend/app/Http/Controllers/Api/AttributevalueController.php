@@ -162,6 +162,14 @@ class attributevalueController extends Controller
             'status' => 200,
         ])->setStatusCode(200, 'OK');
     }
+    /**
+     * @OA\Get(
+     *     path="/api/attributevalue/trashed",
+     *     summary="Lấy danh sách thuộc tính con đã xóa mềm",
+     *     tags={"AttributeValue"},
+     *     @OA\Response(response=200, description="Thành công")
+     * )
+     */
     public function trashed()
     {
         //
@@ -172,6 +180,21 @@ class attributevalueController extends Controller
             'status' => 200,
         ])->setStatusCode(200, 'OK');
     }
+    /**
+     * @OA\Post(
+     *     path="/api/attributevalue/restore/{id}",
+     *     summary="Khôi phục thuộc tính con đã xóa mềm",
+     *     tags={"AttributeValue"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Khôi phục thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
+     */
     public function restore($id)
     {
         //
@@ -187,6 +210,21 @@ class attributevalueController extends Controller
             return response()->json(['message' => 'Không tìm thấy thuộc tính con ',]);
         }
     }
+    /**
+     * @OA\Delete(
+     *     path="/api/attributevalue/force-delete/{id}",
+     *     summary="Xóa vĩnh viễn thuộc tính con đã xóa mềm",
+     *     tags={"AttributeValue"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Xóa vĩnh viễn thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
+     */
     public function forceDelete($id)
     {
         //

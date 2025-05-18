@@ -188,7 +188,14 @@ class CategoryController extends Controller
             'status' => 200,
         ])->setStatusCode(200, 'OK');
     }
-    // xem danh sách danh mục đã xóa mềm 
+    /**
+     * @OA\Get(
+     *     path="/api/categories/trashed",
+     *     summary="Lấy danh sách danh mục đã xóa mềm",
+     *     tags={"Category"},
+     *     @OA\Response(response=200, description="Thành công")
+     * )
+     */
     public function trashed()
     {
 
@@ -208,7 +215,21 @@ class CategoryController extends Controller
             'status' => 200,
         ], 200);
     }
-    // khôi phục danh mục đã xóa mềm
+    /**
+     * @OA\Post(
+     *     path="/api/categories/restore/{id}",
+     *     summary="Khôi phục danh mục đã xóa mềm",
+     *     tags={"Category"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Khôi phục thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
+     */
     public function restore($id)
     {
         $category = Category::withTrashed()->find($id);
@@ -225,7 +246,21 @@ class CategoryController extends Controller
             'status' => 200,
         ])->setStatusCode(200, 'OK');
     }
-    // xóa vĩnh viễn danh mục đã xóa mềm
+    /**
+     * @OA\Delete(
+     *     path="/api/categories/force-delete/{id}",
+     *     summary="Xóa vĩnh viễn danh mục đã xóa mềm",
+     *     tags={"Category"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Xóa vĩnh viễn thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
+     */
     public function forceDelete($id)
     {
         $category = Category::withTrashed()->find($id);
