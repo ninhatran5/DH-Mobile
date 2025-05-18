@@ -154,6 +154,15 @@ class AttributeController extends Controller
             'status' => 200,
         ])->setStatusCode(200, 'OK');
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/attributes/trashed",
+     *     summary="Lấy danh sách thuộc tính đã xóa mềm",
+     *     tags={"Attribute"},
+     *     @OA\Response(response=200, description="Thành công")
+     * )
+     */
     public function trashed()
     {
         //
@@ -164,6 +173,22 @@ class AttributeController extends Controller
             'status' => 200,
         ])->setStatusCode(200, 'OK');
     }
+
+    /**
+     * @OA\Post(
+     *     path="/api/attributes/restore/{id}",
+     *     summary="Khôi phục thuộc tính đã xóa mềm",
+     *     tags={"Attribute"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Khôi phục thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
+     */
     public function restore($id)
     {
         //
@@ -181,6 +206,22 @@ class AttributeController extends Controller
             'status' => 200,
         ])->setStatusCode(200, 'OK');
     }
+
+    /**
+     * @OA\Delete(
+     *     path="/api/attributes/force-delete/{id}",
+     *     summary="Xóa vĩnh viễn thuộc tính đã xóa mềm",
+     *     tags={"Attribute"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Xóa vĩnh viễn thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
+     */
     public function forceDelete($id)
     {
         //

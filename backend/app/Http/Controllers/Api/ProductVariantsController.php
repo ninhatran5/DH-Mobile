@@ -188,7 +188,12 @@ class ProductVariantsController extends Controller
     }
 
     /**
-     * Display a listing of the trashed resources.
+     * @OA\Get(
+     *     path="/api/productvariants/trashed",
+     *     summary="Lấy danh sách biến thể sản phẩm đã xóa mềm",
+     *     tags={"ProductVariants"},
+     *     @OA\Response(response=200, description="Thành công")
+     * )
      */
     public function trashed()
     {
@@ -201,7 +206,19 @@ class ProductVariantsController extends Controller
     }
 
     /**
-     * Restore the specified trashed resource.
+     * @OA\Post(
+     *     path="/api/productvariants/restore/{id}",
+     *     summary="Khôi phục biến thể sản phẩm đã xóa mềm",
+     *     tags={"ProductVariants"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Khôi phục thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
      */
     public function restore($id)
     {
@@ -221,7 +238,19 @@ class ProductVariantsController extends Controller
     }
 
     /**
-     * Force delete the specified trashed resource.
+     * @OA\Delete(
+     *     path="/api/productvariants/force-delete/{id}",
+     *     summary="Xóa vĩnh viễn biến thể sản phẩm đã xóa mềm",
+     *     tags={"ProductVariants"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Xóa vĩnh viễn thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
      */
     public function forceDelete($id)
     {

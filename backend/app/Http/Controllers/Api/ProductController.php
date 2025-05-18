@@ -185,6 +185,14 @@ class ProductController extends Controller
             ])->setStatusCode(404, 'Not Found');
         }
     }
+    /**
+     * @OA\Get(
+     *     path="/api/products/trashed",
+     *     summary="Lấy danh sách sản phẩm đã xóa mềm",
+     *     tags={"Product"},
+     *     @OA\Response(response=200, description="Thành công")
+     * )
+     */
     public function trashed()
     {
 
@@ -204,7 +212,21 @@ class ProductController extends Controller
             'status' => 200,
         ], 200);
     }
-    // khôi phục sản phẩm đã xóa mềm
+    /**
+     * @OA\Post(
+     *     path="/api/products/restore/{id}",
+     *     summary="Khôi phục sản phẩm đã xóa mềm",
+     *     tags={"Product"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Khôi phục thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
+     */
     public function restore($id)
     {
         $product = Product::withTrashed()->find($id);
@@ -221,7 +243,21 @@ class ProductController extends Controller
             'status' => 200,
         ])->setStatusCode(200, 'OK');
     }
-    // xóa vĩnh viễn sản phẩm đã xóa mềm
+    /**
+     * @OA\Delete(
+     *     path="/api/products/force-delete/{id}",
+     *     summary="Xóa vĩnh viễn sản phẩm đã xóa mềm",
+     *     tags={"Product"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Xóa vĩnh viễn thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
+     */
     public function forceDelete($id)
     {
         $product = Product::withTrashed()->find($id);
