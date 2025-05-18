@@ -11,16 +11,16 @@ use App\Http\Controllers\Api\ProductSpecificationsController;
 use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Middleware\CheckAdmin;
 
-// API Auth  
-// http://127.0.0.1:8000/api  
+// API Auth
+// http://127.0.0.1:8000/api
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/resetpassword', [AuthController::class, 'resetPassword']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/register', [AuthController::class, 'register']);
-    // 
-    Route::post('/resetpassword', [AuthController::class, 'resetPassword']);
 });
+
 
 
 
@@ -39,7 +39,7 @@ Route::middleware('auth:sanctum')->prefix('categories')->controller(CategoryCont
     Route::post('/', 'store');                    // Thêm danh mục
     Route::put('/{id}', 'update');               // Cập nhật danh mục theo ID
     Route::get('/trashed',  'trashed');         // Lấy danh sách danh mục đã xóa mềm
-    Route::delete('/{id}', 'destroy');           // Xóa mềm danh mục    
+    Route::delete('/{id}', 'destroy');           // Xóa mềm danh mục
     Route::put('/restore/{id}', 'restore');      // Khôi phục danh mục đã xóa mềm
     Route::delete('/forceDelete/{id}', 'forceDelete'); // Xóa vĩnh viễn
 });
@@ -112,5 +112,5 @@ Route::middleware('auth:sanctum')->prefix('productspecifications')->controller(P
 Route::get('productspecifications', [ProductSpecificationsController::class, 'index']); // lấy danh sách thông số kỹ thuật sản phẩm
 Route::get('productspecifications/{id}', [ProductSpecificationsController::class, 'show']); // lấy thông số kỹ thuật sản phẩm theo id
 
-// Route::middleware(CheckAdmin::class)->group(function () {  
+// Route::middleware(CheckAdmin::class)->group(function () {
 // });
