@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+
 class AttributeValue extends Model
 {
     //
@@ -20,5 +21,9 @@ class AttributeValue extends Model
     public function attribute()
     {
         return $this->belongsTo(Attribute::class, 'attribute_id', 'attribute_id');
+    }
+    public function variantAttributeValues()
+    {
+        return $this->hasMany(VariantAttributeValue::class, 'value_id', 'value_id');
     }
 }

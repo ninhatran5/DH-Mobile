@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
 use App\Http\Controllers\Api\ProductVariantsController;
+use App\Http\Controllers\Api\VariantAttributeValuesController;
 use App\Http\Middleware\CheckAdmin;
 
 // API Auth  
@@ -112,5 +113,17 @@ Route::middleware('auth:sanctum')->prefix('productspecifications')->controller(P
 Route::get('productspecifications', [ProductSpecificationsController::class, 'index']); // lấy danh sách thông số kỹ thuật sản phẩm
 Route::get('productspecifications/{id}', [ProductSpecificationsController::class, 'show']); // lấy thông số kỹ thuật sản phẩm theo id
 
-// Route::middleware(CheckAdmin::class)->group(function () {  
-// });
+// Api VariantAttributeValues
+// http://127.0.0.1:8000/api/variantattributevalues
+Route::middleware('auth:sanctum')->prefix('variantattributevalues')->controller(VariantAttributeValuesController::class)->group(function () {
+    Route::post('/', 'store');                    // Thêm liên kết
+    Route::put('/{id}', 'update');               // Cập nhật liên kết theo ID
+    Route::get('/trashed',  'trashed');         // Lấy danh sách liên kết đã xóa mềm
+    Route::delete('/{id}', 'destroy');           // Xóa mềm liên kết
+    Route::put('/restore/{id}', 'restore');      // Khôi phục liên kết đã xóa mềm
+    Route::delete('/forceDelete/{id}', 'forceDelete'); // Xóa vĩnh viễn
+});
+Route::get('variantattributevalues', [VariantAttributeValuesController::class, 'index']); // lấy danh sách liên kết
+Route::get('variantattributevalues/{id}', [VariantAttributeValuesController::class, 'show']); // lấy liên kết theo id
+
+
