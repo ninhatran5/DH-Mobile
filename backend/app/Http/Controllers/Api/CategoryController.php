@@ -147,7 +147,7 @@ class CategoryController extends Controller
         }
 
         // Bước 3: Cập nhật dữ liệu
-        $category->update($request->only(['name', 'description', 'image_url']));
+        $category->update(attributes: $request->only(['name', 'description', 'image_url']));
 
         // Bước 4: Trả về phản hồi
         return response()->json([
