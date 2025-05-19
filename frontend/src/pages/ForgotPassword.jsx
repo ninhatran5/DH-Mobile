@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import loginImage from "../assets/images/login.jpg";
 import logo from "../assets/images/logo3.png";
 import { useForm } from "react-hook-form";
@@ -6,12 +6,11 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchForgotPassword } from "../slices/forgotPasswordSlice";
+import Loading from "../components/Loading";
 
 const ForgotPassword = () => {
   const dispatch = useDispatch();
-  const { forgotPasswordInitial, loading, error } = useSelector(
-    (state) => state.register
-  );
+  const { loading } = useSelector((state) => state.forgotPassword);
   const { t } = useTranslation();
 
   const {
@@ -30,6 +29,7 @@ const ForgotPassword = () => {
   };
   return (
     <>
+      {loading && <Loading />}
       <div style={{ background: "#f8f8f8", width: "100vw", height: "100vh" }}>
         <section className="p-3">
           <div className="container mt-3">
