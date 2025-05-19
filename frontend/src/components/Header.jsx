@@ -19,7 +19,6 @@ export default function Header() {
   const [searchItem, setSearchItem] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const navigate = useNavigate();
-
   useEffect(() => {
     setSearchResults([]);
     setSearchItem("");
@@ -31,6 +30,7 @@ export default function Header() {
 
   const { t } = useTranslation();
 
+  const userID = localStorage.getItem("userID");
   const iconNavbars = [
     {
       id: 1,
@@ -219,10 +219,14 @@ export default function Header() {
   return (
     <>
       <div>
-        {/* <div className="preloader-wrapper">
-          <div className="preloader"></div>
-        </div> */}
-        <header className={searchResults.length > 0 ? "position-fixed w-100 bg-white" : ""} style={searchResults.length > 0 ? { top: 0, left: 0, zIndex: 1000 } : {}}>
+        <header
+          className={
+            searchResults.length > 0 ? "position-fixed w-100 bg-white" : ""
+          }
+          style={
+            searchResults.length > 0 ? { top: 0, left: 0, zIndex: 1000 } : {}
+          }
+        >
           <div className="container-fluid">
             <div className="row py-3 border-bottom">
               <div className="col-sm-4 col-lg-3 text-center text-sm-start">
@@ -299,6 +303,26 @@ export default function Header() {
                         >
                           {item.icon}
                         </a>
+                      ) : item.id === 2 ? (
+                        <div
+                          onClick={() => {
+                            const token = localStorage.getItem("token");
+                            navigate(token ? `/profile/${userID}` : "/login");
+                          }}
+                          className="rounded-circle bg-light p-2 mx-1"
+                          style={{
+                            width: "40px",
+                            height: "40px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: 23,
+                            color: "black",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {item.icon}
+                        </div>
                       ) : (
                         <Link
                           to={item.link}
@@ -318,8 +342,6 @@ export default function Header() {
                       )}
                     </li>
                   ))}
-
-                  <li className="d-xxl-none"></li>
                 </ul>
 
                 <div className="cart text-end d-none d-lg-block">
@@ -528,12 +550,12 @@ export default function Header() {
       {searchResults.length > 0 && (
         <div
           className="search-results position-fixed bg-white border rounded w-100 d-none d-lg-block p-3"
-          style={{ 
-            height: "calc(100vh - 180px)", 
+          style={{
+            height: "calc(100vh - 180px)",
             top: "180px",
             left: 0,
-            overflowY: "auto", 
-            zIndex: 999
+            overflowY: "auto",
+            zIndex: 999,
           }}
         >
           <div className="container-fluid">
@@ -581,7 +603,7 @@ export default function Header() {
                           toast.success(t("products.addedToCart"));
                           setSearchResults([]);
                           setSearchItem("");
-                          navigate('/shopping-cart')
+                          navigate("/shopping-cart");
                         }}
                         style={{ cursor: "pointer" }}
                         className="nav-link"
@@ -601,12 +623,12 @@ export default function Header() {
       {searchItem.trim() !== "" && searchResults.length === 0 && (
         <div
           className="no-results position-fixed bg-white border rounded w-100 p-2 d-none d-lg-block"
-          style={{ 
-            height: "calc(100vh - 180px)", 
+          style={{
+            height: "calc(100vh - 180px)",
             top: "180px",
             left: 0,
-            overflowY: "auto", 
-            zIndex: 999
+            overflowY: "auto",
+            zIndex: 999,
           }}
         >
           <div className="container-fluid">
