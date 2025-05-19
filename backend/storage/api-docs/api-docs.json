@@ -144,6 +144,74 @@
                 }
             }
         },
+        "/api/attributes/trashed": {
+            "get": {
+                "tags": [
+                    "Attribute"
+                ],
+                "summary": "Lấy danh sách thuộc tính đã xóa mềm",
+                "operationId": "58a91ca1160264b14c95474cac219794",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/attributes/restore/{id}": {
+            "post": {
+                "tags": [
+                    "Attribute"
+                ],
+                "summary": "Khôi phục thuộc tính đã xóa mềm",
+                "operationId": "a648156252b0bd5792c16ea5d7dd59dd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Khôi phục thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/attributes/force-delete/{id}": {
+            "delete": {
+                "tags": [
+                    "Attribute"
+                ],
+                "summary": "Xóa vĩnh viễn thuộc tính đã xóa mềm",
+                "operationId": "2672e7d4e3a6882a2dabe36d5ad4328e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa vĩnh viễn thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
         "/api/attributevalue": {
             "get": {
                 "tags": [
@@ -288,6 +356,74 @@
                 "responses": {
                     "200": {
                         "description": "Xóa thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/attributevalue/trashed": {
+            "get": {
+                "tags": [
+                    "AttributeValue"
+                ],
+                "summary": "Lấy danh sách thuộc tính con đã xóa mềm",
+                "operationId": "126dbba9a4ecd6be62504d537a76e823",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/attributevalue/restore/{id}": {
+            "post": {
+                "tags": [
+                    "AttributeValue"
+                ],
+                "summary": "Khôi phục thuộc tính con đã xóa mềm",
+                "operationId": "d1960307346546bd80b4f06ecb79c4da",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Khôi phục thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/attributevalue/force-delete/{id}": {
+            "delete": {
+                "tags": [
+                    "AttributeValue"
+                ],
+                "summary": "Xóa vĩnh viễn thuộc tính con đã xóa mềm",
+                "operationId": "c06246ffd4e72c4f64437c70ecc7ea4e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa vĩnh viễn thành công"
                     },
                     "404": {
                         "description": "Không tìm thấy"
@@ -742,6 +878,74 @@
                 }
             }
         },
+        "/api/categories/trashed": {
+            "get": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Lấy danh sách danh mục đã xóa mềm",
+                "operationId": "f384cb25ac4c41a40ccd857ebff0febd",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/categories/restore/{id}": {
+            "post": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Khôi phục danh mục đã xóa mềm",
+                "operationId": "d371c3a635b76dc6698ffcd7521f14cb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Khôi phục thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/categories/force-delete/{id}": {
+            "delete": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Xóa vĩnh viễn danh mục đã xóa mềm",
+                "operationId": "5a72a93c1f0ececf2c3c30478f2a2d0b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa vĩnh viễn thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
         "/api/products": {
             "get": {
                 "tags": [
@@ -896,6 +1100,297 @@
                 "responses": {
                     "200": {
                         "description": "Xóa thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/products/trashed": {
+            "get": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Lấy danh sách sản phẩm đã xóa mềm",
+                "operationId": "e038afe43fc15f1175feac875ff8ed9f",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/products/restore/{id}": {
+            "post": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Khôi phục sản phẩm đã xóa mềm",
+                "operationId": "8443951086f85a747f880128c7ec4010",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Khôi phục thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/products/force-delete/{id}": {
+            "delete": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Xóa vĩnh viễn sản phẩm đã xóa mềm",
+                "operationId": "13145ae4262518de6c86a0c5231b1a60",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa vĩnh viễn thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/product-specifications": {
+            "get": {
+                "tags": [
+                    "ProductSpecifications"
+                ],
+                "summary": "Lấy danh sách thông số kỹ thuật sản phẩm",
+                "operationId": "0ea66054f91cfd32da23b017c58c87fa",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "ProductSpecifications"
+                ],
+                "summary": "Thêm thông số kỹ thuật sản phẩm mới",
+                "operationId": "2c61b467d76763faf6db73f79702afc0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "product_id",
+                                    "spec_name",
+                                    "spec_value"
+                                ],
+                                "properties": {
+                                    "product_id": {
+                                        "type": "integer"
+                                    },
+                                    "spec_name": {
+                                        "type": "string"
+                                    },
+                                    "spec_value": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tạo thành công"
+                    }
+                }
+            }
+        },
+        "/api/product-specifications/{id}": {
+            "get": {
+                "tags": [
+                    "ProductSpecifications"
+                ],
+                "summary": "Lấy thông số kỹ thuật sản phẩm theo id",
+                "operationId": "91c9ec0b7ccd4ae05d990884fc5f91a7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "ProductSpecifications"
+                ],
+                "summary": "Cập nhật thông số kỹ thuật sản phẩm theo id",
+                "operationId": "4ffe5c3a155d3fc29dc861402bdf3622",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "product_id",
+                                    "spec_name",
+                                    "spec_value"
+                                ],
+                                "properties": {
+                                    "product_id": {
+                                        "type": "integer"
+                                    },
+                                    "spec_name": {
+                                        "type": "string"
+                                    },
+                                    "spec_value": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cập nhật thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "ProductSpecifications"
+                ],
+                "summary": "Xóa mềm thông số kỹ thuật sản phẩm theo id",
+                "operationId": "93e9a04f17df25e5ba8284f0f91c1429",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/product-specifications/trashed": {
+            "get": {
+                "tags": [
+                    "ProductSpecifications"
+                ],
+                "summary": "Lấy danh sách thông số kỹ thuật sản phẩm đã xóa mềm",
+                "operationId": "6aa58d60647c94a696fdb8a17b3d47e4",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/product-specifications/restore/{id}": {
+            "post": {
+                "tags": [
+                    "ProductSpecifications"
+                ],
+                "summary": "Khôi phục thông số kỹ thuật đã xóa mềm",
+                "operationId": "c0a7bf6de759f06ed7b66d2923eb63bb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Khôi phục thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/product-specifications/force-delete/{id}": {
+            "delete": {
+                "tags": [
+                    "ProductSpecifications"
+                ],
+                "summary": "Xóa vĩnh viễn thông số kỹ thuật đã xóa mềm",
+                "operationId": "5bf49c83e02131e3f34c54b52ef0a3fa",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa vĩnh viễn thành công"
                     },
                     "404": {
                         "description": "Không tìm thấy"
@@ -1061,6 +1556,285 @@
                     }
                 }
             }
+        },
+        "/api/productvariants/trashed": {
+            "get": {
+                "tags": [
+                    "ProductVariants"
+                ],
+                "summary": "Lấy danh sách biến thể sản phẩm đã xóa mềm",
+                "operationId": "c0ce7e19da28e5353be1757253bf6702",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/productvariants/restore/{id}": {
+            "post": {
+                "tags": [
+                    "ProductVariants"
+                ],
+                "summary": "Khôi phục biến thể sản phẩm đã xóa mềm",
+                "operationId": "da84c139d3bcbb5000c56166341f894f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Khôi phục thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/productvariants/force-delete/{id}": {
+            "delete": {
+                "tags": [
+                    "ProductVariants"
+                ],
+                "summary": "Xóa vĩnh viễn biến thể sản phẩm đã xóa mềm",
+                "operationId": "422ae655d34f962b13874f920316d4dc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa vĩnh viễn thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/variant-attribute-values": {
+            "get": {
+                "tags": [
+                    "VariantAttributeValues"
+                ],
+                "summary": "Lấy danh sách liên kết biến thể - giá trị thuộc tính",
+                "operationId": "9ea7bb8fe666ae49af9a38e5a247e550",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "VariantAttributeValues"
+                ],
+                "summary": "Tạo liên kết biến thể - giá trị thuộc tính mới",
+                "operationId": "68e3288822140b408e8a9438bfe8d72e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "variant_id",
+                                    "value_id"
+                                ],
+                                "properties": {
+                                    "variant_id": {
+                                        "type": "integer"
+                                    },
+                                    "value_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tạo thành công"
+                    }
+                }
+            }
+        },
+        "/api/variant-attribute-values/{id}": {
+            "get": {
+                "tags": [
+                    "VariantAttributeValues"
+                ],
+                "summary": "Lấy chi tiết liên kết biến thể - giá trị thuộc tính",
+                "operationId": "48ac7a8b6db1d7344d9022746e0e81f5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "VariantAttributeValues"
+                ],
+                "summary": "Cập nhật liên kết biến thể - giá trị thuộc tính",
+                "operationId": "acfcc3ca74daf2f7cf9a5b8464bedfa6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "variant_id": {
+                                        "type": "integer"
+                                    },
+                                    "value_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cập nhật thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "VariantAttributeValues"
+                ],
+                "summary": "Xóa mềm liên kết biến thể - giá trị thuộc tính",
+                "operationId": "ee6c33361cc8d36f4458c7f288e7a121",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/variant-attribute-values/trashed": {
+            "get": {
+                "tags": [
+                    "VariantAttributeValues"
+                ],
+                "summary": "Lấy danh sách liên kết đã xóa mềm",
+                "operationId": "926f480d6fb751ec7d00a38691ba9709",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/variant-attribute-values/{id}/restore": {
+            "put": {
+                "tags": [
+                    "VariantAttributeValues"
+                ],
+                "summary": "Khôi phục liên kết đã xóa mềm",
+                "operationId": "86472b2e29f4e55bec6f6d8c6e7df507",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Khôi phục thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/variant-attribute-values/{id}/force": {
+            "delete": {
+                "tags": [
+                    "VariantAttributeValues"
+                ],
+                "summary": "Xóa vĩnh viễn liên kết đã xóa mềm",
+                "operationId": "1be28d68037c9a5c16d56d85f049f9cb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa vĩnh viễn thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -1100,8 +1874,16 @@
             "description": "Product"
         },
         {
+            "name": "ProductSpecifications",
+            "description": "ProductSpecifications"
+        },
+        {
             "name": "ProductVariants",
             "description": "ProductVariants"
+        },
+        {
+            "name": "VariantAttributeValues",
+            "description": "VariantAttributeValues"
         }
     ]
 }
