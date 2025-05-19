@@ -4,9 +4,14 @@ import logo from "../assets/images/logo3.png";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchForgotPassword } from "../slices/forgotPasswordSlice";
 
 const ForgotPassword = () => {
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { forgotPasswordInitial, loading, error } = useSelector(
+    (state) => state.register
+  );
   const { t } = useTranslation();
 
   const {
@@ -15,9 +20,13 @@ const ForgotPassword = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = () => {
-    toast.success(t("auth.forgotPasswordNotificationSucces"));
-    navigate("/change-password");
+  const onSubmit = async (data) => {
+    try {
+      await dispatch(fetchForgotPassword(data)).unwrap();
+      toast.success(t("auth.forgotPasswordNotificationSucces"));
+    } catch (error) {
+      toast.error(error);
+    }
   };
   return (
     <>
