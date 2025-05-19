@@ -3,7 +3,6 @@ import { Pagination, Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-
 import banner1 from "../assets/images/banner1.jpg";
 import banner2 from "../assets/images/banner2.jpg";
 import banner3 from "../assets/images/banenr3.jpg";
@@ -24,15 +23,15 @@ import sonyLogo from "../assets/images/sony.png";
 import masstelLogo from "../assets/images/Masstel-logo.png";
 import phone from "../assets/images/phone3x.png";
 import backgroundPhone from "../assets/images/bg-pattern-2.png";
-
 import iphone from "../assets/images/iphone-16-pro-max.webp";
 import Products from "../components/ListProducts";
-import CardProduct from "../components/CardProducts";
 import Blogs from "../components/Blogs";
 import SliderLogoBrand from "../components/SliderLogoBrand";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import ListProductCard from "../components/ListProductCard";
+import ProductsCarousel from "../components/ProductsCarousel";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -194,9 +193,6 @@ const Home = () => {
 
   const bannerAdvertisement = [banner4, banner5];
 
-  const nextProductDetail = (id) => {
-    navigate(`/product-detail/${id}`);
-  };
   const nextShop = () => {
     navigate("/products");
   };
@@ -382,70 +378,10 @@ const Home = () => {
                 : null;
               return (
                 <SwiperSlide key={item.id}>
-                  <div
-                    className="card mb-3 p-3 rounded-4 shadow border-0"
-                    style={{ cursor: "pointer" }}
-                  >
-                    {discountPercent !== null && (
-                      <span className="badge bg-success position-absolute mt-1">
-                        -{discountPercent}%
-                      </span>
-                    )}
-                    <div className="row g-0">
-                      <div className="col-md-4">
-                        <img
-                          onClick={() => nextProductDetail(item.id)}
-                          src={item.image}
-                          className="img-fluid rounded"
-                          alt={item.title}
-                        />
-                      </div>
-                      <div className="col-md-8">
-                        <div className="card-body py-0">
-                          <h5
-                            onClick={() => nextProductDetail(item.id)}
-                            className="card-title"
-                          >
-                            {item.title}
-                          </h5>
-                          <div
-                            style={{
-                              display: "flex",
-                              gap: 7,
-                              flexWrap: "wrap",
-                            }}
-                          >
-                            <h6
-                              onClick={() => nextProductDetail(item.id)}
-                              style={{
-                                color: "#e40303",
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                              }}
-                              className="mb-0"
-                            >
-                              {item.price}
-                            </h6>
-                            <h6
-                              onClick={() => nextProductDetail(item.id)}
-                              style={{
-                                color: "#e40303",
-                                fontSize: 13,
-                                textDecoration: "line-through",
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                              }}
-                              className="mb-0"
-                            >
-                              {item.priceOriginal}
-                            </h6>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <ProductsCarousel
+                    item={item}
+                    discountPercent={discountPercent}
+                  />
                 </SwiperSlide>
               );
             })}
@@ -487,7 +423,7 @@ const Home = () => {
         filter={false}
       />
 
-      <CardProduct title={t("home.bestSellingProducts")} />
+      <ListProductCard title={t("home.bestSellingProducts")} />
 
       <section className="py-2">
         <div className="container-fluid">

@@ -43,7 +43,12 @@ const Product = ({ product, discountPercent, nextProductDetail }) => {
           ) : (
             <a
               onClick={handleUnFavorites}
-              style={{ cursor: "pointer", background: "red", color: "white" }}
+              style={{
+                cursor: "pointer",
+                background: "#e70303",
+                border: "1px solid #e70303",
+                color: "white",
+              }}
               className="btn-wishlist"
             >
               <FaRegHeart style={{ fontSize: 20 }} />
