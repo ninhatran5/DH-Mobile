@@ -7,10 +7,14 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { ToastContainer } from "react-toastify";
 import "./i18n";
+import { store } from "./stores/store.js";
+import { Provider } from "react-redux";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
-    <App />
-    <ToastContainer />
+    <Provider store={store}>
+      <App />
+      <ToastContainer />
+    </Provider>
   </BrowserRouter>
 );
