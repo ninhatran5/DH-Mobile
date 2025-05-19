@@ -3,9 +3,6 @@ import { Pagination, Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-
-import banner4 from "../assets/images/4d6e937b1e03c66d7b23eaaa45668d55.jpg";
-import banner5 from "../assets/images/iphone-16-pro-max-thu-cu-moi-home.webp";
 import background from "../assets/images/background-pattern.jpg";
 import appleLogo from "../assets/images/Apple_logo_black.png";
 import xiaomiLogo from "../assets/images/Xiaomi_logo__2021-_.svg.png";
@@ -206,8 +203,6 @@ const Home = () => {
     },
   ];
 
-  const bannerAdvertisement = [banner4, banner5];
-
   const nextShop = () => {
     navigate("/products");
   };
@@ -233,7 +228,7 @@ const Home = () => {
                     modules={[Pagination, Autoplay]}
                     pagination={{ clickable: true }}
                     autoplay={{ delay: 3000, disableOnInteraction: false }}
-                    loop={true}
+                    loop={false}
                     className="main-swiper"
                   >
                     {sliderBanner.map((banner) => (
