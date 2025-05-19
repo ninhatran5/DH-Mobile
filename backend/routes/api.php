@@ -20,11 +20,10 @@ Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/resetpassword', [AuthController::class, 'resetPassword']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::put('/update-profile', [AuthController::class, 'updateProfile']);
 });
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::put('/user/update', [AuthController::class, 'updateProfile']);
-});
+
 
 
 // API Banner
@@ -95,7 +94,7 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::put('/restore/{id}', 'restore');
         Route::delete('/forceDelete/{id}', 'forceDelete');
     });
-    
+
 });
 
 // Các route chỉ đọc (không cần quyền admin)
