@@ -37,95 +37,79 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
-
-// API Category
-// http://127.0.0.1:8000/api/categories
-Route::middleware('auth:sanctum')->prefix('categories')->controller(CategoryController::class)->group(function () {
-    Route::post('/', 'store');                    // Thêm danh mục
-    Route::put('/{id}', 'update');               // Cập nhật danh mục theo ID
-    Route::get('/trashed',  'trashed');         // Lấy danh sách danh mục đã xóa mềm
-    Route::delete('/{id}', 'destroy');           // Xóa mềm danh mục
-    Route::put('/restore/{id}', 'restore');      // Khôi phục danh mục đã xóa mềm
-    Route::delete('/forceDelete/{id}', 'forceDelete'); // Xóa vĩnh viễn
+// Group các route cần quyền admin
+Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
+    // Category
+    Route::prefix('categories')->controller(CategoryController::class)->group(function () {
+        Route::post('/', 'store');
+        Route::put('/{id}', 'update');
+        Route::delete('/{id}', 'destroy');
+        Route::put('/restore/{id}', 'restore');
+        Route::delete('/forceDelete/{id}', 'forceDelete');
+    });
+    // Product
+    Route::prefix('products')->controller(ProductController::class)->group(function () {
+        Route::post('/', 'store');
+        Route::put('/{id}', 'update');
+        Route::delete('/{id}', 'destroy');
+        Route::put('/restore/{id}', 'restore');
+        Route::delete('/forceDelete/{id}', 'forceDelete');
+    });
+    // Attribute
+    Route::prefix('attributes')->controller(AttributeController::class)->group(function () {
+        Route::post('/', 'store');
+        Route::put('/{id}', 'update');
+        Route::delete('/{id}', 'destroy');
+        Route::put('/restore/{id}', 'restore');
+        Route::delete('/forceDelete/{id}', 'forceDelete');
+    });
+    // AttributeValue
+    Route::prefix('attributevalues')->controller(attributevalueController::class)->group(function () {
+        Route::post('/', 'store');
+        Route::put('/{id}', 'update');
+        Route::delete('/{id}', 'destroy');
+        Route::put('/restore/{id}', 'restore');
+        Route::delete('/forceDelete/{id}', 'forceDelete');
+    });
+    // ProductVariants
+    Route::prefix('productvariants')->controller(ProductVariantsController::class)->group(function () {
+        Route::post('/', 'store');
+        Route::put('/{id}', 'update');
+        Route::delete('/{id}', 'destroy');
+        Route::put('/restore/{id}', 'restore');
+        Route::delete('/forceDelete/{id}', 'forceDelete');
+    });
+    // ProductSpecifications
+    Route::prefix('productspecifications')->controller(ProductSpecificationsController::class)->group(function () {
+        Route::post('/', 'store');
+        Route::put('/{id}', 'update');
+        Route::delete('/{id}', 'destroy');
+        Route::put('/restore/{id}', 'restore');
+        Route::delete('/forceDelete/{id}', 'forceDelete');
+    });
+    // VariantAttributeValues
+    Route::prefix('variantattributevalues')->controller(VariantAttributeValuesController::class)->group(function () {
+        Route::post('/', 'store');
+        Route::put('/{id}', 'update');
+        Route::delete('/{id}', 'destroy');
+        Route::put('/restore/{id}', 'restore');
+        Route::delete('/forceDelete/{id}', 'forceDelete');
+    });
+    
 });
+
+// Các route chỉ đọc (không cần quyền admin)
 Route::get('categories', [CategoryController::class, 'index']); // lấy danh sách danh mục
 Route::get('categories/{id}', [CategoryController::class, 'show']); // lấy danh mục theo id
-
-
-// Api Product
-// http://127.0.0.1:8000/api/products
-Route::middleware('auth:sanctum')->prefix('products')->controller(ProductController::class)->group(function () {
-    Route::post('/', 'store');                    // Thêm sản phẩm
-    Route::put('/{id}', 'update');               // Cập nhật sản phẩm theo ID
-    Route::get('/trashed',  'trashed');         // Lấy danh sách sản phẩm đã xóa mềm
-    Route::delete('/{id}', 'destroy');           // Xóa mềm sản phẩm
-    Route::put('/restore/{id}', 'restore');      // Khôi phục sản phẩm đã xóa mềm
-    Route::delete('/forceDelete/{id}', 'forceDelete'); // Xóa vĩnh viễn
-});
 Route::get('products', [ProductController::class, 'index']); // lấy danh sách sản phẩm
 Route::get('products/{id}', [ProductController::class, 'show']); // lấy sản phẩm theo id
-
-// Api Attributes
-// http://127.0.0.1:8000/api/attributes
-Route::middleware('auth:sanctum')->prefix('attributes')->controller(AttributeController::class)->group(function () {
-    Route::post('/', 'store');                    // Thêm thuộc tính
-    Route::put('/{id}', 'update');               // Cập nhật thuộc tính theo ID
-    Route::get('/trashed',  'trashed');         // Lấy danh sách thuộc tính đã xóa mềm
-    Route::delete('/{id}', 'destroy');           // Xóa mềm thuộc tính
-    Route::put('/restore/{id}', 'restore');      // Khôi phục thuộc tính đã xóa mềm
-    Route::delete('/forceDelete/{id}', 'forceDelete'); // Xóa vĩnh viễn
-});
 Route::get('attributes', [AttributeController::class, 'index']); // lấy danh sách thuộc tính
 Route::get('attributes/{id}', [AttributeController::class, 'show']); // lấy thuộc tính theo id
-
-// Api AttributeValue
-// http://127.0.0.1:8000/api/attributevalues
-Route::middleware('auth:sanctum')->prefix('attributevalues')->controller(attributevalueController::class)->group(function () {
-    Route::post('/', 'store');                    // Thêm thuộc tính con
-    Route::put('/{id}', 'update');               // Cập nhật thuộc tính con theo ID
-    Route::get('/trashed',  'trashed');         // Lấy danh sách thuộc tính con đã xóa mềm
-    Route::delete('/{id}', 'destroy');           // Xóa mềm thuộc tính con
-    Route::put('/restore/{id}', 'restore');      // Khôi phục thuộc tính con đã xóa mềm
-    Route::delete('/forceDelete/{id}', 'forceDelete'); // Xóa vĩnh viễn
-});
 Route::get('attributevalue', [attributevalueController::class, 'index']); // lấy danh sách thuộc tính con
 Route::get('attributevalue/{id}', [attributevalueController::class, 'show']); // lấy thuộc tính con theo id
-
-// Api ProductVariants
-// http://127.0.0.1:8000/api/productvariants
-Route::middleware('auth:sanctum')->prefix('productvariants')->controller(ProductVariantsController::class)->group(function () {
-    Route::post('/', 'store');                    // Thêm biến thể sản phẩm
-    Route::put('/{id}', 'update');               // Cập nhật biến thể sản phẩm theo ID
-    Route::get('/trashed',  'trashed');         // Lấy danh sách biến thể đã xóa mềm
-    Route::delete('/{id}', 'destroy');           // Xóa mềm biến thể sản phẩm
-    Route::put('/restore/{id}', 'restore');      // Khôi phục biến thể đã xóa mềm
-    Route::delete('/forceDelete/{id}', 'forceDelete'); // Xóa vĩnh viễn
-});
 Route::get('productvariants', [ProductVariantsController::class, 'index']); // lấy danh sách biến thể sản phẩm
 Route::get('productvariants/{id}', [ProductVariantsController::class, 'show']); // lấy biến thể sản phẩm theo id
-
-// Api ProductSpecifications
-// http://127.0.0.1:8000/api/productspecifications
-Route::middleware('auth:sanctum')->prefix('productspecifications')->controller(ProductSpecificationsController::class)->group(function () {
-    Route::post('/', 'store');                    // Thêm thông số kỹ thuật sản phẩm
-    Route::put('/{id}', 'update');               // Cập nhật thông số kỹ thuật sản phẩm theo ID
-    Route::get('/trashed',  'trashed');         // Lấy danh sách thông số kỹ thuật đã xóa mềm
-    Route::delete('/{id}', 'destroy');           // Xóa mềm thông số kỹ thuật sản phẩm
-    Route::put('/restore/{id}', 'restore');      // Khôi phục thông số kỹ thuật đã xóa mềm
-    Route::delete('/forceDelete/{id}', 'forceDelete'); // Xóa vĩnh viễn
-});
 Route::get('productspecifications', [ProductSpecificationsController::class, 'index']); // lấy danh sách thông số kỹ thuật sản phẩm
 Route::get('productspecifications/{id}', [ProductSpecificationsController::class, 'show']); // lấy thông số kỹ thuật sản phẩm theo id
-
-// Api VariantAttributeValues
-// http://127.0.0.1:8000/api/variantattributevalues
-Route::middleware('auth:sanctum')->prefix('variantattributevalues')->controller(VariantAttributeValuesController::class)->group(function () {
-    Route::post('/', 'store');                    // Thêm liên kết
-    Route::put('/{id}', 'update');               // Cập nhật liên kết theo ID
-    Route::get('/trashed',  'trashed');         // Lấy danh sách liên kết đã xóa mềm
-    Route::delete('/{id}', 'destroy');           // Xóa mềm liên kết
-    Route::put('/restore/{id}', 'restore');      // Khôi phục liên kết đã xóa mềm
-    Route::delete('/forceDelete/{id}', 'forceDelete'); // Xóa vĩnh viễn
-});
 Route::get('variantattributevalues', [VariantAttributeValuesController::class, 'index']); // lấy danh sách liên kết
 Route::get('variantattributevalues/{id}', [VariantAttributeValuesController::class, 'show']); // lấy liên kết theo id
