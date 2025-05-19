@@ -12,6 +12,7 @@ export const fetchBanners = createAsyncThunk("home/fetchBanners", async () => {
   const response = await axiosConfig.get("/getbanners");
   return response.data;
 });
+
 export const homeSlice = createSlice({
   name: "home",
   initialState,

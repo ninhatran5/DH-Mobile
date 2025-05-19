@@ -7,8 +7,14 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchRegister } from "../slices/registerSlice";
 
 const Register = () => {
+  const dispatch = useDispatch();
+  const { registerInitial, loading, error } = useSelector(
+    (state) => state.register
+  );
   const [isShowPassword, setIsShowPassword] = useState(false);
   const navigate = useNavigate();
   const handleShowPassword = () => {
@@ -21,9 +27,14 @@ const Register = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = () => {
-    toast.success(t("auth.registerNotificationSuccess"));
-    navigate("/login");
+  const onSubmit = async (data) => {
+    try {
+      await dispatch(fetchRegister(data)).unwrap();
+      toast.success(t("auth.registerNotificationSuccess"));
+      navigate("/login");
+    } catch (error) {
+      toast.error(error);
+    }
   };
 
   return (
@@ -113,7 +124,7 @@ const Register = () => {
                                     id="fullname"
                                     spellCheck={false}
                                     placeholder="Full Name"
-                                    {...register("fullname", {
+                                    {...register("full_name", {
                                       required: t(
                                         "auth.validation.fullnameRequired"
                                       ),
