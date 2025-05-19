@@ -1,32 +1,37 @@
 import "../assets/css/profile.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import OrderHistory from "../components/OrderHistory";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const Profile = () => {
   const { t } = useTranslation();
-  const id = 123;
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const loginData = useSelector((state) => state.login.loginInitial);
+  const user = loginData?.user;
   const personalInformations = [
     {
       id: 1,
       title: t("profile.personalInformations.name"),
-      content: "Lê Nguyên Tùng",
+      content: user?.full_name || "Chưa cập nhật",
     },
     {
       id: 2,
       title: t("profile.personalInformations.phone"),
-      content: "0396180619",
+      content: user?.phone || "Chưa cập nhật",
     },
     {
       id: 3,
       title: t("profile.personalInformations.email"),
-      content: "tung.ln@mor.com.vn",
+      content: user?.email || "Chưa cập nhật",
     },
     {
       id: 4,
       title: t("profile.personalInformations.hometown"),
-      content: "Thanh Hóa",
+      content: user?.address || "Chưa cập nhật",
     },
   ];
   const statisticals = [
@@ -85,12 +90,17 @@ const Profile = () => {
     },
   ];
 
+  const handleLogout = () => {
+    try {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userID");
+      toast.success("Đăng xuất thành công");
+      navigate("/login");
+    } catch (error) {
+      toast.error(error);
+    }
+  };
   const features = [
-    {
-      id: 1,
-      name: t("profile.featuresList.adminLogin"),
-      links: "/admin",
-    },
     {
       id: 2,
       name: t("profile.featuresList.favoriteProducts"),
@@ -104,8 +114,17 @@ const Profile = () => {
     {
       id: 4,
       name: t("profile.featuresList.logout"),
+      onClick: handleLogout,
     },
   ];
+
+  if (user?.role === "admin") {
+    features.unshift({
+      id: 1,
+      name: t("profile.featuresList.adminLogin"),
+      links: "/admin",
+    });
+  }
 
   return (
     <>
@@ -131,8 +150,8 @@ const Profile = () => {
                       />
                     </span>
                     <div className="profile-user-info">
-                      <h4 className="profile-username">Lê Nguyên Tùng</h4>
-                      <p className="profile-location">Thanh Hoa, Viet Nam</p>
+                      <h4 className="profile-username">{user?.full_name}</h4>
+                      <p className="profile-location">@{user?.username}</p>
                     </div>
                   </div>
                   <div className="profile-col-half">
@@ -157,7 +176,7 @@ const Profile = () => {
                 <h4 className="profile-title">{t("profile.introduction")}</h4>
                 <div className="profile-body">
                   <p className="profile-description">
-                    {t("profile.description")} Lê Nguyên Tùng...
+                    {t("profile.description")}...
                   </p>
                   <hr />
                   <h4 className="profile-title mb-2">
@@ -187,7 +206,10 @@ const Profile = () => {
                         </button>
                       </Link>
                     ) : (
-                      <button className="profile-btn-reply">
+                      <button
+                        className="profile-btn-reply"
+                        onClick={feature.onClick}
+                      >
                         {feature.name}
                       </button>
                     )}
