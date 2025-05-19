@@ -9,12 +9,11 @@ import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchRegister } from "../slices/registerSlice";
+import Loading from "../components/Loading";
 
 const Register = () => {
   const dispatch = useDispatch();
-  const { registerInitial, loading, error } = useSelector(
-    (state) => state.register
-  );
+  const { loading } = useSelector((state) => state.register);
   const [isShowPassword, setIsShowPassword] = useState(false);
   const navigate = useNavigate();
   const handleShowPassword = () => {
@@ -39,6 +38,8 @@ const Register = () => {
 
   return (
     <>
+      {loading && <Loading />}
+
       <div style={{ background: "#f8f8f8", width: "100vw", height: "100vh" }}>
         <section className="p-4">
           <div className="container mt-2">

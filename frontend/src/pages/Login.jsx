@@ -9,12 +9,11 @@ import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchLogin } from "../slices/loginSlice";
+import Loading from "../components/Loading";
 
 const Login = () => {
   const dispatch = useDispatch();
-  const { loginInitial, loading, error } = useSelector(
-    (state) => state.register
-  );
+  const { loading } = useSelector((state) => state.register);
   const [isShowPassword, setIsShowPassword] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -32,6 +31,7 @@ const Login = () => {
     try {
       const result = await dispatch(fetchLogin(data)).unwrap();
       localStorage.setItem("token", result.access_token);
+      localStorage.setItem("userID", result.user.id);
       toast.success(t("auth.loginNotificationSuccess"));
       navigate("/");
     } catch (error) {
@@ -41,6 +41,7 @@ const Login = () => {
 
   return (
     <>
+      {loading && <Loading />}
       <div style={{ background: "#f8f8f8", width: "100vw", height: "100vh" }}>
         <section className="p-3">
           <div className="container mt-3">
