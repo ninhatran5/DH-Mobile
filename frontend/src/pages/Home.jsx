@@ -3,9 +3,7 @@ import { Pagination, Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import banner1 from "../assets/images/banner1.jpg";
-import banner2 from "../assets/images/banner2.jpg";
-import banner3 from "../assets/images/banenr3.jpg";
+
 import banner4 from "../assets/images/4d6e937b1e03c66d7b23eaaa45668d55.jpg";
 import banner5 from "../assets/images/iphone-16-pro-max-thu-cu-moi-home.webp";
 import background from "../assets/images/background-pattern.jpg";
@@ -29,15 +27,32 @@ import Blogs from "../components/Blogs";
 import SliderLogoBrand from "../components/SliderLogoBrand";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ListProductCard from "../components/ListProductCard";
 import ProductsCarousel from "../components/ProductsCarousel";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchBanners } from "../slices/homeSlice";
 
 const Home = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [isPercentDecrease, setIsPercentDecrease] = useState(true);
-  const banners = [banner1, banner2, banner3];
+  // const banners = [banner1, banner2, banner3];
+
+  const dispatch = useDispatch();
+  const { banners, loading, error } = useSelector((state) => state.home);
+
+  const sliderBanner = banners.filter((banner) =>
+    banner.title.includes("Slider")
+  );
+  const smallBanner = banners.filter((banner) =>
+    banner.title.includes("Banner")
+  );
+
+  useEffect(() => {
+    dispatch(fetchBanners());
+  }, [dispatch]);
+
   const logoBrand = [
     { id: 1, name: "Apple", logo: appleLogo },
     { id: 2, name: "Xiaomi", logo: xiaomiLogo },
@@ -221,12 +236,12 @@ const Home = () => {
                     loop={true}
                     className="main-swiper"
                   >
-                    {banners.map((image, index) => (
-                      <SwiperSlide key={index}>
+                    {sliderBanner.map((banner) => (
+                      <SwiperSlide key={banner.banner_id}>
                         <img
                           className="swiper-image w-100"
-                          src={image}
-                          alt={`Banner ${index + 1}`}
+                          src={banner.image_url}
+                          alt={banner.title}
                         />
                       </SwiperSlide>
                     ))}
@@ -428,16 +443,20 @@ const Home = () => {
       <section className="py-2">
         <div className="container-fluid">
           <div className="row">
-            {bannerAdvertisement.map((item) => {
+            {smallBanner.map((banner) => {
               return (
                 <div
                   style={{ cursor: "pointer" }}
                   onClick={nextShop}
-                  key={item}
+                  key={banner.banner_id}
                   className="col-md-6 mb-3"
                 >
                   <div className="banner-ad">
-                    <img src={item} className="img-fluid" />
+                    <img
+                      src={banner.image_url}
+                      className="img-fluid"
+                      alt={banner.title}
+                    />
                   </div>
                 </div>
               );
