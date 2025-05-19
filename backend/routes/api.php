@@ -1,16 +1,17 @@
 <?php
 
-use App\Http\Controllers\Api\AttributeController;
-use App\Http\Controllers\Api\attributevalueController;
+use App\Http\Middleware\CheckAdmin;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\BannerController;
-use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\ProductSpecificationsController;
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\AttributeController;
+use App\Http\Controllers\Api\attributevalueController;
 use App\Http\Controllers\Api\ProductVariantsController;
-use App\Http\Controllers\Api\VariantAttributeValuesController;
-use App\Http\Middleware\CheckAdmin;
+use App\Http\Controllers\Api\ProductSpecificationsController;
+use App\Http\Controllers\Api\VariantAttributeValuesController; 
 
 // API Auth
 // http://127.0.0.1:8000/api
@@ -20,8 +21,28 @@ Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/resetpassword', [AuthController::class, 'resetPassword']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::put('/update-profile', [AuthController::class, 'updateProfile']);
 });
+
+
+// API User
+
+// Admin 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware(CheckAdmin::class)->group(function () {
+        Route::get('/getuser', [UserController::class, 'getuser']);
+        // Route::put('/updateuser/{id}', [UserController::class, 'updateuser']);
+        // Route::delete('/deleteuser/{id}', [UserController::class, 'deleteuser']);
+        // Route::put('/restoreuser/{id}', [UserController::class, 'restoreuser']);
+        // Route::delete('/forceDeleteUser/{id}', [UserController::class, 'forceDeleteUser']);
+    });
+
+});
+// Client
+Route::middleware('auth:sanctum')->group(function () {
+    Route::put('/update-profile', [UserController::class, 'updateProfile']);
+    Route::get('/profile', [UserController::class, 'profile']);
+});
+
 
 
 
