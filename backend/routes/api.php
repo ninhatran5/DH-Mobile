@@ -22,6 +22,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 });
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::put('/user/update', [AuthController::class, 'updateProfile']);
+});
+
 
 // API Banner
 // http://127.0.0.1:8000/api/banners

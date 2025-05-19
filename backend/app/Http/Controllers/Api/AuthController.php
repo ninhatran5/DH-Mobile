@@ -268,4 +268,12 @@ class AuthController extends Controller
             'message' => 'Mật khẩu đã được đặt lại thành công.',
         ]);
     }
+
+    public function updateProfile(Request $request){
+
+        $user = $request->user();
+
+        
+
+    }
 }
