@@ -7,8 +7,14 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchLogin } from "../slices/loginSlice";
 
 const Login = () => {
+  const dispatch = useDispatch();
+  const { loginInitial, loading, error } = useSelector(
+    (state) => state.register
+  );
   const [isShowPassword, setIsShowPassword] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -16,16 +22,21 @@ const Login = () => {
   const handleShowPassword = () => {
     setIsShowPassword(!isShowPassword);
   };
-
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const login = () => {
-    toast.success(t("auth.loginNotificationSuccess"));
-    navigate("/");
+  const login = async (data) => {
+    try {
+      const result = await dispatch(fetchLogin(data)).unwrap();
+      localStorage.setItem("token", result.access_token);
+      toast.success(t("auth.loginNotificationSuccess"));
+      navigate("/");
+    } catch (error) {
+      toast.error(error);
+    }
   };
 
   return (
@@ -61,7 +72,9 @@ const Login = () => {
                                     />
                                   </a>
                                 </div>
-                                <h4 className="text-center">{t("auth.titleLogin")}</h4>
+                                <h4 className="text-center">
+                                  {t("auth.titleLogin")}
+                                </h4>
                               </div>
                             </div>
                           </div>
@@ -77,16 +90,23 @@ const Login = () => {
                                     id="email"
                                     placeholder="name@example.com"
                                     {...register("email", {
-                                      required: t("auth.validation.emailRequired"),
+                                      required: t(
+                                        "auth.validation.emailRequired"
+                                      ),
                                       pattern: {
                                         value:
                                           /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                        message: t("auth.validation.emailInvalid"),
+                                        message: t(
+                                          "auth.validation.emailInvalid"
+                                        ),
                                       },
                                     })}
                                   />
                                   {errors?.email && (
-                                    <small className="mt-2" style={{ color: "red" }}>
+                                    <small
+                                      className="mt-2"
+                                      style={{ color: "red" }}
+                                    >
                                       {errors.email.message}
                                     </small>
                                   )}
@@ -105,16 +125,23 @@ const Login = () => {
                                     spellCheck={false}
                                     placeholder={t("auth.password")}
                                     {...register("password", {
-                                      required: t("auth.validation.passwordRequired"),
+                                      required: t(
+                                        "auth.validation.passwordRequired"
+                                      ),
                                       pattern: {
                                         value:
                                           /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/,
-                                        message: t("auth.validation.passwordInvalid"),
+                                        message: t(
+                                          "auth.validation.passwordInvalid"
+                                        ),
                                       },
                                     })}
                                   />
                                   {errors?.password && (
-                                    <small className="mt-2" style={{ color: "red" }}>
+                                    <small
+                                      className="mt-2"
+                                      style={{ color: "red" }}
+                                    >
                                       {errors.password.message}
                                     </small>
                                   )}
@@ -128,20 +155,33 @@ const Login = () => {
                                     }}
                                     onClick={handleShowPassword}
                                   >
-                                    {isShowPassword ? <FaEyeSlash /> : <IoEyeSharp />}
+                                    {isShowPassword ? (
+                                      <FaEyeSlash />
+                                    ) : (
+                                      <IoEyeSharp />
+                                    )}
                                   </div>
-                                  <label htmlFor="password" className="form-label">
+                                  <label
+                                    htmlFor="password"
+                                    className="form-label"
+                                  >
                                     {t("auth.password")}
                                   </label>
                                 </div>
                               </div>
                               <div className="col-12 d-flex">
                                 <div className="col-6">
-                                  <Link style={{ textDecoration: "none" }} to={"/register"}>
+                                  <Link
+                                    style={{ textDecoration: "none" }}
+                                    to={"/register"}
+                                  >
                                     <h6>{t("auth.register")}</h6>
                                   </Link>
                                 </div>
-                                <div style={{ textAlign: "end" }} className="col-6">
+                                <div
+                                  style={{ textAlign: "end" }}
+                                  className="col-6"
+                                >
                                   <Link
                                     style={{ textDecoration: "none" }}
                                     to={"/forgot-password"}
