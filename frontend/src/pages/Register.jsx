@@ -77,20 +77,67 @@ const Register = () => {
                                     spellCheck={false}
                                     placeholder="Username"
                                     {...register("username", {
-                                      required: t("auth.validation.usernameRequired"),
+                                      required: t(
+                                        "auth.validation.usernameRequired"
+                                      ),
                                       minLength: {
                                         value: 3,
-                                        message: t("auth.validation.usernameMinLength"),
+                                        message: t(
+                                          "auth.validation.usernameMinLength"
+                                        ),
                                       },
                                     })}
                                   />
                                   {errors?.username && (
-                                    <small className="mt-2" style={{ color: "red" }}>
+                                    <small
+                                      className="mt-2"
+                                      style={{ color: "red" }}
+                                    >
                                       {errors.username.message}
                                     </small>
                                   )}
-                                  <label htmlFor="username" className="form-label">
+                                  <label
+                                    htmlFor="username"
+                                    className="form-label"
+                                  >
                                     {t("auth.username")}
+                                  </label>
+                                </div>
+                              </div>
+                              <div className="col-12">
+                                <div className="form-floating mb-3">
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    name="fullname"
+                                    id="fullname"
+                                    spellCheck={false}
+                                    placeholder="Full Name"
+                                    {...register("fullname", {
+                                      required: t(
+                                        "auth.validation.fullnameRequired"
+                                      ),
+                                      minLength: {
+                                        value: 3,
+                                        message: t(
+                                          "auth.validation.fullnameMinLength"
+                                        ),
+                                      },
+                                    })}
+                                  />
+                                  {errors?.fullname && (
+                                    <small
+                                      className="mt-2"
+                                      style={{ color: "red" }}
+                                    >
+                                      {errors.fullname.message}
+                                    </small>
+                                  )}
+                                  <label
+                                    htmlFor="fullname"
+                                    className="form-label"
+                                  >
+                                    {t("auth.fullname")}
                                   </label>
                                 </div>
                               </div>
@@ -104,15 +151,23 @@ const Register = () => {
                                     spellCheck={false}
                                     placeholder="name@example.com"
                                     {...register("email", {
-                                      required: t("auth.validation.emailRequired"),
+                                      required: t(
+                                        "auth.validation.emailRequired"
+                                      ),
                                       pattern: {
-                                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                        message: t("auth.validation.emailInvalid"),
+                                        value:
+                                          /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                        message: t(
+                                          "auth.validation.emailInvalid"
+                                        ),
                                       },
                                     })}
                                   />
                                   {errors?.email && (
-                                    <small className="mt-2" style={{ color: "red" }}>
+                                    <small
+                                      className="mt-2"
+                                      style={{ color: "red" }}
+                                    >
                                       {errors.email.message}
                                     </small>
                                   )}
@@ -132,16 +187,23 @@ const Register = () => {
                                     spellCheck={false}
                                     placeholder="Password"
                                     {...register("password", {
-                                      required: t("auth.validation.passwordRequired"),
+                                      required: t(
+                                        "auth.validation.passwordRequired"
+                                      ),
                                       pattern: {
                                         value:
                                           /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/,
-                                        message: t("auth.validation.passwordInvalid"),
+                                        message: t(
+                                          "auth.validation.passwordInvalid"
+                                        ),
                                       },
                                     })}
                                   />
                                   {errors?.password && (
-                                    <small className="mt-2" style={{ color: "red" }}>
+                                    <small
+                                      className="mt-2"
+                                      style={{ color: "red" }}
+                                    >
                                       {errors.password.message}
                                     </small>
                                   )}
@@ -155,20 +217,33 @@ const Register = () => {
                                     }}
                                     onClick={handleShowPassword}
                                   >
-                                    {isShowPassword ? <FaEyeSlash /> : <IoEyeSharp />}
+                                    {isShowPassword ? (
+                                      <FaEyeSlash />
+                                    ) : (
+                                      <IoEyeSharp />
+                                    )}
                                   </div>
-                                  <label htmlFor="password" className="form-label">
+                                  <label
+                                    htmlFor="password"
+                                    className="form-label"
+                                  >
                                     {t("auth.password")}
                                   </label>
                                 </div>
                               </div>
                               <div className="col-12 d-flex">
                                 <div className="col-6">
-                                  <Link style={{ textDecoration: "none" }} to={"/login"}>
+                                  <Link
+                                    style={{ textDecoration: "none" }}
+                                    to={"/login"}
+                                  >
                                     <h6>{t("auth.login")}</h6>
                                   </Link>
                                 </div>
-                                <div style={{ textAlign: "end" }} className="col-6">
+                                <div
+                                  style={{ textAlign: "end" }}
+                                  className="col-6"
+                                >
                                   <Link
                                     style={{ textDecoration: "none" }}
                                     to={"/forgot-password"}
