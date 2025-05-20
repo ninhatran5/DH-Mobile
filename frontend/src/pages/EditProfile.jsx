@@ -8,115 +8,81 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchEditProfile, fetchProfile } from "../slices/updateProfileSlice";
 import Loading from "../components/Loading";
 import { toast } from "react-toastify";
+import { fetchAddress } from "../slices/addressSlice";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 const EditProfile = () => {
-  // const [isShowPassword, setIsShowPassword] = useState(false);
-  // const [isShowPasswordNew, setIsShowPasswordNew] = useState(false);
-  // const [isShowConfirmPassword, setIsShowConfirmPassword] = useState(false);
   const { id } = useParams();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const { profile, loading } = useSelector((state) => state.editProfile);
+  const { data } = useSelector((state) => state.address);
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm({
+    mode: "onTouched",
+  });
+
   const [previewImage, setPreviewImage] = useState(null);
+  const [profileData, setProfileData] = useState({
+    image: null,
+  });
+
+  // Watch các giá trị select để lọc động
+  const watchCity = watch("city");
+  const watchDistrict = watch("district");
+
+  // Lọc districts theo city được chọn
+  const filteredDistricts =
+    data.find((province) => province.codename === watchCity)?.districts || [];
+
+  // Lọc wards theo district được chọn
+  const filteredWards =
+    filteredDistricts.find((district) => district.codename === watchDistrict)
+      ?.wards || [];
+
+  useEffect(() => {
+    if (profile?.user) {
+      setValue("full_name", profile.user.full_name || "");
+      setValue("phone", profile.user.phone || "");
+      setValue("email", profile.user.email || "");
+      setValue("ward", "");
+      setValue("district", "");
+      setValue("city", "");
+      setValue("address", profile.user.address || "");
+    }
+  }, [profile, setValue]);
+
+  useEffect(() => {
+    dispatch(fetchAddress());
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(fetchProfile());
   }, [dispatch]);
 
-  // const handleShowPassword = () => {
-  //   setIsShowPassword(!isShowPassword);
-  // };
-  // const handleShowPasswordNew = () => {
-  //   setIsShowPasswordNew(!isShowPasswordNew);
-  // };
-  // const handleShowConfirmPassword = () => {
-  //   setIsShowConfirmPassword(!isShowConfirmPassword);
-  // };
-  const [profileData, setProfileData] = useState({
-    full_name: "",
-    phone: "",
-    email: "",
-    ward: "",
-    district: "",
-    city: "",
-    address: "",
-    image: null,
-  });
-
-  useEffect(() => {
-    if (profile?.user) {
-      setProfileData({
-        full_name: profile.user.full_name || "",
-        phone: profile.user.phone || "",
-        email: profile.user.email || "",
-        ward: "",
-        district: "",
-        city: "",
-        address: profile.user.address || "",
-      });
+  const onSubmit = async (dataForm) => {
+    const dataToSend = new FormData();
+    dataToSend.append("full_name", dataForm.full_name);
+    dataToSend.append("phone", dataForm.phone);
+    dataToSend.append("email", dataForm.email);
+    dataToSend.append("ward", dataForm.ward);
+    dataToSend.append("district", dataForm.district);
+    dataToSend.append("city", dataForm.city);
+    dataToSend.append("address", dataForm.address);
+    if (profileData.image) {
+      dataToSend.append("image_url", profileData.image);
     }
-  }, [profile]);
-
-  const address = [
-    {
-      id: 1,
-      title: "Phường/Xã ",
-      options: "Chọn Phường/Xã",
-      items: [
-        { id: 1, name: "Phường Tràng Tiền", value: "phuong-trang-tien" },
-        { id: 2, name: "Phường Khâm Thiên", value: "phuong-kham-thien" },
-        { id: 3, name: "Phường Bạch Đằng", value: "phuong-bach-dang" },
-        { id: 4, name: "Phường Nghĩa Đô", value: "phuong-nghia-do" },
-        { id: 5, name: "Phường Tứ Liên", value: "phuong-tu-lien" },
-        { id: 6, name: "Phường Ngọc Lâm", value: "phuong-ngoc-lam" },
-        { id: 7, name: "Phường Mộ Lao", value: "phuong-mo-lao" },
-      ],
-    },
-    {
-      id: 2,
-      title: "Quận/Huyện ",
-      options: "Chọn Quận/Huyện",
-      items: [
-        { id: 1, name: "Quận Hoàn Kiếm", value: "quan-hoan-kiem" },
-        { id: 2, name: "Quận Đống Đa", value: "quan-dong-da" },
-        { id: 3, name: "Quận Hai Bà Trưng", value: "quan-hai-ba-trung" },
-        { id: 4, name: "Quận Cầu Giấy", value: "quan-cau-giay" },
-        { id: 5, name: "Quận Tây Hồ", value: "quan-tay-ho" },
-        { id: 6, name: "Quận Long Biên", value: "quan-long-bien" },
-        { id: 7, name: "Quận Hà Đông", value: "quan-ha-dong" },
-      ],
-    },
-    {
-      id: 3,
-      title: "Tỉnh/Thành Phố ",
-      options: "Tỉnh/Thành Phố",
-      items: [
-        { id: 1, name: "Hà Nội", value: "ha-noi" },
-        { id: 2, name: "Hải Phòng", value: "hai-phong" },
-        { id: 3, name: "Đà Nẵng", value: "da-nang" },
-        { id: 4, name: "Hồ Chí Minh", value: "ho-chi-minh" },
-      ],
-    },
-  ];
-
-  const handleChange = (e) => {
-    console.log("🚀 ~ handleChange ~ e:", e);
-    const { name, value } = e.target;
-    setProfileData({ ...profileData, [name]: value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const data = new FormData();
-    data.append("full_name", profileData.full_name);
-    data.append("phone", profileData.phone);
-    data.append("address", profileData.address);
-    data.append("image_url", profileData.image);
-    data.append("_method", "PUT");
-    dispatch(fetchEditProfile(data));
+    dataToSend.append("_method", "PUT");
 
     try {
-      const result = await dispatch(fetchEditProfile(data)).unwrap();
-      console.log("🚀 ~ handleSubmit ~ result:", result);
+      const result = await dispatch(fetchEditProfile(dataToSend)).unwrap();
       toast.success("Cập nhật hồ sơ thành công!");
     } catch (error) {
       toast.error(error);
@@ -126,7 +92,7 @@ const EditProfile = () => {
   const onChangeAvatar = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setPreviewImage(URL.createObjectURL(file)); // tạo URL tạm
+      setPreviewImage(URL.createObjectURL(file));
       setProfileData({
         ...profileData,
         image: file,
@@ -138,10 +104,10 @@ const EditProfile = () => {
     <>
       {loading && <Loading />}
       <Breadcrumb
-        title={"Chỉnh Sửa Hồ Sơ Cá Nhân"}
-        mainItem={"Trang chủ"}
-        mainItem2={"Hồ sơ cá nhân"}
-        secondaryItem={"Chỉnh sửa hồ sơ"}
+        title={t("editProfile.brumTitle")}
+        mainItem={t("profile.home")}
+        mainItem2={t("profile.title")}
+        secondaryItem={t("editProfile.brumTitle")}
         linkMainItem={"/"}
         linkMainItem2={`/profile/${id}`}
         showMainItem2={true}
@@ -149,96 +115,243 @@ const EditProfile = () => {
       <div className="container-fluid">
         <div className="row">
           <div className="col-12">
-            <form className="file-upload mt-3" onSubmit={handleSubmit}>
+            <form
+              className="file-upload mt-3"
+              onSubmit={handleSubmit(onSubmit)}
+            >
               <div className="row mb-5 gx-5">
                 <div className="col-xxl-8 mb-5 mb-xxl-0">
                   <div className="bg-secondary-soft-custom px-4 py-5 rounded-custom">
                     <div className="row g-3">
-                      <h4 className="mb-4 mt-0">Thông tin tài khoản</h4>
+                      <h4 className="mb-4 mt-0">
+                        {t("editProfile.accountInfo")}
+                      </h4>
+
+                      {/* Họ tên */}
                       <div className="col-md-6">
                         <label className="title-edit-profile form-label">
-                          Họ tên <span className="span-validate">*</span>
+                          {t("profile.personalInformations.name")}
+                          <span className="span-validate ms-1">*</span>
                         </label>
                         <input
                           type="text"
                           name="full_name"
                           spellCheck={false}
-                          className="input_profile_edit form-control"
-                          placeholder=""
-                          value={profileData.full_name}
-                          onChange={handleChange}
+                          className={`input_profile_edit form-control ${
+                            errors.full_name ? "is-invalid" : ""
+                          }`}
+                          {...register("full_name", {
+                            required: t("editProfile.validate.nameRequired"),
+                          })}
                         />
+                        {errors.full_name && (
+                          <div className="invalid-feedback">
+                            {errors.full_name.message}
+                          </div>
+                        )}
                       </div>
+
+                      {/* Số điện thoại */}
                       <div className="col-md-6">
                         <label className="title-edit-profile form-label">
-                          Số điện thoại <span className="span-validate">*</span>
+                          {t("profile.personalInformations.phone")}
+                          <span className="span-validate ms-1">*</span>
                         </label>
                         <input
-                          type="text"
+                          type="number"
+                          min={0}
                           name="phone"
                           spellCheck={false}
-                          className="input_profile_edit form-control"
-                          placeholder=""
-                          value={profileData.phone}
-                          onChange={handleChange}
+                          className={`input_profile_edit form-control ${
+                            errors.phone ? "is-invalid" : ""
+                          }`}
+                          {...register("phone", {
+                            required: t("editProfile.validate.phoneRequired"),
+                            pattern: {
+                              value: /^[0-9]+$/,
+                              message: t("editProfile.validate.phonePattern"),
+                            },
+                            minLength: {
+                              value: 9,
+                              message: t("editProfile.validate.phoneMinLength"),
+                            },
+                            maxLength: {
+                              value: 12,
+                              message: t("editProfile.validate.phoneMaxLength"),
+                            },
+                          })}
                         />
+                        {errors.phone && (
+                          <div className="invalid-feedback">
+                            {errors.phone.message}
+                          </div>
+                        )}
                       </div>
+
+                      {/* Email */}
                       <div className="col-md-6">
                         <label className="title-edit-profile form-label">
-                          Email <span className="span-validate">*</span>
+                          {t("profile.personalInformations.email")}
+                          <span className="span-validate ms-1">*</span>
                         </label>
                         <input
                           type="email"
                           name="email"
                           spellCheck={false}
-                          className="input_profile_edit form-control"
-                          value={profileData.email}
-                          onChange={handleChange}
+                          className={`input_profile_edit form-control ${
+                            errors.email ? "is-invalid" : ""
+                          }`}
+                          {...register("email", {
+                            required: t("editProfile.validate.emailRequired"),
+                            pattern: {
+                              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                              message: t("editProfile.validate.emailPattern"),
+                            },
+                          })}
                         />
+                        {errors.email && (
+                          <div className="invalid-feedback">
+                            {errors.email.message}
+                          </div>
+                        )}
                       </div>
 
-                      {address.map((item) => (
-                        <div className="col-md-6" key={item.id}>
-                          <label className="title-edit-profile form-label">
-                            {item.title}
-                            <span className="span-validate">*</span>
-                          </label>
-                          <select
-                            name={item.title.trim()}
-                            className="input_profile_edit-select form-select"
-                            onChange={handleChange}
-                          >
-                            <option value="">{item.options}</option>
-                            {item.items.map((add) => (
-                              <option key={add.id} value={add.value}>
-                                {add.name}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      ))}
+                      {/* Phường/Xã */}
+                      <div className="col-md-6">
+                        <label className="title-edit-profile form-label">
+                          {t("editProfile.wards")}
+                          <span className="span-validate ms-1">*</span>
+                        </label>
+                        <select
+                          name="ward"
+                          className={`input_profile_edit-select form-select ${
+                            errors.ward ? "is-invalid" : ""
+                          }`}
+                          {...register("ward", {
+                            required: t("editProfile.validate.wardRequired"),
+                          })}
+                          disabled={!watchDistrict}
+                        >
+                          <option value="">
+                            {t("editProfile.selectWard")}
+                          </option>
+                          {filteredWards.map((ward) => (
+                            <option key={ward.code} value={ward.codename}>
+                              {ward.name}
+                            </option>
+                          ))}
+                        </select>
+                        {errors.ward && (
+                          <div className="invalid-feedback">
+                            {errors.ward.message}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Quận/Huyện */}
+                      <div className="col-md-6">
+                        <label className="title-edit-profile form-label">
+                          {t("editProfile.district")}
+                          <span className="span-validate ms-1">*</span>
+                        </label>
+                        <select
+                          name="district"
+                          className={`input_profile_edit-select form-select ${
+                            errors.district ? "is-invalid" : ""
+                          }`}
+                          {...register("district", {
+                            required: t(
+                              "editProfile.validate.districtRequired"
+                            ),
+                          })}
+                          disabled={!watchCity}
+                        >
+                          <option value="">
+                            {t("editProfile.selectDistrict")}
+                          </option>
+                          {filteredDistricts.map((district) => (
+                            <option
+                              key={district.code}
+                              value={district.codename}
+                            >
+                              {district.name}
+                            </option>
+                          ))}
+                        </select>
+                        {errors.district && (
+                          <div className="invalid-feedback">
+                            {errors.district.message}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Tỉnh/Thành Phố */}
+                      <div className="col-md-6">
+                        <label className="title-edit-profile form-label">
+                          {t("editProfile.city")}
+                          <span className="span-validate ms-1">*</span>
+                        </label>
+                        <select
+                          name="city"
+                          className={`input_profile_edit-select form-select ${
+                            errors.city ? "is-invalid" : ""
+                          }`}
+                          {...register("city", {
+                            required: t("editProfile.validate.cityRequired"),
+                          })}
+                        >
+                          <option value="">
+                            {t("editProfile.selectCity")}
+                          </option>
+                          {data.map((province) => (
+                            <option
+                              key={province.code}
+                              value={province.codename}
+                            >
+                              {province.name}
+                            </option>
+                          ))}
+                        </select>
+                        {errors.city && (
+                          <div className="invalid-feedback">
+                            {errors.city.message}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Địa chỉ cụ thể */}
                       <div className="col-md-12">
                         <label className="title-edit-profile form-label">
-                          Địa chỉ cụ thể
-                          <span className="ms-1 span-validate">*</span>
+                          {t("editProfile.fullAddress")}
+                          <span className="ms-1 span-validate ms-1">*</span>
                         </label>
                         <textarea
                           type="address"
                           name="address"
-                          rows="6"
+                          rows="4"
                           spellCheck={false}
-                          className="input_profile_edit form-control"
-                          value={profileData.address}
-                          onChange={handleChange}
+                          className={`input_profile_edit form-control ${
+                            errors.address ? "is-invalid" : ""
+                          }`}
+                          {...register("address", {
+                            required: t("editProfile.validate.addressRequired"),
+                          })}
                         />
+                        {errors.address && (
+                          <div className="invalid-feedback">
+                            {errors.address.message}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
                 </div>
+
+                {/* Ảnh hồ sơ */}
                 <div className="col-xxl-4">
                   <div className="bg-secondary-soft-custom px-4 py-5 rounded-custom">
                     <div className="row g-3">
-                      <h4 className="mb-4 mt-0">Ảnh hồ sơ</h4>
+                      <h4 className="mb-4 mt-0">{t("editProfile.image")}</h4>
                       <div className="text-center">
                         <div className="square-custom position-relative display-2 mb-3">
                           <img
@@ -258,106 +371,21 @@ const EditProfile = () => {
                           onChange={onChangeAvatar}
                         />
                         <label className="" htmlFor="customFile">
-                          Tải lên
+                          {t("editProfile.upload")}
                         </label>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              {/* <div className="row mb-5">
-                <div className="col-xxl-12">
-                  <div className="bg-secondary-soft-custom px-4 py-5 rounded-custom">
-                    <div className="row g-3">
-                      <h4 className="my-4">Thay đổi mật khẩu</h4>
 
-                      <div className="col-md-6">
-                        <label className="title-edit-profile form-label">
-                          Mật khẩu <span className="span-validate">*</span>
-                        </label>
-                        <div className="input-password-wrapper">
-                          <input
-                            spellCheck={false}
-                            type={isShowPassword ? "text" : "password"}
-                            name="oldPassword"
-                            className="form-control"
-                            id="oldPassword"
-                            value={profileData.oldPassword}
-                            onChange={handleChange}
-                          />
-                          <span
-                            className="toggle-password-icon"
-                            onClick={handleShowPassword}
-                          >
-                            {isShowPassword ? <FaEyeSlash /> : <IoEyeSharp />}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="col-md-6">
-                        <label className="title-edit-profile form-label">
-                          Mật khẩu mới <span className="span-validate">*</span>
-                        </label>
-                        <div className="input-password-wrapper">
-                          <input
-                            spellCheck={false}
-                            type={isShowPasswordNew ? "text" : "password"}
-                            name="newPassword"
-                            className="form-control"
-                            id="newPassword"
-                            value={profileData.newPassword}
-                            onChange={handleChange}
-                          />
-                          <span
-                            className="toggle-password-icon"
-                            onClick={handleShowPasswordNew}
-                          >
-                            {isShowPasswordNew ? (
-                              <FaEyeSlash />
-                            ) : (
-                              <IoEyeSharp />
-                            )}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="col-md-12">
-                        <label className="title-edit-profile form-label">
-                          Xác nhận mật khẩu
-                          <span className="span-validate">*</span>
-                        </label>
-                        <div className="input-password-wrapper">
-                          <input
-                            spellCheck={false}
-                            type={isShowConfirmPassword ? "text" : "password"}
-                            name="confirmPassword"
-                            className="form-control"
-                            id="confirmPassword"
-                            value={profileData.confirmPassword}
-                            onChange={handleChange}
-                          />
-                          <span
-                            className="toggle-password-icon"
-                            onClick={handleShowConfirmPassword}
-                          >
-                            {isShowConfirmPassword ? (
-                              <FaEyeSlash />
-                            ) : (
-                              <IoEyeSharp />
-                            )}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div> */}
               <div className="gap-3 d-md-flex justify-content-md-end text-center">
                 <button
+                  type="submit"
                   className="btn btn-primary mb-5"
                   style={{ marginTop: -10 }}
                 >
-                  Cập nhật
+                  {t("editProfile.buttonUpdate")}
                 </button>
               </div>
             </form>

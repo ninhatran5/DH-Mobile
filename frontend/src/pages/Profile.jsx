@@ -12,7 +12,6 @@ import Loading from "../components/Loading";
 const Profile = () => {
   const dispatch = useDispatch();
   const { profile, loading } = useSelector((state) => state.profile);
-  console.log("🚀 ~ Profile ~ profile:", profile);
   const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -204,7 +203,9 @@ const Profile = () => {
                   <div className="profile-info-list">
                     {personalInformations.map((personalInformation) => (
                       <p key={personalInformation.id}>
-                        <strong>{personalInformation.title}</strong>
+                        <strong className="me-1">
+                          {personalInformation.title}
+                        </strong>
                         <span>{personalInformation.content}</span>
                       </p>
                     ))}

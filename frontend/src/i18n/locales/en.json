@@ -372,5 +372,31 @@
       "confirmPasswordInvalid": "Passwords do not match",
       "newPasswordCannotMatchOld": "New password must not be the same as the old password"
     }
+  },
+  "editProfile": {
+    "accountInfo": "Account Information",
+    "wards": "Ward",
+    "district": "District",
+    "city": "City/Province",
+    "fullAddress": "Full Address",
+    "upload": "Upload Image",
+    "image": "Profile Image",
+    "buttonUpdate": "Update",
+    "selectWard": "Select Ward",
+    "selectDistrict": "Select District",
+    "selectCity": "Select City/Province",
+    "validate": {
+      "nameRequired": "Full name is required",
+      "phoneRequired": "Phone number is required",
+      "phonePattern": "Phone number must contain digits only",
+      "phoneMinLength": "Phone number must be at least 9 digits",
+      "phoneMaxLength": "Phone number must not exceed 12 digits",
+      "emailRequired": "Email is required",
+      "emailPattern": "Invalid email format",
+      "wardRequired": "Ward is required",
+      "districtRequired": "District is required",
+      "cityRequired": "City/Province is required",
+      "addressRequired": "Full address is required"
+    }
   }
 }

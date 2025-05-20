@@ -5,6 +5,7 @@ import loginReducer from "../slices/loginSlice";
 import forgotPasswordReducer from "../slices/forgotPasswordSlice";
 import profileReducer from "../slices/profileSlice";
 import editProfileReducer from "../slices/updateProfileSlice";
+import addressReducer from "../slices/addressSlice";
 
 export const store = configureStore({
   reducer: {
@@ -14,5 +15,6 @@ export const store = configureStore({
     forgotPassword: forgotPasswordReducer,
     profile: profileReducer,
     editProfile: editProfileReducer,
+    address: addressReducer,
   },
 });
