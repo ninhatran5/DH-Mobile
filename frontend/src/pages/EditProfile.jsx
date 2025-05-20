@@ -2,37 +2,59 @@ import { Link, useParams } from "react-router-dom";
 import "../assets/css/editprofile.css";
 import { FaEyeSlash } from "react-icons/fa";
 import { IoEyeSharp } from "react-icons/io5";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Breadcrumb from "../components/Breadcrumb";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchEditProfile, fetchProfile } from "../slices/updateProfileSlice";
+import Loading from "../components/Loading";
+import { toast } from "react-toastify";
 
 const EditProfile = () => {
-  const [isShowPassword, setIsShowPassword] = useState(false);
-  const [isShowPasswordNew, setIsShowPasswordNew] = useState(false);
-  const [isShowConfirmPassword, setIsShowConfirmPassword] = useState(false);
+  // const [isShowPassword, setIsShowPassword] = useState(false);
+  // const [isShowPasswordNew, setIsShowPasswordNew] = useState(false);
+  // const [isShowConfirmPassword, setIsShowConfirmPassword] = useState(false);
   const { id } = useParams();
-  console.log("🚀 ~ EditProfile ~ id:", id);
-  const handleShowPassword = () => {
-    setIsShowPassword(!isShowPassword);
-  };
-  const handleShowPasswordNew = () => {
-    setIsShowPasswordNew(!isShowPasswordNew);
-  };
-  const handleShowConfirmPassword = () => {
-    setIsShowConfirmPassword(!isShowConfirmPassword);
-  };
-  const [formData, setFormData] = useState({
-    name: "Lê Nguyên Tùng",
-    phone: "0396180619",
-    email: "tung.ln@mor.com.vn",
+  const dispatch = useDispatch();
+  const { profile, loading } = useSelector((state) => state.editProfile);
+  const [previewImage, setPreviewImage] = useState(null);
+
+  useEffect(() => {
+    dispatch(fetchProfile());
+  }, [dispatch]);
+
+  // const handleShowPassword = () => {
+  //   setIsShowPassword(!isShowPassword);
+  // };
+  // const handleShowPasswordNew = () => {
+  //   setIsShowPasswordNew(!isShowPasswordNew);
+  // };
+  // const handleShowConfirmPassword = () => {
+  //   setIsShowConfirmPassword(!isShowConfirmPassword);
+  // };
+  const [profileData, setProfileData] = useState({
+    full_name: "",
+    phone: "",
+    email: "",
     ward: "",
     district: "",
     city: "",
-    introduce:
-      "Xin chào! Tôi là X$ng Rất vui được đồng hành cùng bạn tại đây. Với tài khoản của mình, tôi có thể dễ dàng quản lý thông tin cá nhân, theo dõi các hoạt động gần đây và tận hưởng những tiện ích mà hệ thống mang lại. Hãy cùng khám phá và trải nghiệm những tính năng tuyệt vời dành riêng cho người dùng đã đăng nhập!",
-    oldPassword: "",
-    newPassword: "",
-    confirmPassword: "",
+    address: "",
+    image: null,
   });
+
+  useEffect(() => {
+    if (profile?.user) {
+      setProfileData({
+        full_name: profile.user.full_name || "",
+        phone: profile.user.phone || "",
+        email: profile.user.email || "",
+        ward: "",
+        district: "",
+        city: "",
+        address: profile.user.address || "",
+      });
+    }
+  }, [profile]);
 
   const address = [
     {
@@ -77,17 +99,43 @@ const EditProfile = () => {
   ];
 
   const handleChange = (e) => {
+    console.log("🚀 ~ handleChange ~ e:", e);
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setProfileData({ ...profileData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    const data = new FormData();
+    data.append("full_name", profileData.full_name);
+    data.append("phone", profileData.phone);
+    data.append("address", profileData.address);
+    data.append("image_url", profileData.image);
+    dispatch(fetchEditProfile(data));
+
+    try {
+      const result = await dispatch(fetchEditProfile(data)).unwrap();
+      console.log("🚀 ~ handleSubmit ~ result:", result);
+      toast.success("Cập nhật hồ sơ thành công!");
+    } catch (error) {
+      toast.error(error);
+    }
+  };
+
+  const onChangeAvatar = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setPreviewImage(URL.createObjectURL(file)); // tạo URL tạm
+      setProfileData({
+        ...profileData,
+        image: file,
+      });
+    }
   };
 
   return (
     <>
+      {loading && <Loading />}
       <Breadcrumb
         title={"Chỉnh Sửa Hồ Sơ Cá Nhân"}
         mainItem={"Trang chủ"}
@@ -112,11 +160,11 @@ const EditProfile = () => {
                         </label>
                         <input
                           type="text"
-                          name="name"
+                          name="full_name"
                           spellCheck={false}
                           className="input_profile_edit form-control"
                           placeholder=""
-                          value={formData.name}
+                          value={profileData.full_name}
                           onChange={handleChange}
                         />
                       </div>
@@ -130,7 +178,7 @@ const EditProfile = () => {
                           spellCheck={false}
                           className="input_profile_edit form-control"
                           placeholder=""
-                          value={formData.phone}
+                          value={profileData.phone}
                           onChange={handleChange}
                         />
                       </div>
@@ -143,7 +191,7 @@ const EditProfile = () => {
                           name="email"
                           spellCheck={false}
                           className="input_profile_edit form-control"
-                          value={formData.email}
+                          value={profileData.email}
                           onChange={handleChange}
                         />
                       </div>
@@ -170,15 +218,16 @@ const EditProfile = () => {
                       ))}
                       <div className="col-md-12">
                         <label className="title-edit-profile form-label">
-                          Giới thiệu
+                          Địa chỉ cụ thể
+                          <span className="ms-1 span-validate">*</span>
                         </label>
                         <textarea
-                          type="introduce"
-                          name="introduce"
+                          type="address"
+                          name="address"
                           rows="6"
                           spellCheck={false}
                           className="input_profile_edit form-control"
-                          value={formData.introduce}
+                          value={profileData.address}
                           onChange={handleChange}
                         />
                       </div>
@@ -192,11 +241,21 @@ const EditProfile = () => {
                       <div className="text-center">
                         <div className="square-custom position-relative display-2 mb-3">
                           <img
-                            src="https://photo.znews.vn/w660/Uploaded/mdf_eioxrd/2021_07_06/2.jpg"
-                            alt=""
+                            src={
+                              previewImage ||
+                              profile?.user?.image_url ||
+                              "https://bootdey.com/img/Content/avatar/avatar1.png"
+                            }
+                            alt="avatar"
                           />
                         </div>
-                        <input type="file" id="customFile" name="file" hidden />
+                        <input
+                          type="file"
+                          id="customFile"
+                          name="file"
+                          hidden
+                          onChange={onChangeAvatar}
+                        />
                         <label className="" htmlFor="customFile">
                           Tải lên
                         </label>
@@ -205,7 +264,7 @@ const EditProfile = () => {
                   </div>
                 </div>
               </div>
-              <div className="row mb-5">
+              {/* <div className="row mb-5">
                 <div className="col-xxl-12">
                   <div className="bg-secondary-soft-custom px-4 py-5 rounded-custom">
                     <div className="row g-3">
@@ -222,7 +281,7 @@ const EditProfile = () => {
                             name="oldPassword"
                             className="form-control"
                             id="oldPassword"
-                            value={formData.oldPassword}
+                            value={profileData.oldPassword}
                             onChange={handleChange}
                           />
                           <span
@@ -234,7 +293,6 @@ const EditProfile = () => {
                         </div>
                       </div>
 
-                      {/* Mật khẩu mới */}
                       <div className="col-md-6">
                         <label className="title-edit-profile form-label">
                           Mật khẩu mới <span className="span-validate">*</span>
@@ -246,7 +304,7 @@ const EditProfile = () => {
                             name="newPassword"
                             className="form-control"
                             id="newPassword"
-                            value={formData.newPassword}
+                            value={profileData.newPassword}
                             onChange={handleChange}
                           />
                           <span
@@ -262,7 +320,6 @@ const EditProfile = () => {
                         </div>
                       </div>
 
-                      {/* Xác nhận mật khẩu */}
                       <div className="col-md-12">
                         <label className="title-edit-profile form-label">
                           Xác nhận mật khẩu
@@ -275,7 +332,7 @@ const EditProfile = () => {
                             name="confirmPassword"
                             className="form-control"
                             id="confirmPassword"
-                            value={formData.confirmPassword}
+                            value={profileData.confirmPassword}
                             onChange={handleChange}
                           />
                           <span
@@ -293,8 +350,7 @@ const EditProfile = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-
+              </div> */}
               <div className="gap-3 d-md-flex justify-content-md-end text-center">
                 <button
                   className="btn btn-primary mb-5"
