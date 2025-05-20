@@ -37,7 +37,7 @@ const Home = () => {
   // const banners = [banner1, banner2, banner3];
 
   const dispatch = useDispatch();
-  const { banners, loading, error } = useSelector((state) => state.home);
+  const { banners } = useSelector((state) => state.home);
 
   const sliderBanner = banners.filter((banner) =>
     banner.title.includes("Slider")

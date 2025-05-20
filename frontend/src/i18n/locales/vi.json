@@ -264,11 +264,12 @@
     "introduction": "Giới thiệu",
     "description": "Xin chào",
     "personalInfo": "Thông tin cá nhân",
+    "titleHello": ", chào mừng bạn đến với DH Moblie",
     "personalInformations": {
       "name": "Họ tên:",
       "phone": "Số điện thoại:",
       "email": "Email:",
-      "hometown": "Quê quán:"
+      "hometown": "Địa chỉ:"
     },
     "features": "Các tính năng",
     "featuresList": {
@@ -365,6 +366,32 @@
       "confirmPasswordRequired": "Không được bỏ trống Xác Nhận Mật Khẩu",
       "confirmPasswordInvalid": "Mật khẩu không khớp",
       "newPasswordCannotMatchOld": "Mật khẩu mới không được trùng mật khẩu cũ"
+    }
+  },
+  "editProfile": {
+    "accountInfo": "Thông tin tài khoản",
+    "wards": "Phường/Xã",
+    "district": "Quận/Huyện",
+    "city": "Tỉnh/Thành Phố",
+    "fullAddress": "Địa chỉ cụ thể",
+    "upload": "Tải ảnh lên",
+    "image": "Ảnh hồ sơ",
+    "buttonUpdate": "Cập nhật",
+    "selectWard": "Chọn Phường/Xã",
+    "selectDistrict": "Chọn Quận/Huyện",
+    "selectCity": "Chọn Tỉnh/Thành Phố",
+    "validate": {
+      "nameRequired": "Họ tên là bắt buộc",
+      "phoneRequired": "Số điện thoại là bắt buộc",
+      "phonePattern": "Số điện thoại chỉ chứa số",
+      "phoneMinLength": "Số điện thoại phải từ 9 số trở lên",
+      "phoneMaxLength": "Số điện thoại tối đa 12 số",
+      "emailRequired": "Email là bắt buộc",
+      "emailPattern": "Email không hợp lệ",
+      "wardRequired": "Phường/Xã là bắt buộc",
+      "districtRequired": "Quận/Huyện là bắt buộc",
+      "cityRequired": "Tỉnh/Thành Phố là bắt buộc",
+      "addressRequired": "Địa chỉ là bắt buộc"
     }
   }
 }
