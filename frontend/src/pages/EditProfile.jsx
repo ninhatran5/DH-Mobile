@@ -216,34 +216,36 @@ const EditProfile = () => {
                         )}
                       </div>
 
-                      {/* Phường/Xã */}
+                      {/* Tỉnh/Thành Phố */}
                       <div className="col-md-6">
                         <label className="title-edit-profile form-label">
-                          {t("editProfile.wards")}
+                          {t("editProfile.city")}
                           <span className="span-validate ms-1">*</span>
                         </label>
                         <select
-                          name="ward"
+                          name="city"
                           className={`input_profile_edit-select form-select ${
-                            errors.ward ? "is-invalid" : ""
+                            errors.city ? "is-invalid" : ""
                           }`}
-                          {...register("ward", {
-                            required: t("editProfile.validate.wardRequired"),
+                          {...register("city", {
+                            required: t("editProfile.validate.cityRequired"),
                           })}
-                          disabled={!watchDistrict}
                         >
                           <option value="">
-                            {t("editProfile.selectWard")}
+                            {t("editProfile.selectCity")}
                           </option>
-                          {filteredWards.map((ward) => (
-                            <option key={ward.code} value={ward.codename}>
-                              {ward.name}
+                          {data.map((province) => (
+                            <option
+                              key={province.code}
+                              value={province.codename}
+                            >
+                              {province.name}
                             </option>
                           ))}
                         </select>
-                        {errors.ward && (
+                        {errors.city && (
                           <div className="invalid-feedback">
-                            {errors.ward.message}
+                            {errors.city.message}
                           </div>
                         )}
                       </div>
@@ -285,36 +287,34 @@ const EditProfile = () => {
                         )}
                       </div>
 
-                      {/* Tỉnh/Thành Phố */}
+                      {/* Phường/Xã */}
                       <div className="col-md-6">
                         <label className="title-edit-profile form-label">
-                          {t("editProfile.city")}
+                          {t("editProfile.wards")}
                           <span className="span-validate ms-1">*</span>
                         </label>
                         <select
-                          name="city"
+                          name="ward"
                           className={`input_profile_edit-select form-select ${
-                            errors.city ? "is-invalid" : ""
+                            errors.ward ? "is-invalid" : ""
                           }`}
-                          {...register("city", {
-                            required: t("editProfile.validate.cityRequired"),
+                          {...register("ward", {
+                            required: t("editProfile.validate.wardRequired"),
                           })}
+                          disabled={!watchDistrict}
                         >
                           <option value="">
-                            {t("editProfile.selectCity")}
+                            {t("editProfile.selectWard")}
                           </option>
-                          {data.map((province) => (
-                            <option
-                              key={province.code}
-                              value={province.codename}
-                            >
-                              {province.name}
+                          {filteredWards.map((ward) => (
+                            <option key={ward.code} value={ward.codename}>
+                              {ward.name}
                             </option>
                           ))}
                         </select>
-                        {errors.city && (
+                        {errors.ward && (
                           <div className="invalid-feedback">
-                            {errors.city.message}
+                            {errors.ward.message}
                           </div>
                         )}
                       </div>
