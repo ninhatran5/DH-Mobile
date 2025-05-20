@@ -3,35 +3,44 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import OrderHistory from "../components/OrderHistory";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { fetchProfile } from "../slices/profileSlice";
+import Loading from "../components/Loading";
 
 const Profile = () => {
+  const dispatch = useDispatch();
+  const { profile, loading } = useSelector((state) => state.profile);
+  console.log("🚀 ~ Profile ~ profile:", profile);
   const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
-  const loginData = useSelector((state) => state.login.loginInitial);
-  const user = loginData?.user;
+
+  useEffect(() => {
+    dispatch(fetchProfile());
+  }, [dispatch]);
+
   const personalInformations = [
     {
       id: 1,
       title: t("profile.personalInformations.name"),
-      content: user?.full_name || "Chưa cập nhật",
+      content: profile?.user?.full_name || "Chưa cập nhật",
     },
     {
       id: 2,
       title: t("profile.personalInformations.phone"),
-      content: user?.phone || "Chưa cập nhật",
+      content: profile?.user?.phone || "Chưa cập nhật",
     },
     {
       id: 3,
       title: t("profile.personalInformations.email"),
-      content: user?.email || "Chưa cập nhật",
+      content: profile?.user?.email || "Chưa cập nhật",
     },
     {
       id: 4,
       title: t("profile.personalInformations.hometown"),
-      content: user?.address || "Chưa cập nhật",
+      content: profile?.user?.address || "Chưa cập nhật",
     },
   ];
   const statisticals = [
@@ -43,7 +52,7 @@ const Profile = () => {
     {
       id: 2,
       label: t("profile.statisticals.wallet"),
-      value: "10.000VND",
+      value: "10.000đ",
     },
     {
       id: 3,
@@ -118,7 +127,7 @@ const Profile = () => {
     },
   ];
 
-  if (user?.role === "admin") {
+  if (profile.user?.role === "admin") {
     features.unshift({
       id: 1,
       name: t("profile.featuresList.adminLogin"),
@@ -128,6 +137,7 @@ const Profile = () => {
 
   return (
     <>
+      {loading && <Loading />}
       <Breadcrumb
         title={t("profile.title")}
         mainItem={t("profile.home")}
@@ -144,14 +154,21 @@ const Profile = () => {
                   <div className="profile-col-half">
                     <span className="profile-avatar">
                       <img
-                        src="https://bootdey.com/img/Content/avatar/avatar1.png"
+                        src={
+                          profile?.user?.image_url ||
+                          "https://bootdey.com/img/Content/avatar/avatar1.png"
+                        }
                         alt="avatar"
                         className="profile-img"
                       />
                     </span>
                     <div className="profile-user-info">
-                      <h4 className="profile-username">{user?.full_name}</h4>
-                      <p className="profile-location">@{user?.username}</p>
+                      <h4 className="profile-username">
+                        {profile?.user?.full_name}
+                      </h4>
+                      <p className="profile-location">
+                        @{profile?.user?.username}
+                      </p>
                     </div>
                   </div>
                   <div className="profile-col-half">
@@ -176,7 +193,9 @@ const Profile = () => {
                 <h4 className="profile-title">{t("profile.introduction")}</h4>
                 <div className="profile-body">
                   <p className="profile-description">
-                    {t("profile.description")}...
+                    {t("profile.description")}
+                    <strong className="ms-1">{profile?.user?.full_name}</strong>
+                    {t("profile.titleHello")}
                   </p>
                   <hr />
                   <h4 className="profile-title mb-2">
@@ -185,7 +204,7 @@ const Profile = () => {
                   <div className="profile-info-list">
                     {personalInformations.map((personalInformation) => (
                       <p key={personalInformation.id}>
-                        <strong>{personalInformation.title}</strong>{" "}
+                        <strong>{personalInformation.title}</strong>
                         <span>{personalInformation.content}</span>
                       </p>
                     ))}

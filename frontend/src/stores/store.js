@@ -3,6 +3,7 @@ import homeReducer from "../slices/homeSlice";
 import registerReducer from "../slices/registerSlice";
 import loginReducer from "../slices/loginSlice";
 import forgotPasswordReducer from "../slices/forgotPasswordSlice";
+import profileReducer from "../slices/profileSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,5 +11,6 @@ export const store = configureStore({
     register: registerReducer,
     login: loginReducer,
     forgotPassword: forgotPasswordReducer,
+    profile: profileReducer,
   },
 });

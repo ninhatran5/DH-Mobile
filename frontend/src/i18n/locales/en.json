@@ -265,11 +265,13 @@
     "introduction": "Introduction",
     "description": "Hello",
     "personalInfo": "Personal Information",
+    "titleHello": ", welcome to DH Mobile",
+
     "personalInformations": {
       "name": "Full Name:",
       "phone": "Phone Number:",
       "email": "Email:",
-      "hometown": "Hometown:"
+      "hometown": "Address:"
     },
     "features": "Features",
     "featuresList": {

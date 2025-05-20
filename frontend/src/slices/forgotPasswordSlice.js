@@ -7,7 +7,7 @@ const initialState = {
   error: null,
 };
 
-///CALL API LOGIN
+///CALL API FORGOT PASSWORD
 export const fetchForgotPassword = createAsyncThunk(
   "login/fetchLogin",
   async (data, thunkAPI) => {

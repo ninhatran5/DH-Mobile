@@ -1,5 +1,6 @@
 import blogImage from "../assets/images/blog.jpg";
 import tungln from "../assets/images/tungln.jpg";
+import { BiSolidQuoteAltLeft } from "react-icons/bi";
 import "../assets/css/blogDetail.css";
 import { GrFormNextLink, GrFormPreviousLink } from "react-icons/gr";
 const BlogDetail = () => {
@@ -54,7 +55,9 @@ const BlogDetail = () => {
                   </p>
                 </div>
                 <div className="blog__details__quote">
-                  <i className="fa fa-quote-left" />
+                  <i>
+                    <BiSolidQuoteAltLeft style={{ fontSize: 22 }} />
+                  </i>
                   <p>
                     “When designing an advertisement for a particular product
                     many things should be researched like where it should be

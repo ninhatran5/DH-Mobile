@@ -264,11 +264,12 @@
     "introduction": "Giới thiệu",
     "description": "Xin chào",
     "personalInfo": "Thông tin cá nhân",
+    "titleHello": ", chào mừng bạn đến với DH Moblie",
     "personalInformations": {
       "name": "Họ tên:",
       "phone": "Số điện thoại:",
       "email": "Email:",
-      "hometown": "Quê quán:"
+      "hometown": "Địa chỉ:"
     },
     "features": "Các tính năng",
     "featuresList": {
