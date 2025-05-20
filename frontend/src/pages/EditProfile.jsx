@@ -111,6 +111,7 @@ const EditProfile = () => {
     data.append("phone", profileData.phone);
     data.append("address", profileData.address);
     data.append("image_url", profileData.image);
+    data.append("_method", "PUT");
     dispatch(fetchEditProfile(data));
 
     try {
@@ -142,7 +143,7 @@ const EditProfile = () => {
         mainItem2={"Hồ sơ cá nhân"}
         secondaryItem={"Chỉnh sửa hồ sơ"}
         linkMainItem={"/"}
-        linkMainItem2={"/profile"}
+        linkMainItem2={`/profile/${id}`}
         showMainItem2={true}
       />
       <div className="container-fluid">

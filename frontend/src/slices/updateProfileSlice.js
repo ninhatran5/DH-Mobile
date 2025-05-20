@@ -27,7 +27,7 @@ export const fetchEditProfile = createAsyncThunk(
   "editProfile/fetchEditProfile",
   async (data, thunkAPI) => {
     try {
-      const response = await axiosConfig.put("/update-profile", data);
+      const response = await axiosConfig.post("/update-profile", data);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
