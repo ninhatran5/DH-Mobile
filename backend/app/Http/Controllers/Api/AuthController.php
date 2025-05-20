@@ -220,8 +220,7 @@ class AuthController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"email","token","password","password_confirmation"},
-     *             @OA\Property(property="email", type="string", format="email"),
+     *             required={"token","password","password_confirmation"},
      *             @OA\Property(property="token", type="string"),
      *             @OA\Property(property="password", type="string", format="password"),
      *             @OA\Property(property="password_confirmation", type="string", format="password")
@@ -235,8 +234,6 @@ class AuthController extends Controller
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
-            'token' => 'required|string',
             'password' => [
                 'required',
                 'string',
@@ -244,37 +241,24 @@ class AuthController extends Controller
                 'max:28',
                 'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,28}$/'
             ],
+            'password_confirmation' => 'required|same:password',
         ]);
-        $reset = DB::table('password_resets')
-            ->where('email', $request->email)
-            ->where('token', $request->token)
-            ->first();
-        if (!$reset) {
-            return response()->json([
-                'message' => 'Token không hợp lệ hoặc đã hết hạn.',
-            ], 400);
-        }
-        // Cập nhật mật khẩu
-        $user = User::where('email', $request->email)->first();
+        $user = $request->user();
         if (!$user) {
             return response()->json([
-                'message' => 'Email không tồn tại.',
-            ], 404);
+                'message' => 'Không xác định được người dùng.',
+            ], 401);
+        }
+        // Kiểm tra mật khẩu mới không trùng với mật khẩu cũ
+        if (Hash::check($request->password, $user->password_hash)) {
+            return response()->json([
+                'message' => 'Mật khẩu mới không được trùng với mật khẩu cũ.',
+            ], 400);
         }
         $user->password_hash = Hash::make($request->password);
         $user->save();
-        // Xóa token
-        DB::table('password_resets')->where('email', $request->email)->delete();
         return response()->json([
-            'message' => 'Mật khẩu đã được đặt lại thành công.',
+            'message' => 'Mật khẩu đã được đổi thành công.',
         ]);
     }
-
-
-    
-
-
-
-
-
 }
