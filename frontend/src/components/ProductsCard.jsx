@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { FaRegHeart } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import checkLogin from "../../utils/checkLogin";
 
 const ProductCard = ({ discountPercent, product, nextProductDetail }) => {
   const navigate = useNavigate();
@@ -16,13 +17,17 @@ const ProductCard = ({ discountPercent, product, nextProductDetail }) => {
   };
 
   const addToFavorites = () => {
-    setFavorite(true);
-    toast.success(t("products.addedToFavorites"));
+    if (checkLogin()) {
+      setFavorite(true);
+      toast.success(t("products.addedToFavorites"));
+    }
   };
 
   const addToShoppingCart = () => {
-    toast.success(t("products.addedToCart"));
-    navigate("/shopping-cart");
+    if (checkLogin()) {
+      toast.success(t("products.addedToCart"));
+      navigate("/shopping-cart");
+    }
   };
 
   return (
