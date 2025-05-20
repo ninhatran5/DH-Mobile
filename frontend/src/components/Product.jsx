@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { FaRegHeart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import checkLogin from "../../utils/checkLogin";
 
 const Product = ({ product, discountPercent, nextProductDetail }) => {
   const { t } = useTranslation();
@@ -14,13 +15,17 @@ const Product = ({ product, discountPercent, nextProductDetail }) => {
     toast.success(t("products.removeFavorites"));
   };
   const addToFavorites = () => {
-    setFavorite(true);
-    toast.success(t("products.addedToFavorites"));
+    if (checkLogin()) {
+      setFavorite(true);
+      toast.success(t("products.addedToFavorites"));
+    }
   };
   const addToShoppingCart = () => {
-    console.log("added");
-    toast.success(t("products.addedToCart"));
-    navigate("/shopping-cart");
+    if (checkLogin()) {
+      console.log("added");
+      toast.success(t("products.addedToCart"));
+      navigate("/shopping-cart");
+    }
   };
   return (
     <>

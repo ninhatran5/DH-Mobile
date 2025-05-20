@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useRoutes } from "react-router-dom";
 import "../src/assets/css/style.css";
 import Home from "./pages/Home";
@@ -46,12 +45,19 @@ import ListBanner from "./pages/admin/ListBanner";
 import CommentsList from "./pages/admin/CommentsList";
 import ShowProduct from "./pages/admin/ShowProduct";
 import ScrollToTop from "../utils/ScrollToTop";
+import RequireAuth from "./components/RequireAuth";
 
-const withLayoutClient = (Component) => {
-  return (
+const withLayoutClient = (Component, requireAuth = false) => {
+  const wrappedComponent = (
     <Layout>
       <Component />
     </Layout>
+  );
+
+  return requireAuth ? (
+    <RequireAuth>{wrappedComponent}</RequireAuth>
+  ) : (
+    wrappedComponent
   );
 };
 
@@ -78,23 +84,23 @@ const routerConfig = [
   },
   {
     path: "/shopping-cart",
-    element: withLayoutClient(ShoppingCart),
+    element: withLayoutClient(ShoppingCart, true),
   },
   {
     path: "/checkout",
-    element: withLayoutClient(CheckOut),
+    element: withLayoutClient(CheckOut, true),
   },
   {
     path: "/change-checkout",
-    element: withLayoutClient(ChangeCheckout),
+    element: withLayoutClient(ChangeCheckout, true),
   },
   {
     path: "/thank-you",
-    element: withLayoutClient(ThanksYou),
+    element: withLayoutClient(ThanksYou, true),
   },
   {
     path: "/vouchers",
-    element: withLayoutClient(Voucher),
+    element: withLayoutClient(Voucher, true),
   },
   {
     path: "/check-imei",
@@ -114,11 +120,11 @@ const routerConfig = [
   },
   {
     path: "/profile/:id",
-    element: withLayoutClient(Profile),
+    element: withLayoutClient(Profile, true),
   },
   {
     path: "/edit-profile/:id",
-    element: withLayoutClient(EditProfile),
+    element: withLayoutClient(EditProfile, true),
   },
   {
     path: "/product-detail/:id",
@@ -126,15 +132,15 @@ const routerConfig = [
   },
   {
     path: "/favorite-products",
-    element: withLayoutClient(FavoriteProducts),
+    element: withLayoutClient(FavoriteProducts, true),
   },
   {
     path: "/order-history",
-    element: withLayoutClient(OrderTable),
+    element: withLayoutClient(OrderTable, true),
   },
   {
     path: "/order-detail/:id",
-    element: withLayoutClient(OrderDetail),
+    element: withLayoutClient(OrderDetail, true),
   },
   {
     path: "/login",

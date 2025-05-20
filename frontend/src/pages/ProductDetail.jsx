@@ -12,11 +12,13 @@ import Comment from "../components/Comment";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { useSwipeable } from "react-swipeable";
+import checkLogin from "../../utils/checkLogin";
 
 const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
   const [selectedVersion, setSelectedVersion] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
+
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -130,14 +132,18 @@ const ProductDetail = () => {
   };
 
   const addToFavorites = () => {
-    console.log("added");
-    toast.success(t("products.addedToFavorites"));
+    if (checkLogin()) {
+      console.log("added");
+      toast.success(t("products.addedToFavorites"));
+    }
   };
 
   const addToShoppingCart = () => {
-    console.log("added");
-    toast.success(t("products.addedToCart"));
-    navigate("/shopping-cart");
+    if (checkLogin()) {
+      console.log("added");
+      toast.success(t("products.addedToCart"));
+      navigate("/shopping-cart");
+    }
   };
 
   const handleSelect = useCallback(
@@ -354,15 +360,10 @@ const ProductDetail = () => {
               <button
                 onClick={addToFavorites}
                 className="btn-custom btn-favorite px-4"
-                disabled={!selectedVersion || !selectedColor}
               >
                 {t("productDetail.addToFavorites")}
               </button>
-              <button
-                onClick={addToShoppingCart}
-                className="btn-custom px-4"
-                disabled={!selectedVersion || !selectedColor}
-              >
+              <button onClick={addToShoppingCart} className="btn-custom px-4">
                 {t("products.addToCart")}
               </button>
             </div>
