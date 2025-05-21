@@ -11,6 +11,7 @@ import productReducer from "../slices/productSlice";
 import productsVariantReducer from "../slices/productVariantsSlice";
 import categorytReducer from "../slices/categorySlice";
 import productDetailReducer from "../slices/productDetailSlice";
+import productVariationDetailReducer from "../slices/productVariationDetails";
 
 export const store = configureStore({
   reducer: {
@@ -26,5 +27,6 @@ export const store = configureStore({
     productsVariant: productsVariantReducer,
     category: categorytReducer,
     productDetail: productDetailReducer,
+    productVariationDetail: productVariationDetailReducer
   },
 });

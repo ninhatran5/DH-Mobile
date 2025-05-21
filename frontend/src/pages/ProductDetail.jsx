@@ -16,6 +16,7 @@ import checkLogin from "../../utils/checkLogin";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "../components/Loading";
 import { fetchProductDetail } from "../slices/productDetailSlice";
+import { fetchProductVariationDetail } from "../slices/productVariationDetails";
 
 const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
@@ -26,6 +27,14 @@ const ProductDetail = () => {
   const { productDetails, loading } = useSelector(
     (state) => state.productDetail
   );
+  const { productVariationDetails } = useSelector(
+    (state) => state.productVariationDetail
+  );
+  console.log(
+    "🚀 ~ ProductDetail ~ productVariationDetails:",
+    productVariationDetails
+  );
+
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -35,45 +44,22 @@ const ProductDetail = () => {
     { id: 3, image: iphone3 },
   ];
 
-  const phoneVersions = [
+  const phoneColor = [
     {
       id: 1,
-      version: "Titan đen",
+      color: "Titan đen",
     },
     {
       id: 2,
-      version: "Titan tự nhiên",
+      color: "Titan tự nhiên",
     },
     {
       id: 3,
-      version: "Titan trắng",
+      color: "Titan trắng",
     },
     {
       id: 4,
-      version: "Titan sa mạc",
-    },
-  ];
-
-  const phoneColors = [
-    {
-      id: 1,
-      colors: "red",
-      values: "red",
-    },
-    {
-      id: 2,
-      colors: "green",
-      values: "green",
-    },
-    {
-      id: 3,
-      colors: "yellow",
-      values: "yellow",
-    },
-    {
-      id: 4,
-      colors: "blue",
-      values: "blue",
+      color: "Titan sa mạc",
     },
   ];
 
@@ -171,8 +157,10 @@ const ProductDetail = () => {
   useEffect(() => {
     if (id) {
       dispatch(fetchProductDetail(id));
+      dispatch(fetchProductVariationDetail(id));
     }
   }, [dispatch, id]);
+
   return (
     <>
       {loading && <Loading />}
@@ -261,82 +249,75 @@ const ProductDetail = () => {
             <div key={productDetails.product_id}>
               <h2 className="mb-3">{productDetails.name}</h2>
               <div className="price">
-                <h4 className="text-price_sale mb-3">msdflkmas</h4>
+                <h4 className="text-price_sale">
+                  {productVariationDetails.price}
+                </h4>
                 <p className="text-price_original">ádasd</p>
               </div>
               <p className="text-muted">
                 {t("productDetail.quantity")}:{" "}
-                <span className="fw-bold">ádasd</span>
+                <span className="fw-bold me-1">
+                  {productVariationDetails.stock}
+                </span>
                 {t("productDetail.product")}
               </p>
               <p className="text-muted">{productDetails.description}</p>
             </div>
 
             <div className="mb-3">
-              <label className="font-weight-bold">
+              <label className="font-weight-bold mt-3">
                 {t("productDetail.selectVersion")}:
-                {!selectedVersion && <span className="text-danger">*</span>}
               </label>
               <div className="d-flex justify-content-start version-button-group">
-                {phoneVersions.map((phoneVersion) => (
+                {productVariationDetails?.attribute_values?.map(
+                  (phoneVersion) => (
+                    <button
+                      key={phoneVersion.attribute_id}
+                      className={`btn btn-outline-secondary mx-1 ${
+                        selectedVersion === phoneVersion.attribute_id
+                          ? "active"
+                          : ""
+                      }`}
+                      onClick={() =>
+                        setSelectedVersion(
+                          selectedVersion === phoneVersion.attribute_id
+                            ? null
+                            : phoneVersion.attribute_id
+                        )
+                      }
+                    >
+                      {phoneVersion.value}
+                    </button>
+                  )
+                )}
+              </div>
+            </div>
+            <div className="mb-4">
+              <label className="font-weight-bold mb-2 mt-2">
+                {t("productDetail.selectColor")}:
+              </label>
+              <div className="d-flex justify-content-start version-button-group">
+                {phoneColor.map((phoneVersion) => (
                   <button
                     key={phoneVersion.id}
                     className={`btn btn-outline-secondary mx-1 ${
-                      selectedVersion === phoneVersion.id ? "active" : ""
+                      selectedColor === phoneVersion.id ? "active" : ""
                     }`}
                     onClick={() =>
-                      setSelectedVersion(
-                        selectedVersion === phoneVersion.id
+                      setSelectedColor(
+                        selectedColor === phoneVersion.id
                           ? null
                           : phoneVersion.id
                       )
                     }
                   >
-                    {phoneVersion.version}
+                    {phoneVersion.color}
                   </button>
                 ))}
               </div>
             </div>
-            <div className="mb-4">
-              <label className="font-weight-bold mb-2">
-                {t("productDetail.selectColor")}:
-                {!selectedColor && <span className="text-danger">*</span>}
-              </label>
-              <div className="d-flex justify-content-start">
-                {phoneColors.map((phoneColor) => (
-                  <div
-                    key={phoneColor.id}
-                    className={`color-circle mx-1 ${
-                      selectedColor === phoneColor.id ? "active" : ""
-                    }`}
-                    style={{
-                      backgroundColor: phoneColor.colors,
-                      border:
-                        selectedColor === phoneColor.id
-                          ? `1px solid ${phoneColor.colors}`
-                          : "1px solid #e0e0e0",
-                      transform:
-                        selectedColor === phoneColor.id
-                          ? "scale(1.08)"
-                          : "scale(1)",
-                      boxShadow:
-                        selectedColor === phoneColor.id
-                          ? `0 0 0 1px #fff, 0 0 0 2px ${phoneColor.colors}`
-                          : "none",
-                      transition: "all 0.2s ease-in-out",
-                      cursor: "pointer",
-                    }}
-                    onClick={() =>
-                      setSelectedColor(
-                        selectedColor === phoneColor.id ? null : phoneColor.id
-                      )
-                    }
-                  ></div>
-                ))}
-              </div>
-            </div>
 
-            <div style={{ marginTop: 30 }}>
+            <div style={{ marginTop: 40 }}>
               <label className="font-weight-bold mb-2 me-3">
                 {t("productDetail.quantity")}:
               </label>
