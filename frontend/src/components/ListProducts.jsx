@@ -219,7 +219,10 @@ export default function ListProducts({
                   aria-labelledby="nav-all-tab"
                 >
                   <div className="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
-                    {(limit ? sortedProducts.slice(0, limit) : sortedProducts).map((product) => {
+                    {(limit
+                      ? sortedProducts.slice(0, limit)
+                      : sortedProducts
+                    ).map((product) => {
                       const discountPercent = getDiscountPercent(product);
                       const matchedVariant = productsVariants.find(
                         (variant) => variant.product_id === product.product_id

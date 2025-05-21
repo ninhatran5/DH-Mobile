@@ -6,12 +6,7 @@ import { toast } from "react-toastify";
 import checkLogin from "../../utils/checkLogin";
 import iphone from "../assets/images/iphone-16-pro-max.webp";
 
-const ProductCard = ({
-  discountPercent,
-  product,
-  nextProductDetail,
-  productsVariants,
-}) => {
+const ProductCard = ({ discountPercent, product, productsVariants }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -20,6 +15,10 @@ const ProductCard = ({
   const handleUnFavorites = () => {
     setFavorite(false);
     toast.success(t("products.removeFavorites"));
+  };
+
+  const nextProductDetail = (id) => {
+    navigate(`/product-detail/${id}`);
   };
 
   const addToFavorites = () => {
@@ -72,7 +71,7 @@ const ProductCard = ({
       <figure>
         <img
           style={{ cursor: "pointer" }}
-          onClick={() => nextProductDetail(product.id)}
+          onClick={() => nextProductDetail(product.product_id)}
           src={iphone}
           className="tab-image"
           alt={product.name}
@@ -82,7 +81,7 @@ const ProductCard = ({
 
       <h3
         style={{ cursor: "pointer" }}
-        onClick={() => nextProductDetail(product.id)}
+        onClick={() => nextProductDetail(product.product_id)}
       >
         {product.title || product.name}
       </h3>

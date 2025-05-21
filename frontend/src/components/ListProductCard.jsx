@@ -82,7 +82,7 @@ export default function ListProductCard({ title }) {
                   (variant) => variant.product_id === product.product_id
                 );
                 return (
-                  <SwiperSlide key={product.id}>
+                  <SwiperSlide key={product.product_id}>
                     <ProductCard
                       favorites={favorites}
                       setFavorites={setFavorites}

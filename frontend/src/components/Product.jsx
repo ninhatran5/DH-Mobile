@@ -35,7 +35,7 @@ const Product = ({
   };
   return (
     <>
-      <div className="col" key={product.id}>
+      <div className="col" key={product.product_id}>
         <div className="product-item position-relative">
           {discountPercent !== null && (
             <span className="badge bg-success position-absolute mt-1 ms-1">
@@ -76,7 +76,7 @@ const Product = ({
           </figure>
 
           <h3
-            onClick={() => nextProductDetail(product.id)}
+            onClick={() => nextProductDetail(product.product_id)}
             style={{ cursor: "pointer" }}
           >
             {product.name}

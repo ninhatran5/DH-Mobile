@@ -10,6 +10,7 @@ import changePasswordReducer from "../slices/changPasswordSlice";
 import productReducer from "../slices/productSlice";
 import productsVariantReducer from "../slices/productVariantsSlice";
 import categorytReducer from "../slices/categorySlice";
+import productDetailReducer from "../slices/productDetailSlice";
 
 export const store = configureStore({
   reducer: {
@@ -24,5 +25,6 @@ export const store = configureStore({
     product: productReducer,
     productsVariant: productsVariantReducer,
     category: categorytReducer,
+    productDetail: productDetailReducer,
   },
 });

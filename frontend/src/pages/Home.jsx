@@ -382,7 +382,7 @@ const Home = () => {
               1200: { slidesPerView: 4 },
             }}
           >
-            {products.slice(0,5).map((item) => {
+            {products.slice(0, 5).map((item) => {
               const discountPercent = isPercentDecrease
                 ? getDiscountPercent(item)
                 : null;

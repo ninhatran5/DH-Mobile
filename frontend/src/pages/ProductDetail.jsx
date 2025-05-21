@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Modal } from "react-bootstrap";
 import iphone from "../assets/images/iphone-16-pro-max.webp";
 import iphone2 from "../assets/images/iphone-15-pro_2__2_1_1_1.webp";
@@ -6,19 +6,26 @@ import iphone3 from "../assets/images/iphone-15-plus_1__1.webp";
 import { MdOutlineZoomInMap } from "react-icons/md";
 import Carousel from "react-bootstrap/Carousel";
 import "../assets/css/product-detail.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import Comment from "../components/Comment";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { useSwipeable } from "react-swipeable";
 import checkLogin from "../../utils/checkLogin";
+import { useDispatch, useSelector } from "react-redux";
+import Loading from "../components/Loading";
+import { fetchProductDetail } from "../slices/productDetailSlice";
 
 const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
   const [selectedVersion, setSelectedVersion] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
-
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  const { productDetails, loading } = useSelector(
+    (state) => state.productDetail
+  );
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -67,17 +74,6 @@ const ProductDetail = () => {
       id: 4,
       colors: "blue",
       values: "blue",
-    },
-  ];
-
-  const machineInformation = [
-    {
-      id: 1,
-      name: "iPhone 16 Pro Max",
-      priceSale: "24.000.000đ",
-      priceOriginal: "24.500.000đ",
-      quantity: 1000,
-      desc: "iPhone 16 Pro Max mang đến thiết kế sang trọng với khung thép không gỉ và mặt lưng kính cường lực. Màn hình Super Retina XDR với công nghệ ProMotion cung cấp trải nghiệm hình ảnh mượt mà. Được trang bị chip A17 Bionic, nó mạnh mẽ và tiết kiệm năng lượng. Hệ thống camera cải tiến cho khả năng chụp ảnh và quay video ấn tượng, bao gồm chế độ ban đêm và video 4K. Hỗ trợ kết nối 5G, thời lượng pin lâu dài và chạy trên iOS mới nhất, iPhone 16 Pro Max là lựa chọn hoàn hảo cho những người yêu công nghệ.",
     },
   ];
 
@@ -172,8 +168,14 @@ const ProductDetail = () => {
     rotationAngle: 0,
   });
 
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchProductDetail(id));
+    }
+  }, [dispatch, id]);
   return (
     <>
+      {loading && <Loading />}
       <Breadcrumb
         title={t("breadcrumbProductDetail.breadcrumbHeader")}
         mainItem={t("breadcrumbProductDetail.breadcrumbTitleHome")}
@@ -256,21 +258,20 @@ const ProductDetail = () => {
           </Modal>
 
           <div className="col-md-6">
-            {machineInformation.map((item) => (
-              <div key={item.id}>
-                <h2 className="mb-3">{item.name}</h2>
-                <div className="price">
-                  <h4 className="text-price_sale mb-3">{item.priceSale}</h4>
-                  <p className="text-price_original">{item.priceOriginal}</p>
-                </div>
-                <p className="text-muted">
-                  {t("productDetail.quantity")}:{" "}
-                  <span className="fw-bold">{item.quantity}</span>{" "}
-                  {t("productDetail.product")}
-                </p>
-                <p className="text-muted">{item.desc}</p>
+            <div key={productDetails.product_id}>
+              <h2 className="mb-3">{productDetails.name}</h2>
+              <div className="price">
+                <h4 className="text-price_sale mb-3">msdflkmas</h4>
+                <p className="text-price_original">ádasd</p>
               </div>
-            ))}
+              <p className="text-muted">
+                {t("productDetail.quantity")}:{" "}
+                <span className="fw-bold">ádasd</span>
+                {t("productDetail.product")}
+              </p>
+              <p className="text-muted">{productDetails.description}</p>
+            </div>
+
             <div className="mb-3">
               <label className="font-weight-bold">
                 {t("productDetail.selectVersion")}:
@@ -411,16 +412,7 @@ const ProductDetail = () => {
             {activeTab === "description" && (
               <div className="tab-pane fade show active">
                 <p className="desc_productdetai">
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
+                  {productDetails.description}
                 </p>
               </div>
             )}
