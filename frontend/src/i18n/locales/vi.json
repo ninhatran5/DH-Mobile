@@ -45,7 +45,8 @@
     "feedback_with_us": "Phản hồi với chúng tôi",
     "we_are_pleased_to_hear": "Chúng tôi rất sẵn lòng lắng nghe các ý kiến của bạn",
     "email_address": "Địa chỉ Email",
-    "send": "Gửi"
+    "send": "Gửi",
+    "client": "Quý Khách"
   },
   "products": {
     "trademark": "Thương hiệu",
@@ -369,6 +370,7 @@
     }
   },
   "editProfile": {
+    "brumTitle": "Chỉnh Sửa Hồ Sơ Cá Nhân",
     "accountInfo": "Thông tin tài khoản",
     "wards": "Phường/Xã",
     "district": "Quận/Huyện",

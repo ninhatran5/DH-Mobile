@@ -45,7 +45,8 @@
     "feedback_with_us": "Feedback to Us",
     "we_are_pleased_to_hear": "We are pleased to hear your opinions",
     "email_address": "Email Address",
-    "send": "Send"
+    "send": "Send",
+    "client": "Customer"
   },
   "products": {
     "trademark": "Brand",
@@ -374,6 +375,7 @@
     }
   },
   "editProfile": {
+    "brumTitle": "Edit Personal Profile",
     "accountInfo": "Account Information",
     "wards": "Ward",
     "district": "District",

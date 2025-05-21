@@ -12,8 +12,13 @@ import { useState, useEffect } from "react";
 import iphone from "../assets/images/iphone-16-pro-max.webp";
 import { FaRegHeart } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProfile } from "../slices/profileSlice";
 
 export default function Header() {
+  const dispatch = useDispatch();
+  const { profile } = useSelector((state) => state.profile);
+  const token = localStorage.getItem("token");
   const location = useLocation();
   const { i18n } = useTranslation();
   const [searchItem, setSearchItem] = useState("");
@@ -216,6 +221,10 @@ export default function Header() {
   const handleNextProductDetail = (id) => {
     navigate(`/product-detail/${id}`);
   };
+
+  useEffect(() => {
+    dispatch(fetchProfile());
+  }, [dispatch]);
   return (
     <>
       <div>
@@ -347,7 +356,15 @@ export default function Header() {
                 <div className="cart text-end d-none d-lg-block">
                   <button className="border-0 bg-transparent d-flex flex-column gap-2 lh-1 text-end">
                     <span className="fs-6 text-muted">{t("header.hello")}</span>
-                    <span className="cart-total fs-5 fw-bold">Nguyên Tùng</span>
+                    {token ? (
+                      <span className="cart-total fs-5 fw-bold">
+                        {profile?.user?.full_name}
+                      </span>
+                    ) : (
+                      <span className="cart-total fs-5 fw-bold">
+                        {t("header.client")}
+                      </span>
+                    )}
                   </button>
                 </div>
               </div>
