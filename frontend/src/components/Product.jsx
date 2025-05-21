@@ -2,10 +2,16 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaRegHeart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+
 import { toast } from "react-toastify";
 import checkLogin from "../../utils/checkLogin";
-
-const Product = ({ product, discountPercent, nextProductDetail }) => {
+import iphone from "../assets/images/iphone-16-pro-max.webp";
+const Product = ({
+  product,
+  discountPercent,
+  nextProductDetail,
+  productsVariants,
+}) => {
   const { t } = useTranslation();
   const [favorite, setFavorite] = useState(product.favorite);
   const navigate = useNavigate();
@@ -61,8 +67,11 @@ const Product = ({ product, discountPercent, nextProductDetail }) => {
           )}
 
           <figure>
-            <Link to={`/product-detail/${product.id}`} title={product.name}>
-              <img src={product.image} className="tab-image" />
+            <Link
+              to={`/product-detail/${product.product_id}`}
+              title={product.name}
+            >
+              <img src={iphone} alt={product.name} className="tab-image" />
             </Link>
           </figure>
 
@@ -91,7 +100,7 @@ const Product = ({ product, discountPercent, nextProductDetail }) => {
                 textOverflow: "ellipsis",
               }}
             >
-              {product.price}
+              {productsVariants?.price}
             </span>
             <span
               className="price_original"

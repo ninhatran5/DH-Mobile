@@ -23,7 +23,7 @@ export const fetchChangPassword = createAsyncThunk(
     }
   }
 );
-export const registerSlice = createSlice({
+export const changePasswordSlice = createSlice({
   name: "changePassword",
   initialState,
   reducers: {},
@@ -47,4 +47,4 @@ export const registerSlice = createSlice({
   },
 });
 
-export default registerSlice.reducer;
+export default changePasswordSlice.reducer;

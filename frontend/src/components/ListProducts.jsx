@@ -1,12 +1,20 @@
-import { useState } from "react";
-import { FaRegHeart, FaShippingFast } from "react-icons/fa";
-import iphone from "../assets/images/iphone-16-pro-max.webp";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { FaShippingFast } from "react-icons/fa";
 import { FaArrowDownShortWide, FaArrowUpWideShort } from "react-icons/fa6";
+import { MdDeleteSweep } from "react-icons/md";
+
+import { useTranslation } from "react-i18next";
+
+import Loading from "../components/Loading";
+import Product from "./Product";
 
 import "../assets/css/products.css";
-import { useTranslation } from "react-i18next";
-import Product from "./Product";
+
+import { fetchProducts } from "../slices/productSlice";
+import { fetchProductVariants } from "../slices/productVariantsSlice";
+import { fetchCategory } from "../slices/categorySlice";
 
 export default function ListProducts({
   title,
@@ -16,129 +24,72 @@ export default function ListProducts({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [priceFilter, setPriceFilter] = useState("");
   const [sortOrder, setSortOrder] = useState("");
-  const [isPercentDecrease, setIsPercentDecrease] = useState(true);
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [readyStock, setReadyStock] = useState(false);
+  const { products, loading } = useSelector((state) => state.product);
+  const { productsVariants } = useSelector((state) => state.productsVariant);
+  console.log("🚀 ~ productsVariants:", productsVariants);
 
-  const nextProductDetail = (id) => {
-    navigate(`/product-detail/${id}`);
-  };
+  const { categorys } = useSelector((state) => state.category);
 
-  const products = [
-    {
-      id: 1,
-      name: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
-      price: "27.890.000đ",
-      image: iphone,
-      favorite: true,
-    },
-    {
-      id: 2,
-      name: "Samsung Galaxy S22 Ultra 512GB",
-      price: "29.990.000đ",
-      priceOriginal: "32.500.000đ",
-      favorite: true,
-      image: iphone,
-    },
-    {
-      id: 3,
-      name: "Xiaomi Redmi Note 12",
-      price: "6.990.000đ",
-      image: iphone,
-      favorite: false,
-    },
-    {
-      id: 4,
-      name: "iPhone 15 Pro Max",
-      price: "34.990.000đ",
-      priceOriginal: "39.500.000đ",
-      image: iphone,
-      favorite: true,
-    },
-    {
-      id: 5,
-      name: "Samsung Galaxy A14",
-      price: "4.690.000đ",
-      priceOriginal: "7.500.000đ",
-      image: iphone,
-      favorite: false,
-    },
-    {
-      id: 6,
-      name: "iPhone SE 2022",
-      price: "9.990.000đ",
-      image: iphone,
-      favorite: true,
-    },
-    {
-      id: 7,
-      name: "Xiaomi 13T Pro",
-      price: "13.990.000đ",
-      image: iphone,
-      favorite: true,
-    },
-    {
-      id: 8,
-      name: "Samsung Galaxy S21 FE",
-      price: "12.490.000đ",
-      image: iphone,
-      favorite: true,
-    },
-    {
-      id: 9,
-      name: "iPhone 14 128GB",
-      price: "19.990.000đ",
-      priceOriginal: "20.500.000đ",
-      image: iphone,
-      favorite: true,
-    },
-    {
-      id: 10,
-      name: "iPhone 11 64GB",
-      price: "10.490.000đ",
-      image: iphone,
-      favorite: false,
-    },
-  ];
-
-  const convertPriceToNumber = (priceString) => {
-    return Number(priceString.replace(/\./g, "").replace("đ", ""));
-  };
+  const parsePrice = (priceStr) =>
+    parseInt(priceStr?.replace(/[^\d]/g, "")) || 0;
 
   const getDiscountPercent = (product) => {
-    if (!product.price || !product.priceOriginal) return null;
-
-    const original = convertPriceToNumber(product.priceOriginal);
-    const sale = convertPriceToNumber(product.price);
-
-    if (isNaN(original) || isNaN(sale) || sale >= original) return null;
-
+    const original = parsePrice(product.priceOriginal);
+    const sale = parsePrice(product.price);
+    if (sale >= original || !original || !sale) return null;
     return Math.round(((original - sale) / original) * 100);
   };
 
-  // Chuyển chuỗi giá thành số nguyên
-  const parsePrice = (priceStr) => parseInt(priceStr.replace(/[^\d]/g, ""));
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) => {
+      const price = parsePrice(product.price);
 
-  // Lọc theo giá
-  const filteredProducts = products.filter((product) => {
-    const price = parsePrice(product.price);
-    if (priceFilter === "duoi-10tr") return price < 10000000;
-    if (priceFilter === "10-20tr")
-      return price >= 10000000 && price <= 20000000;
-    if (priceFilter === "tren-20tr") return price > 20000000;
-    return true;
-  });
+      const matchCategory =
+        !selectedCategoryId ||
+        product.category_id?.toString() === selectedCategoryId;
 
-  // Sắp xếp theo giá
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    const priceA = parsePrice(a.price);
-    const priceB = parsePrice(b.price);
+      const matchPrice =
+        (priceFilter === "duoi-10tr" && price < 10000000) ||
+        (priceFilter === "10-20tr" && price >= 10000000 && price <= 20000000) ||
+        (priceFilter === "tren-20tr" && price > 20000000) ||
+        priceFilter === "" ||
+        !priceFilter;
 
-    if (sortOrder === "lowToHigh") return priceA - priceB;
-    if (sortOrder === "highToLow") return priceB - priceA;
-    return 0;
-  });
+      const matchReadyStock = !readyStock || product.isReadyStock;
+
+      return matchCategory && matchPrice && matchReadyStock;
+    });
+  }, [products, priceFilter, selectedCategoryId, readyStock]);
+
+  const sortedProducts = useMemo(() => {
+    return [...filteredProducts].sort((a, b) => {
+      // Lấy variant tương ứng với từng sản phẩm
+      const variantA = productsVariants.find(
+        (variant) => variant.product_id === a.product_id
+      );
+      const variantB = productsVariants.find(
+        (variant) => variant.product_id === b.product_id
+      );
+      // Ưu tiên lấy giá từ variant, nếu không có thì lấy từ product
+      const priceA = parsePrice(variantA?.price ?? a.price);
+      const priceB = parsePrice(variantB?.price ?? b.price);
+      if (sortOrder === "lowToHigh") return priceA - priceB;
+      if (sortOrder === "highToLow") return priceB - priceA;
+      return 0;
+    });
+  }, [filteredProducts, sortOrder, productsVariants]);
+
+  useEffect(() => {
+    dispatch(fetchProducts());
+    dispatch(fetchProductVariants());
+    dispatch(fetchCategory());
+  }, [dispatch]);
 
   return (
     <section className={padding}>
@@ -148,11 +99,19 @@ export default function ListProducts({
             <div className="filter-extended">
               <div className="filter-group">
                 <label>{t("products.trademark")}:</label>
-                <select>
+                <select
+                  value={selectedCategoryId}
+                  onChange={(e) => setSelectedCategoryId(e.target.value)}
+                >
                   <option value="">{t("products.all")}</option>
-                  <option value="iphone">iPhone</option>
-                  <option value="samsung">Samsung</option>
-                  <option value="xiaomi">Xiaomi</option>
+                  {categorys.map((category) => (
+                    <option
+                      key={category.category_id}
+                      value={category.category_id}
+                    >
+                      {category.name}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="filter-group">
@@ -169,27 +128,70 @@ export default function ListProducts({
               </div>
             </div>
             <div className="filter-buttons">
-              <button onClick={() => setSortOrder("lowToHigh")}>
+              <button
+                onClick={() => setSortOrder("lowToHigh")}
+                style={{
+                  background: sortOrder === "lowToHigh" ? "#e40303" : "",
+                  color: sortOrder === "lowToHigh" ? "#fff" : "",
+                  border: sortOrder === "lowToHigh" ? "1px solid #e40303" : "",
+                  marginRight: 8,
+                }}
+              >
                 <span>
                   <FaArrowUpWideShort />
                 </span>
                 {t("products.lowToHigh")}
               </button>
-              <button onClick={() => setSortOrder("highToLow")}>
+              <button
+                onClick={() => setSortOrder("highToLow")}
+                style={{
+                  background: sortOrder === "highToLow" ? "#e40303" : "",
+                  color: sortOrder === "highToLow" ? "#fff" : "",
+                  border: sortOrder === "highToLow" ? "1px solid #e40303" : "",
+                  marginRight: 8,
+                }}
+              >
                 <span>
                   <FaArrowDownShortWide />
                 </span>
                 {t("products.highToLow")}
               </button>
-              <button>
+              <button
+                onClick={() => setReadyStock((prev) => !prev)}
+                style={{
+                  background: readyStock ? "#e40303" : "",
+                  color: readyStock ? "#fff" : "",
+                  border: readyStock ? "1px solid #e40303" : "",
+                  marginRight: 8,
+                }}
+              >
                 <span>
                   <FaShippingFast />
                 </span>
                 {t("products.readyStock")}
               </button>
+              <button
+                onClick={() => {
+                  setSelectedCategoryId("");
+                  setPriceFilter("");
+                  setSortOrder("");
+                  setReadyStock(false);
+                }}
+                style={{
+                  background: "#e80000",
+                  color: "#fff",
+                }}
+              >
+                <span>
+                  <MdDeleteSweep style={{ fontSize: 20 }} />
+                </span>
+                {t("products.deleteFilter")}
+              </button>
             </div>
           </div>
         )}
+
+        {loading && <Loading />}
 
         <div className="row">
           <div className="col-md-12">
@@ -218,25 +220,28 @@ export default function ListProducts({
                 >
                   <div className="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
                     {sortedProducts.map((product) => {
-                      const discountPercent = isPercentDecrease
-                        ? getDiscountPercent(product)
-                        : null;
-
+                      const discountPercent = getDiscountPercent(product);
+                      const matchedVariant = productsVariants.find(
+                        (variant) => variant.product_id === product.product_id
+                      );
                       return (
                         <Product
-                          key={product.id}
+                          key={product.product_id}
                           product={product}
                           discountPercent={discountPercent}
-                          nextProductDetail={nextProductDetail}
+                          productsVariants={matchedVariant}
+                          nextProductDetail={() =>
+                            navigate(`/product-detail/${product.product_id}`)
+                          }
                         />
                       );
                     })}
                   </div>
 
                   {sortedProducts.length === 0 && (
-                    <p className="text-center mt-5">
+                    <h6 className="text-center mt-5 mb-5">
                       {t("products.noProductFound")}
-                    </p>
+                    </h6>
                   )}
                 </div>
               </div>

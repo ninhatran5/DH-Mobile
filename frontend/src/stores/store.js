@@ -6,6 +6,10 @@ import forgotPasswordReducer from "../slices/forgotPasswordSlice";
 import profileReducer from "../slices/profileSlice";
 import editProfileReducer from "../slices/updateProfileSlice";
 import addressReducer from "../slices/addressSlice";
+import changePasswordReducer from "../slices/changPasswordSlice";
+import productReducer from "../slices/productSlice";
+import productsVariantReducer from "../slices/productVariantsSlice";
+import categorytReducer from "../slices/categorySlice";
 
 export const store = configureStore({
   reducer: {
@@ -16,5 +20,9 @@ export const store = configureStore({
     profile: profileReducer,
     editProfile: editProfileReducer,
     address: addressReducer,
+    changePassword: changePasswordReducer,
+    product: productReducer,
+    productsVariant: productsVariantReducer,
+    category: categorytReducer,
   },
 });
