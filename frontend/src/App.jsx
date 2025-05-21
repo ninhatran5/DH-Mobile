@@ -48,6 +48,7 @@ import ScrollToTop from "../utils/ScrollToTop";
 import RequireAuth from "./components/RequireAuth";
 import ProtectedRoute from "./pages/admin/ProtectedRoute";
 import AdminLogin from "./pages/admin/AdminLogin";
+import PublicRouteAdmin from "./components/PublicRouteAdmin";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -236,9 +237,14 @@ const routerConfig = [
     ],
   },
 {
-  path: "/AdminLogin",
-  element: <AdminLogin />,
-},
+    path: "/AdminLogin",
+    element: (
+      <PublicRouteAdmin>
+        <AdminLogin />
+      </PublicRouteAdmin>
+    ),
+  }
+  ,
   {
     path: "*",
     element: <ErrorPage />,
