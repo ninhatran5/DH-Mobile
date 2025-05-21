@@ -49,11 +49,11 @@ const AdminLogin = () => {
               <div className="card shadow-lg border-0 rounded-lg overflow-hidden">
                 <div className="bg-primary text-white py-4 text-center">
                   <img src={logo} alt="Logo" style={{ height: "60px" }} className="mb-2" />
-                  <h3 className="text-white">{t("auth.titleAdminLogin") || "Admin Dashboard"}</h3>
+                  <h3 className="text-white">{t("Đăng nhập Admin") || "Admin Dashboard"}</h3>
                 </div>
                 <div className="card-body p-4 p-sm-5">
                   <div className="text-center mb-4">
-                    <h4>{t("auth.welcomeAdmin") || "Welcome Back!"}</h4>
+                    <h4>{t("Chào mừng bạn đến với Admin") || "Welcome Back!"}</h4>
                     <p className="text-muted">{t("auth.signInPrompt") || "Sign in to access the admin panel"}</p>
                   </div>
 
@@ -132,7 +132,7 @@ const AdminLogin = () => {
                       {loading ? (
                         <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                       ) : null}
-                      {t("auth.adminLoginButton") || "Sign in"}
+                      {t("Đăng Nhập ") || "Sign in"}
                     </button>
                   </form>
                   
