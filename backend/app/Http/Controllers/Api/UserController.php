@@ -97,6 +97,23 @@ class UserController extends Controller
         ]);
     }
 
+
+    public function getuserbyid($id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json([
+                'message' => 'Người dùng không tồn tại.'
+            ], 404);
+        }
+        return response()->json([
+            'message' => 'Lấy thông tin người dùng thành công.',
+            'user' => $user
+        ]);
+    }
+
+
+
     public function profile(Request $request)
     {
         $user = $request->user();
