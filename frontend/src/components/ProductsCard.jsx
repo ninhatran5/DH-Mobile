@@ -4,7 +4,6 @@ import { FaRegHeart } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import checkLogin from "../../utils/checkLogin";
-import iphone from "../assets/images/iphone-16-pro-max.webp";
 
 const ProductCard = ({ discountPercent, product, productsVariants }) => {
   const navigate = useNavigate();
@@ -72,7 +71,7 @@ const ProductCard = ({ discountPercent, product, productsVariants }) => {
         <img
           style={{ cursor: "pointer" }}
           onClick={() => nextProductDetail(product.product_id)}
-          src={iphone}
+          src={product.image_url}
           className="tab-image"
           alt={product.name}
           title={product.title || product.name}

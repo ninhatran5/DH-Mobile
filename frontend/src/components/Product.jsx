@@ -5,7 +5,6 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { toast } from "react-toastify";
 import checkLogin from "../../utils/checkLogin";
-import iphone from "../assets/images/iphone-16-pro-max.webp";
 const Product = ({
   product,
   discountPercent,
@@ -71,7 +70,11 @@ const Product = ({
               to={`/product-detail/${product.product_id}`}
               title={product.name}
             >
-              <img src={iphone} alt={product.name} className="tab-image" />
+              <img
+                src={product.image_url}
+                alt={product.name}
+                className="tab-image"
+              />
             </Link>
           </figure>
 

@@ -30,10 +30,6 @@ const ProductDetail = () => {
   const { productVariationDetails } = useSelector(
     (state) => state.productVariationDetail
   );
-  console.log(
-    "🚀 ~ ProductDetail ~ productVariationDetails:",
-    productVariationDetails
-  );
 
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -293,7 +289,7 @@ const ProductDetail = () => {
               </div>
             </div>
             <div className="mb-4">
-              <label className="font-weight-bold mb-2 mt-2">
+              <label className="font-weight-bold mt-2">
                 {t("productDetail.selectColor")}:
               </label>
               <div className="d-flex justify-content-start version-button-group">
