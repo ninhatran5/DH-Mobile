@@ -1,82 +1,36 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import iphone16 from "../assets/images/aaa.png";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ProductCard from "./ProductsCard";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProducts } from "../slices/productSlice";
+import { fetchProductVariants } from "../slices/productVariantsSlice";
 
 export default function ListProductCard({ title }) {
   const { t } = useTranslation();
-
-  const products = [
-  {
-    id: 1,
-    title: "Sunstar Fresh Melon Juice",
-    price: "$18.00",
-    image: iphone16,
-    favorite: false,
-  },
-  {
-    id: 2,
-    title: "iPhone 16 Pro Max",
-    price: "$1,199.00",
-    priceOriginal: "$1,499.00",
-    image: iphone16,
-    favorite: true,
-  },
-  { id: 3, title: "iPhone 16 Mini", price: "$799.00", image: iphone16, favorite: false },
-  { id: 4, title: "iPhone 16 Ultra", price: "$1,399.00", image: iphone16, favorite: false },
-  { id: 5, title: "iPhone 16 SE", price: "$699.00", image: iphone16, favorite: false },
-  {
-    id: 6,
-    title: "iPhone 16 Plus",
-    price: "$999.00",
-    priceOriginal: "$1,199.00",
-    image: iphone16,
-    favorite: true,
-  },
-  { id: 7, title: "iPhone 16 Pro", price: "$1,199.00", image: iphone16, favorite: false },
-  { id: 8, title: "iPhone 16 Max", price: "$1,499.00", image: iphone16, favorite: false },
-  {
-    id: 9,
-    title: "iPhone 16 Mini Pro",
-    price: "$899.00",
-    priceOriginal: "$1,099.00",
-    image: iphone16,
-    favorite: false,
-  },
-  {
-    id: 10,
-    title: "iPhone 16 Ultra Max",
-    price: "$1,599.00",
-    priceOriginal: "$1,899.00",
-    image: iphone16,
-    favorite: false,
-  },
-];
-
-
+  const dispatch = useDispatch();
+  const { products } = useSelector((state) => state.product);
+  const { productsVariants } = useSelector((state) => state.productsVariant);
   const [favorites, setFavorites] = useState([]);
-
   const convertPriceToNumber = (priceString) => {
     if (!priceString) return NaN;
     return Number(priceString.replace(/[^0-9.-]+/g, ""));
   };
-
   const getDiscountPercent = (product) => {
     if (!product.price || !product.priceOriginal) return null;
-
     const original = convertPriceToNumber(product.priceOriginal);
     const sale = convertPriceToNumber(product.price);
-
     if (isNaN(original) || isNaN(sale) || sale >= original) return null;
-
     return Math.round(((original - sale) / original) * 100);
   };
-
+  useEffect(() => {
+    dispatch(fetchProducts());
+    dispatch(fetchProductVariants());
+  }, [dispatch]);
   return (
     <section className="overflow-hidden">
       <div className="container-fluid">
@@ -122,9 +76,11 @@ export default function ListProductCard({ title }) {
                 1200: { slidesPerView: 5 },
               }}
             >
-              {products.map((product) => {
+              {products.slice(0, 8).map((product) => {
                 const discountPercent = getDiscountPercent(product);
-
+                const matchedVariant = productsVariants.find(
+                  (variant) => variant.product_id === product.product_id
+                );
                 return (
                   <SwiperSlide key={product.id}>
                     <ProductCard
@@ -132,6 +88,7 @@ export default function ListProductCard({ title }) {
                       setFavorites={setFavorites}
                       discountPercent={discountPercent}
                       product={product}
+                      productsVariants={matchedVariant}
                     />
                   </SwiperSlide>
                 );

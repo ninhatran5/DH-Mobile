@@ -4,8 +4,14 @@ import { FaRegHeart } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import checkLogin from "../../utils/checkLogin";
+import iphone from "../assets/images/iphone-16-pro-max.webp";
 
-const ProductCard = ({ discountPercent, product, nextProductDetail }) => {
+const ProductCard = ({
+  discountPercent,
+  product,
+  nextProductDetail,
+  productsVariants,
+}) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -67,9 +73,9 @@ const ProductCard = ({ discountPercent, product, nextProductDetail }) => {
         <img
           style={{ cursor: "pointer" }}
           onClick={() => nextProductDetail(product.id)}
-          src={product.image}
+          src={iphone}
           className="tab-image"
-          alt={product.title || product.name}
+          alt={product.name}
           title={product.title || product.name}
         />
       </figure>
@@ -98,7 +104,7 @@ const ProductCard = ({ discountPercent, product, nextProductDetail }) => {
             textOverflow: "ellipsis",
           }}
         >
-          {product.price}
+          {productsVariants?.price}
         </span>
         <span
           className="price_original"
