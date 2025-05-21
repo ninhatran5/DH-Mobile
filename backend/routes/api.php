@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\AttributeController;
 use App\Http\Controllers\Api\attributevalueController;
+use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
 use App\Http\Controllers\Api\VariantAttributeValuesController; 
@@ -115,6 +116,14 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::put('/restore/{id}', 'restore');
         Route::delete('/forceDelete/{id}', 'forceDelete');
     });
+    // News
+    // Route::prefix('news')->controller(NewsController::class)->group(function () {
+    //     Route::post('/', 'store');
+    //     Route::put('/{id}', 'update');
+    //     Route::delete('/{id}', 'destroy');
+    //     Route::put('/restore/{id}', 'restore');
+    //     Route::delete('/forceDelete/{id}', 'forceDelete');
+    // });
 
 });
 
@@ -133,3 +142,5 @@ Route::get('productspecifications', [ProductSpecificationsController::class, 'in
 Route::get('productspecifications/{id}', [ProductSpecificationsController::class, 'show']); // lấy thông số kỹ thuật sản phẩm theo id
 Route::get('variantattributevalues', [VariantAttributeValuesController::class, 'index']); // lấy danh sách liên kết
 Route::get('variantattributevalues/{id}', [VariantAttributeValuesController::class, 'show']); // lấy liên kết theo id
+Route::get('news', [newsController::class, 'index']); // lấy danh sách tin tức
+Route::get('news/{id}', [NewsController::class, 'show']); // lấy tin tức theo id
