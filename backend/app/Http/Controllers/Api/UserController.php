@@ -6,6 +6,7 @@ use App\Models\User;
 use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 
 
 class UserController extends Controller
@@ -19,6 +20,82 @@ class UserController extends Controller
         ]);
     }
 
+    public function createuser(Request $request)
+    {
+        $validatedData = $request->validate([
+            'username' => [
+                'required',
+                'string',
+                'max:50',
+                'regex:/^[a-zA-Z0-9_]+$/',
+                'unique:users,username'
+            ],
+            'full_name' => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^[\pL\s\-]+$/u',
+                'unique:users,full_name'
+            ],
+            'email' => 'required|email|unique:users,email',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:28',
+                'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,28}$/'
+            ],
+            'phone' => [
+                'nullable',
+                'string',
+                'max:15',
+                'regex:/^(\+?\d{9,15})$/'
+            ],
+            'address' => 'nullable|string|max:255',
+            'ward' => 'string|max:100',
+            'district' => 'string|max:100',
+            'city' => 'string|max:100',
+            'image_url' => 'nullable|image|max:2048', // giới hạn 2MB
+            'role' => 'required|in:admin,customer,sale,shipper,checker', // Chỉ cho phép giá trị 'admin' hoặc 'user'
+        ]);
+
+        if ($request->hasFile('image_url')) {
+            try {
+                $cloudinary = app(Cloudinary::class);
+                // Upload ảnh mới
+                $uploadApi = $cloudinary->uploadApi();
+                $result = $uploadApi->upload($request->file('image_url')->getRealPath(), [
+                    'folder' => 'users'
+                ]);
+                $validatedData['image_url'] = $result['secure_url'];
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Lỗi khi upload ảnh: ' . $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ], 500);
+            }
+        }
+
+        $user = User::create([
+            'username' => $validatedData['username'],
+            'full_name' => $validatedData['full_name'],
+            'email' => $validatedData['email'],
+            'password_hash' => Hash::make($validatedData['password']),
+            'phone' => $validatedData['phone'],
+            'address' => $validatedData['address'],
+            'ward' => $validatedData['ward'],
+            'district' => $validatedData['district'],
+            'city' => $validatedData['city'],
+            'image_url' => $validatedData['image_url'] ?? null,
+            'role' => $validatedData['role'],
+        ]);
+
+        return response()->json([
+            'message' => 'Tạo người dùng thành công.',
+            'user' => $user
+        ]);
+    }
 
     public function profile(Request $request)
     {
