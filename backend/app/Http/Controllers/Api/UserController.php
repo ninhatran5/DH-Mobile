@@ -114,6 +114,103 @@ class UserController extends Controller
 
 
 
+    public function updateuser(Request $request, $id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json([
+                'message' => 'Người dùng không tồn tại.'
+            ], 404);
+        }
+
+        $validatedData = $request->validate([
+            'username' => [
+                'nullable',
+                'string',
+                'max:50',
+                'regex:/^[a-zA-Z0-9_]+$/',
+                'unique:users,username,' . $user->user_id . ',user_id'
+            ],
+            'full_name' => [
+                'nullable',
+                'string',
+                'max:100',
+                'regex:/^[\pL\s\-]+$/u',
+                'unique:users,full_name,' . $user->user_id . ',user_id'
+            ],
+            'email' => 'nullable|email|unique:users,email,' . $user->user_id . ',user_id',
+            'phone' => [
+                'nullable',
+                'string',
+                'max:15',
+                'regex:/^(\+?\d{9,15})$/'
+            ],
+            'address' => 'nullable|string|max:255',
+            'ward' => 'nullable|string|max:100',
+            'district' => 'nullable|string|max:100',
+            'city' => 'nullable|string|max:100',
+            'image_url' => 'nullable|image|max:2048', // giới hạn 2MB
+        ]);
+
+        if($request->hasFile('image_url')) {
+            try {
+                $cloudinary = app(Cloudinary::class);
+                // Xoá ảnh cũ nếu có
+                if ($user->image_url) {
+                    $publicId = $this->getPublicIdFromUrl($user->image_url);
+                    if ($publicId) {
+                        $cloudinary->uploadApi()->destroy($publicId, ['resource_type' => 'image']);
+                    }
+                }
+                // Upload ảnh mới
+                $uploadApi = $cloudinary->uploadApi();
+                $result = $uploadApi->upload($request->file('image_url')->getRealPath(), [
+                    'folder' => 'users'
+                ]);
+                $validatedData['image_url'] = $result['secure_url'];
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Lỗi khi upload ảnh: ' . $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ], 500);
+            }
+        }
+
+        $user->update($validatedData);
+
+        return response()->json([
+            'message' => 'Cập nhật người dùng thành công.',
+            'user' => $user
+        ]);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public function profile(Request $request)
     {
         $user = $request->user();
