@@ -17,7 +17,10 @@ return new class extends Migration
             $table->string('full_name', 100)->nullable();
             $table->string('phone', 15)->nullable();
             $table->text('address')->nullable();
-            $table->enum('role', ['customer','admin','sale','shipper','checker'])->default('customer');
+            $table->string('ward', 100)->nullable();
+            $table->string('district', 100)->nullable();
+            $table->string('city', 100)->nullable();
+            $table->enum('role', ['customer', 'admin', 'sale', 'shipper', 'checker'])->default('customer');
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->dateTime('deleted_at')->nullable();
