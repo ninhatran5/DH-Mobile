@@ -234,6 +234,7 @@ class AuthController extends Controller
     public function resetPassword(Request $request)
     {
         $request->validate([
+            'token' => 'required|string',
             'password' => [
                 'required',
                 'string',
@@ -243,20 +244,36 @@ class AuthController extends Controller
             ],
             'password_confirmation' => 'required|same:password',
         ]);
-        $user = $request->user();
+
+        // Kiểm tra token hợp lệ
+        $reset = DB::table('password_resets')->where('token', $request->token)->first();
+        if (!$reset) {
+            return response()->json([
+                'message' => 'Token không hợp lệ hoặc đã hết hạn.',
+            ], 400);
+        }
+
+        // Lấy user theo email trong password_resets
+        $user = User::where('email', $reset->email)->first();
         if (!$user) {
             return response()->json([
-                'message' => 'Không xác định được người dùng.',
-            ], 401);
+                'message' => 'Email không tồn tại.',
+            ], 404);
         }
+
         // Kiểm tra mật khẩu mới không trùng với mật khẩu cũ
         if (Hash::check($request->password, $user->password_hash)) {
             return response()->json([
                 'message' => 'Mật khẩu mới không được trùng với mật khẩu cũ.',
             ], 400);
         }
+
         $user->password_hash = Hash::make($request->password);
         $user->save();
+
+        // Xoá token sau khi reset thành công
+        DB::table('password_resets')->where('email', $user->email)->delete();
+
         return response()->json([
             'message' => 'Mật khẩu đã được đổi thành công.',
         ]);
