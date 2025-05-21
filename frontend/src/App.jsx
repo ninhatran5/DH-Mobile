@@ -46,7 +46,8 @@ import CommentsList from "./pages/admin/CommentsList";
 import ShowProduct from "./pages/admin/ShowProduct";
 import ScrollToTop from "../utils/ScrollToTop";
 import RequireAuth from "./components/RequireAuth";
-
+import ProtectedRoute from "./pages/admin/ProtectedRoute";
+import AdminLogin from "./pages/admin/AdminLogin";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -161,7 +162,11 @@ const routerConfig = [
 
   {
     path: "/admin",
-    element: <HomeAdmin />,
+    element: 
+      <ProtectedRoute>
+      <HomeAdmin />,
+</ProtectedRoute>,
+    
     children: [
       {
         path: "",
@@ -230,7 +235,10 @@ const routerConfig = [
       },
     ],
   },
-
+{
+  path: "/AdminLogin",
+  element: <AdminLogin />,
+},
   {
     path: "*",
     element: <ErrorPage />,
