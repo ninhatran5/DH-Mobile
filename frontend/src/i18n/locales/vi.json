@@ -53,6 +53,7 @@
     "price": "Khoảng giá",
     "lowToHigh": "Giá Thấp - Cao",
     "highToLow": "Giá Cao - Thấp",
+    "deleteFilter": "Xóa bộ lọc",
     "readyStock": "Sẵn hàng",
     "addToCart": "Thêm vào giỏ hàng",
     "all": "Tất cả",

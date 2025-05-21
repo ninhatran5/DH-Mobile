@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Modal } from "react-bootstrap";
 import iphone from "../assets/images/iphone-16-pro-max.webp";
 import iphone2 from "../assets/images/iphone-15-pro_2__2_1_1_1.webp";
@@ -6,18 +6,34 @@ import iphone3 from "../assets/images/iphone-15-plus_1__1.webp";
 import { MdOutlineZoomInMap } from "react-icons/md";
 import Carousel from "react-bootstrap/Carousel";
 import "../assets/css/product-detail.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import Comment from "../components/Comment";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { useSwipeable } from "react-swipeable";
 import checkLogin from "../../utils/checkLogin";
+import { useDispatch, useSelector } from "react-redux";
+import Loading from "../components/Loading";
+import { fetchProductDetail } from "../slices/productDetailSlice";
+import { fetchProductVariationDetail } from "../slices/productVariationDetails";
 
 const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
   const [selectedVersion, setSelectedVersion] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  const { productDetails, loading } = useSelector(
+    (state) => state.productDetail
+  );
+  const { productVariationDetails } = useSelector(
+    (state) => state.productVariationDetail
+  );
+  console.log(
+    "🚀 ~ ProductDetail ~ productVariationDetails:",
+    productVariationDetails
+  );
 
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -28,56 +44,22 @@ const ProductDetail = () => {
     { id: 3, image: iphone3 },
   ];
 
-  const phoneVersions = [
+  const phoneColor = [
     {
       id: 1,
-      version: "Titan đen",
+      color: "Titan đen",
     },
     {
       id: 2,
-      version: "Titan tự nhiên",
+      color: "Titan tự nhiên",
     },
     {
       id: 3,
-      version: "Titan trắng",
+      color: "Titan trắng",
     },
     {
       id: 4,
-      version: "Titan sa mạc",
-    },
-  ];
-
-  const phoneColors = [
-    {
-      id: 1,
-      colors: "red",
-      values: "red",
-    },
-    {
-      id: 2,
-      colors: "green",
-      values: "green",
-    },
-    {
-      id: 3,
-      colors: "yellow",
-      values: "yellow",
-    },
-    {
-      id: 4,
-      colors: "blue",
-      values: "blue",
-    },
-  ];
-
-  const machineInformation = [
-    {
-      id: 1,
-      name: "iPhone 16 Pro Max",
-      priceSale: "24.000.000đ",
-      priceOriginal: "24.500.000đ",
-      quantity: 1000,
-      desc: "iPhone 16 Pro Max mang đến thiết kế sang trọng với khung thép không gỉ và mặt lưng kính cường lực. Màn hình Super Retina XDR với công nghệ ProMotion cung cấp trải nghiệm hình ảnh mượt mà. Được trang bị chip A17 Bionic, nó mạnh mẽ và tiết kiệm năng lượng. Hệ thống camera cải tiến cho khả năng chụp ảnh và quay video ấn tượng, bao gồm chế độ ban đêm và video 4K. Hỗ trợ kết nối 5G, thời lượng pin lâu dài và chạy trên iOS mới nhất, iPhone 16 Pro Max là lựa chọn hoàn hảo cho những người yêu công nghệ.",
+      color: "Titan sa mạc",
     },
   ];
 
@@ -172,8 +154,16 @@ const ProductDetail = () => {
     rotationAngle: 0,
   });
 
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchProductDetail(id));
+      dispatch(fetchProductVariationDetail(id));
+    }
+  }, [dispatch, id]);
+
   return (
     <>
+      {loading && <Loading />}
       <Breadcrumb
         title={t("breadcrumbProductDetail.breadcrumbHeader")}
         mainItem={t("breadcrumbProductDetail.breadcrumbTitleHome")}
@@ -256,86 +246,78 @@ const ProductDetail = () => {
           </Modal>
 
           <div className="col-md-6">
-            {machineInformation.map((item) => (
-              <div key={item.id}>
-                <h2 className="mb-3">{item.name}</h2>
-                <div className="price">
-                  <h4 className="text-price_sale mb-3">{item.priceSale}</h4>
-                  <p className="text-price_original">{item.priceOriginal}</p>
-                </div>
-                <p className="text-muted">
-                  {t("productDetail.quantity")}:{" "}
-                  <span className="fw-bold">{item.quantity}</span>{" "}
-                  {t("productDetail.product")}
-                </p>
-                <p className="text-muted">{item.desc}</p>
+            <div key={productDetails.product_id}>
+              <h2 className="mb-3">{productDetails.name}</h2>
+              <div className="price">
+                <h4 className="text-price_sale">
+                  {productVariationDetails.price}
+                </h4>
+                <p className="text-price_original">ádasd</p>
               </div>
-            ))}
+              <p className="text-muted">
+                {t("productDetail.quantity")}:{" "}
+                <span className="fw-bold me-1">
+                  {productVariationDetails.stock}
+                </span>
+                {t("productDetail.product")}
+              </p>
+              <p className="text-muted">{productDetails.description}</p>
+            </div>
+
             <div className="mb-3">
-              <label className="font-weight-bold">
+              <label className="font-weight-bold mt-3">
                 {t("productDetail.selectVersion")}:
-                {!selectedVersion && <span className="text-danger">*</span>}
               </label>
               <div className="d-flex justify-content-start version-button-group">
-                {phoneVersions.map((phoneVersion) => (
+                {productVariationDetails?.attribute_values?.map(
+                  (phoneVersion) => (
+                    <button
+                      key={phoneVersion.attribute_id}
+                      className={`btn btn-outline-secondary mx-1 ${
+                        selectedVersion === phoneVersion.attribute_id
+                          ? "active"
+                          : ""
+                      }`}
+                      onClick={() =>
+                        setSelectedVersion(
+                          selectedVersion === phoneVersion.attribute_id
+                            ? null
+                            : phoneVersion.attribute_id
+                        )
+                      }
+                    >
+                      {phoneVersion.value}
+                    </button>
+                  )
+                )}
+              </div>
+            </div>
+            <div className="mb-4">
+              <label className="font-weight-bold mb-2 mt-2">
+                {t("productDetail.selectColor")}:
+              </label>
+              <div className="d-flex justify-content-start version-button-group">
+                {phoneColor.map((phoneVersion) => (
                   <button
                     key={phoneVersion.id}
                     className={`btn btn-outline-secondary mx-1 ${
-                      selectedVersion === phoneVersion.id ? "active" : ""
+                      selectedColor === phoneVersion.id ? "active" : ""
                     }`}
                     onClick={() =>
-                      setSelectedVersion(
-                        selectedVersion === phoneVersion.id
+                      setSelectedColor(
+                        selectedColor === phoneVersion.id
                           ? null
                           : phoneVersion.id
                       )
                     }
                   >
-                    {phoneVersion.version}
+                    {phoneVersion.color}
                   </button>
                 ))}
               </div>
             </div>
-            <div className="mb-4">
-              <label className="font-weight-bold mb-2">
-                {t("productDetail.selectColor")}:
-                {!selectedColor && <span className="text-danger">*</span>}
-              </label>
-              <div className="d-flex justify-content-start">
-                {phoneColors.map((phoneColor) => (
-                  <div
-                    key={phoneColor.id}
-                    className={`color-circle mx-1 ${
-                      selectedColor === phoneColor.id ? "active" : ""
-                    }`}
-                    style={{
-                      backgroundColor: phoneColor.colors,
-                      border:
-                        selectedColor === phoneColor.id
-                          ? `1px solid ${phoneColor.colors}`
-                          : "1px solid #e0e0e0",
-                      transform:
-                        selectedColor === phoneColor.id
-                          ? "scale(1.08)"
-                          : "scale(1)",
-                      boxShadow:
-                        selectedColor === phoneColor.id
-                          ? `0 0 0 1px #fff, 0 0 0 2px ${phoneColor.colors}`
-                          : "none",
-                      transition: "all 0.2s ease-in-out",
-                      cursor: "pointer",
-                    }}
-                    onClick={() =>
-                      setSelectedColor(
-                        selectedColor === phoneColor.id ? null : phoneColor.id
-                      )
-                    }
-                  ></div>
-                ))}
-              </div>
-            </div>
 
-            <div style={{ marginTop: 30 }}>
+            <div style={{ marginTop: 40 }}>
               <label className="font-weight-bold mb-2 me-3">
                 {t("productDetail.quantity")}:
               </label>
@@ -411,16 +393,7 @@ const ProductDetail = () => {
             {activeTab === "description" && (
               <div className="tab-pane fade show active">
                 <p className="desc_productdetai">
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
+                  {productDetails.description}
                 </p>
               </div>
             )}

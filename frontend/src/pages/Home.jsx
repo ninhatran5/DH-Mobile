@@ -382,7 +382,7 @@ const Home = () => {
               1200: { slidesPerView: 4 },
             }}
           >
-            {products.map((item) => {
+            {products.slice(0, 5).map((item) => {
               const discountPercent = isPercentDecrease
                 ? getDiscountPercent(item)
                 : null;
@@ -431,6 +431,7 @@ const Home = () => {
         showHeader={true}
         padding={"py-5"}
         filter={false}
+        limit={5}
       />
 
       <ListProductCard title={t("home.bestSellingProducts")} />

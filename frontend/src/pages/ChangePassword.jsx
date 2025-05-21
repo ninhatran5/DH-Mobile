@@ -28,7 +28,6 @@ const ChangePassword = () => {
     formState: { errors },
   } = useForm();
 
-  const passwordValue = watch("password");
   const newPasswordValue = watch("newpassword");
   const confirmPasswordValue = watch("confirmpassword");
 
@@ -101,11 +100,6 @@ const ChangePassword = () => {
                                           "auth.validation.newPasswordInvalid"
                                         ),
                                       },
-                                      validate: (value) =>
-                                        value !== passwordValue ||
-                                        t(
-                                          "auth.validation.newPasswordCannotMatchOld"
-                                        ),
                                     })}
                                   />
                                   {errors?.newpassword && (

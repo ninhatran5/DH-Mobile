@@ -4,8 +4,9 @@ import { FaRegHeart } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import checkLogin from "../../utils/checkLogin";
+import iphone from "../assets/images/iphone-16-pro-max.webp";
 
-const ProductCard = ({ discountPercent, product, nextProductDetail }) => {
+const ProductCard = ({ discountPercent, product, productsVariants }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -14,6 +15,10 @@ const ProductCard = ({ discountPercent, product, nextProductDetail }) => {
   const handleUnFavorites = () => {
     setFavorite(false);
     toast.success(t("products.removeFavorites"));
+  };
+
+  const nextProductDetail = (id) => {
+    navigate(`/product-detail/${id}`);
   };
 
   const addToFavorites = () => {
@@ -66,17 +71,17 @@ const ProductCard = ({ discountPercent, product, nextProductDetail }) => {
       <figure>
         <img
           style={{ cursor: "pointer" }}
-          onClick={() => nextProductDetail(product.id)}
-          src={product.image}
+          onClick={() => nextProductDetail(product.product_id)}
+          src={iphone}
           className="tab-image"
-          alt={product.title || product.name}
+          alt={product.name}
           title={product.title || product.name}
         />
       </figure>
 
       <h3
         style={{ cursor: "pointer" }}
-        onClick={() => nextProductDetail(product.id)}
+        onClick={() => nextProductDetail(product.product_id)}
       >
         {product.title || product.name}
       </h3>
@@ -98,7 +103,7 @@ const ProductCard = ({ discountPercent, product, nextProductDetail }) => {
             textOverflow: "ellipsis",
           }}
         >
-          {product.price}
+          {productsVariants?.price}
         </span>
         <span
           className="price_original"
