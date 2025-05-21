@@ -370,6 +370,7 @@
     }
   },
   "editProfile": {
+    "brumTitle": "Chỉnh Sửa Hồ Sơ Cá Nhân",
     "accountInfo": "Thông tin tài khoản",
     "wards": "Phường/Xã",
     "district": "Quận/Huyện",

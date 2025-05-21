@@ -60,11 +60,18 @@
   flex-direction: row-reverse;
 }
 
-.avatar {
+.avatar_chat {
   width: 35px;
   height: 35px;
   border-radius: 50%;
   margin: 0 10px;
+  overflow: hidden;
+}
+.avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: blox;
 }
 
 .bubble {

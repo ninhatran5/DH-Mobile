@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../assets/css/chatbot.css";
 import chatbotLogo2 from "../assets/images/logochat.png";
 import { FaPaperPlane, FaTimes } from "react-icons/fa";
 import { GoPaperclip } from "react-icons/go";
 import { Modal } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
+import { fetchProfile } from "../slices/profileSlice";
 
 const messagesData = [
   { sender: "user", text: "Xin chào", time: "10:00 AM" },
@@ -36,12 +38,18 @@ const messagesData = [
 ];
 
 export default function ChatWindow() {
+  const dispatch = useDispatch();
+  const { profile } = useSelector((state) => state.profile);
   const [show, setShow] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [visible, setVisible] = useState(true);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    dispatch(fetchProfile());
+  }, [dispatch]);
 
   return (
     <div className="chatbot-container">
@@ -63,15 +71,17 @@ export default function ChatWindow() {
           <div className="messages">
             {messagesData.map((msg, index) => (
               <div className={`message ${msg.sender}`} key={index}>
-                <img
-                  src={
-                    msg.sender === "user"
-                      ? "https://static-cse.canva.com/blob/2008403/1600w-vkBvE1d_xYA.jpg"
-                      : "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg"
-                  }
-                  alt="avatar"
-                  className="avatar"
-                />
+                <div className="avatar_chat">
+                  <img
+                    src={
+                      msg.sender === "user"
+                        ? profile.user.image_url
+                        : "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg"
+                    }
+                    alt="avatar"
+                    className="avatar"
+                  />
+                </div>
                 <div className="bubble">
                   {msg.text && <div>{msg.text}</div>}
                   {msg.image && (

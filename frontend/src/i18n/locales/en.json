@@ -375,6 +375,7 @@
     }
   },
   "editProfile": {
+    "brumTitle": "Edit Personal Profile",
     "accountInfo": "Account Information",
     "wards": "Ward",
     "district": "District",

@@ -9,7 +9,6 @@ const ChatBot = () => {
   const toggleChat = () => {
     setIsOpen(!isOpen);
   };
-
   return (
     <div className="chatbot-container">
       {!isOpen && (
