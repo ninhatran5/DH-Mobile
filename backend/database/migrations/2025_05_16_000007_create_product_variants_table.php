@@ -13,11 +13,13 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id')->nullable();
             $table->string('sku', 50)->unique();
             $table->decimal('price', 10, 2);
+            $table->decimal('price_original', 10, 2)->nullable();
+            $table->string('image_url', 255)->nullable();
             $table->integer('stock')->default(0);
             $table->boolean('is_active')->default(1);
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
-            $table->dateTime('deleted_at')->useCurrent();
+            $table->dateTime('deleted_at')->nullable();
 
             $table->foreign('product_id')->references('product_id')->on('products');
         });

@@ -111,7 +111,7 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
     // VariantAttributeValues
     Route::prefix('variantattributevalues')->controller(VariantAttributeValuesController::class)->group(function () {
         Route::post('/', 'store');
-        Route::put('/{id}', 'update');
+        Route::post('/{id}', 'update');
         Route::delete('/{id}', 'destroy');
         Route::put('/restore/{id}', 'restore');
         Route::delete('/forceDelete/{id}', 'forceDelete');

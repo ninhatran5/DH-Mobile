@@ -592,16 +592,11 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "email",
                                     "token",
                                     "password",
                                     "password_confirmation"
                                 ],
                                 "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "format": "email"
-                                    },
                                     "token": {
                                         "type": "string"
                                     },
@@ -1426,7 +1421,7 @@
                                     "product_id",
                                     "sku",
                                     "price",
-                                    "stock_quantity"
+                                    "stock"
                                 ],
                                 "properties": {
                                     "product_id": {
@@ -1438,8 +1433,17 @@
                                     "price": {
                                         "type": "number"
                                     },
-                                    "stock_quantity": {
+                                    "price_original": {
+                                        "type": "number"
+                                    },
+                                    "image_url": {
+                                        "type": "string"
+                                    },
+                                    "stock": {
                                         "type": "integer"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean"
                                     }
                                 },
                                 "type": "object"
@@ -1504,7 +1508,7 @@
                                 "required": [
                                     "sku",
                                     "price",
-                                    "stock_quantity"
+                                    "stock"
                                 ],
                                 "properties": {
                                     "sku": {
@@ -1513,8 +1517,17 @@
                                     "price": {
                                         "type": "number"
                                     },
-                                    "stock_quantity": {
+                                    "price_original": {
+                                        "type": "number"
+                                    },
+                                    "image_url": {
+                                        "type": "string"
+                                    },
+                                    "stock": {
                                         "type": "integer"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean"
                                     }
                                 },
                                 "type": "object"

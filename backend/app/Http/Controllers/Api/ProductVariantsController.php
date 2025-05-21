@@ -35,11 +35,14 @@ class ProductVariantsController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"product_id","sku","price","stock_quantity"},
+     *             required={"product_id","sku","price","stock"},
      *             @OA\Property(property="product_id", type="integer"),
      *             @OA\Property(property="sku", type="string"),
      *             @OA\Property(property="price", type="number"),
-     *             @OA\Property(property="stock_quantity", type="integer")
+     *             @OA\Property(property="price_original", type="number"),
+     *             @OA\Property(property="image_url", type="string"),
+     *             @OA\Property(property="stock", type="integer"),
+     *             @OA\Property(property="is_active", type="boolean")
      *         )
      *     ),
      *     @OA\Response(response=201, description="Tạo thành công")
@@ -49,12 +52,14 @@ class ProductVariantsController extends Controller
     {
         $request->validate([
             'product_id' => 'required|integer',
-            'sku' => 'required|string|max:100|unique:product_variants,sku',
+            'sku' => 'required|string|max:50|unique:product_variants,sku',
             'price' => 'required|numeric',
+            'price_original' => 'nullable|numeric',
             'image_url' => 'nullable',
-            'stock_quantity' => 'required|integer',
+            'stock' => 'required|integer',
+            'is_active' => 'nullable|boolean',
         ]);
-        $data = $request->only(['product_id', 'sku', 'price', 'image_url', 'stock_quantity']);
+        $data = $request->only(['product_id', 'sku', 'price', 'price_original', 'image_url', 'stock', 'is_active']);
         if ($request->hasFile('image_url')) {
             $path = $request->file('image_url')->store('product_variants', 'public');
             $data['image_url'] = $path;
@@ -110,10 +115,13 @@ class ProductVariantsController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"sku","price","stock_quantity"},
+     *             required={"sku","price","stock"},
      *             @OA\Property(property="sku", type="string"),
      *             @OA\Property(property="price", type="number"),
-     *             @OA\Property(property="stock_quantity", type="integer")
+     *             @OA\Property(property="price_original", type="number"),
+     *             @OA\Property(property="image_url", type="string"),
+     *             @OA\Property(property="stock", type="integer"),
+     *             @OA\Property(property="is_active", type="boolean")
      *         )
      *     ),
      *     @OA\Response(response=200, description="Cập nhật thành công"),
@@ -123,10 +131,12 @@ class ProductVariantsController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'sku' => 'required|string|max:100|unique:product_variants,sku,' . $id . ',variant_id',
+            'sku' => 'required|string|max:50|unique:product_variants,sku,' . $id . ',variant_id',
             'price' => 'required|numeric',
+            'price_original' => 'nullable|numeric',
             'image_url' => 'nullable',
-            'stock_quantity' => 'required|integer',
+            'stock' => 'required|integer',
+            'is_active' => 'nullable|boolean',
         ]);
 
         $variant = ProductVariant::find($id);
@@ -137,7 +147,7 @@ class ProductVariantsController extends Controller
             ], 404);
         }
 
-        $validatedData = $request->only(['sku', 'price', 'image_url', 'stock_quantity']);
+        $validatedData = $request->only(['sku', 'price', 'price_original', 'image_url', 'stock', 'is_active']);
         if ($request->hasFile('image_url')) {
             // Xoá ảnh cũ nếu có
             if ($variant->image_url) {
@@ -148,6 +158,11 @@ class ProductVariantsController extends Controller
             $validatedData['image_url'] = $path;
         }
         $variant->update($validatedData);
+
+        // Gán lại attributeValues nếu có
+        if ($request->has('attribute_value_ids')) {
+            $variant->attributeValues()->sync($request->input('attribute_value_ids'));
+        }
 
         return response()->json([
             'message' => 'Cập nhật biến thể sản phẩm thành công',
