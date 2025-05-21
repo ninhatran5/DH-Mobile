@@ -39,7 +39,7 @@ const Profile = () => {
     {
       id: 4,
       title: t("profile.personalInformations.hometown"),
-      content: profile?.user?.address || "Chưa cập nhật",
+      content: profile?.user?.city || "Chưa cập nhật",
     },
   ];
   const statisticals = [

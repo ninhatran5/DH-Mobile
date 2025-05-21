@@ -40,24 +40,24 @@ const EditProfile = () => {
 
   // Lọc districts theo city được chọn
   const filteredDistricts =
-    data.find((province) => province.codename === watchCity)?.districts || [];
+    data.find((province) => province.name === watchCity)?.districts || [];
 
   // Lọc wards theo district được chọn
   const filteredWards =
-    filteredDistricts.find((district) => district.codename === watchDistrict)
+    filteredDistricts.find((district) => district.name === watchDistrict)
       ?.wards || [];
 
   useEffect(() => {
-    if (profile?.user) {
+    if (profile?.user && data.length > 0) {
       setValue("full_name", profile.user.full_name || "");
       setValue("phone", profile.user.phone || "");
       setValue("email", profile.user.email || "");
-      setValue("ward", "");
-      setValue("district", "");
-      setValue("city", "");
+      setValue("city", profile.user.city || "");
+      setValue("district", profile.user.district || "");
+      setValue("ward", profile.user.ward || "");
       setValue("address", profile.user.address || "");
     }
-  }, [profile, setValue]);
+  }, [profile, data, setValue]);
 
   useEffect(() => {
     dispatch(fetchAddress());
@@ -83,6 +83,7 @@ const EditProfile = () => {
 
     try {
       const result = await dispatch(fetchEditProfile(dataToSend)).unwrap();
+      console.log("🚀 ~ onSubmit ~ result:", result);
       toast.success("Cập nhật hồ sơ thành công!");
     } catch (error) {
       toast.error(error);
@@ -235,10 +236,7 @@ const EditProfile = () => {
                             {t("editProfile.selectCity")}
                           </option>
                           {data.map((province) => (
-                            <option
-                              key={province.code}
-                              value={province.codename}
-                            >
+                            <option key={province.code} value={province.name}>
                               {province.name}
                             </option>
                           ))}
@@ -272,10 +270,7 @@ const EditProfile = () => {
                             {t("editProfile.selectDistrict")}
                           </option>
                           {filteredDistricts.map((district) => (
-                            <option
-                              key={district.code}
-                              value={district.codename}
-                            >
+                            <option key={district.code} value={district.name}>
                               {district.name}
                             </option>
                           ))}
@@ -307,7 +302,7 @@ const EditProfile = () => {
                             {t("editProfile.selectWard")}
                           </option>
                           {filteredWards.map((ward) => (
-                            <option key={ward.code} value={ward.codename}>
+                            <option key={ward.code} value={ward.name}>
                               {ward.name}
                             </option>
                           ))}
