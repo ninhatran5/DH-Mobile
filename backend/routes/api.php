@@ -45,8 +45,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 
-
-
 // API Banner
 // http://127.0.0.1:8000/api/banners
 Route::get('/getbanners', [BannerController::class, 'index']); // lấy toàn bộ danh sách banner
