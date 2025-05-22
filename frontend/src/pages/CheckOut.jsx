@@ -30,7 +30,7 @@ const CheckOut = () => {
   ];
   useEffect(() => {
     dispatch(fetchProfile());
-  }, []);
+  }, [dispatch]);
   return (
     <>
       {loading && <Loading />}

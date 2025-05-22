@@ -3,9 +3,53 @@ import iphone from "../assets/images/iphone-16-pro-max.webp";
 import { IoReturnDownBack } from "react-icons/io5";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { fetchAddress } from "../slices/addressSlice";
+import { useForm } from "react-hook-form";
+import "../../src/assets/css/checkout.css";
 
 const ChangeCheckout = () => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const { data } = useSelector((state) => state.address);
+  const [selectedCityCode, setSelectedCityCode] = useState(null);
+  const [selectedDistrictCode, setSelectedDistrictCode] = useState(null);
+  const [selectedWardCode, setSelectedWardCode] = useState(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      fullName: "",
+      phone: "",
+      city: "",
+      district: "",
+      ward: "",
+      addressDetail: "",
+      paymentMethod: "",
+    },
+  });
+
+  useEffect(() => {
+    dispatch(fetchAddress());
+  }, [dispatch]);
+
+  const selectedCity = data.find((city) => city.code === selectedCityCode);
+  const filteredDistricts = selectedCity?.districts || [];
+  const selectedDistrict = filteredDistricts.find(
+    (district) => district.code === selectedDistrictCode
+  );
+  const filteredWards = selectedDistrict?.wards || [];
+
+  useEffect(() => {
+    setValue("city", selectedCityCode || "");
+    setValue("district", selectedDistrictCode || "");
+    setValue("ward", selectedWardCode || "");
+  }, [selectedCityCode, selectedDistrictCode, selectedWardCode, setValue]);
 
   const purchaseInformation = [
     {
@@ -24,46 +68,28 @@ const ChangeCheckout = () => {
     },
   ];
 
-  const wards = [
-    {
-      id: 1,
-      name: "Phường Tràng Tiền",
-      value: "phuong-trang-tien",
-      districtId: 1,
-    },
-    {
-      id: 2,
-      name: "Phường Khâm Thiên",
-      value: "phuong-kham-thien",
-      districtId: 2,
-    },
-    {
-      id: 3,
-      name: "Phường Bạch Đằng",
-      value: "phuong-bach-dang",
-      districtId: 3,
-    },
-    { id: 4, name: "Phường Nghĩa Đô", value: "phuong-nghia-do", districtId: 4 },
-    { id: 5, name: "Phường Tứ Liên", value: "phuong-tu-lien", districtId: 5 },
-    { id: 6, name: "Phường Ngọc Lâm", value: "phuong-ngoc-lam", districtId: 6 },
-    { id: 7, name: "Phường Mộ Lao", value: "phuong-mo-lao", districtId: 7 },
-  ];
-  const districts = [
-    { id: 1, name: "Quận Hoàn Kiếm", value: "quan-hoan-kiem" },
-    { id: 2, name: "Quận Đống Đa", value: "quan-dong-da" },
-    { id: 3, name: "Quận Hai Bà Trưng", value: "quan-hai-ba-trung" },
-    { id: 4, name: "Quận Cầu Giấy", value: "quan-cau-giay" },
-    { id: 5, name: "Quận Tây Hồ", value: "quan-tay-ho" },
-    { id: 6, name: "Quận Long Biên", value: "quan-long-bien" },
-    { id: 7, name: "Quận Hà Đông", value: "quan-ha-dong" },
-  ];
+  // Handle form submission: chuyển code thành name trước khi gửi
+  const onSubmit = (formData) => {
+    const cityName =
+      data.find((city) => city.code === Number(formData.city))?.name || "";
+    const districtName =
+      filteredDistricts.find(
+        (district) => district.code === Number(formData.district)
+      )?.name || "";
+    const wardName =
+      filteredWards.find((ward) => ward.code === Number(formData.ward))?.name ||
+      "";
 
-  const cities = [
-    { id: 1, name: "Hà Nội", value: "ha-noi" },
-    { id: 2, name: "Hải Phòng", value: "hai-phong" },
-    { id: 3, name: "Đà Nẵng", value: "da-nang" },
-    { id: 4, name: "Hồ Chí Minh", value: "ho-chi-minh" },
-  ];
+    const dataToSend = {
+      ...formData,
+      city: cityName,
+      district: districtName,
+      ward: wardName,
+    };
+
+    console.log("Form Data with Names:", dataToSend);
+    // Thực hiện gửi dataToSend lên server ở đây
+  };
 
   return (
     <>
@@ -78,7 +104,7 @@ const ChangeCheckout = () => {
       <div className="container-fluid">
         <section className="checkout" style={{ marginTop: 60 }}>
           <div className="checkout__form">
-            <form action="#">
+            <form onSubmit={handleSubmit(onSubmit)}>
               <div className="row">
                 <div className="col-lg-8 col-md-6 mb-5">
                   <h5 className="checkout__title">{t("checkout.enterInfo")}</h5>
@@ -89,7 +115,21 @@ const ChangeCheckout = () => {
                           {t("checkout.fullName")}
                           <span>*</span>
                         </p>
-                        <input type="text" />
+                        <input
+                          type="text"
+                          {...register("fullName", {
+                            required: t("checkout.fullNameRequired"),
+                            minLength: {
+                              value: 2,
+                              message: t("checkout.fullNameMinLength"),
+                            },
+                          })}
+                        />
+                        {errors.fullName && (
+                          <p className="error_message_checkout">
+                            {errors.fullName.message}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div className="col-lg-6">
@@ -98,44 +138,35 @@ const ChangeCheckout = () => {
                           {t("checkout.phone")}
                           <span>*</span>
                         </p>
-                        <input type="number" min={0} />
+                        <input
+                          type="number"
+                          {...register("phone", {
+                            required: t("checkout.phoneRequired"),
+                            validate: {
+                              startsWithZero: (value) =>
+                                value.startsWith("0") ||
+                                t("checkout.phoneMustStartWithZero"),
+                              lengthCheck: (value) =>
+                                value.length === 10 ||
+                                value.length === 11 ||
+                                t("checkout.phoneLengthInvalid"),
+                              isNumber: (value) =>
+                                /^[0-9]+$/.test(value) ||
+                                t("checkout.phoneMustBeNumber"),
+                            },
+                          })}
+                        />
+
+                        {errors.phone && (
+                          <p className="error_message_checkout">
+                            {errors.phone.message}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
-                  <div className="checkout__input">
-                    <p>
-                      {t("checkout.ward")}
-                      <span>*</span>
-                    </p>
-                    <select
-                      className="checkout_change_select form-select"
-                      aria-label="Default select example"
-                    >
-                      <option selected>{t("checkout.ward")}</option>
-                      {wards.map((item) => (
-                        <option key={item.id} value={item.value}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="checkout__input">
-                    <p>
-                      {t("checkout.district")}
-                      <span>*</span>
-                    </p>
-                    <select
-                      className="checkout_change_select form-select"
-                      aria-label="Default select example"
-                    >
-                      <option selected>{t("checkout.district")}</option>
-                      {districts.map((item) => (
-                        <option key={item.id} value={item.value}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+
+                  {/* Select Thành phố */}
                   <div className="checkout__input">
                     <p>
                       {t("checkout.city")}
@@ -143,23 +174,120 @@ const ChangeCheckout = () => {
                     </p>
                     <select
                       className="checkout_change_select form-select"
-                      aria-label="Default select example"
+                      aria-label="City"
+                      {...register("city", {
+                        required: t("checkout.cityRequired"),
+                      })}
+                      onChange={(e) => {
+                        const code = Number(e.target.value);
+                        setSelectedCityCode(code);
+                        setSelectedDistrictCode(null);
+                        setSelectedWardCode(null);
+                        setValue("district", "");
+                        setValue("ward", "");
+                      }}
                     >
-                      <option selected>{t("checkout.city")}</option>
-                      {cities.map((item) => (
-                        <option key={item.id} value={item.value}>
-                          {item.name}
+                      <option value="">{t("checkout.city")}</option>
+                      {data.map((city) => (
+                        <option key={city.code} value={city.code}>
+                          {city.name}
                         </option>
                       ))}
                     </select>
+                    {errors.city && (
+                      <p className="error_message_checkout">
+                        {errors.city.message}
+                      </p>
+                    )}
                   </div>
+
+                  {/* Select Quận/Huyện */}
+                  <div className="checkout__input">
+                    <p>
+                      {t("checkout.district")}
+                      <span>*</span>
+                    </p>
+                    <select
+                      className="checkout_change_select form-select"
+                      aria-label="District"
+                      {...register("district", {
+                        required: t("checkout.districtRequired"),
+                      })}
+                      onChange={(e) => {
+                        const code = Number(e.target.value);
+                        setSelectedDistrictCode(code);
+                        setSelectedWardCode(null);
+                        setValue("ward", "");
+                      }}
+                      disabled={!selectedCityCode}
+                    >
+                      <option value="">{t("checkout.district")}</option>
+                      {filteredDistricts.map((district) => (
+                        <option key={district.code} value={district.code}>
+                          {district.name}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.district && (
+                      <p className="error_message_checkout">
+                        {errors.district.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Select Phường/Xã */}
+                  <div className="checkout__input">
+                    <p>
+                      {t("checkout.ward")}
+                      <span>*</span>
+                    </p>
+                    <select
+                      className="checkout_change_select form-select"
+                      aria-label="Ward"
+                      {...register("ward", {
+                        required: t("checkout.wardRequired"),
+                      })}
+                      onChange={(e) =>
+                        setSelectedWardCode(Number(e.target.value))
+                      }
+                      disabled={!selectedDistrictCode}
+                    >
+                      <option value="">{t("checkout.ward")}</option>
+                      {filteredWards.map((ward) => (
+                        <option key={ward.code} value={ward.code}>
+                          {ward.name}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.ward && (
+                      <p className="error_message_checkout">
+                        {errors.ward.message}
+                      </p>
+                    )}
+                  </div>
+
                   <div className="checkout__input">
                     <p>
                       {t("checkout.addressDetail")}
                       <span>*</span>
                     </p>
-                    <input type="text" />
+                    <input
+                      type="text"
+                      {...register("addressDetail", {
+                        required: t("checkout.addressDetailRequired"),
+                        minLength: {
+                          value: 5,
+                          message: t("checkout.addressDetailMinLength"),
+                        },
+                      })}
+                    />
+                    {errors.addressDetail && (
+                      <p className="error_message_checkout">
+                        {errors.addressDetail.message}
+                      </p>
+                    )}
                   </div>
+
                   <div className="checkout_change_address">
                     <Link
                       to={"/checkout"}
@@ -177,13 +305,22 @@ const ChangeCheckout = () => {
                       </h6>
                     </Link>
                   </div>
+
                   <div style={{ marginTop: -30, width: "60%" }}>
                     <div className="checkout__input__checkbox">
                       <label htmlFor="acc">
                         <h4 className="checkout-text">
                           {t("checkout.payOnDelivery")}
                         </h4>
-                        <input type="radio" name="checkout" id="acc" />
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          id="acc"
+                          value="cod"
+                          {...register("paymentMethod", {
+                            required: t("checkout.paymentMethodRequired"),
+                          })}
+                        />
                         <span className="checkmark" />
                       </label>
                     </div>
@@ -192,13 +329,27 @@ const ChangeCheckout = () => {
                         <h4 className="checkout-text">
                           {t("checkout.payViaVNPAY")}
                         </h4>
-                        <input type="radio" name="checkout" id="vnpay" />
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          id="vnpay"
+                          value="vnpay"
+                          {...register("paymentMethod", {
+                            required: t("checkout.paymentMethodRequired"),
+                          })}
+                        />
                         <span className="checkmark" />
                       </label>
                     </div>
+                    {errors.paymentMethod && (
+                      <p className="error_message_checkout">
+                        {errors.paymentMethod.message}
+                      </p>
+                    )}
                   </div>
                 </div>
 
+                {/* Order Information */}
                 <div className="col-lg-4 col-md-6">
                   <div className="checkout__order">
                     <h4 className="order__title">{t("checkout.cartTotal")}</h4>
@@ -220,7 +371,7 @@ const ChangeCheckout = () => {
                         <li>
                           <div className="checkout_card">
                             <div className="checkout_card_image">
-                              <img src={item.image} alt="" />
+                              <img src={item.image} alt={item.name} />
                             </div>
                             <p className="checkout_card_name">{item.name}</p>
                             <p className="checkout_card_quantity">
@@ -241,11 +392,9 @@ const ChangeCheckout = () => {
                         {t("checkout.totalMoney")} <span>1.000.000đ</span>
                       </li>
                     </ul>
-                    <Link to={"/thank-you"}>
-                      <button className="site-btn">
-                        {t("checkout.payNow")}
-                      </button>
-                    </Link>
+                    <button type="submit" className="site-btn">
+                      {t("checkout.payNow")}
+                    </button>
                   </div>
                 </div>
               </div>
