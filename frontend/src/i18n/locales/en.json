@@ -264,6 +264,8 @@
     "title": "Personal Profile",
     "home": "Home",
     "editProfile": "Edit",
+    "returnProfile": "Return to profile page",
+    "forgotPassword": "Change password",
     "introduction": "Introduction",
     "description": "Hello",
     "personalInfo": "Personal Information",

@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import "../assets/css/editprofile.css";
 import { FaEyeSlash } from "react-icons/fa";
 import { IoEyeSharp } from "react-icons/io5";
@@ -18,6 +18,7 @@ const EditProfile = () => {
   const { t } = useTranslation();
   const { profile, loading } = useSelector((state) => state.editProfile);
   const { data } = useSelector((state) => state.address);
+  const navigate = useNavigate();
 
   const {
     register,
@@ -101,6 +102,13 @@ const EditProfile = () => {
     }
   };
 
+  const handleNextForgotPasssword = () => {
+    navigate("/forgot-password");
+  };
+  const handleReturnProfile = (id) => {
+    navigate(`/profile/${id}`);
+  };
+
   return (
     <>
       {loading && <Loading />}
@@ -116,6 +124,20 @@ const EditProfile = () => {
       <div className="container-fluid">
         <div className="row">
           <div className="col-12">
+            <div className="d-flex">
+              <button
+                className="btn-custom-profile"
+                onClick={() => handleReturnProfile(profile?.user?.id)}
+              >
+                {t("profile.returnProfile")}
+              </button>
+              <button
+                className="btn-custom-profile"
+                onClick={handleNextForgotPasssword}
+              >
+                {t("profile.forgotPassword")}
+              </button>
+            </div>
             <form
               className="file-upload mt-3"
               onSubmit={handleSubmit(onSubmit)}
@@ -371,17 +393,16 @@ const EditProfile = () => {
                       </div>
                     </div>
                   </div>
+                  <div className="d-md-flex  justify-content-md-end text-center">
+                    <button
+                      type="submit"
+                      className="btn btn-primary mb-5"
+                      style={{ marginTop: 20 }}
+                    >
+                      {t("editProfile.buttonUpdate")}
+                    </button>
+                  </div>
                 </div>
-              </div>
-
-              <div className="gap-3 d-md-flex justify-content-md-end text-center">
-                <button
-                  type="submit"
-                  className="btn btn-primary mb-5"
-                  style={{ marginTop: -10 }}
-                >
-                  {t("editProfile.buttonUpdate")}
-                </button>
               </div>
             </form>
           </div>
