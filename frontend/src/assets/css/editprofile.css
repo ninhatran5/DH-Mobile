@@ -136,3 +136,27 @@
 #customFile + label:hover {
   background-color: #0056b3;
 }
+
+.btn-custom-profile {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-weight: 500;
+  font-size: 15px;
+  margin-right: 10px;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 4px rgba(25, 118, 210, 0.08);
+  cursor: pointer;
+  margin-top: -20px;
+}
+
+.btn-custom-profile:last-child {
+  margin-right: 0;
+}
+
+.btn-custom-profile:hover {
+  background: #1251a3;
+  color: #fff;
+}

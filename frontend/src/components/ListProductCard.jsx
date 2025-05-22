@@ -20,11 +20,19 @@ export default function ListProductCard({ title }) {
     if (!priceString) return NaN;
     return Number(priceString.replace(/[^0-9.-]+/g, ""));
   };
-  const getDiscountPercent = (product) => {
-    if (!product.price || !product.priceOriginal) return null;
-    const original = convertPriceToNumber(product.priceOriginal);
-    const sale = convertPriceToNumber(product.price);
-    if (isNaN(original) || isNaN(sale) || sale >= original) return null;
+  const getDiscountPercent = (product, variant) => {
+    const original = convertPriceToNumber(
+      variant?.price_original ?? product.priceOriginal ?? product.price_original
+    );
+    const sale = convertPriceToNumber(variant?.price ?? product.price);
+    if (
+      isNaN(original) ||
+      isNaN(sale) ||
+      sale >= original ||
+      !original ||
+      !sale
+    )
+      return null;
     return Math.round(((original - sale) / original) * 100);
   };
   useEffect(() => {
@@ -77,9 +85,12 @@ export default function ListProductCard({ title }) {
               }}
             >
               {products.slice(0, 8).map((product) => {
-                const discountPercent = getDiscountPercent(product);
                 const matchedVariant = productsVariants.find(
                   (variant) => variant.product_id === product.product_id
+                );
+                const discountPercent = getDiscountPercent(
+                  product,
+                  matchedVariant
                 );
                 return (
                   <SwiperSlide key={product.product_id}>

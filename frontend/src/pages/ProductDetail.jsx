@@ -1,8 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
 import { Modal } from "react-bootstrap";
-import iphone from "../assets/images/iphone-16-pro-max.webp";
-import iphone2 from "../assets/images/iphone-15-pro_2__2_1_1_1.webp";
-import iphone3 from "../assets/images/iphone-15-plus_1__1.webp";
 import { MdOutlineZoomInMap } from "react-icons/md";
 import Carousel from "react-bootstrap/Carousel";
 import "../assets/css/product-detail.css";
@@ -17,7 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Loading from "../components/Loading";
 import { fetchProductDetail } from "../slices/productDetailSlice";
 import { fetchProductVariationDetail } from "../slices/productVariationDetails";
-
+import numberFomat from "../../utils/numberFormat";
 const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
   const [selectedVersion, setSelectedVersion] = useState(null);
@@ -30,15 +27,19 @@ const ProductDetail = () => {
   const { productVariationDetails } = useSelector(
     (state) => state.productVariationDetail
   );
+  console.log(
+    "🚀 ~ ProductDetail ~ productVariationDetails:",
+    productVariationDetails
+  );
 
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const productImages = [
-    { id: 1, image: iphone },
-    { id: 2, image: iphone2 },
-    { id: 3, image: iphone3 },
-  ];
+  const productImages = Array.isArray(productDetails.image_url)
+    ? productDetails.image_url.map((url, idx) => ({ id: idx + 1, image: url }))
+    : productDetails.image_url
+    ? [{ id: 1, image: productDetails.image_url }]
+    : [];
 
   const phoneColor = [
     {
@@ -59,7 +60,7 @@ const ProductDetail = () => {
     },
   ];
 
-  const [currentImage, setCurrentImage] = useState(iphone);
+  const [currentImage, setCurrentImage] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -157,6 +158,12 @@ const ProductDetail = () => {
     }
   }, [dispatch, id]);
 
+  useEffect(() => {
+    if (productImages.length > 0) {
+      setCurrentImage(productImages[0].image);
+    }
+  }, [productImages]);
+
   return (
     <>
       {loading && <Loading />}
@@ -164,7 +171,7 @@ const ProductDetail = () => {
         title={t("breadcrumbProductDetail.breadcrumbHeader")}
         mainItem={t("breadcrumbProductDetail.breadcrumbTitleHome")}
         mainItem2={t("breadcrumbProductDetail.breadcrumbTitleProduct")}
-        secondaryItem={"iPhone 16 Pro Max"}
+        secondaryItem={productDetails.name}
         linkMainItem={"/"}
         linkMainItem2={"/products"}
       />
@@ -246,9 +253,11 @@ const ProductDetail = () => {
               <h2 className="mb-3">{productDetails.name}</h2>
               <div className="price">
                 <h4 className="text-price_sale">
-                  {productVariationDetails.price}
+                  {numberFomat(productVariationDetails.price)}
                 </h4>
-                <p className="text-price_original">ádasd</p>
+                <p className="text-price_original">
+                  {numberFomat(productVariationDetails?.price_original)}
+                </p>
               </div>
               <p className="text-muted">
                 {t("productDetail.quantity")}:{" "}
