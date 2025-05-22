@@ -13,7 +13,7 @@ const ThanksYou = () => {
     <>
       <div className="container-fluid">
         <div
-          className="card col-md-4 bg-white shadow-md p-5"
+          className=" col-md-4 bg-white shadow-md p-5"
           style={{
             justifyContent: "center",
             alignItems: "center",
@@ -40,7 +40,7 @@ const ThanksYou = () => {
             <h1>{t("thanksYou.paymentSuccess")}</h1>
             <p>
               {t("thanksYou.thankYouMessage")}
-              <br/>
+              <br />
               {t("thanksYou.thankYouMessage2")}
             </p>
             <Link to={"/"}>
