@@ -39,9 +39,13 @@ export default function ListProducts({
   const parsePrice = (priceStr) =>
     parseInt(priceStr?.replace(/[^\d]/g, "")) || 0;
 
-  const getDiscountPercent = (product) => {
-    const original = parsePrice(product.priceOriginal);
-    const sale = parsePrice(product.price);
+  // Sửa hàm getDiscountPercent để nhận cả product và variant
+  const getDiscountPercent = (product, variant) => {
+    // Ưu tiên lấy giá từ variant nếu có, nếu không lấy từ product
+    const original = parsePrice(
+      variant?.price_original ?? product.price_original
+    );
+    const sale = parsePrice(variant?.price ?? product.price);
     if (sale >= original || !original || !sale) return null;
     return Math.round(((original - sale) / original) * 100);
   };
@@ -223,9 +227,12 @@ export default function ListProducts({
                       ? sortedProducts.slice(0, limit)
                       : sortedProducts
                     ).map((product) => {
-                      const discountPercent = getDiscountPercent(product);
                       const matchedVariant = productsVariants.find(
                         (variant) => variant.product_id === product.product_id
+                      );
+                      const discountPercent = getDiscountPercent(
+                        product,
+                        matchedVariant
                       );
                       return (
                         <Product

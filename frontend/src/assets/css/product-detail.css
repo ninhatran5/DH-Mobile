@@ -33,7 +33,6 @@
   display: none !important;
 }
 .border.rounded img {
-  max-height: 400px;
   object-fit: contain;
   border-radius: 8px;
 }

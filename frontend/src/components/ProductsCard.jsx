@@ -4,6 +4,7 @@ import { FaRegHeart } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import checkLogin from "../../utils/checkLogin";
+import numberFormat from "../../utils/numberFormat";
 
 const ProductCard = ({ discountPercent, product, productsVariants }) => {
   const navigate = useNavigate();
@@ -102,7 +103,7 @@ const ProductCard = ({ discountPercent, product, productsVariants }) => {
             textOverflow: "ellipsis",
           }}
         >
-          {productsVariants?.price}
+          {numberFormat(productsVariants?.price)}
         </span>
         <span
           className="price_original"
@@ -115,7 +116,7 @@ const ProductCard = ({ discountPercent, product, productsVariants }) => {
             textOverflow: "ellipsis",
           }}
         >
-          {product.priceOriginal}
+          {numberFormat(productsVariants?.price_original)}
         </span>
       </div>
 

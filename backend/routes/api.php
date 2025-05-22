@@ -118,13 +118,13 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::delete('/forceDelete/{id}', 'forceDelete');
     });
     // News
-    // Route::prefix('news')->controller(NewsController::class)->group(function () {
-    //     Route::post('/', 'store');
-    //     Route::put('/{id}', 'update');
-    //     Route::delete('/{id}', 'destroy');
-    //     Route::put('/restore/{id}', 'restore');
-    //     Route::delete('/forceDelete/{id}', 'forceDelete');
-    // });
+    Route::prefix('news')->controller(NewsController::class)->group(function () {
+        Route::post('/', 'store');
+        Route::put('/{id}', 'update');
+        Route::delete('/{id}', 'destroy');
+        Route::put('/restore/{id}', 'restore');
+        Route::delete('/forceDelete/{id}', 'forceDelete');
+    });
 
 });
 
