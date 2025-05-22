@@ -134,8 +134,8 @@ Route::get('products', [ProductController::class, 'index']); // lấy danh sách
 Route::get('products/{id}', [ProductController::class, 'show']); // lấy sản phẩm theo id
 Route::get('attributes', [AttributeController::class, 'index']); // lấy danh sách thuộc tính
 Route::get('attributes/{id}', [AttributeController::class, 'show']); // lấy thuộc tính theo id
-Route::get('attributevalue', [attributevalueController::class, 'index']); // lấy danh sách thuộc tính con
-Route::get('attributevalue/{id}', [attributevalueController::class, 'show']); // lấy thuộc tính con theo id
+Route::get('attributevalues', [attributevalueController::class, 'index']); // lấy danh sách thuộc tính con
+Route::get('attributevalues/{id}', [attributevalueController::class, 'show']); // lấy thuộc tính con theo id
 Route::get('productvariants', [ProductVariantsController::class, 'index']); // lấy danh sách biến thể sản phẩm
 Route::get('productvariants/{id}', [ProductVariantsController::class, 'show']); // lấy biến thể sản phẩm theo id
 Route::get('productspecifications', [ProductSpecificationsController::class, 'index']); // lấy danh sách thông số kỹ thuật sản phẩm
