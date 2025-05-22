@@ -7,7 +7,7 @@ import forgotPasswordReducer from "../slices/forgotPasswordSlice";
 import profileReducer from "../slices/profileSlice";
 import editProfileReducer from "../slices/updateProfileSlice";
 import addressReducer from "../slices/addressSlice";
-import changePasswordReducer from "../slices/changPasswordSlice";
+import changePasswordReducer from "../slices/changePasswordSlice";
 import productReducer from "../slices/productSlice";
 import productsVariantReducer from "../slices/productVariantsSlice";
 import categorytReducer from "../slices/categorySlice";

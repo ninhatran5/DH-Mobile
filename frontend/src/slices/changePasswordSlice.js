@@ -7,14 +7,11 @@ const initialState = {
   error: null,
 };
 
-export const fetchChangPassword = createAsyncThunk(
+export const fetchChangePassword = createAsyncThunk(
   "changePassword/fetchRegister",
   async (data, thunkAPI) => {
     try {
-      const response = await axiosConfig.post("/resetpassword", {
-        ...data,
-        _method: "PUT",
-      });
+      const response = await axiosConfig.put("/resetpassword", data);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -30,17 +27,17 @@ export const changePasswordSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // pending(đang call)
-      .addCase(fetchChangPassword.pending, (state) => {
+      .addCase(fetchChangePassword.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       // call thành công
-      .addCase(fetchChangPassword.fulfilled, (state, action) => {
+      .addCase(fetchChangePassword.fulfilled, (state, action) => {
         state.loading = false;
         state.changePassword = action.payload;
       })
       // call lỗi
-      .addCase(fetchChangPassword.rejected, (state, action) => {
+      .addCase(fetchChangePassword.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
       });
