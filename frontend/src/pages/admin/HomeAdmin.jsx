@@ -4,6 +4,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Link, Outlet, useLocation } from "react-router-dom";
 import logo from "../../assets/images/logo2.png";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 // CSS inline cho sidebar thu gọn
 const sidebarCollapsedStyles = {
@@ -178,7 +180,6 @@ const Homeadmin =()=>{
 
   const handleNotificationClick = (e) => {
     e.preventDefault();
-    // Effect when clicking on notification
     const notificationBell = e.currentTarget.querySelector('.bi-bell');
     if (notificationBell) {
       notificationBell.classList.add('admin_dh-bell-ring');
@@ -188,6 +189,20 @@ const Homeadmin =()=>{
     }
   };
 
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    if (window.confirm("Bạn có chắc chắn muốn đăng xuất không?")) {
+      try {
+        localStorage.removeItem("adminToken");
+        localStorage.removeItem("adminID");
+        toast.success("Đăng xuất thành công");
+        navigate("/AdminLogin", { replace: true });
+      } catch (error) {
+        toast.error("Đã xảy ra lỗi khi đăng xuất. Vui lòng thử lại.");
+      }
+    }
+  };
   return(
     <>
       <div className={`admin_dh-wrapper ${isDarkMode ? 'dark-mode' : ''}`}>
@@ -566,7 +581,16 @@ const Homeadmin =()=>{
                     <li><a className="dropdown-item" href="#"><i className="bi bi-person me-2"></i>Hồ sơ</a></li>
                     <li><a className="dropdown-item" href="#"><i className="bi bi-gear me-2"></i>Cài đặt</a></li>
                     <li><hr className="dropdown-divider" /></li>
-                    <li><a className="dropdown-item" href="#"><i className="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
+                    <li>
+ <button
+    className="dropdown-item"
+    onClick={handleLogout}
+    style={{ textAlign: "left", width: "100%" }}
+  >
+    <i className="bi bi-box-arrow-right me-2"></i>
+    Đăng xuất
+  </button>
+</li>
                   </ul>
                 </div>
               </div>
