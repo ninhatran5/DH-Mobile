@@ -13,6 +13,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('product_id')->nullable();
             $table->dateTime('created_at')->useCurrent();
+            $table->dateTime('updated_at')->nullable();
 
             $table->unique(['user_id', 'product_id'], 'product_likes_index_0');
             $table->foreign('user_id')->references('user_id')->on('users');
