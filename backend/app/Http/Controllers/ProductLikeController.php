@@ -13,7 +13,7 @@ class ProductLikeController extends Controller
     // thích sản phẩm
     public function productlike($id)
     {
-        $user = User::where('user_id', $id)->first();
+        $user = Auth::user();
         if (!$user) {
             return response()->json([
                 'status' => false,
