@@ -13,7 +13,7 @@ import productsVariantReducer from "../slices/productVariantsSlice";
 import categorytReducer from "../slices/categorySlice";
 import productDetailReducer from "../slices/productDetailSlice";
 import productVariationDetailReducer from "../slices/productVariationDetails";
-
+import bannerReducer from "../slices/BannerSlice";
 export const store = configureStore({
   reducer: {
     home: homeReducer,
@@ -29,6 +29,7 @@ export const store = configureStore({
     productsVariant: productsVariantReducer,
     category: categorytReducer,
     productDetail: productDetailReducer,
-    productVariationDetail: productVariationDetailReducer
+    productVariationDetail: productVariationDetailReducer,
+    banner: bannerReducer,
   },
 });
