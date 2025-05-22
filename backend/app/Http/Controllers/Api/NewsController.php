@@ -11,7 +11,12 @@ use Cloudinary\Cloudinary;
 class NewsController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/news",
+     *     summary="Lấy danh sách tin tức",
+     *     tags={"News"},
+     *     @OA\Response(response=200, description="Thành công")
+     * )
      */
     public function index()
     {
@@ -25,7 +30,12 @@ class NewsController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/news",
+     *     summary="Thêm tin tức mới",
+     *     tags={"News"},
+     *     @OA\Response(response=201, description="Thành công")
+     * )
      */
     public function store(Request $request)
     {
@@ -60,7 +70,18 @@ class NewsController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/news/{id}",
+     *     summary="Lấy chi tiết tin tức",
+     *     tags={"News"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Thành công")
+     * )
      */
     public function show(string $id)
     {
@@ -78,7 +99,18 @@ class NewsController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/api/news/{id}",
+     *     summary="Cập nhật tin tức",
+     *     tags={"News"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Thành công")
+     * )
      */
     public function update(Request $request, $id)
     {
@@ -129,11 +161,148 @@ class NewsController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/news/{id}",
+     *     summary="Xóa mềm tin tức",
+     *     tags={"News"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Thành công")
+     * )
      */
     public function destroy(string $id)
     {
-        //
+        $news = news::find($id);
+        if (!$news) {
+            return response()->json([
+                'message' => 'Tin tức không tồn tại',
+                'status' => 404,
+            ], 404);
+        }
+        // Xóa ảnh trên Cloudinary nếu có
+        if ($news->image_url) {
+            try {
+                $cloudinary = app(Cloudinary::class);
+                $publicId = $this->getPublicIdFromUrl($news->image_url);
+                if ($publicId) {
+                    $cloudinary->uploadApi()->destroy($publicId, [
+                        'resource_type' => 'image'
+                    ]);
+                }
+            } catch (\Exception $e) {
+                // Có thể log lỗi hoặc bỏ qua nếu không cần thiết
+            }
+        }
+        $news->delete();
+        return response()->json([
+            'message' => 'Đã bỏ vào thùng rác thành công',
+            'status' => 200,
+        ])->setStatusCode(200, 'OK');
+    }
+    /**
+     * @OA\Post(
+     *     path="/api/news/restore/{id}",
+     *     summary="Khôi phục tin tức đã xóa mềm",
+     *     tags={"News"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Thành công")
+     * )
+     */
+    public function restore($id)
+    {
+        $news = news::withTrashed()->find($id);
+        if (!$news) {
+            return response()->json([
+                'message' => 'Tin tức không tồn tại',
+                'status' => 404,
+            ], 404);
+        }
+        $news->restore();
+        return response()->json([
+            'message' => 'Khôi phục tin tức thành công',
+            'data' => $news,
+            'status' => 200,
+        ])->setStatusCode(200, 'OK');
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/news/trashed",
+     *     summary="Lấy danh sách tin tức đã xóa mềm",
+     *     tags={"News"},
+     *     @OA\Response(response=200, description="Thành công")
+     * )
+     */
+    public function trashed()
+    {
+        $deletedNews = news::onlyTrashed()->orderBy('deleted_at', 'DESC')->get();
+
+        if ($deletedNews->isEmpty()) {
+            return response()->json([
+                'message' => 'Không tìm thấy tin tức đã xóa mềm',
+                'data' => [],
+                'status' => 404,
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Lấy danh sách tin tức đã xóa (mềm) thành công',
+            'data' => $deletedNews,
+            'status' => 200,
+        ], 200);
+    }
+
+    /**
+     * @OA\Delete(
+     *     path="/api/news/force-delete/{id}",
+     *     summary="Xóa vĩnh viễn tin tức",
+     *     tags={"News"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Thành công")
+     * )
+     */
+    public function forceDelete($id)
+    {
+        $news = news::withTrashed()->find($id);
+        if (!$news) {
+            return response()->json([
+                'message' => 'Tin tức không tồn tại',
+                'status' => 404,
+            ], 404);
+        }
+        // Xóa ảnh trên Cloudinary nếu có
+        if ($news->image_url) {
+            try {
+                $cloudinary = app(Cloudinary::class);
+                $publicId = $this->getPublicIdFromUrl($news->image_url);
+                if ($publicId) {
+                    $cloudinary->uploadApi()->destroy($publicId, [
+                        'resource_type' => 'image'
+                    ]);
+                }
+            } catch (\Exception $e) {
+                // Có thể log lỗi hoặc bỏ qua nếu không cần thiết
+            }
+        }
+        $news->forceDelete();
+        return response()->json([
+            'message' => 'Xóa vĩnh viễn tin tức thành công',
+            'status' => 200,
+        ])->setStatusCode(200, 'OK');
     }
 
     private function getPublicIdFromUrl($url)

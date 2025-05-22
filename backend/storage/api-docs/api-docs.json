@@ -941,6 +941,162 @@
                 }
             }
         },
+        "/api/news": {
+            "get": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Lấy danh sách tin tức",
+                "operationId": "a03e1a336bc332d11c385fe176757db9",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Thêm tin tức mới",
+                "operationId": "a3204d8708e05a4132ae88fec0ac3fe8",
+                "responses": {
+                    "201": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/news/{id}": {
+            "get": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Lấy chi tiết tin tức",
+                "operationId": "fdc889540fee482bc9fb94d60c177807",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Cập nhật tin tức",
+                "operationId": "da566c1c8fc4c29c380894496b4111aa",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Xóa mềm tin tức",
+                "operationId": "293b8000120d24698c27cfc8c20b40ed",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/news/restore/{id}": {
+            "post": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Khôi phục tin tức đã xóa mềm",
+                "operationId": "98b0b551c77375c0424bf729fd69146a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/news/trashed": {
+            "get": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Lấy danh sách tin tức đã xóa mềm",
+                "operationId": "ef7c628369d572c116d847ed507a276c",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/news/force-delete/{id}": {
+            "delete": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Xóa vĩnh viễn tin tức",
+                "operationId": "f9b040dc871848b04ea753421d92f825",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
         "/api/products": {
             "get": {
                 "tags": [
@@ -1881,6 +2037,10 @@
         {
             "name": "Category",
             "description": "Category"
+        },
+        {
+            "name": "News",
+            "description": "News"
         },
         {
             "name": "Product",
