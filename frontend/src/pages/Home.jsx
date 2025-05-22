@@ -404,10 +404,10 @@ const Home = () => {
           <h3 className="my-5">{t("home.ourServices")}</h3>
         </div>
         <div className="container-fluid">
-          <div className="row row-cols-1 row-cols-sm-4 row-cols-lg-4">
+          <div className="row row-cols-1 row-cols-sm-4 row-cols-lg-4 pt-2 pb-3">
             {services.map((service) => (
               <div className="col" key={service.id}>
-                <div className="card mb-3 border-0">
+                <div className=" mb-3 border-0">
                   <div className="row">
                     <div className="col-md-2 text-dark mb-2">
                       {service.icon}
@@ -429,14 +429,14 @@ const Home = () => {
       <Products
         title={t("home.featuredProducts")}
         showHeader={true}
-        padding={"py-5"}
+        padding={"py-3"}
         filter={false}
         limit={5}
       />
 
       <ListProductCard title={t("home.bestSellingProducts")} />
 
-      <section className="py-2">
+      <section className="py-2 mt-4">
         <div className="container-fluid">
           <div className="row">
             {smallBanner.map((banner) => {
@@ -464,7 +464,7 @@ const Home = () => {
 
       <Blogs showHeader={true} padding={"py-5"} />
 
-      <section className="py-5 my-5">
+      <section className="py-5" style={{ marginTop: 100, marginBottom: 70 }}>
         <div className="container-fluid">
           <div
             className="bg-warning py-5 rounded-5"
