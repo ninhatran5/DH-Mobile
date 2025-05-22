@@ -49,6 +49,7 @@ import RequireAuth from "./components/RequireAuth";
 import ProtectedRoute from "./pages/admin/ProtectedRoute";
 import AdminLogin from "./pages/admin/AdminLogin";
 import PublicRouteAdmin from "./components/PublicRouteAdmin";
+import EditBanner from "./pages/admin/EditBanner";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -229,6 +230,10 @@ const routerConfig = [
       {
         path: "banners",
         element: <ListBanner />,
+      },
+      {
+        path:"editbanner/:id",
+        element:<EditBanner/>
       },
       {
         path: "comments",
