@@ -3,10 +3,15 @@ import iphone from "../assets/images/iphone-16-pro-max.webp";
 import { TbExchange } from "react-icons/tb";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { fetchProfile } from "../slices/profileSlice";
+import Loading from "../components/Loading";
 
 const CheckOut = () => {
   const { t } = useTranslation();
-
+  const dispatch = useDispatch();
+  const { profile, loading } = useSelector((state) => state.profile);
   const purchaseInformation = [
     {
       id: 1,
@@ -23,9 +28,12 @@ const CheckOut = () => {
       total: "14.890.000đ",
     },
   ];
-
+  useEffect(() => {
+    dispatch(fetchProfile());
+  }, []);
   return (
     <>
+      {loading && <Loading />}
       <Breadcrumb
         title={t("checkout.title")}
         mainItem={t("breadcrumb.home")}
@@ -50,7 +58,11 @@ const CheckOut = () => {
                           {t("checkout.fullName")}
                           <span>*</span>
                         </p>
-                        <input type="text" value={"Lê Nguyên Tùng"} disabled />
+                        <input
+                          type="text"
+                          value={profile?.user?.full_name ?? "Chưa cập nhật"}
+                          disabled
+                        />
                       </div>
                     </div>
                     <div className="col-lg-6">
@@ -60,9 +72,9 @@ const CheckOut = () => {
                           <span>*</span>
                         </p>
                         <input
-                          type="number"
+                          type="text"
                           min={0}
-                          value={"0396180619"}
+                          value={profile?.user?.phone ?? "Chưa cập nhật"}
                           disabled
                         />
                       </div>
@@ -73,21 +85,33 @@ const CheckOut = () => {
                       {t("checkout.ward")}
                       <span>*</span>
                     </p>
-                    <input type="text" value={"Thị Trấn Thiệu Hóa"} disabled />
+                    <input
+                      type="text"
+                      value={profile?.user?.ward ?? "Chưa cập nhật"}
+                      disabled
+                    />
                   </div>
                   <div className="checkout__input">
                     <p>
                       {t("checkout.district")}
                       <span>*</span>
                     </p>
-                    <input type="text" value={"Thiệu Hóa"} disabled />
+                    <input
+                      type="text"
+                      value={profile?.user?.district ?? "Chưa cập nhật"}
+                      disabled
+                    />
                   </div>
                   <div className="checkout__input">
                     <p>
                       {t("checkout.city")}
                       <span>*</span>
                     </p>
-                    <input type="text" value={"Thanh Hóa"} disabled />
+                    <input
+                      type="text"
+                      value={profile?.user?.city ?? "Chưa cập nhật"}
+                      disabled
+                    />
                   </div>
                   <div className="checkout__input">
                     <p>
@@ -97,9 +121,7 @@ const CheckOut = () => {
                     <input
                       type="text"
                       disabled
-                      value={
-                        "Khu phố 8, Thị trấn thiệu hóa, Huyện thiệu hóa, Tỉnh Thanh Hóa"
-                      }
+                      value={profile?.user?.address ?? "Chưa cập nhật"}
                     />
                   </div>
                   <div className="checkout_change_address">
