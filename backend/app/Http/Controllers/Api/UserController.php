@@ -185,6 +185,43 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * Xoá mềm người dùng
+     */
+    public function deleteuser($id){
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json([
+                'message' => 'Người dùng không tồn tại.'
+            ], 404);
+        }
+
+        // Xoá ảnh cũ nếu có
+        if ($user->image_url) {
+            $publicId = $this->getPublicIdFromUrl($user->image_url);
+            if ($publicId) {
+                $cloudinary = app(Cloudinary::class);
+                $cloudinary->uploadApi()->destroy($publicId, ['resource_type' => 'image']);
+            }
+        }
+
+        $user->delete();
+
+        return response()->json([
+            'message' => 'Xóa người dùng thành công.'
+        ]);
+    }
+
+
+    public function trashuser()
+    {
+        $user = User::onlyTrashed()->get();
+        return response()->json([
+            'message' => 'Lấy danh sách người dùng đã xóa thành công.',
+            'user' => $user
+        ]);
+    }
+
 
 
 
