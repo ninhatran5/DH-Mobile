@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Cloudinary\Cloudinary;
 use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
@@ -48,19 +49,31 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => 'required|string|max:200',
             'description' => 'nullable|string|max:255',
-            'image_url' => 'nullable',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-        $category = Category::create($request->only(['name', 'description', 'image_url']));
+
+        // Nếu có ảnh upload thì upload lên Cloudinary
         if ($request->hasFile('image_url')) {
-            // Lưu ảnh vào thư mục public/category
-            $path = $request->file('image_url')->store('category', 'public');
-            $category->image_url = $path;
-            $category->save();
+            try {
+                $cloudinary = app(Cloudinary::class);
+                $uploadApi = $cloudinary->uploadApi();
+                $result = $uploadApi->upload($request->file('image_url')->getRealPath(), [
+                    'folder' => 'categories'
+                ]);
+                $validatedData['image_url'] = $result['secure_url'];
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Lỗi khi upload ảnh: ' . $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ], 500);
+            }
         }
+
+        $category = Category::create($validatedData);
         return response()->json([
             'message' => 'Thêm danh mục thành công',
             'data' => $category,
@@ -118,38 +131,49 @@ class CategoryController extends Controller
      *     @OA\Response(response=404, description="Không tìm thấy")
      * )
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
-        $request->validate([
-            'name' => 'required|string|max:200',
-            'description' => 'nullable|string|max:255',
-            'image_url' => 'nullable',
-        ]);
-
-        // Bước 2: Tìm danh mục theo ID
         $category = Category::find($id);
-        if ($request->hasFile('image_url')) {
-            // Xoá ảnh cũ nếu có
-            if ($category->image_url) {
-                Storage::disk('public')->delete($category->image_url);
-            }
-
-            // Lưu ảnh mới
-            $path = $request->file('image_url')->store('category', 'public');
-            $validatedData['image_url'] = $path;
-        }
         if (!$category) {
             return response()->json([
                 'message' => 'Danh mục không tồn tại',
                 'status' => 404,
             ], 404);
         }
-
-        // Bước 3: Cập nhật dữ liệu
-        $category->update(attributes: $request->only(['name', 'description', 'image_url']));
-
-        // Bước 4: Trả về phản hồi
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:200',
+            'description' => 'nullable|string|max:255',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+        // Nếu có ảnh mới được upload
+        if ($request->hasFile('image_url')) {
+            try {
+                $cloudinary = app(Cloudinary::class);
+                // Xóa ảnh cũ nếu có
+                if ($category->image_url) {
+                    $oldImageUrl = $category->image_url;
+                    $publicId = $this->getPublicIdFromUrl($oldImageUrl);
+                    if ($publicId) {
+                        $cloudinary->uploadApi()->destroy($publicId, [
+                            'resource_type' => 'image'
+                        ]);
+                    }
+                }
+                // Upload ảnh mới lên Cloudinary
+                $uploadApi = $cloudinary->uploadApi();
+                $result = $uploadApi->upload($request->file('image_url')->getRealPath(), [
+                    'folder' => 'categories'
+                ]);
+                $validatedData['image_url'] = $result['secure_url'];
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Lỗi khi upload ảnh: ' . $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ], 500);
+            }
+        }
+        $category->update($validatedData);
         return response()->json([
             'message' => 'Cập nhật danh mục thành công',
             'data' => $category,
@@ -275,5 +299,18 @@ class CategoryController extends Controller
             'message' => 'Xóa vĩnh viễn danh mục thành công',
             'status' => 200,
         ])->setStatusCode(200, 'OK');
+    }
+
+    private function getPublicIdFromUrl($url)
+    {
+        if (empty($url)) {
+            return null;
+        }
+        $pattern = '/\/upload\/(?:v\d+\/)?(.+)$/';
+        if (preg_match($pattern, $url, $matches)) {
+            $publicId = preg_replace('/\.[^.]+$/', '', $matches[1]);
+            return $publicId;
+        }
+        return null;
     }
 }

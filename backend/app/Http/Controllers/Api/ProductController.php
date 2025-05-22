@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Cloudinary\Cloudinary;
 
 class ProductController extends Controller
 {
@@ -47,20 +48,29 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => 'required|string|max:200',
             'category_id' => 'required|integer',
             'description' => 'nullable|string|max:255',
-            'image_url' => 'nullable',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-        $product = Product::create($request->only(['name', 'category_id', 'description', 'image_url']));
         if ($request->hasFile('image_url')) {
-            // Lưu ảnh vào thư mục public/product
-            $path = $request->file('image_url')->store('product', 'public');
-            $product->image_url = $path;
-            $product->save();
+            try {
+                $cloudinary = app(Cloudinary::class);
+                $uploadApi = $cloudinary->uploadApi();
+                $result = $uploadApi->upload($request->file('image_url')->getRealPath(), [
+                    'folder' => 'products'
+                ]);
+                $validatedData['image_url'] = $result['secure_url'];
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Lỗi khi upload ảnh: ' . $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ], 500);
+            }
         }
+        $product = Product::create($validatedData);
         return response()->json([
             'message' => 'Thêm sản phẩm thành công',
             'data' => $product,
@@ -122,35 +132,52 @@ class ProductController extends Controller
      *     @OA\Response(response=404, description="Không tìm thấy")
      * )
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
-        $request->validate([
-            'name' => 'required|string|max:200',
-            'category_id' => 'required|integer',
-            'description' => 'nullable|string|max:255',
-            'image_url' => 'nullable',
-        ]);
         $product = Product::find($id);
-        if ($product) {
-            $product->update($request->only(['name', 'category_id', 'description', 'image_url']));
-            if ($request->hasFile('image_url')) {
-                // Lưu ảnh vào thư mục public/product
-                $path = $request->file('image_url')->store('product', 'public');
-                $product->image_url = $path;
-                $product->save();
-            }
-            return response()->json([
-                'message' => 'Cập nhật sản phẩm thành công',
-                'data' => $product,
-                'status' => 200,
-            ])->setStatusCode(200, 'OK');
-        } else {
+        if (!$product) {
             return response()->json([
                 'message' => 'Sản phẩm không tồn tại',
                 'status' => 404,
-            ])->setStatusCode(404, 'Not Found');
+            ], 404);
         }
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:200',
+            'category_id' => 'required|integer',
+            'description' => 'nullable|string|max:255',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+        if ($request->hasFile('image_url')) {
+            try {
+                $cloudinary = app(Cloudinary::class);
+                if ($product->image_url) {
+                    $oldImageUrl = $product->image_url;
+                    $publicId = $this->getPublicIdFromUrl($oldImageUrl);
+                    if ($publicId) {
+                        $cloudinary->uploadApi()->destroy($publicId, [
+                            'resource_type' => 'image'
+                        ]);
+                    }
+                }
+                $uploadApi = $cloudinary->uploadApi();
+                $result = $uploadApi->upload($request->file('image_url')->getRealPath(), [
+                    'folder' => 'products'
+                ]);
+                $validatedData['image_url'] = $result['secure_url'];
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Lỗi khi upload ảnh: ' . $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ], 500);
+            }
+        }
+        $product->update($validatedData);
+        return response()->json([
+            'message' => 'Cập nhật sản phẩm thành công',
+            'data' => $product,
+            'status' => 200,
+        ])->setStatusCode(200, 'OK');
     }
 
     /**
@@ -272,5 +299,18 @@ class ProductController extends Controller
             'message' => 'Xóa vĩnh viễn sản phẩm thành công',
             'status' => 200,
         ])->setStatusCode(200, 'OK');
+    }
+
+    private function getPublicIdFromUrl($url)
+    {
+        if (empty($url)) {
+            return null;
+        }
+        $pattern = '/\/upload\/(?:v\d+\/)?(.+)$/';
+        if (preg_match($pattern, $url, $matches)) {
+            $publicId = preg_replace('/\.[^.]+$/', '', $matches[1]);
+            return $publicId;
+        }
+        return null;
     }
 }

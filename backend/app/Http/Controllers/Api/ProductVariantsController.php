@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ProductVariant;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use Cloudinary\Cloudinary;
 
 class ProductVariantsController extends Controller
 {
@@ -50,22 +51,32 @@ class ProductVariantsController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'product_id' => 'required|integer',
             'sku' => 'required|string|max:50|unique:product_variants,sku',
             'price' => 'required|numeric',
             'price_original' => 'nullable|numeric',
-            'image_url' => 'nullable',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'stock' => 'required|integer',
             'is_active' => 'nullable|boolean',
         ]);
-        $data = $request->only(['product_id', 'sku', 'price', 'price_original', 'image_url', 'stock', 'is_active']);
         if ($request->hasFile('image_url')) {
-            $path = $request->file('image_url')->store('product_variants', 'public');
-            $data['image_url'] = $path;
+            try {
+                $cloudinary = app(Cloudinary::class);
+                $uploadApi = $cloudinary->uploadApi();
+                $result = $uploadApi->upload($request->file('image_url')->getRealPath(), [
+                    'folder' => 'product_variants'
+                ]);
+                $validatedData['image_url'] = $result['secure_url'];
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Lỗi khi upload ảnh: ' . $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ], 500);
+            }
         }
-        $variant = ProductVariant::create($data);
-        // Gán attributeValues nếu có
+        $variant = ProductVariant::create($validatedData);
         if ($request->has('attribute_value_ids')) {
             $variant->attributeValues()->sync($request->input('attribute_value_ids'));
         }
@@ -128,17 +139,8 @@ class ProductVariantsController extends Controller
      *     @OA\Response(response=404, description="Không tìm thấy")
      * )
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        $request->validate([
-            'sku' => 'required|string|max:50|unique:product_variants,sku,' . $id . ',variant_id',
-            'price' => 'required|numeric',
-            'price_original' => 'nullable|numeric',
-            'image_url' => 'nullable',
-            'stock' => 'required|integer',
-            'is_active' => 'nullable|boolean',
-        ]);
-
         $variant = ProductVariant::find($id);
         if (!$variant) {
             return response()->json([
@@ -146,24 +148,43 @@ class ProductVariantsController extends Controller
                 'status' => 404,
             ], 404);
         }
-
-        $validatedData = $request->only(['sku', 'price', 'price_original', 'image_url', 'stock', 'is_active']);
+        $validatedData = $request->validate([
+            'sku' => 'required|string|max:50|unique:product_variants,sku,' . $id . ',variant_id',
+            'price' => 'required|numeric',
+            'price_original' => 'nullable|numeric',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'stock' => 'required|integer',
+            'is_active' => 'nullable|boolean',
+        ]);
         if ($request->hasFile('image_url')) {
-            // Xoá ảnh cũ nếu có
-            if ($variant->image_url) {
-                Storage::disk('public')->delete($variant->image_url);
+            try {
+                $cloudinary = app(Cloudinary::class);
+                if ($variant->image_url) {
+                    $oldImageUrl = $variant->image_url;
+                    $publicId = $this->getPublicIdFromUrl($oldImageUrl);
+                    if ($publicId) {
+                        $cloudinary->uploadApi()->destroy($publicId, [
+                            'resource_type' => 'image'
+                        ]);
+                    }
+                }
+                $uploadApi = $cloudinary->uploadApi();
+                $result = $uploadApi->upload($request->file('image_url')->getRealPath(), [
+                    'folder' => 'product_variants'
+                ]);
+                $validatedData['image_url'] = $result['secure_url'];
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Lỗi khi upload ảnh: ' . $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ], 500);
             }
-            // Lưu ảnh mới
-            $path = $request->file('image_url')->store('product_variants', 'public');
-            $validatedData['image_url'] = $path;
         }
         $variant->update($validatedData);
-
-        // Gán lại attributeValues nếu có
         if ($request->has('attribute_value_ids')) {
             $variant->attributeValues()->sync($request->input('attribute_value_ids'));
         }
-
         return response()->json([
             'message' => 'Cập nhật biến thể sản phẩm thành công',
             'data' => $variant,
@@ -281,5 +302,18 @@ class ProductVariantsController extends Controller
             'message' => 'Xóa vĩnh viễn biến thể thành công',
             'status' => 200,
         ])->setStatusCode(200, 'OK');
+    }
+
+    private function getPublicIdFromUrl($url)
+    {
+        if (empty($url)) {
+            return null;
+        }
+        $pattern = '/\/upload\/(?:v\d+\/)?(.+)$/';
+        if (preg_match($pattern, $url, $matches)) {
+            $publicId = preg_replace('/\.[^.]+$/', '', $matches[1]);
+            return $publicId;
+        }
+        return null;
     }
 }
