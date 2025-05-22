@@ -152,7 +152,7 @@ class UserController extends Controller
             'image_url' => 'nullable|image|max:2048', // giới hạn 2MB
         ]);
 
-        if($request->hasFile('image_url')) {
+        if ($request->hasFile('image_url')) {
             try {
                 $cloudinary = app(Cloudinary::class);
                 // Xoá ảnh cũ nếu có
@@ -188,7 +188,8 @@ class UserController extends Controller
     /**
      * Xoá mềm người dùng
      */
-    public function deleteuser($id){
+    public function deleteuser($id)
+    {
         $user = User::find($id);
         if (!$user) {
             return response()->json([
@@ -196,14 +197,14 @@ class UserController extends Controller
             ], 404);
         }
 
-        // Xoá ảnh cũ nếu có
-        if ($user->image_url) {
-            $publicId = $this->getPublicIdFromUrl($user->image_url);
-            if ($publicId) {
-                $cloudinary = app(Cloudinary::class);
-                $cloudinary->uploadApi()->destroy($publicId, ['resource_type' => 'image']);
-            }
-        }
+        // // Xoá ảnh cũ nếu có
+        // if ($user->image_url) {
+        //     $publicId = $this->getPublicIdFromUrl($user->image_url);
+        //     if ($publicId) {
+        //         $cloudinary = app(Cloudinary::class);
+        //         $cloudinary->uploadApi()->destroy($publicId, ['resource_type' => 'image']);
+        //     }
+        // }
 
         $user->delete();
 
@@ -223,6 +224,47 @@ class UserController extends Controller
     }
 
 
+
+    public function restoreuser($id)
+    {
+        $user = User::onlyTrashed()->find($id);
+        if (!$user) {
+            return response()->json([
+                'message' => 'Người dùng không tồn tại.'
+            ], 404);
+        }
+
+        $user->restore();
+
+        return response()->json([
+            'message' => 'Khôi phục người dùng thành công.',
+            'user' => $user
+        ]);
+    }
+
+
+    public function forceDeleteuser($id) {
+        $user = User::onlyTrashed()->find($id);
+        if (!$user) {
+            return response()->json([
+                'message' => 'Người dùng không tồn tại.'
+            ], 404);
+        }
+        // Xoá ảnh cũ nếu có
+        if ($user->image_url) {
+            $publicId = $this->getPublicIdFromUrl($user->image_url);
+            if ($publicId) {
+                $cloudinary = app(Cloudinary::class);
+                $cloudinary->uploadApi()->destroy($publicId, ['resource_type' => 'image']);
+            }
+        }
+
+        $user->forceDelete();
+
+        return response()->json([
+            'message' => 'Xóa vĩnh viễn người dùng thành công.'
+        ]);
+    }
 
 
 
