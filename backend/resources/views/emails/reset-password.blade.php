@@ -1,7 +1,7 @@
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; background: #f9f9f9; border-radius: 8px; border: 1px solid #e0e0e0;">
     <!-- Logo -->
     <div style="text-align: center; margin-bottom: 20px;">
-        <img src="https://yourdomain.com/logo.png" alt="Logo" style="max-width: 150px;">
+        <img src="frontend/src/assets/images/logo2.png" alt="Logo" style="max-width: 150px;">
     </div>
 
     <!-- Greeting -->
