@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaRegHeart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-
+import numberFormat from "../../utils/numberFormat";
 import { toast } from "react-toastify";
 import checkLogin from "../../utils/checkLogin";
 const Product = ({
@@ -103,7 +103,7 @@ const Product = ({
                 textOverflow: "ellipsis",
               }}
             >
-              {productsVariants?.price}
+              {numberFormat(productsVariants?.price)}
             </span>
             <span
               className="price_original"
@@ -116,7 +116,7 @@ const Product = ({
                 textOverflow: "ellipsis",
               }}
             >
-              {product.priceOriginal}
+              {numberFormat(productsVariants?.price_original)}
             </span>
           </div>
 

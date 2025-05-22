@@ -24,7 +24,7 @@ import Blogs from "../components/Blogs";
 import SliderLogoBrand from "../components/SliderLogoBrand";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import ListProductCard from "../components/ListProductCard";
 import ProductsCarousel from "../components/ProductsCarousel";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,7 +33,7 @@ import { fetchBanners } from "../slices/homeSlice";
 const Home = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [isPercentDecrease, setIsPercentDecrease] = useState(true);
+  const isPercentDecrease = true;
   // const banners = [banner1, banner2, banner3];
 
   const dispatch = useDispatch();
