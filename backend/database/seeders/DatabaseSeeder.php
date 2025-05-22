@@ -21,14 +21,14 @@ class DatabaseSeeder extends Seeder
         // ]);
         //  $this->call(UserSeeder::class);
         $this->call([
-            // AttributeSeeder::class,
-            // AttributeValueSeeder::class,
-            // CategorySeeder::class,
-            // ProductSeeder::class,
+            AttributeSeeder::class,
+            AttributeValueSeeder::class,
+            CategorySeeder::class,
+            ProductSeeder::class,
             ProductVariantSeeder::class,
-            // ProductSpecificationSeeder::class,
-            // VariantAttributeValueSeeder::class,
-            // UserSeeder::class,
+            ProductSpecificationSeeder::class,
+            VariantAttributeValueSeeder::class,
+            UserSeeder::class,
 
         ]);
     }

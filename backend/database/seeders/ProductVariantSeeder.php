@@ -88,7 +88,7 @@ class ProductVariantSeeder extends Seeder
                 'price' => 1499.99,
                 'price_original' => 1599.99,
                 'stock' => 50,
-                'image_url' => 'https://cdn2.cellphones.com.vn/x358,webp,q100/media/catalog/product/s/2/s24-ultra-trang.png'
+                'image_url' => 'https://cdn2.cellphones.com.vn/x358,webp,q100/media/catalog/product/s/2/s24-ultra-gold.png'
             ]
         ];
 
@@ -97,7 +97,7 @@ class ProductVariantSeeder extends Seeder
                 'product_id' => $productId,
                 'sku' => "SAM-" . Str::slug($productName) . "-{$variant['storage']}-" . Str::random(4),
                 'price' => $variant['price'],
-                'price_original' => $variant['price_original'],
+                'price_original' => $variant['price_original'], 
                 'image_url' => $variant['image_url'],
                 'stock' => $variant['stock'],
                 'is_active' => true,
