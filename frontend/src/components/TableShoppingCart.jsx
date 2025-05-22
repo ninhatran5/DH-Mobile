@@ -4,6 +4,7 @@ import iphone from "../assets/images/iphone-16-pro-max.webp";
 import { MdOutlineNavigateNext } from "react-icons/md";
 import { GrFormPrevious } from "react-icons/gr";
 import { useTranslation } from "react-i18next";
+import { FaDeleteLeft } from "react-icons/fa6";
 
 const TableShoppingCart = () => {
   const [cartItems, setCartItems] = useState([
@@ -12,7 +13,7 @@ const TableShoppingCart = () => {
       name: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
       quantity: 1,
       unitPrice: 10,
-      color: "Trắng",
+      color: "Titan Tự Nhiên",
       version: "512GB",
       selected: false,
     },
@@ -21,7 +22,7 @@ const TableShoppingCart = () => {
       name: "iPhone 16 Pro Max 512GB | Chính hãng VN/A",
       quantity: 1,
       unitPrice: 10,
-      color: "Trắng",
+      color: "Titan Trắng",
       version: "512GB",
       selected: false,
     },
@@ -30,7 +31,7 @@ const TableShoppingCart = () => {
       name: "iPhone 16 Pro Max 1TB | Chính hãng VN/A",
       quantity: 1,
       unitPrice: 10,
-      color: "Trắng",
+      color: "Titan Đen",
       version: "512GB",
       selected: false,
     },
@@ -108,10 +109,10 @@ const TableShoppingCart = () => {
             />
           </th>
           <th>{t("tableHeaders.product")}</th>
-          <th>{t("tableHeaders.quantity")}</th>
-          <th>{t("tableHeaders.color")}</th>
-          <th>{t("tableHeaders.version")}</th>
-          <th>{t("tableHeaders.totalPrice")}</th>
+          <th className="text-center">{t("tableHeaders.quantity")}</th>
+          <th className="text-center">{t("tableHeaders.color")}</th>
+          <th className="text-end">{t("tableHeaders.version")}</th>
+          <th className="text-end">{t("tableHeaders.totalPrice")}</th>
           <th />
         </tr>
       </thead>
@@ -135,8 +136,8 @@ const TableShoppingCart = () => {
               </div>
             </td>
             <td className="quantity__item">
-              <div className="quantity">
-                <div className="pro-qty-2" style={{ display: "flex" }}>
+              <div className="quantity d-flex justify-content-center">
+                <div className="pro-qty-2 d-flex">
                   <GrFormPrevious
                     style={{ cursor: "pointer" }}
                     onClick={() => handleDecrease(item.id)}
@@ -156,11 +157,13 @@ const TableShoppingCart = () => {
                 </div>
               </div>
             </td>
-            <td className="cart__price">{item.color}</td>
-            <td className="cart__price">{item.version}</td>
-            <td className="cart__price">{item.quantity * item.unitPrice}đ</td>
+            <td className="cart__price ">{item.color}</td>
+            <td className="cart__price text-end">{item.version}</td>
+            <td className="cart__price text-end">
+              {item.quantity * item.unitPrice}đ
+            </td>
             <td className="cart__close" style={{ cursor: "pointer" }}>
-              <i style={{ marginLeft: 27 }} className="fa fa-close" />
+              <i style={{ marginLeft: 27 }}></i>
             </td>
           </tr>
         ))}

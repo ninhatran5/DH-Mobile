@@ -246,7 +246,20 @@
     "totalPrice": "Tổng tiền",
     "discount": "Mã giảm giá",
     "totalMoney": "Tổng tiền",
-    "payNow": "THANH TOÁN"
+    "payNow": "THANH TOÁN",
+    "fullNameRequired": "Họ và tên là bắt buộc",
+    "fullNameMinLength": "Họ và tên phải có ít nhất 2 ký tự",
+    "phoneRequired": "Số điện thoại là bắt buộc",
+    "phoneInvalid": "Số điện thoại phải gồm 10 hoặc 11 chữ số",
+    "cityRequired": "Tỉnh/Thành phố là bắt buộc",
+    "districtRequired": "Quận/Huyện là bắt buộc",
+    "wardRequired": "Phường/Xã là bắt buộc",
+    "addressDetailRequired": "Chi tiết địa chỉ là bắt buộc",
+    "addressDetailMinLength": "Chi tiết địa chỉ phải có ít nhất 5 ký tự",
+    "paymentMethodRequired": "Phương thức thanh toán là bắt buộc",
+    "phoneMustStartWithZero": "Số điện thoại phải bắt đầu bằng số 0.",
+    "phoneLengthInvalid": "Số điện thoại phải có độ dài 10 hoặc 11 chữ số.",
+    "phoneMustBeNumber": "Số điện thoại chỉ được chứa các chữ số."
   },
   "breadcrumb": {
     "home": "Trang chủ",
