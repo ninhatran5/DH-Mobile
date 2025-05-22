@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Loading from "../components/Loading";
 import { fetchProductDetail } from "../slices/productDetailSlice";
 import { fetchProductVariationDetail } from "../slices/productVariationDetails";
-
+import numberFomat from "../../utils/numberFormat";
 const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
   const [selectedVersion, setSelectedVersion] = useState(null);
@@ -29,6 +29,10 @@ const ProductDetail = () => {
   );
   const { productVariationDetails } = useSelector(
     (state) => state.productVariationDetail
+  );
+  console.log(
+    "🚀 ~ ProductDetail ~ productVariationDetails:",
+    productVariationDetails
   );
 
   const navigate = useNavigate();
@@ -246,9 +250,11 @@ const ProductDetail = () => {
               <h2 className="mb-3">{productDetails.name}</h2>
               <div className="price">
                 <h4 className="text-price_sale">
-                  {productVariationDetails.price}
+                  {numberFomat(productVariationDetails.price)}
                 </h4>
-                <p className="text-price_original">ádasd</p>
+                <p className="text-price_original">
+                  {numberFomat(productVariationDetails?.price_original)}
+                </p>
               </div>
               <p className="text-muted">
                 {t("productDetail.quantity")}:{" "}
