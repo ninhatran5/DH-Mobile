@@ -40,4 +40,9 @@ class User extends Authenticatable
     {
         return $this->password_hash;
     }
+
+    public function productlikes()
+    {
+        return $this->hasMany(ProductLike::class, 'user_id', 'user_id');
+    }
 }
