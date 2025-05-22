@@ -3,13 +3,14 @@
 use App\Http\Middleware\CheckAdmin;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\ProductLikeController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\AttributeController;
 use App\Http\Controllers\Api\attributevalueController;
-use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
 use App\Http\Controllers\Api\VariantAttributeValuesController;
@@ -45,7 +46,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/update-profile', [UserController::class, 'updateProfile']);
     Route::get('/profile', [UserController::class, 'profile']);
 });
-
 
 
 // API Banner
@@ -151,3 +151,13 @@ Route::get('variantattributevalues', [VariantAttributeValuesController::class, '
 Route::get('variantattributevalues/{id}', [VariantAttributeValuesController::class, 'show']); // lấy liên kết theo id
 Route::get('news', [newsController::class, 'index']); // lấy danh sách tin tức
 Route::get('news/{id}', [NewsController::class, 'show']); // lấy tin tức theo id
+
+
+
+
+//
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('productlike/{id}', [ProductLikeController::class,'productlike']);
+    Route::get('listproductlike', [ProductLikeController::class,'listproductlike']);
+});
