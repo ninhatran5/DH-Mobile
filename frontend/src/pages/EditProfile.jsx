@@ -190,17 +190,17 @@ const EditProfile = () => {
                           }`}
                           {...register("phone", {
                             required: t("editProfile.validate.phoneRequired"),
-                            pattern: {
-                              value: /^[0-9]+$/,
-                              message: t("editProfile.validate.phonePattern"),
-                            },
-                            minLength: {
-                              value: 9,
-                              message: t("editProfile.validate.phoneMinLength"),
-                            },
-                            maxLength: {
-                              value: 12,
-                              message: t("editProfile.validate.phoneMaxLength"),
+                            validate: {
+                              startsWithZero: (value) =>
+                                value.startsWith("0") ||
+                                t("checkout.phoneMustStartWithZero"),
+                              lengthCheck: (value) =>
+                                value.length === 10 ||
+                                value.length === 11 ||
+                                t("checkout.phoneLengthInvalid"),
+                              isNumber: (value) =>
+                                /^[0-9]+$/.test(value) ||
+                                t("checkout.phoneMustBeNumber"),
                             },
                           })}
                         />

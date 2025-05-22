@@ -311,19 +311,17 @@ export default function Header() {
                   ))}
                 </ul>
 
-                <div className="cart text-end d-none d-lg-block">
-                  <button className="border-0 bg-transparent d-flex flex-column gap-2 lh-1 text-end">
-                    <span className="fs-6 text-muted">{t("header.hello")}</span>
-                    {token ? (
-                      <span className="cart-total fs-5 fw-bold">
-                        {profile?.user?.full_name}
-                      </span>
-                    ) : (
-                      <span className="cart-total fs-5 fw-bold">
-                        {t("header.client")}
-                      </span>
-                    )}
-                  </button>
+                <div className="border-0 bg-transparent d-flex flex-column gap-2 lh-1 text-end">
+                  <span className="fs-6 text-muted">{t("header.hello")}</span>
+                  {token ? (
+                    <span className="cart-total fs-5 fw-bold text-dark">
+                      {profile?.user?.full_name}
+                    </span>
+                  ) : (
+                    <span className="cart-total fs-5 fw-bold text-dark">
+                      {t("header.client")}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>

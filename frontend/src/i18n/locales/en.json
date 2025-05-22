@@ -247,7 +247,20 @@
     "totalPrice": "Total Price",
     "discount": "Discount Code",
     "totalMoney": "Total Amount",
-    "payNow": "PAY NOW"
+    "payNow": "PAY NOW",
+    "fullNameRequired": "Full name is required",
+    "fullNameMinLength": "Full name must be at least 2 characters",
+    "phoneRequired": "Phone number is required",
+    "phoneInvalid": "Phone number must be 10 or 11 digits",
+    "cityRequired": "City is required",
+    "districtRequired": "District is required",
+    "wardRequired": "Ward is required",
+    "addressDetailRequired": "Address detail is required",
+    "addressDetailMinLength": "Address detail must be at least 5 characters",
+    "paymentMethodRequired": "Payment method is required",
+    "phoneMustStartWithZero": "Phone number must start with 0.",
+    "phoneLengthInvalid": "Phone number must be 10 or 11 digits long.",
+    "phoneMustBeNumber": "Phone number must contain only digits."
   },
   "breadcrumb": {
     "home": "Home",

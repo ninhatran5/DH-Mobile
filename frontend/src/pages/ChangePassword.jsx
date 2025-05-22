@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import loginImage from "../assets/images/login.jpg";
 import logo from "../assets/images/logo3.png";
 import { FaEyeSlash, FaCheckCircle, FaCheck } from "react-icons/fa";
@@ -7,13 +7,20 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchChangePassword } from "../slices/changePasswordSlice";
+import Loading from "../components/Loading";
 
 const ChangePassword = () => {
   const [isShowPasswordNew, setIsShowPasswordNew] = useState(false);
   const [isShowConfirmPassword, setIsShowConfirmPassword] = useState(false);
+  const location = useLocation();
+  const token = new URLSearchParams(location.search).get("token");
+  window.history.replaceState({}, document.title, location.pathname);
+  const dispatch = useDispatch();
+  const { loading } = useSelector((state) => state.changePassword);
   const navigate = useNavigate();
   const { t } = useTranslation();
-
   const handleShowPasswordNew = () => {
     setIsShowPasswordNew(!isShowPasswordNew);
   };
@@ -31,13 +38,30 @@ const ChangePassword = () => {
   const newPasswordValue = watch("newpassword");
   const confirmPasswordValue = watch("confirmpassword");
 
-  const onSubmit = () => {
-    toast.success(t("auth.changePasswordNotificationSuccess"));
-    navigate("/login");
+  const onSubmit = async (data) => {
+    if (!token) {
+      toast.error("Token của bạn không hợp lệ hoặc đã hết hạn");
+      navigate("/login");
+      return;
+    }
+    const res = await dispatch(
+      fetchChangePassword({
+        token: token,
+        password: data.newpassword,
+        password_confirmation: data.confirmpassword,
+      })
+    );
+    if (res.meta.requestStatus === "fulfilled") {
+      toast.success(t("auth.changePasswordNotificationSuccess"));
+      navigate("/login");
+    } else {
+      toast.error(res.payload || "Đã có lỗi xảy ra.");
+    }
   };
 
   return (
     <>
+      {loading && <Loading />}
       <div style={{ background: "#f8f8f8", width: "100vw", height: "100vh" }}>
         <section className="p-3">
           <div className="container mt-3">
