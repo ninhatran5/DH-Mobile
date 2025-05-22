@@ -12,6 +12,8 @@ return new class extends Migration
             $table->id('id');
             $table->unsignedBigInteger('variant_id')->nullable();
             $table->unsignedBigInteger('value_id')->nullable();
+            $table->dateTime('created_at')->useCurrent();
+            $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->dateTime('deleted_at')->nullable();
 
             $table->foreign('variant_id')->references('variant_id')->on('product_variants');

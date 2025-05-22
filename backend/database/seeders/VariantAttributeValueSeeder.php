@@ -29,52 +29,84 @@ class VariantAttributeValueSeeder extends Seeder
             // Get product info to determine which values to assign
             $product = DB::table('products')->where('product_id', $variant->product_id)->first();
             
-            // Parse storage from SKU (assuming format includes storage value)
+            // Parse storage from SKU
             preg_match('/(\d+(?:GB|TB))/', $variant->sku, $matches);
-            $storageValue = $matches[1] ?? '128GB';
+            $storageStr = $matches[1] ?? '128GB';
             
             // Find matching storage value_id
-            $storageValue = $storages->first(function($storage) use ($storageValue) {
-                return $storage->value === $storageValue;
-            });
+            $storageValue = $storages->firstWhere('value', $storageStr);
 
             if ($storageValue) {
                 DB::table('variant_attribute_values')->insert([
                     'variant_id' => $variant->variant_id,
-                    'value_id' => $storageValue->value_id
+                    'value_id' => $storageValue->value_id,
+                    'created_at' => now(),
+                    'updated_at' => now()
                 ]);
             }
 
             // Assign color based on product type
-            $color = null;
+            $colorValue = null;
             if (str_contains($product->name, 'iPhone')) {
-                $color = $colors->first(function($c) { return $c->value === 'Gold'; });
+                if (str_contains(strtolower($variant->image_url), 'black')) {
+                    $colorValue = $colors->firstWhere('value', 'Black');
+                } elseif (str_contains(strtolower($variant->image_url), 'white')) {
+                    $colorValue = $colors->firstWhere('value', 'White');
+                } elseif (str_contains(strtolower($variant->image_url), 'blue')) {
+                    $colorValue = $colors->firstWhere('value', 'Blue');
+                } else {
+                    $colorValue = $colors->firstWhere('value', 'Gold');
+                }
             } else if (str_contains($product->name, 'Samsung')) {
-                $color = $colors->first(function($c) { return $c->value === 'Black'; });
+                if (str_contains(strtolower($variant->image_url), 'den')) {
+                    $colorValue = $colors->firstWhere('value', 'Black');
+                } elseif (str_contains(strtolower($variant->image_url), 'gold')) {
+                    $colorValue = $colors->firstWhere('value', 'Gold');
+                } else {
+                    $colorValue = $colors->firstWhere('value', 'Silver');
+                }
             } else {
-                $color = $colors->first(function($c) { return $c->value === 'Blue'; });
+                if (str_contains(strtolower($variant->image_url), 'den')) {
+                    $colorValue = $colors->firstWhere('value', 'Black');
+                } elseif (str_contains(strtolower($variant->image_url), 'xanh')) {
+                    $colorValue = $colors->firstWhere('value', 'Blue');
+                } else {
+                    $colorValue = $colors->firstWhere('value', 'White');
+                }
             }
 
-            if ($color) {
+            if ($colorValue) {
                 DB::table('variant_attribute_values')->insert([
                     'variant_id' => $variant->variant_id,
-                    'value_id' => $color->value_id
+                    'value_id' => $colorValue->value_id,
+                    'created_at' => now(),
+                    'updated_at' => now()
                 ]);
             }
 
-            // Assign RAM based on storage size (higher storage = higher RAM)
-            $ramSize = str_contains($storageValue->value ?? '', '1TB') ? '12GB' : 
-                     (str_contains($storageValue->value ?? '', '512GB') ? '8GB' : 
-                     (str_contains($storageValue->value ?? '', '256GB') ? '6GB' : '4GB'));
+            // Assign RAM based on storage size more appropriately
+            $ramSize = '';
+            if (str_contains($storageStr, 'TB')) {
+                $ramSize = '12GB';
+            } else {
+                $storageNum = (int)$storageStr;
+                if ($storageNum >= 512) {
+                    $ramSize = '8GB';
+                } else if ($storageNum >= 256) {
+                    $ramSize = '6GB';
+                } else {
+                    $ramSize = '4GB';
+                }
+            }
             
-            $ramValue = $rams->first(function($ram) use ($ramSize) {
-                return $ram->value === $ramSize;
-            });
+            $ramValue = $rams->firstWhere('value', $ramSize);
 
             if ($ramValue) {
                 DB::table('variant_attribute_values')->insert([
                     'variant_id' => $variant->variant_id,
-                    'value_id' => $ramValue->value_id
+                    'value_id' => $ramValue->value_id,
+                    'created_at' => now(),
+                    'updated_at' => now()
                 ]);
             }
         }
