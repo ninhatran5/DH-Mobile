@@ -12,7 +12,7 @@ use App\Http\Controllers\Api\attributevalueController;
 use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
-use App\Http\Controllers\Api\VariantAttributeValuesController; 
+use App\Http\Controllers\Api\VariantAttributeValuesController;
 
 // API Auth
 // http://127.0.0.1:8000/api
@@ -38,7 +38,6 @@ Route::middleware('auth:sanctum')->group(function () {
         // Route::put('/restoreuser/{id}', [UserController::class, 'restoreuser']);
         // Route::delete('/forceDeleteUser/{id}', [UserController::class, 'forceDeleteUser']);
     });
-
 });
 // Client
 Route::middleware('auth:sanctum')->group(function () {
@@ -67,6 +66,7 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::delete('/{id}', 'destroy');
         Route::put('/restore/{id}', 'restore');
         Route::delete('/forceDelete/{id}', 'forceDelete');
+        Route::get('/trashed', 'trashed');
     });
     // Product
     Route::prefix('products')->controller(ProductController::class)->group(function () {
@@ -75,6 +75,7 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::delete('/{id}', 'destroy');
         Route::put('/restore/{id}', 'restore');
         Route::delete('/forceDelete/{id}', 'forceDelete');
+        Route::get('/trashed', 'trashed');
     });
     // Attribute
     Route::prefix('attributes')->controller(AttributeController::class)->group(function () {
@@ -83,6 +84,7 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::delete('/{id}', 'destroy');
         Route::put('/restore/{id}', 'restore');
         Route::delete('/forceDelete/{id}', 'forceDelete');
+        Route::get('/trashed', 'trashed');
     });
     // AttributeValue
     Route::prefix('attributevalues')->controller(attributevalueController::class)->group(function () {
@@ -91,6 +93,7 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::delete('/{id}', 'destroy');
         Route::put('/restore/{id}', 'restore');
         Route::delete('/forceDelete/{id}', 'forceDelete');
+        Route::get('/trashed', 'trashed');
     });
     // ProductVariants
     Route::prefix('productvariants')->controller(ProductVariantsController::class)->group(function () {
@@ -99,6 +102,7 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::delete('/{id}', 'destroy');
         Route::put('/restore/{id}', 'restore');
         Route::delete('/forceDelete/{id}', 'forceDelete');
+        Route::get('/trashed', 'trashed');
     });
     // ProductSpecifications
     Route::prefix('productspecifications')->controller(ProductSpecificationsController::class)->group(function () {
@@ -107,6 +111,7 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::delete('/{id}', 'destroy');
         Route::put('/restore/{id}', 'restore');
         Route::delete('/forceDelete/{id}', 'forceDelete');
+        Route::get('/trashed', 'trashed');
     });
     // VariantAttributeValues
     Route::prefix('variantattributevalues')->controller(VariantAttributeValuesController::class)->group(function () {
@@ -115,6 +120,7 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::delete('/{id}', 'destroy');
         Route::put('/restore/{id}', 'restore');
         Route::delete('/forceDelete/{id}', 'forceDelete');
+        Route::get('/trashed', 'trashed');
     });
     // News
     Route::prefix('news')->controller(NewsController::class)->group(function () {
@@ -123,8 +129,8 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::delete('/{id}', 'destroy');
         Route::put('/restore/{id}', 'restore');
         Route::delete('/forceDelete/{id}', 'forceDelete');
+        Route::get('/trashed', 'trashed');
     });
-
 });
 
 // Các route chỉ đọc (không cần quyền admin)
