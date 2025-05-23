@@ -7,7 +7,6 @@ const initialState = {
   error: null,
 };
 
-///CALL API BANNER
 export const fetchBlogs = createAsyncThunk("blog/fetchBlogs", async () => {
   const response = await axiosConfig.get("/news");
   return response.data;
@@ -27,7 +26,9 @@ export const blogSlice = createSlice({
       // call thành công
       .addCase(fetchBlogs.fulfilled, (state, action) => {
         state.loading = false;
-        state.news = action.payload;
+        state.news = Array.isArray(action.payload.data)
+          ? action.payload.data
+          : [];
       })
       // call lỗi
       .addCase(fetchBlogs.rejected, (state, action) => {

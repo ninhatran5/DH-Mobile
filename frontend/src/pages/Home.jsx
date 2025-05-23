@@ -424,7 +424,7 @@ const Home = () => {
       </section>
       <SliderLogoBrand />
 
-      <Blogs showHeader={true} padding={"py-5"} />
+      <Blogs limit={3} showHeader={true} padding={"py-5"} />
 
       <section className="py-5" style={{ marginTop: 100, marginBottom: 70 }}>
         <div className="container-fluid">
