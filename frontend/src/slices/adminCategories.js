@@ -37,6 +37,31 @@ export const deleteCategory = createAsyncThunk(
   }
 );
 
+export const addCategory = createAsyncThunk(
+  "category/addCategory",
+  async (newCategory, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      if (!token) {
+        return rejectWithValue("Token không tồn tại hoặc hết hạn");
+      }
+
+      const res = await axiosConfig.post("/categories", newCategory, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return res.data.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Lỗi khi thêm danh mục");
+    }
+  }
+);
+
+
+
+
 
 
 const categorySlice = createSlice({
@@ -58,7 +83,6 @@ const categorySlice = createSlice({
         state.error = action.payload;
       })
 
-      // Thêm xử lý xóa danh mục
       .addCase(deleteCategory.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -72,7 +96,12 @@ const categorySlice = createSlice({
       .addCase(deleteCategory.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+      .addCase(addCategory.fulfilled, (state, action) => {
+        state.categories.push(action.payload);
+      })
+      
+
   },
 });
 

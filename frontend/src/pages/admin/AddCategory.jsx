@@ -1,180 +1,95 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import '../../assets/admin/AddCategory.module.css';
-
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { addCategory } from "../../slices/adminCategories";
+import { useNavigate } from "react-router-dom";
 
 const AddCategory = () => {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [is_active, setIsActive] = useState(true);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    image: null,
-    parentCategory: '',
-    displayOrder: 0,
-    status: 'active'
+
+  const handleFileChange = (e) => {
+    setImageFile(e.target.files[0]);
+  };
+
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+ 
+  const formData = new FormData();
+  formData.append("name", name);
+  formData.append("description", description);
+  formData.append("is_active", is_active);
+  if (imageFile) {
+    formData.append("image_url", imageFile);
+  }
+
+  
+  const token = localStorage.getItem("adminToken");
+
+  console.log("Token:", token);
+  
+  const formDataEntries = {};
+  formData.forEach((value, key) => {
+    formDataEntries[key] = value;
   });
-  const [preview, setPreview] = useState(null);
-  const [parentCategories, setParentCategories] = useState([]);
-  const [loading, setLoading] = useState(false);
+  console.log("FormData entries to submit:", formDataEntries);
 
-  useEffect(() => {
-    // Fetch parent categories when component mounts
-    fetchParentCategories();
-  }, []);
-
-  const fetchParentCategories = async () => {
-    try {
-      const response = await fetch('/api/categories');
-      const data = await response.json();
-      setParentCategories(data);
-    } catch (error) {
-      console.error('Error fetching parent categories:', error);
-    }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData(prev => ({
-        ...prev,
-        image: file
-      }));
-      setPreview(URL.createObjectURL(file));
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const formDataToSend = new FormData();
-      Object.keys(formData).forEach(key => {
-        formDataToSend.append(key, formData[key]);
-      });
-
-      await fetch('/api/categories', {
-        method: 'POST',
-        body: formDataToSend
-      });
-
-      navigate('/admin/categories');
-    } catch (error) {
-      console.error('Error adding category:', error);
-      // Handle error (show notification, etc.)
-    } finally {
-      setLoading(false);
-    }
-  };
+  await dispatch(addCategory(formData));
+  navigate("/admin/categories");
+};
 
   return (
-    <div className="admin_dh-category-container">
-      <div className="admin_dh-category-header">
-        <h2 className="admin_dh-category-title">Add New Category</h2>
-        <button
-          className="admin_dh-btn admin_dh-btn-secondary"
-          onClick={() => navigate('/admin/categories')}
-        >
-          <i className="bi bi-arrow-left"></i> Back to Categories
-        </button>
-      </div>
-
-      <form className="admin_dh-category-form" onSubmit={handleSubmit}>
-        <div className="admin_dh-form-group">
-          <label className="admin_dh-form-label admin_dh-required-label">Name</label>
+    <div className="admin-form-container">
+      <h2>Thêm danh mục mới</h2>
+      <form onSubmit={handleSubmit} className="admin-form">
+        <div className="form-group">
+          <label>Tên danh mục</label>
           <input
             type="text"
-            className="admin_dh-form-control"
-            name="name"
-            value={formData.name}
-            onChange={handleInputChange}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             required
           />
         </div>
 
-        <div className="admin_dh-form-group">
-          <label className="admin_dh-form-label">Description</label>
+        <div className="form-group">
+          <label>Mô tả</label>
           <textarea
-            className="admin_dh-form-control"
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            rows="3"
-          />
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          ></textarea>
         </div>
 
-        
-
-        <div className="admin_dh-form-group">
-          <label className="admin_dh-form-label">Parent Category</label>
-          <select
-            className="admin_dh-form-control admin_dh-form-select"
-            name="parentCategory"
-            value={formData.parentCategory}
-            onChange={handleInputChange}
-          >
-            <option value="">None</option>
-            {parentCategories.map(category => (
-              <option key={category._id} value={category._id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="admin_dh-form-group">
-          <label className="admin_dh-form-label">Display Order</label>
+        <div className="form-group">
+          <label>Hình ảnh</label>
           <input
-            type="number"
-            className="admin_dh-form-control"
-            name="displayOrder"
-            value={formData.displayOrder}
-            onChange={handleInputChange}
-            min="0"
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
           />
         </div>
 
-        <div className="admin_dh-form-group">
-          <label className="admin_dh-form-label">Status</label>
-          <select
-            className="admin_dh-form-control admin_dh-form-select"
-            name="status"
-            value={formData.status}
-            onChange={handleInputChange}
-          >
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
+        <div className="form-group">
+          <label>
+            <input
+              type="checkbox"
+              checked={is_active}
+              onChange={(e) => setIsActive(e.target.checked)}
+            />
+            Hoạt động
+          </label>
         </div>
 
-        <div className="admin_dh-btn-container">
-          <button
-            type="submit"
-            className="admin_dh-btn admin_dh-btn-primary"
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <i className="bi bi-arrow-repeat"></i> Adding...
-              </>
-            ) : (
-              <>
-                <i className="bi bi-plus"></i> Add Category
-              </>
-            )}
-          </button>
-        </div>
+        <button type="submit" className="btn btn-primary">
+          Thêm danh mục
+        </button>
       </form>
     </div>
   );
 };
 
-export default AddCategory; 
+export default AddCategory;
