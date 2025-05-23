@@ -51,6 +51,8 @@ class ProductController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:200',
             'category_id' => 'required|integer',
+            'price' => 'nullable|numeric',
+            'price_original' => 'nullable|numeric',
             'description' => 'nullable|string|max:255',
             'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
@@ -144,6 +146,8 @@ class ProductController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:200',
             'category_id' => 'required|integer',
+            'price' => 'nullable|numeric',
+            'price_original' => 'nullable|numeric',
             'description' => 'nullable|string|max:255',
             'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
