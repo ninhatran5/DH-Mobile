@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategories,deleteCategory } from "../../slices/adminCategories";
+import { fetchCategories,deleteCategory,addCategory } from "../../slices/adminCategories";
 import "../../assets/admin/Categories.css";
-
+import { Link } from "react-router-dom";
 const CategoryList = () => {
   const dispatch = useDispatch();
   const { categories, loading, error } = useSelector((state) => state.category);
@@ -39,7 +39,10 @@ const CategoryList = () => {
             onChange={handleSearchChange}
             className="admin_dh-search-input"
           />
-          <button className="admin_dh-add-btn">+ Thêm danh mục</button>
+          <Link to="/admin/Addcategories" className="admin_dh-add-btn">
+  + Thêm danh mục
+</Link>
+
         </div>
       </div>
 
@@ -85,6 +88,7 @@ const CategoryList = () => {
   <div style={{ display: "flex", gap: "8px" }}>
     <button className="admin_dh-action-btn edit" title="Chỉnh sửa">
       <i className="bi bi-pencil-fill"></i>
+      
     </button>
     <button
       className="admin_dh-action-btn delete"

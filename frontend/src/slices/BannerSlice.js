@@ -27,7 +27,7 @@ export const fetchBannerById = createAsyncThunk(
   "banner/fetchBannerById",
   async (id, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("admintoken");
+      const token = localStorage.getItem("adminToken");
       const response = await axios.get(
         `https://dhmobile-website-production.up.railway.app/api/getbanners`,
         {
@@ -57,7 +57,6 @@ export const updateBanner = createAsyncThunk(
         return rejectWithValue("Token không tồn tại hoặc hết hạn");
       }
 
-      // Gửi thẳng data (FormData) lên API
       const response = await axios.request({
         url: `https://dhmobile-website-production.up.railway.app/api/updatebanners/${id}`,
         method: "POST",

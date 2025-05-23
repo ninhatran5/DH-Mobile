@@ -14,17 +14,14 @@ export default function ListProductCard({ title }) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { products } = useSelector((state) => state.product);
-  const { productsVariants } = useSelector((state) => state.productsVariant);
   const [favorites, setFavorites] = useState([]);
   const convertPriceToNumber = (priceString) => {
     if (!priceString) return NaN;
     return Number(priceString.replace(/[^0-9.-]+/g, ""));
   };
-  const getDiscountPercent = (product, variant) => {
-    const original = convertPriceToNumber(
-      variant?.price_original ?? product.priceOriginal ?? product.price_original
-    );
-    const sale = convertPriceToNumber(variant?.price ?? product.price);
+  const getDiscountPercent = (product) => {
+    const original = convertPriceToNumber(product.price_original);
+    const sale = convertPriceToNumber(product.price);
     if (
       isNaN(original) ||
       isNaN(sale) ||
@@ -33,7 +30,7 @@ export default function ListProductCard({ title }) {
       !sale
     )
       return null;
-    return Math.round(((original - sale) / original) * 100);
+    return Math.floor(((original - sale) / original) * 100);
   };
   useEffect(() => {
     dispatch(fetchProducts());
@@ -85,13 +82,7 @@ export default function ListProductCard({ title }) {
               }}
             >
               {products.slice(0, 8).map((product) => {
-                const matchedVariant = productsVariants.find(
-                  (variant) => variant.product_id === product.product_id
-                );
-                const discountPercent = getDiscountPercent(
-                  product,
-                  matchedVariant
-                );
+                const discountPercent = getDiscountPercent(product);
                 return (
                   <SwiperSlide key={product.product_id}>
                     <ProductCard
@@ -99,7 +90,6 @@ export default function ListProductCard({ title }) {
                       setFavorites={setFavorites}
                       discountPercent={discountPercent}
                       product={product}
-                      productsVariants={matchedVariant}
                     />
                   </SwiperSlide>
                 );

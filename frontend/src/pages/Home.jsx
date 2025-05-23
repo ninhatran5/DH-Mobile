@@ -29,6 +29,7 @@ import ProductsCarousel from "../components/ProductsCarousel";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBanners } from "../slices/homeSlice";
 import { fetchListFavorite } from "../slices/listFavoriteProducts";
+import { fetchProducts } from "../slices/productSlice";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ const Home = () => {
 
   const dispatch = useDispatch();
   const { banners } = useSelector((state) => state.home);
+  const { products, loading } = useSelector((state) => state.product);
 
   const sliderBanner = banners.filter((banner) =>
     banner.title.includes("Slider")
@@ -47,12 +49,10 @@ const Home = () => {
   );
 
   const { listFavorite } = useSelector((state) => state.listFavoriteProducts);
-  console.log("🚀 ~ Home ~ listFavorite:", listFavorite);
   useEffect(() => {
     dispatch(fetchListFavorite());
-  }, [dispatch]);
-  useEffect(() => {
     dispatch(fetchBanners());
+    dispatch(fetchProducts());
   }, [dispatch]);
 
   const logoBrand = [
@@ -71,18 +71,25 @@ const Home = () => {
   ];
 
   const convertPriceToNumber = (priceString) => {
+    if (!priceString || typeof priceString !== "string") return 0;
     return Number(priceString.replace(/\./g, "").replace("đ", ""));
   };
 
-  const getDiscountPercent = (product) => {
-    if (!product.price || !product.priceOriginal) return null;
+  const getDiscountPercent = (item) => {
+    const original = convertPriceToNumber(item?.product?.price_original);
+    const sale = convertPriceToNumber(item?.product?.price);
 
-    const original = convertPriceToNumber(product.priceOriginal);
-    const sale = convertPriceToNumber(product.price);
+    if (
+      !original ||
+      !sale ||
+      isNaN(original) ||
+      isNaN(sale) ||
+      sale >= original
+    )
+      return null;
 
-    if (isNaN(original) || isNaN(sale) || sale >= original) return null;
-
-    return Math.round(((original - sale) / original) * 100);
+    // Làm tròn về phía dưới để luôn nhất quán
+    return Math.floor(((original - sale) / original) * 100);
   };
 
   const services = [
@@ -394,6 +401,8 @@ const Home = () => {
         padding={"py-3"}
         filter={false}
         limit={5}
+        products={products}
+        loading={loading}
       />
 
       <ListProductCard title={t("home.bestSellingProducts")} />

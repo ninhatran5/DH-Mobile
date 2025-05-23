@@ -1,186 +1,78 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
-import '../../assets/admin/AddProduct.css';
-const AddProduct = () => {
-  const [formData, setFormData] = useState({
-    categoryName: '',
-    description: '',
-    image: null,
-    parentCategory: '',
-    displayOrder: 0,
-    status: 'SHOW' 
-  });
+// src/pages/admin/AddCategory.jsx
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { addCategory } from "../../slices/adminCategories";
+import { useNavigate } from "react-router-dom";
 
-  const [imagePreview, setImagePreview] = useState(null);
-  const [categories, setCategories] = useState([]); 
+const AddCategory = () => {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [image_url, setImageUrl] = useState("");
+  const [is_active, setIsActive] = useState(true);
 
- 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-  };
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  // Handle image upload
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData(prevState => ({
-        ...prevState,
-        image: file
-      }));
-      // Create preview URL
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    console.log('Form data:', formData);
+    const newCategory = {
+      name,
+      description,
+      image_url,
+      is_active,
+    };
+    await dispatch(addCategory(newCategory));
+    navigate("/admin/categories");
   };
-  useEffect(() => {
-    const mockCategories = [
-      { id: 1, name: 'Phụ kiện' },
-      { id: 2, name: 'Điện thoại' },
-      { id: 3, name: 'Máy tính' }
-    ];
-    setCategories(mockCategories);
-  }, []);
 
   return (
-    <Container fluid className="py-4">
-      <Card className="shadow-sm">
-        <Card.Header className="bg-white">
-          <h4 className="mb-0">Thêm Sản Phẩm Mới</h4>
-        </Card.Header>
-        <Card.Body>
-          <Form onSubmit={handleSubmit}>
-            <Row>
-              <Col md={8}>
-                {/* Tên danh mục */}
-                <Form.Group className="mb-3">
-                  <Form.Label>Tên danh mục <span className="text-danger">*</span></Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="categoryName"
-                    value={formData.categoryName}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="Nhập tên danh mục"
-                  />
-                </Form.Group>
+    <div className="admin-form-container">
+      <h2>Thêm danh mục mới</h2>
+      <form onSubmit={handleSubmit} className="admin-form">
+        <div className="form-group">
+          <label>Tên danh mục</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </div>
 
-                {/* Mô tả */}
-                <Form.Group className="mb-3">
-                  <Form.Label>Mô tả</Form.Label>
-                  <Form.Control
-                    as="textarea"
-                    rows={3}
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    placeholder="Nhập mô tả danh mục"
-                  />
-                </Form.Group>
+        <div className="form-group">
+          <label>Mô tả</label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          ></textarea>
+        </div>
 
-                {/* Danh mục cha */}
-                <Form.Group className="mb-3">
-                  <Form.Label>Danh mục cha</Form.Label>
-                  <Form.Select
-                    name="parentCategory"
-                    value={formData.parentCategory}
-                    onChange={handleInputChange}
-                  >
-                    <option value="">-- Chọn danh mục cha --</option>
-                    {categories.map(category => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
+        <div className="form-group">
+          <label>Hình ảnh (URL)</label>
+          <input
+            type="text"
+            value={image_url}
+            onChange={(e) => setImageUrl(e.target.value)}
+          />
+        </div>
 
-                {/* Thứ tự hiển thị */}
-                <Form.Group className="mb-3">
-                  <Form.Label>Thứ tự hiển thị <span className="text-danger">*</span></Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="displayOrder"
-                    value={formData.displayOrder}
-                    onChange={handleInputChange}
-                    required
-                    min="0"
-                    placeholder="Nhập thứ tự hiển thị"
-                  />
-                </Form.Group>
+        <div className="form-group">
+          <label>
+            <input
+              type="checkbox"
+              checked={is_active}
+              onChange={(e) => setIsActive(e.target.checked)}
+            />
+            Hoạt động
+          </label>
+        </div>
 
-                {/* Trạng thái */}
-                <Form.Group className="mb-3">
-                  <Form.Label>Trạng thái</Form.Label>
-                  <Form.Select
-                    name="status"
-                    value={formData.status}
-                    onChange={handleInputChange}
-                  >
-                    <option value="SHOW">Hiển thị</option>
-                    <option value="HIDE">Ẩn</option>
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-
-              <Col md={4}>
-                {/* Hình ảnh */}
-                <Form.Group className="mb-3">
-                  <Form.Label>Hình ảnh danh mục</Form.Label>
-                  <div className="image-upload-container">
-                    <div className="image-preview-container mb-3">
-                      {imagePreview ? (
-                        <img
-                          src={imagePreview}
-                          alt="Preview"
-                          className="img-thumbnail"
-                          style={{ maxHeight: '200px', width: 'auto' }}
-                        />
-                      ) : (
-                        <div className="image-placeholder">
-                          <i className="bi bi-image" style={{ fontSize: '2rem' }}></i>
-                          <p>Chọn hình ảnh</p>
-                        </div>
-                      )}
-                    </div>
-                    <Form.Control
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="mb-2"
-                    />
-                    <small className="text-muted">
-                      Định dạng: JPG, PNG. Tối đa 2MB
-                    </small>
-                  </div>
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <div className="d-flex justify-content-end gap-2">
-              <Button variant="secondary" type="button">
-                Hủy
-              </Button>
-              <Button variant="primary" type="submit">
-                Thêm danh mục
-              </Button>
-            </div>
-          </Form>
-        </Card.Body>
-      </Card>
-    </Container>
+        <button type="submit" className="btn btn-primary">
+          Thêm danh mục
+        </button>
+      </form>
+    </div>
   );
 };
 
-export default AddProduct; 
+export default AddCategory;

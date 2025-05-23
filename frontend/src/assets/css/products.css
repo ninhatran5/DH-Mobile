@@ -17,6 +17,14 @@
   gap: 1.5rem;
   flex-wrap: wrap;
 }
+.product_filter_listproduct {
+  border: 1px solid #ccc !important;
+  color: black !important;
+}
+.product_filter_listproduct:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
 
 /* Từng nhóm filter */
 .filter-group {
