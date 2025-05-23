@@ -1,20 +1,64 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FaShippingFast } from "react-icons/fa";
 import { FaArrowDownShortWide, FaArrowUpWideShort } from "react-icons/fa6";
 import { MdDeleteSweep } from "react-icons/md";
-
 import { useTranslation } from "react-i18next";
-
 import Loading from "../components/Loading";
 import Product from "./Product";
-
 import "../assets/css/products.css";
-
-import { fetchProducts } from "../slices/productSlice";
-import { fetchProductVariants } from "../slices/productVariantsSlice";
 import { fetchCategory } from "../slices/categorySlice";
+
+// Hàm lọc theo danh mục
+const filterByCategory = (products, selectedCategoryId) => {
+  if (!selectedCategoryId) return products;
+  return products.filter(
+    (p) => String(p.category_id) === String(selectedCategoryId)
+  );
+};
+
+// Hàm lọc theo giá
+const filterByPrice = (products, priceFilter, parsePrice) => {
+  if (priceFilter === "duoi-10tr") {
+    return products.filter((p) => parsePrice(p.price) < 10000000);
+  } else if (priceFilter === "10-20tr") {
+    return products.filter(
+      (p) => parsePrice(p.price) >= 10000000 && parsePrice(p.price) <= 20000000
+    );
+  } else if (priceFilter === "tren-20tr") {
+    return products.filter((p) => parsePrice(p.price) > 20000000);
+  }
+  return products;
+};
+
+// Hàm lọc còn hàng
+const filterByStock = (products, readyStock) => {
+  if (!readyStock) return products;
+  return products.filter((p) => p.stock > 0);
+};
+
+// Hàm tìm kiếm theo tên
+const filterBySearch = (products, searchTerm) => {
+  if (!searchTerm) return products;
+  return products.filter((p) =>
+    p.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+};
+
+// Hàm sắp xếp
+const sortProducts = (products, sortOrder, parsePrice) => {
+  if (sortOrder === "lowToHigh") {
+    return products
+      .slice()
+      .sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+  } else if (sortOrder === "highToLow") {
+    return products
+      .slice()
+      .sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+  }
+  return products;
+};
 
 export default function ListProducts({
   title,
@@ -22,6 +66,8 @@ export default function ListProducts({
   padding,
   filter = true,
   limit,
+  products,
+  loading,
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -31,69 +77,31 @@ export default function ListProducts({
   const [sortOrder, setSortOrder] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [readyStock, setReadyStock] = useState(false);
-  const { products, loading } = useSelector((state) => state.product);
-  const { productsVariants } = useSelector((state) => state.productsVariant);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const { categorys } = useSelector((state) => state.category);
 
   const parsePrice = (priceStr) =>
     parseInt(priceStr?.replace(/[^\d]/g, "")) || 0;
 
-  // Sửa hàm getDiscountPercent để nhận cả product và variant
-  const getDiscountPercent = (product, variant) => {
-    // Ưu tiên lấy giá từ variant nếu có, nếu không lấy từ product
-    const original = parsePrice(
-      variant?.price_original ?? product.price_original
-    );
-    const sale = parsePrice(variant?.price ?? product.price);
-    if (sale >= original || !original || !sale) return null;
-    return Math.round(((original - sale) / original) * 100);
+  const getDiscountPercent = (product) => {
+    const original = parsePrice(product.price_original);
+    const sale = parsePrice(product.price);
+    if (!original || !sale || sale >= original) return null;
+    return Math.floor(((original - sale) / original) * 100);
   };
 
-  const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
-      const price = parsePrice(product.price);
-
-      const matchCategory =
-        !selectedCategoryId ||
-        product.category_id?.toString() === selectedCategoryId;
-
-      const matchPrice =
-        (priceFilter === "duoi-10tr" && price < 10000000) ||
-        (priceFilter === "10-20tr" && price >= 10000000 && price <= 20000000) ||
-        (priceFilter === "tren-20tr" && price > 20000000) ||
-        priceFilter === "" ||
-        !priceFilter;
-
-      const matchReadyStock = !readyStock || product.isReadyStock;
-
-      return matchCategory && matchPrice && matchReadyStock;
-    });
-  }, [products, priceFilter, selectedCategoryId, readyStock]);
-
-  const sortedProducts = useMemo(() => {
-    return [...filteredProducts].sort((a, b) => {
-      // Lấy variant tương ứng với từng sản phẩm
-      const variantA = productsVariants.find(
-        (variant) => variant.product_id === a.product_id
-      );
-      const variantB = productsVariants.find(
-        (variant) => variant.product_id === b.product_id
-      );
-      // Ưu tiên lấy giá từ variant, nếu không có thì lấy từ product
-      const priceA = parsePrice(variantA?.price ?? a.price);
-      const priceB = parsePrice(variantB?.price ?? b.price);
-      if (sortOrder === "lowToHigh") return priceA - priceB;
-      if (sortOrder === "highToLow") return priceB - priceA;
-      return 0;
-    });
-  }, [filteredProducts, sortOrder, productsVariants]);
-
   useEffect(() => {
-    dispatch(fetchProducts());
-    dispatch(fetchProductVariants());
     dispatch(fetchCategory());
   }, [dispatch]);
+
+  // Áp dụng các bộ lọc và tìm kiếm
+  let filteredProducts = Array.isArray(products) ? products : [];
+  filteredProducts = filterByCategory(filteredProducts, selectedCategoryId);
+  filteredProducts = filterByPrice(filteredProducts, priceFilter, parsePrice);
+  filteredProducts = filterByStock(filteredProducts, readyStock);
+  filteredProducts = filterBySearch(filteredProducts, searchTerm);
+  filteredProducts = sortProducts(filteredProducts, sortOrder, parsePrice);
 
   return (
     <section className={padding}>
@@ -101,6 +109,17 @@ export default function ListProducts({
         {filter && (
           <div className="filter-bar-wrapper">
             <div className="filter-extended">
+              <div className="filter-group">
+                <label>{t("products.search")}:</label>
+                <input
+                  type="text"
+                  className="product_filter_listproduct form-control"
+                  placeholder={t("products.searchPlaceholder")}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{ minWidth: 180 }}
+                />
+              </div>
               <div className="filter-group">
                 <label>{t("products.trademark")}:</label>
                 <select
@@ -133,13 +152,13 @@ export default function ListProducts({
             </div>
             <div className="filter-buttons">
               <button
-                onClick={() => setSortOrder("lowToHigh")}
                 style={{
                   background: sortOrder === "lowToHigh" ? "#e40303" : "",
                   color: sortOrder === "lowToHigh" ? "#fff" : "",
                   border: sortOrder === "lowToHigh" ? "1px solid #e40303" : "",
                   marginRight: 8,
                 }}
+                onClick={() => setSortOrder("lowToHigh")}
               >
                 <span>
                   <FaArrowUpWideShort />
@@ -147,13 +166,13 @@ export default function ListProducts({
                 {t("products.lowToHigh")}
               </button>
               <button
-                onClick={() => setSortOrder("highToLow")}
                 style={{
                   background: sortOrder === "highToLow" ? "#e40303" : "",
                   color: sortOrder === "highToLow" ? "#fff" : "",
                   border: sortOrder === "highToLow" ? "1px solid #e40303" : "",
                   marginRight: 8,
                 }}
+                onClick={() => setSortOrder("highToLow")}
               >
                 <span>
                   <FaArrowDownShortWide />
@@ -161,13 +180,13 @@ export default function ListProducts({
                 {t("products.highToLow")}
               </button>
               <button
-                onClick={() => setReadyStock((prev) => !prev)}
                 style={{
                   background: readyStock ? "#e40303" : "",
                   color: readyStock ? "#fff" : "",
                   border: readyStock ? "1px solid #e40303" : "",
                   marginRight: 8,
                 }}
+                onClick={() => setReadyStock((prev) => !prev)}
               >
                 <span>
                   <FaShippingFast />
@@ -175,15 +194,16 @@ export default function ListProducts({
                 {t("products.readyStock")}
               </button>
               <button
+                style={{
+                  background: "#f0a600",
+                  color: "#fff",
+                }}
                 onClick={() => {
                   setSelectedCategoryId("");
                   setPriceFilter("");
                   setSortOrder("");
                   setReadyStock(false);
-                }}
-                style={{
-                  background: "#e80000",
-                  color: "#fff",
+                  setSearchTerm("");
                 }}
               >
                 <span>
@@ -194,10 +214,8 @@ export default function ListProducts({
             </div>
           </div>
         )}
-
-        {loading && <Loading />}
-
         <div className="row">
+          {loading && <Loading />}
           <div className="col-md-12">
             <div className="bootstrap-tabs product-tabs">
               {showHeader && (
@@ -222,36 +240,34 @@ export default function ListProducts({
                   role="tabpanel"
                   aria-labelledby="nav-all-tab"
                 >
-                  <div className="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
-                    {(limit
-                      ? sortedProducts.slice(0, limit)
-                      : sortedProducts
-                    ).map((product) => {
-                      const matchedVariant = productsVariants.find(
-                        (variant) => variant.product_id === product.product_id
-                      );
-                      const discountPercent = getDiscountPercent(
-                        product,
-                        matchedVariant
-                      );
-                      return (
-                        <Product
-                          key={product.product_id}
-                          product={product}
-                          discountPercent={discountPercent}
-                          productsVariants={matchedVariant}
-                          nextProductDetail={() =>
-                            navigate(`/product-detail/${product.product_id}`)
-                          }
-                        />
-                      );
-                    })}
-                  </div>
-
-                  {sortedProducts.length === 0 && (
-                    <h6 className="text-center mt-5 mb-5">
-                      {t("products.noProductFound")}
-                    </h6>
+                  {filteredProducts.length === 0 ? (
+                    <div
+                      className="w-100 d-flex justify-content-center align-items-center"
+                      style={{ minHeight: 200 }}
+                    >
+                      <h6 className="text-center  text-muted fw-bold">
+                        {t("products.noProductFound")}
+                      </h6>
+                    </div>
+                  ) : (
+                    <div className="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
+                      {(limit
+                        ? filteredProducts.slice(0, limit)
+                        : filteredProducts
+                      ).map((product) => {
+                        const discountPercent = getDiscountPercent(product);
+                        return (
+                          <Product
+                            key={product.product_id}
+                            product={product}
+                            discountPercent={discountPercent}
+                            nextProductDetail={() =>
+                              navigate(`/product-detail/${product.product_id}`)
+                            }
+                          />
+                        );
+                      })}
+                    </div>
                   )}
                 </div>
               </div>

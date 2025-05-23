@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import numberFormat from "../../utils/numberFormat";
 
 const ProductsCarousel = ({ item, discountPercent }) => {
   const navigate = useNavigate();
@@ -20,14 +21,36 @@ const ProductsCarousel = ({ item, discountPercent }) => {
         <div className="row g-0">
           <div className="col-md-4">
             <img
-              src={item.image_url}
+              src={item?.product?.image_url}
               className="img-fluid rounded"
-              alt={item.product.name}
+              alt={item?.product?.name}
+              style={{
+                height: "120px",
+                width: "100%",
+                objectFit: "contain",
+                display: "block",
+              }}
             />
           </div>
           <div className="col-md-8">
             <div className="card-body py-0">
-              <h5 className="card-title">{item.product.name}</h5>
+              <h5
+                className="card-title"
+                style={{
+                  fontSize: 22,
+                  fontWeight: 600,
+                  color: "black",
+                  marginBottom: 8,
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2, // Hiển thị tối đa 2 dòng
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  minHeight: "52px", // Đảm bảo chiều cao cố định cho 2 dòng
+                }}
+              >
+                {item?.product?.name}
+              </h5>
               <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
                 <h6
                   style={{
@@ -38,7 +61,7 @@ const ProductsCarousel = ({ item, discountPercent }) => {
                   }}
                   className="mb-0"
                 >
-                  {item.price}
+                  {numberFormat(item?.product?.price)}
                 </h6>
                 <h6
                   style={{
@@ -51,7 +74,7 @@ const ProductsCarousel = ({ item, discountPercent }) => {
                   }}
                   className="mb-0"
                 >
-                  {item.priceOriginal}
+                  {numberFormat(item?.product?.price_original)}
                 </h6>
               </div>
             </div>

@@ -7,12 +7,7 @@ import { toast } from "react-toastify";
 import checkLogin from "../../utils/checkLogin";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFavoriteProduct } from "../slices/favoriteProductsSlice";
-const Product = ({
-  product,
-  discountPercent,
-  nextProductDetail,
-  productsVariants,
-}) => {
+const Product = ({ product, discountPercent, nextProductDetail }) => {
   const dispatch = useDispatch();
   const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
   const { t } = useTranslation();
@@ -113,7 +108,7 @@ const Product = ({
                 textOverflow: "ellipsis",
               }}
             >
-              {numberFormat(productsVariants?.price)}
+              {numberFormat(product?.price)}
             </span>
             <span
               className="price_original"
@@ -126,7 +121,7 @@ const Product = ({
                 textOverflow: "ellipsis",
               }}
             >
-              {numberFormat(productsVariants?.price_original)}
+              {numberFormat(product?.price_original)}
             </span>
           </div>
 
