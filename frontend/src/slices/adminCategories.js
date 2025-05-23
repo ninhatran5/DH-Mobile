@@ -60,6 +60,29 @@ export const addCategory = createAsyncThunk(
 );
 
 
+export const updateCategory = createAsyncThunk(
+  "category/updateCategory",
+  async ({ id, updatedData }, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      if (!token) {
+        return rejectWithValue("Token không tồn tại hoặc hết hạn");
+      }
+
+      const response = await axiosConfig.post(`/categories/${id}?_method=PUT`, updatedData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data"
+        },
+      });
+
+      return response.data.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Lỗi khi cập nhật danh mục");
+    }
+  }
+);
+
 
 
 
@@ -100,7 +123,14 @@ const categorySlice = createSlice({
       .addCase(addCategory.fulfilled, (state, action) => {
         state.categories.push(action.payload);
       })
-      
+      .addCase(updateCategory.fulfilled, (state, action) => {
+  const updatedCategory = action.payload;
+  const index = state.categories.findIndex(cat => cat.category_id === updatedCategory.category_id);
+  if (index !== -1) {
+    state.categories[index] = updatedCategory;
+  }
+})
+
 
   },
 });

@@ -86,10 +86,9 @@ const CategoryList = () => {
                 <td>{cat.updated_at || "22/5/2025 10:00:00"}</td>
                <td>
   <div style={{ display: "flex", gap: "8px" }}>
-    <button className="admin_dh-action-btn edit" title="Chỉnh sửa">
-      <i className="bi bi-pencil-fill"></i>
-      
-    </button>
+    <Link to={`/admin/EditCategories/${cat.category_id}`} className="admin_dh-action-btn edit" title="Chỉnh sửa">
+  <i className="bi bi-pencil-fill"></i>
+</Link>
     <button
       className="admin_dh-action-btn delete"
       onClick={() => handleDelete(cat.category_id)}
