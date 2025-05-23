@@ -7,8 +7,9 @@ import checkLogin from "../../utils/checkLogin";
 import numberFormat from "../../utils/numberFormat";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFavoriteProduct } from "../slices/favoriteProductsSlice";
+import { fetchListFavorite } from "../slices/listFavoriteProducts";
 
-const ProductCard = ({ discountPercent, product, productsVariants }) => {
+const ProductCard = ({ discountPercent, product }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -32,6 +33,7 @@ const ProductCard = ({ discountPercent, product, productsVariants }) => {
       await dispatch(fetchFavoriteProduct(product.product_id));
       setFavorite(true);
       toast.success(t("products.addedToFavorites"));
+      dispatch(fetchListFavorite());
     } catch (error) {
       toast.error(error || t("products.errorAddingFavorite"));
     }

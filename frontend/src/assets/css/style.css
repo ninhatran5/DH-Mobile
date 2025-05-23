@@ -454,6 +454,14 @@ h6 {
   margin-bottom: 5px;
   color: #ffb110;
 }
+.meta-date-updated {
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  color: rgb(100, 100, 100);
+  text-transform: uppercase;
+}
 /* category carousel */
 .category-carousel .category-item {
   background: #ffffff;
