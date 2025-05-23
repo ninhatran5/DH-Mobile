@@ -1,17 +1,64 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FaShippingFast } from "react-icons/fa";
 import { FaArrowDownShortWide, FaArrowUpWideShort } from "react-icons/fa6";
 import { MdDeleteSweep } from "react-icons/md";
-
 import { useTranslation } from "react-i18next";
-
 import Loading from "../components/Loading";
 import Product from "./Product";
-
 import "../assets/css/products.css";
 import { fetchCategory } from "../slices/categorySlice";
+
+// Hàm lọc theo danh mục
+const filterByCategory = (products, selectedCategoryId) => {
+  if (!selectedCategoryId) return products;
+  return products.filter(
+    (p) => String(p.category_id) === String(selectedCategoryId)
+  );
+};
+
+// Hàm lọc theo giá
+const filterByPrice = (products, priceFilter, parsePrice) => {
+  if (priceFilter === "duoi-10tr") {
+    return products.filter((p) => parsePrice(p.price) < 10000000);
+  } else if (priceFilter === "10-20tr") {
+    return products.filter(
+      (p) => parsePrice(p.price) >= 10000000 && parsePrice(p.price) <= 20000000
+    );
+  } else if (priceFilter === "tren-20tr") {
+    return products.filter((p) => parsePrice(p.price) > 20000000);
+  }
+  return products;
+};
+
+// Hàm lọc còn hàng
+const filterByStock = (products, readyStock) => {
+  if (!readyStock) return products;
+  return products.filter((p) => p.stock > 0);
+};
+
+// Hàm tìm kiếm theo tên
+const filterBySearch = (products, searchTerm) => {
+  if (!searchTerm) return products;
+  return products.filter((p) =>
+    p.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+};
+
+// Hàm sắp xếp
+const sortProducts = (products, sortOrder, parsePrice) => {
+  if (sortOrder === "lowToHigh") {
+    return products
+      .slice()
+      .sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+  } else if (sortOrder === "highToLow") {
+    return products
+      .slice()
+      .sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+  }
+  return products;
+};
 
 export default function ListProducts({
   title,
@@ -30,6 +77,7 @@ export default function ListProducts({
   const [sortOrder, setSortOrder] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [readyStock, setReadyStock] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const { categorys } = useSelector((state) => state.category);
 
@@ -47,12 +95,31 @@ export default function ListProducts({
     dispatch(fetchCategory());
   }, [dispatch]);
 
+  // Áp dụng các bộ lọc và tìm kiếm
+  let filteredProducts = Array.isArray(products) ? products : [];
+  filteredProducts = filterByCategory(filteredProducts, selectedCategoryId);
+  filteredProducts = filterByPrice(filteredProducts, priceFilter, parsePrice);
+  filteredProducts = filterByStock(filteredProducts, readyStock);
+  filteredProducts = filterBySearch(filteredProducts, searchTerm);
+  filteredProducts = sortProducts(filteredProducts, sortOrder, parsePrice);
+
   return (
     <section className={padding}>
       <div className="container-fluid">
         {filter && (
           <div className="filter-bar-wrapper">
             <div className="filter-extended">
+              <div className="filter-group">
+                <label>{t("products.search")}:</label>
+                <input
+                  type="text"
+                  className="product_filter_listproduct form-control"
+                  placeholder={t("products.searchPlaceholder")}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{ minWidth: 180 }}
+                />
+              </div>
               <div className="filter-group">
                 <label>{t("products.trademark")}:</label>
                 <select
@@ -128,7 +195,7 @@ export default function ListProducts({
               </button>
               <button
                 style={{
-                  background: "#e80000",
+                  background: "#f0a600",
                   color: "#fff",
                 }}
                 onClick={() => {
@@ -136,6 +203,7 @@ export default function ListProducts({
                   setPriceFilter("");
                   setSortOrder("");
                   setReadyStock(false);
+                  setSearchTerm("");
                 }}
               >
                 <span>
@@ -172,9 +240,21 @@ export default function ListProducts({
                   role="tabpanel"
                   aria-labelledby="nav-all-tab"
                 >
-                  <div className="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
-                    {(limit ? products.slice(0, limit) : products).map(
-                      (product) => {
+                  {filteredProducts.length === 0 ? (
+                    <div
+                      className="w-100 d-flex justify-content-center align-items-center"
+                      style={{ minHeight: 200 }}
+                    >
+                      <h6 className="text-center  text-muted fw-bold">
+                        {t("products.noProductFound")}
+                      </h6>
+                    </div>
+                  ) : (
+                    <div className="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
+                      {(limit
+                        ? filteredProducts.slice(0, limit)
+                        : filteredProducts
+                      ).map((product) => {
                         const discountPercent = getDiscountPercent(product);
                         return (
                           <Product
@@ -186,14 +266,9 @@ export default function ListProducts({
                             }
                           />
                         );
-                      }
-                    )}
-                    {products.length === 0 && (
-                      <h6 className="text-center mt-5 mb-5">
-                        {t("products.noProductFound")}
-                      </h6>
-                    )}
-                  </div>
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

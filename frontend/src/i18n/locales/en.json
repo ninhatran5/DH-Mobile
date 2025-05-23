@@ -66,7 +66,9 @@
     "10-20trieu": "420-830 USD",
     "tren20trieu": "Over 830 USD",
     "noProductFound": "No product found",
-    "errorAddingFavorite": "An error occurred while adding to the favorites list."
+    "errorAddingFavorite": "An error occurred while adding to the favorites list.",
+    "searchPlaceholder": "Search Product...",
+    "search": "Search"
   },
   "blog": {
     "poster": "Posted by"
