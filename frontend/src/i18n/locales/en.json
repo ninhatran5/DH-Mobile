@@ -65,7 +65,8 @@
     "duoi10tr": "Under 420 USD",
     "10-20trieu": "420-830 USD",
     "tren20trieu": "Over 830 USD",
-    "noProductFound": "No product found"
+    "noProductFound": "No product found",
+    "errorAddingFavorite": "An error occurred while adding to the favorites list."
   },
   "blog": {
     "poster": "Posted by"
