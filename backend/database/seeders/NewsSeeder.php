@@ -14,26 +14,50 @@ class NewsSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = Faker::create();
-        $images = [
-            'https://cdn-media.sforum.vn/storage/app/media/nhattruong/iphone-16-series-52.jpg',
-            'https://cdn-media.sforum.vn/storage/app/media/tiz/Apple-iPhone-16-finish-lineup-geo-240909.jpg',
-            'https://cdn-media.sforum.vn/storage/app/media/doanphuong/reviewiphone16promax/review-iphone-16-pro-max-bg.jpg',
-            'https://cdn-media.sforum.vn/storage/app/media/maithuong/so-sanh-oppo-reno14-pro-va-iphone-16-cover.jpg',
-            'https://cdn-media.sforum.vn/storage/app/media/maithuong/oppo-reno14-pro-2.jpg',
-            'https://scontent.fhan8-1.fna.fbcdn.net/v/t1.6435-9/119980738_3248806465232235_7314821825692360127_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=127cfc&_nc_ohc=421l_dzjV2kQ7kNvwGStB2R&_nc_oc=Adk9S1aJN2CgapC9AkKnO6iMknenYvK0ou0e6mXayDLYEPfxbadF7vuTYnbizW_Nzk4&_nc_zt=23&_nc_ht=scontent.fhan8-1.fna&_nc_gid=9ADRdZoTIe9rZqC3KVRdUQ&oh=00_AfJoLQrF3h9T_jgrMvVDzVtzBYJcIWRB97LC3CTJGdFyQA&oe=685790F7',
-        ];
-        $newsData = [];
-        for ($i = 0; $i < 6; $i++) {
-            $newsData[] = [
-                'title' => $faker->sentence(6),
-                'content' => $faker->paragraphs(3, true),
-                'image_url' => $images[$i],
+        DB::table('news')->truncate(); // Xóa dữ liệu cũ trước khi seed
+
+        $news = [
+            [
+                'title' => 'iPhone 15 ra mắt với nhiều cải tiến',
+                'user_id' => 1,
+                'content' => 'Apple vừa chính thức giới thiệu iPhone 15 với nhiều tính năng mới và thiết kế hiện đại.',
+                'image_url' => 'https://images2.thanhnien.vn/528068263637045248/2024/12/18/jack--17345360331611347307406.jpg',
                 'created_at' => now(),
                 'updated_at' => now(),
                 'deleted_at' => null,
-            ];
+            ],
+            [
+                'title' => 'Samsung Galaxy S24 trình làng',
+                'user_id' => 1,
+                'content' => 'Samsung Galaxy S24 được trang bị camera AI và pin dung lượng lớn.',
+                'image_url' => 'https://game8.vn/media/202207/images/3751224195569329541.jpg',
+                'created_at' => now(),
+                'updated_at' => now(),
+                'deleted_at' => null,
+            ],
+            [
+                'title' => 'Xiaomi ra mắt dòng Redmi Note mới',
+                'user_id' => 1,
+                'content' => 'Redmi Note mới của Xiaomi có giá thành hợp lý và cấu hình mạnh mẽ.',
+                'image_url' => 'https://i.pinimg.com/736x/fa/fc/4b/fafc4b1052deae2438681e45ff7335a5.jpg',
+                'created_at' => now(),
+                'updated_at' => now(),
+                'deleted_at' => null,
+            ],
+            [
+                'title' => 'OPPO Find X7 Pro chính thức lên kệ',
+                'user_id' => 1,
+                'content' => 'OPPO Find X7 Pro sở hữu camera ẩn dưới màn hình và sạc siêu nhanh.',
+                'image_url' => 'https://game8.vn/media/202207/images/joker-viet.jpg',
+                'created_at' => now(),
+                'updated_at' => now(),
+                'deleted_at' => null,
+            ],
+           
+        ];
+
+        foreach ($news as $item) {
+            DB::table('news')->insert($item);
         }
-        DB::table('news')->insert($newsData);
     }
 }
