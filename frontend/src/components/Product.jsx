@@ -7,6 +7,8 @@ import { toast } from "react-toastify";
 import checkLogin from "../../utils/checkLogin";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFavoriteProduct } from "../slices/favoriteProductsSlice";
+import { fetchListFavorite } from "../slices/listFavoriteProducts";
+
 const Product = ({ product, discountPercent, nextProductDetail }) => {
   const dispatch = useDispatch();
   const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
@@ -26,6 +28,7 @@ const Product = ({ product, discountPercent, nextProductDetail }) => {
       await dispatch(fetchFavoriteProduct(product.product_id));
       setFavorite(true);
       toast.success(t("products.addedToFavorites"));
+      dispatch(fetchListFavorite()); 
     } catch (error) {
       toast.error(error || t("products.errorAddingFavorite"));
     }

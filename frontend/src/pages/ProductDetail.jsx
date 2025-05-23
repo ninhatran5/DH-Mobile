@@ -16,6 +16,8 @@ import { fetchProductDetail } from "../slices/productDetailSlice";
 import { fetchProductVariationDetail } from "../slices/productVariationDetails";
 import numberFomat from "../../utils/numberFormat";
 import { fetchFavoriteProduct } from "../slices/favoriteProductsSlice";
+import { fetchListFavorite } from "../slices/listFavoriteProducts"; // Thêm dòng này
+
 const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
   const [selectedVersion, setSelectedVersion] = useState(null);
@@ -115,6 +117,7 @@ const ProductDetail = () => {
     try {
       await dispatch(fetchFavoriteProduct(productDetails.product_id));
       toast.success(t("products.addedToFavorites"));
+      dispatch(fetchListFavorite()); // Thêm dòng này để cập nhật danh sách yêu thích
     } catch (error) {
       toast.error(error || t("products.errorAddingFavorite"));
     }
