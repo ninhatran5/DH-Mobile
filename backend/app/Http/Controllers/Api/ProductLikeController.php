@@ -55,51 +55,20 @@ class ProductLikeController extends Controller
     public function listproductlike()
     {
         $user = Auth::user();
-        $productlikes = ProductLike::with(['product.productVariants' => function($query) {
-            $query->with(['attributeValues' => function($q) {
-                $q->with('attribute');
-            }]);
-        }])
+        $productlikes = ProductLike::with('Product')
         ->where('user_id', $user->user_id)
         ->get();
-
         if ($productlikes->isEmpty()) {
             return response()->json([
                 'status' => false,
                 'message' => 'Không có sản phẩm nào đã thích'
             ]);
+        } else {
+            return response()->json([
+                'status' => true,
+                'data' => $productlikes,
+            ]);
         }
-
-        $formattedData = $productlikes->map(function($like) {
-            $product = $like->product;
-            $variants = $product->productVariants->map(function($variant) {
-                
-                return [
-                    'variant_id' => $variant->variant_id,
-                    'sku' => $variant->sku,
-                    'price' => $variant->price,
-                    'price_original' => $variant->price_original,
-                    'image_url' => $variant->image_url,
-                    'stock' => $variant->stock,
-                ];
-            });
-
-            return [
-                'product_id' => $product->product_id,
-                'name' => $product->name,
-                'description' => $product->description,
-                'image_url' => $product->image_url,
-                'variants' => $variants
-            ];
-        });
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Danh sách sản phẩm đã thích',
-            'total' => $formattedData->count(),
-            'user_id' => $user->user_id,
-            'data' => $formattedData,
-        ]);
 
     }
 }
