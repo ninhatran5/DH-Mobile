@@ -29,7 +29,7 @@ const AdminLogin = () => {
       if (result && result.access_token) {
         localStorage.setItem("adminToken", result.access_token);
         localStorage.setItem("adminID", result.user ? result.user.id : (result.admin ? result.admin.id : null));
-        toast.success(t("auth.adminLoginSuccess") || "Admin login successful");
+        toast.success(t("Đăng nhập thành công ") || "Admin login successful");
         navigate("/admin")
       } else {
         toast.error("Invalid login response");
@@ -43,7 +43,7 @@ const AdminLogin = () => {
     <>
       {loading && <Loading />}
       <div className="d-flex vh-100" style={{ backgroundColor: "#f5f5f5" }}>
-        <div className="container m-auto">
+        <div className="container my-6">
           <div className="row justify-content-center">
             <div className="col-md-8 col-lg-6 col-xl-5">
               <div className="card shadow-lg border-0 rounded-lg overflow-hidden">
@@ -54,7 +54,6 @@ const AdminLogin = () => {
                 <div className="card-body p-4 p-sm-5">
                   <div className="text-center mb-4">
                     <h4>{t("Chào mừng bạn đến với Admin") || "Welcome Back!"}</h4>
-                    <p className="text-muted">{t("auth.signInPrompt") || "Sign in to access the admin panel"}</p>
                   </div>
 
                   <form onSubmit={handleSubmit(login)} noValidate>
@@ -66,7 +65,7 @@ const AdminLogin = () => {
                         <input
                           type="email"
                           className={`form-control form-control-lg border-0 ${errors.email ? "is-invalid" : ""}`}
-                          placeholder={t("auth.emailAddress") || "Email address"}
+                          placeholder={t(" Vui lòng nhập Email") || "Email address"}
                           {...register("email", {
                             required: t("auth.validation.emailRequired") || "Email is required",
                             pattern: {
@@ -119,7 +118,7 @@ const AdminLogin = () => {
                           id="rememberMe"
                         />
                         <label className="form-check-label" htmlFor="rememberMe">
-                          {t("auth.rememberMe") || "Remember me"}
+                          {t("Ghi nhớ tài khoản") || "Remember me"}
                         </label>
                       </div>
                     </div>
@@ -136,15 +135,11 @@ const AdminLogin = () => {
                     </button>
                   </form>
                   
-                  <div className="text-center mt-4">
-                    <p className="text-muted mb-0 small">
-                      {t("auth.protectedArea") || "This is a protected area. Authorized personnel only."}
-                    </p>
-                  </div>
+                  
                 </div>
                 <div className="card-footer bg-light py-3 text-center">
                   <p className="text-muted mb-0">
-                    &copy; {new Date().getFullYear()} {t("auth.companyName") || "DH Mobile"} - {t("auth.allRightsReserved") || "All rights reserved"}
+                    &copy; {new Date().getFullYear()} - {t("DHMobile") || "All rights reserved"}
                   </p>
                 </div>
               </div>
