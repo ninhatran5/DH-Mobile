@@ -71,4 +71,41 @@ class ProductLikeController extends Controller
         }
 
     }
+
+    // Bỏ thích sản phẩm
+    public function productunlike($id)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Người dùng không tồn tại'
+            ],401);
+        }
+
+        $product = Product::where('product_id', $id)->first();
+        if (!$product) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Sản phẩm không tồn tại'
+            ]);
+        }
+
+        $productlike = ProductLike::where('user_id', $user->user_id)
+            ->where('product_id', $product->product_id)
+            ->first();
+
+        if ($productlike) {
+            $productlike->delete();
+            return response()->json([
+                'status' => true,
+                'message' => 'Bỏ thích sản phẩm thành công'
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Bạn chưa thích sản phẩm này'
+            ]);
+        }
+    }
 }
