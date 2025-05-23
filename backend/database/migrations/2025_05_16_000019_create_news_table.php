@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('image_url', 255)->nullable();
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('deleted_at')->nullable();
+            $table->dateTime('updated_at')->nullable();
         });
     }
 

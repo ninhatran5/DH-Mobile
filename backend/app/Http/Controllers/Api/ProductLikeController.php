@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Models\User;
 use App\Models\Product;
 use App\Models\ProductLike;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class ProductLikeController extends Controller
@@ -51,10 +52,14 @@ class ProductLikeController extends Controller
     }
 
     // Lấy danh sách sản phẩm đã thích theo id người dùng
-    public function listproductlike(Request $request)
+    public function listproductlike()
     {
         $user = Auth::user();
-        $productlikes = ProductLike::with('product')
+        $productlikes = ProductLike::with(['product.productVariants' => function($query) {
+            $query->with(['attributeValues' => function($q) {
+                $q->with('attribute');
+            }]);
+        }])
         ->where('user_id', $user->user_id)
         ->get();
 
@@ -63,12 +68,38 @@ class ProductLikeController extends Controller
                 'status' => false,
                 'message' => 'Không có sản phẩm nào đã thích'
             ]);
-        } else {
-            return response()->json([
-                'status' => true,
-                'data' => $productlikes
-            ]);
         }
+
+        $formattedData = $productlikes->map(function($like) {
+            $product = $like->product;
+            $variants = $product->productVariants->map(function($variant) {
+                
+                return [
+                    'variant_id' => $variant->variant_id,
+                    'sku' => $variant->sku,
+                    'price' => $variant->price,
+                    'price_original' => $variant->price_original,
+                    'image_url' => $variant->image_url,
+                    'stock' => $variant->stock,
+                ];
+            });
+
+            return [
+                'product_id' => $product->product_id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'image_url' => $product->image_url,
+                'variants' => $variants
+            ];
+        });
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Danh sách sản phẩm đã thích',
+            'total' => $formattedData->count(),
+            'user_id' => $user->user_id,
+            'data' => $formattedData,
+        ]);
 
     }
 }

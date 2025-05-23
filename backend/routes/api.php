@@ -7,7 +7,7 @@ use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\ProductLikeController;
+use App\Http\Controllers\Api\ProductLikeController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\AttributeController;
 use App\Http\Controllers\Api\attributevalueController;

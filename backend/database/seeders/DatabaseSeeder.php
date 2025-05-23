@@ -29,8 +29,7 @@ class DatabaseSeeder extends Seeder
             // ProductSpecificationSeeder::class,
             // VariantAttributeValueSeeder::class,
             // UserSeeder::class,
-            // NewsSeeder::class,
-
+            NewsSeeder::class,
         ]);
     }
 }
