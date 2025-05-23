@@ -5,11 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import checkLogin from "../../utils/checkLogin";
 import numberFormat from "../../utils/numberFormat";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchFavoriteProduct } from "../slices/favoriteProductsSlice";
 
 const ProductCard = ({ discountPercent, product, productsVariants }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-
+  const dispatch = useDispatch();
+  const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
   const [favorite, setFavorite] = useState(product.favorite);
 
   const handleUnFavorites = () => {
@@ -21,10 +24,16 @@ const ProductCard = ({ discountPercent, product, productsVariants }) => {
     navigate(`/product-detail/${id}`);
   };
 
-  const addToFavorites = () => {
-    if (checkLogin()) {
+  const addToFavorites = async () => {
+    if (!checkLogin()) {
+      return;
+    }
+    try {
+      await dispatch(fetchFavoriteProduct(product.product_id));
       setFavorite(true);
       toast.success(t("products.addedToFavorites"));
+    } catch (error) {
+      toast.error(error || t("products.errorAddingFavorite"));
     }
   };
 
