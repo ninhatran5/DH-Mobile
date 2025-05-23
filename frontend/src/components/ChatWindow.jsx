@@ -75,7 +75,7 @@ export default function ChatWindow() {
                   <img
                     src={
                       msg.sender === "user"
-                        ? profile.user.image_url ||
+                        ? profile?.user?.image_url ||
                           "https://bootdey.com/img/Content/avatar/avatar1.png"
                         : "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg"
                     }

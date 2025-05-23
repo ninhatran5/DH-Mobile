@@ -12,12 +12,13 @@ class ProductLike extends Model
     protected $fillable = [
         'user_id',
         'product_id',
+        'status',
         'created_at',
-       
+        'updated_at'
     ];
     public function user()
     {
-        return $this->belongsToMany(User::class, 'user_id', 'user_id');
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
     public function product()
     {

@@ -40,7 +40,6 @@ const Home = () => {
   const dispatch = useDispatch();
   const { banners } = useSelector((state) => state.home);
   const { products, loading } = useSelector((state) => state.product);
-  console.log("🚀 ~ Home ~ products:", products);
 
   const sliderBanner = banners.filter((banner) =>
     banner.title.includes("Slider")
