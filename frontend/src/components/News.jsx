@@ -24,7 +24,7 @@ export default function News({ item }) {
               {item.updated_at
                 ? new Date(item.updated_at).toLocaleDateString("vi-VN", {
                     day: "2-digit",
-                    month: "numeric",
+                    month: "2-digit",
                     year: "numeric",
                   })
                 : ""}

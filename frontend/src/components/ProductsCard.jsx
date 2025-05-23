@@ -112,7 +112,7 @@ const ProductCard = ({ discountPercent, product, productsVariants }) => {
             textOverflow: "ellipsis",
           }}
         >
-          {numberFormat(productsVariants?.price)}
+          {numberFormat(product?.price)}
         </span>
         <span
           className="price_original"
@@ -125,7 +125,7 @@ const ProductCard = ({ discountPercent, product, productsVariants }) => {
             textOverflow: "ellipsis",
           }}
         >
-          {numberFormat(productsVariants?.price_original)}
+          {numberFormat(product?.price_original)}
         </span>
       </div>
 
