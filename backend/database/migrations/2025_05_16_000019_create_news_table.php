@@ -10,12 +10,15 @@ return new class extends Migration
     {
         Schema::create('news', function (Blueprint $table) {
             $table->id('news_id');
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->string('title', 255);
             $table->text('content');
             $table->string('image_url', 255)->nullable();
             $table->dateTime('created_at')->useCurrent();
+            $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->dateTime('deleted_at')->nullable();
-            $table->dateTime('updated_at')->nullable();
+
+            $table->foreign('user_id')->references('user_id')->on('users');
         });
     }
 
