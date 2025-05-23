@@ -71,7 +71,9 @@
     "search": "Tìm kiếm"
   },
   "blog": {
-    "poster": "Người đăng"
+    "poster": "Người đăng",
+    "date": "Ngày đăng:",
+    "update": "Cập nhật:"
   },
   "chatBot": {
     "chat": "Trò chuyện",

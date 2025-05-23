@@ -9,6 +9,7 @@ export default function Blogs({ showHeader = true, padding, limit }) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { news, loading } = useSelector((state) => state.blog);
+  console.log("🚀 ~ Blogs ~ news:", news);
   useEffect(() => {
     dispatch(fetchBlogs());
   }, [dispatch]);

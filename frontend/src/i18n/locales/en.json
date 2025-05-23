@@ -71,7 +71,9 @@
     "search": "Search"
   },
   "blog": {
-    "poster": "Posted by"
+    "poster": "Posted by",
+    "date": "Published on:",
+    "update": "Last updated:"
   },
   "chatBot": {
     "chat": "Chat",
