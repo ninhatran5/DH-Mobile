@@ -50,6 +50,7 @@ import ProtectedRoute from "./pages/admin/ProtectedRoute";
 import AdminLogin from "./pages/admin/AdminLogin";
 import PublicRouteAdmin from "./components/PublicRouteAdmin";
 import EditBanner from "./pages/admin/EditBanner";
+import EditCategory from "./pages/admin/EditCategories";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -239,6 +240,10 @@ const routerConfig = [
         path: "comments",
         element: <CommentsList />,
       },
+      {
+        path: "EditCategories/:id",
+        element: <EditCategory />,
+      }
     ],
   },
 {

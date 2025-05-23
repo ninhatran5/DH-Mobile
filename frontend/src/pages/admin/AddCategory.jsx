@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addCategory } from "../../slices/adminCategories";
 import { useNavigate } from "react-router-dom";
+import "../../assets/admin/AddCategories.css"; 
 
 const AddCategory = () => {
   const [name, setName] = useState("");
@@ -15,38 +16,35 @@ const AddCategory = () => {
     setImageFile(e.target.files[0]);
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
- 
-  const formData = new FormData();
-  formData.append("name", name);
-  formData.append("description", description);
-  formData.append("is_active", is_active);
-  if (imageFile) {
-    formData.append("image_url", imageFile);
-  }
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("is_active", is_active);
+    if (imageFile) {
+      formData.append("image_url", imageFile);
+    }
 
-  
-  const token = localStorage.getItem("adminToken");
+    const token = localStorage.getItem("adminToken");
+    console.log("Token:", token);
 
-  console.log("Token:", token);
-  
-  const formDataEntries = {};
-  formData.forEach((value, key) => {
-    formDataEntries[key] = value;
-  });
-  console.log("FormData entries to submit:", formDataEntries);
+    const formDataEntries = {};
+    formData.forEach((value, key) => {
+      formDataEntries[key] = value;
+    });
+    console.log("FormData entries to submit:", formDataEntries);
 
-  await dispatch(addCategory(formData));
-  navigate("/admin/categories");
-};
+    await dispatch(addCategory(formData));
+    navigate("/admin/categories");
+  };
 
   return (
-    <div className="admin-form-container">
-      <h2>Thêm danh mục mới</h2>
-      <form onSubmit={handleSubmit} className="admin-form">
-        <div className="form-group">
+    <div className="addcategories-container">
+      <h2 className="addcategories-title">Thêm danh mục mới</h2>
+      <form onSubmit={handleSubmit} className="addcategories-form">
+        <div className="addcategories-group">
           <label>Tên danh mục</label>
           <input
             type="text"
@@ -56,7 +54,7 @@ const AddCategory = () => {
           />
         </div>
 
-        <div className="form-group">
+        <div className="addcategories-group">
           <label>Mô tả</label>
           <textarea
             value={description}
@@ -64,16 +62,18 @@ const AddCategory = () => {
           ></textarea>
         </div>
 
-        <div className="form-group">
+        <div className="addcategories-group">
           <label>Hình ảnh</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-          />
+          <input type="file" accept="image/*" onChange={handleFileChange} />
         </div>
 
-        <div className="form-group">
+        {imageFile && (
+          <div className="addcategories-image-preview">
+            <img src={URL.createObjectURL(imageFile)} alt="Preview" />
+          </div>
+        )}
+
+        <div className="addcategories-group">
           <label>
             <input
               type="checkbox"
@@ -84,7 +84,7 @@ const AddCategory = () => {
           </label>
         </div>
 
-        <button type="submit" className="btn btn-primary">
+        <button type="submit" className="addcategories-submit-btn">
           Thêm danh mục
         </button>
       </form>
