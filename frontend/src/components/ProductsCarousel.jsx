@@ -10,7 +10,7 @@ const ProductsCarousel = ({ item, discountPercent }) => {
       <div
         className="card mb-3 p-3 rounded-4 shadow border-0"
         style={{ cursor: "pointer" }}
-        onClick={() => nextProductDetail(item.id)}
+        onClick={() => nextProductDetail(item.product.product_id)}
       >
         {discountPercent !== null && (
           <span className="badge bg-success position-absolute mt-1">
@@ -20,14 +20,14 @@ const ProductsCarousel = ({ item, discountPercent }) => {
         <div className="row g-0">
           <div className="col-md-4">
             <img
-              src={item.image}
+              src={item.image_url}
               className="img-fluid rounded"
-              alt={item.title}
+              alt={item.product.name}
             />
           </div>
           <div className="col-md-8">
             <div className="card-body py-0">
-              <h5 className="card-title">{item.title}</h5>
+              <h5 className="card-title">{item.product.name}</h5>
               <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
                 <h6
                   style={{

@@ -15,6 +15,7 @@ import Loading from "../components/Loading";
 import { fetchProductDetail } from "../slices/productDetailSlice";
 import { fetchProductVariationDetail } from "../slices/productVariationDetails";
 import numberFomat from "../../utils/numberFormat";
+import { fetchFavoriteProduct } from "../slices/favoriteProductsSlice";
 const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
   const [selectedVersion, setSelectedVersion] = useState(null);
@@ -27,10 +28,7 @@ const ProductDetail = () => {
   const { productVariationDetails } = useSelector(
     (state) => state.productVariationDetail
   );
-  console.log(
-    "🚀 ~ ProductDetail ~ productVariationDetails:",
-    productVariationDetails
-  );
+  const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
 
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -60,7 +58,7 @@ const ProductDetail = () => {
     },
   ];
 
-  const [currentImage, setCurrentImage] = useState("");
+  const [currentImage, setCurrentImage] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -110,10 +108,15 @@ const ProductDetail = () => {
     }
   };
 
-  const addToFavorites = () => {
-    if (checkLogin()) {
-      console.log("added");
+  const addToFavorites = async () => {
+    if (!checkLogin()) {
+      return;
+    }
+    try {
+      await dispatch(fetchFavoriteProduct(productDetails.product_id));
       toast.success(t("products.addedToFavorites"));
+    } catch (error) {
+      toast.error(error || t("products.errorAddingFavorite"));
     }
   };
 

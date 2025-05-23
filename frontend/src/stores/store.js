@@ -14,6 +14,9 @@ import categorytReducer from "../slices/categorySlice";
 import productDetailReducer from "../slices/productDetailSlice";
 import productVariationDetailReducer from "../slices/productVariationDetails";
 import bannerReducer from "../slices/BannerSlice";
+import blogReducer from "../slices/blogSlice";
+import favoriteProductReducer from "../slices/favoriteProductsSlice";
+import listFavoriteProductsReducer from "../slices/listFavoriteProducts";
 export const store = configureStore({
   reducer: {
     home: homeReducer,
@@ -31,5 +34,8 @@ export const store = configureStore({
     productDetail: productDetailReducer,
     productVariationDetail: productVariationDetailReducer,
     banner: bannerReducer,
+    blog: blogReducer,
+    favoriteProduct: favoriteProductReducer,
+    listFavoriteProducts: listFavoriteProductsReducer,
   },
 });

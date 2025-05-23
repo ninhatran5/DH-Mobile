@@ -18,7 +18,6 @@ import sonyLogo from "../assets/images/sony.png";
 import masstelLogo from "../assets/images/Masstel-logo.png";
 import phone from "../assets/images/phone3x.png";
 import backgroundPhone from "../assets/images/bg-pattern-2.png";
-import iphone from "../assets/images/iphone-16-pro-max.webp";
 import Products from "../components/ListProducts";
 import Blogs from "../components/Blogs";
 import SliderLogoBrand from "../components/SliderLogoBrand";
@@ -29,6 +28,7 @@ import ListProductCard from "../components/ListProductCard";
 import ProductsCarousel from "../components/ProductsCarousel";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBanners } from "../slices/homeSlice";
+import { fetchListFavorite } from "../slices/listFavoriteProducts";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -46,6 +46,11 @@ const Home = () => {
     banner.title.includes("Banner")
   );
 
+  const { listFavorite } = useSelector((state) => state.listFavoriteProducts);
+  console.log("🚀 ~ Home ~ listFavorite:", listFavorite);
+  useEffect(() => {
+    dispatch(fetchListFavorite());
+  }, [dispatch]);
   useEffect(() => {
     dispatch(fetchBanners());
   }, [dispatch]);
@@ -63,54 +68,6 @@ const Home = () => {
     { id: 10, name: "Asus", logo: asusLogo },
     { id: 11, name: "Sony", logo: sonyLogo },
     { id: 12, name: "Masstel", logo: masstelLogo },
-  ];
-
-  const products = [
-    {
-      id: 1,
-      price: "27.890.000đ",
-      priceOriginal: "30.500.000đ",
-      title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
-      image: iphone,
-    },
-    {
-      id: 2,
-      price: "27.890.000đ",
-      title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
-      image: iphone,
-    },
-    {
-      id: 3,
-      price: "27.890.000đ",
-      priceOriginal: "30.500.000đ",
-      title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
-      image: iphone,
-    },
-    {
-      id: 4,
-      price: "27.890.000đ",
-      priceOriginal: "30.500.000đ",
-      title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
-      image: iphone,
-    },
-    {
-      id: 5,
-      price: "27.890.000đ",
-      title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
-      image: iphone,
-    },
-    {
-      id: 6,
-      price: "27.890.000đ",
-      title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
-      image: iphone,
-    },
-    {
-      id: 7,
-      price: "27.890.000đ",
-      title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
-      image: iphone,
-    },
   ];
 
   const convertPriceToNumber = (priceString) => {
@@ -365,37 +322,42 @@ const Home = () => {
               </div>
             </div>
           </div>
-
-          <Swiper
-            modules={[Navigation]}
-            navigation={{
-              nextEl: ".brand-carousel-next",
-              prevEl: ".brand-carousel-prev",
-            }}
-            spaceBetween={20}
-            speed={600}
-            breakpoints={{
-              0: { slidesPerView: 2 },
-              576: { slidesPerView: 2 },
-              768: { slidesPerView: 2 },
-              992: { slidesPerView: 3 },
-              1200: { slidesPerView: 4 },
-            }}
-          >
-            {products.slice(0, 5).map((item) => {
-              const discountPercent = isPercentDecrease
-                ? getDiscountPercent(item)
-                : null;
-              return (
-                <SwiperSlide key={item.id}>
-                  <ProductsCarousel
-                    item={item}
-                    discountPercent={discountPercent}
-                  />
-                </SwiperSlide>
-              );
-            })}
-          </Swiper>
+          {listFavorite?.data ? (
+            <Swiper
+              modules={[Navigation]}
+              navigation={{
+                nextEl: ".brand-carousel-next",
+                prevEl: ".brand-carousel-prev",
+              }}
+              spaceBetween={20}
+              speed={600}
+              breakpoints={{
+                0: { slidesPerView: 2 },
+                576: { slidesPerView: 2 },
+                768: { slidesPerView: 2 },
+                992: { slidesPerView: 3 },
+                1200: { slidesPerView: 4 },
+              }}
+            >
+              {listFavorite?.data?.slice(0, 5)?.map((item) => {
+                const discountPercent = isPercentDecrease
+                  ? getDiscountPercent(item)
+                  : null;
+                return (
+                  <SwiperSlide key={item.product_id}>
+                    <ProductsCarousel
+                      item={item}
+                      discountPercent={discountPercent}
+                    />
+                  </SwiperSlide>
+                );
+              })}
+            </Swiper>
+          ) : (
+            <div className="text-center text-muted py-4 fw-bold">
+              Bạn chưa có sản phẩm yêu thích nào.
+            </div>
+          )}
         </div>
       </section>
 

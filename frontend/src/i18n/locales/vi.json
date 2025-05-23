@@ -65,7 +65,8 @@
     "duoi10tr": "Dưới 10 triệu",
     "10-20trieu": "10-20 triệu",
     "tren20trieu": "Trên 20 triệu",
-    "noProductFound": "Không tìm thấy sản phẩm"
+    "noProductFound": "Không tìm thấy sản phẩm",
+    "errorAddingFavorite": "Đã xảy ra lỗi khi thêm vào danh sách yêu thích"
   },
   "blog": {
     "poster": "Người đăng"
