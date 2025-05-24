@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ProductLikeController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\AttributeController;
-use App\Http\Controllers\Api\attributevalueController;
+use App\Http\Controllers\Api\AttributevalueController;
 use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
 use App\Http\Controllers\Api\VariantAttributeValuesController;
@@ -88,7 +88,7 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::get('/trashed', 'trashed');
     });
     // AttributeValue
-    Route::prefix('attributevalues')->controller(attributevalueController::class)->group(function () {
+    Route::prefix('attributevalues')->controller(AttributevalueController::class)->group(function () {
         Route::post('/', 'store');
         Route::put('/{id}', 'update');
         Route::delete('/{id}', 'destroy');
@@ -141,15 +141,15 @@ Route::get('products', [ProductController::class, 'index']); // lấy danh sách
 Route::get('products/{id}', [ProductController::class, 'show']); // lấy sản phẩm theo id
 Route::get('attributes', [AttributeController::class, 'index']); // lấy danh sách thuộc tính
 Route::get('attributes/{id}', [AttributeController::class, 'show']); // lấy thuộc tính theo id
-Route::get('attributevalues', [attributevalueController::class, 'index']); // lấy danh sách thuộc tính con
-Route::get('attributevalues/{id}', [attributevalueController::class, 'show']); // lấy thuộc tính con theo id
+Route::get('attributevalues', [AttributevalueController::class, 'index']); // lấy danh sách thuộc tính con
+Route::get('attributevalues/{id}', [AttributevalueController::class, 'show']); // lấy thuộc tính con theo id
 Route::get('productvariants', [ProductVariantsController::class, 'index']); // lấy danh sách biến thể sản phẩm
 Route::get('productvariants/{id}', [ProductVariantsController::class, 'show']); // lấy biến thể sản phẩm theo id
 Route::get('productspecifications', [ProductSpecificationsController::class, 'index']); // lấy danh sách thông số kỹ thuật sản phẩm
 Route::get('productspecifications/{id}', [ProductSpecificationsController::class, 'show']); // lấy thông số kỹ thuật sản phẩm theo id
 Route::get('variantattributevalues', [VariantAttributeValuesController::class, 'index']); // lấy danh sách liên kết
 Route::get('variantattributevalues/{id}', [VariantAttributeValuesController::class, 'show']); // lấy liên kết theo id
-Route::get('news', [newsController::class, 'index']); // lấy danh sách tin tức
+Route::get('news', [NewsController::class, 'index']); // lấy danh sách tin tức
 Route::get('news/{id}', [NewsController::class, 'show']); // lấy tin tức theo id
 
 
