@@ -51,6 +51,9 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import PublicRouteAdmin from "./components/PublicRouteAdmin";
 import EditBanner from "./pages/admin/EditBanner";
 import EditCategory from "./pages/admin/EditCategories";
+import Attributes from "./pages/admin/Attribute";
+import Addattribute from "./pages/admin/AddAttributes";
+import EditAttribute from "./pages/admin/EditAttributes";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -243,6 +246,18 @@ const routerConfig = [
       {
         path: "EditCategories/:id",
         element: <EditCategory />,
+      },
+      {
+        path: "attribute",
+        element:<Attributes />,
+      },
+      {
+        path: "Addattribute",
+        element:<Addattribute/>
+      },
+      {
+        path: "Editattribute/:id",
+        element: <EditAttribute/>
       }
     ],
   },
