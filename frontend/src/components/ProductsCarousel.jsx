@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import numberFormat from "../../utils/numberFormat";
-
 const ProductsCarousel = ({ item, discountPercent }) => {
   const navigate = useNavigate();
   const nextProductDetail = (id) => {

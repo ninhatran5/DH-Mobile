@@ -13,7 +13,7 @@ const Product = ({ product, discountPercent, nextProductDetail }) => {
   const dispatch = useDispatch();
   const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
   const { t } = useTranslation();
-  const [favorite, setFavorite] = useState(product.favorite);
+  const [favorite, setFavorite] = useState(product.status);
   const navigate = useNavigate();
   const handleUnFavorites = () => {
     console.log("un");
@@ -28,7 +28,7 @@ const Product = ({ product, discountPercent, nextProductDetail }) => {
       await dispatch(fetchFavoriteProduct(product.product_id));
       setFavorite(true);
       toast.success(t("products.addedToFavorites"));
-      dispatch(fetchListFavorite()); 
+      dispatch(fetchListFavorite());
     } catch (error) {
       toast.error(error || t("products.errorAddingFavorite"));
     }
