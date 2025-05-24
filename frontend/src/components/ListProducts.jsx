@@ -79,7 +79,7 @@ export default function ListProducts({
   const [readyStock, setReadyStock] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { categorys } = useSelector((state) => state.category);
+  const { categorys } = useSelector((state) => state.categorys);
 
   const parsePrice = (priceStr) =>
     parseInt(priceStr?.replace(/[^\d]/g, "")) || 0;

@@ -10,7 +10,6 @@ import addressReducer from "../slices/addressSlice";
 import changePasswordReducer from "../slices/changePasswordSlice";
 import productReducer from "../slices/productSlice";
 import productsVariantReducer from "../slices/productVariantsSlice";
-import categorytReducer from "../slices/categorySlice";
 import productDetailReducer from "../slices/productDetailSlice";
 import productVariationDetailReducer from "../slices/productVariationDetails";
 import bannerReducer from "../slices/BannerSlice";
@@ -19,6 +18,7 @@ import favoriteProductReducer from "../slices/favoriteProductsSlice";
 import categoryReducer from "../slices/adminCategories";
 import attributeReducer from "../slices/Attribute";
 import attributeValueReducer from "../slices/attributeValueSlice";
+import categorysReducer from "../slices/categorySlice";
 
 export const store = configureStore({
   reducer: {
@@ -33,7 +33,7 @@ export const store = configureStore({
     changePassword: changePasswordReducer,
     product: productReducer,
     productsVariant: productsVariantReducer,
-    category: categorytReducer,
+    categorys: categorysReducer,
     productDetail: productDetailReducer,
     productVariationDetail: productVariationDetailReducer,
     banner: bannerReducer,

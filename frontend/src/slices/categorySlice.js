@@ -15,8 +15,8 @@ export const fetchCategory = createAsyncThunk(
   }
 );
 
-export const categorytSlice = createSlice({
-  name: "category",
+export const categorysSlice = createSlice({
+  name: "categorys",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
@@ -39,4 +39,4 @@ export const categorytSlice = createSlice({
   },
 });
 
-export default categorytSlice.reducer;
+export default categorysSlice.reducer;
