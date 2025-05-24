@@ -18,6 +18,8 @@ import blogReducer from "../slices/blogSlice";
 import favoriteProductReducer from "../slices/favoriteProductsSlice";
 import listFavoriteProductsReducer from "../slices/listFavoriteProducts";
 import categoryReducer from "../slices/adminCategories";
+import attributeReducer from "../slices/Attribute";
+import attributeValueReducer from "../slices/attributeValueSlice";
 export const store = configureStore({
   reducer: {
     home: homeReducer,
@@ -39,5 +41,8 @@ export const store = configureStore({
     favoriteProduct: favoriteProductReducer,
     listFavoriteProducts: listFavoriteProductsReducer,
      category: categoryReducer,
+     attribute:attributeReducer,
+     attributeValue: attributeValueReducer,
+     
   },
 });

@@ -7,7 +7,6 @@ import logo from "../../assets/images/logo2.png";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-// CSS inline cho sidebar thu gọn
 const sidebarCollapsedStyles = {
   submenu: {
     position: 'absolute',
@@ -50,17 +49,14 @@ const Homeadmin =()=>{
   }, []);
 
   useEffect(() => {
-    // Lưu trạng thái sidebar vào localStorage để đồng bộ giữa các thiết bị
     localStorage.setItem('sidebarCollapsed', isSidebarCollapsed);
   }, [isSidebarCollapsed]);
 
-  // Đọc trạng thái sidebar từ localStorage khi lần đầu load trang
   useEffect(() => {
     const storedSidebarState = localStorage.getItem('sidebarCollapsed');
     if (storedSidebarState !== null) {
       const collapsed = storedSidebarState === 'true';
       setIsSidebarCollapsed(collapsed);
-      // Đồng bộ trạng thái sidebar mobile theo desktop
       if (window.innerWidth > 768) {
         setIsSidebarActive(!collapsed);
       }
@@ -68,18 +64,14 @@ const Homeadmin =()=>{
   }, []);
 
   useEffect(() => {
-    // Xử lý khi thay đổi kích thước cửa sổ
     const handleResize = () => {
       if (window.innerWidth <= 768) {
-        // Trên thiết bị di động, ẩn sidebar mặc định
         setIsSidebarActive(false);
       } else {
-        // Trên máy tính, hiển thị sidebar theo trạng thái đã lưu
         setIsSidebarActive(!isSidebarCollapsed);
       }
     };
 
-    // Gọi handleResize ngay khi mount để thiết lập trạng thái ban đầu
     handleResize();
 
     window.addEventListener('resize', handleResize);
@@ -87,7 +79,6 @@ const Homeadmin =()=>{
   }, [isSidebarCollapsed]);
 
   useEffect(() => {
-    // Khi chuyển trang trên thiết bị di động, đóng sidebar
     if (window.innerWidth <= 768) {
       setIsSidebarActive(false);
     }
@@ -293,6 +284,7 @@ const Homeadmin =()=>{
                   <div className={`admin_dh-submenu ${isDropdownActive('products') ? 'show' : ''}`}>
                     <div><Link to="/admin/product">Product List</Link></div>
                     <div><Link to="/admin/addproduct">Add Product</Link></div>
+                    <div><Link to="/admin/attribute">Attribute</Link></div>
                   </div>
                 </div>
               </div>
