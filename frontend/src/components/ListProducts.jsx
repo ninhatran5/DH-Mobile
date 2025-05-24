@@ -127,7 +127,7 @@ export default function ListProducts({
                   onChange={(e) => setSelectedCategoryId(e.target.value)}
                 >
                   <option value="">{t("products.all")}</option>
-                  {categorys.map((category) => (
+                  {categorys?.map((category) => (
                     <option
                       key={category.category_id}
                       value={category.category_id}
