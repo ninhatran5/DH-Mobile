@@ -8,6 +8,7 @@ use App\Models\ProductLike;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\ProductLikeResource;
 
 class ProductLikeController extends Controller
 {
@@ -56,8 +57,8 @@ class ProductLikeController extends Controller
     {
         $user = Auth::user();
         $productlikes = ProductLike::with('Product')
-        ->where('user_id', $user->user_id)
-        ->get();
+            ->where('user_id', $user->user_id)
+            ->get();
         if ($productlikes->isEmpty()) {
             return response()->json([
                 'status' => false,
@@ -65,11 +66,10 @@ class ProductLikeController extends Controller
             ]);
         } else {
             return response()->json([
-                'status' => true,
-                'data' => $productlikes,
+                'message' => 'Danh sách sản phẩm đã thích',
+                'data' => ProductLikeResource::collection($productlikes)
             ]);
         }
-
     }
 
     // Bỏ thích sản phẩm
@@ -80,7 +80,7 @@ class ProductLikeController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Người dùng không tồn tại'
-            ],401);
+            ], 401);
         }
 
         $product = Product::where('product_id', $id)->first();
