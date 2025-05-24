@@ -28,7 +28,7 @@ import ListProductCard from "../components/ListProductCard";
 import ProductsCarousel from "../components/ProductsCarousel";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBanners } from "../slices/homeSlice";
-import { fetchListFavorite } from "../slices/listFavoriteProducts";
+import { fetchListFavorite } from "../slices/favoriteProductsSlice";
 import { fetchProducts } from "../slices/productSlice";
 
 const Home = () => {
@@ -48,7 +48,7 @@ const Home = () => {
     banner.title.includes("Banner")
   );
 
-  const { listFavorite } = useSelector((state) => state.listFavoriteProducts);
+  const { listFavorite } = useSelector((state) => state.favoriteProduct);
   useEffect(() => {
     dispatch(fetchListFavorite());
     dispatch(fetchBanners());

@@ -16,10 +16,10 @@ import productVariationDetailReducer from "../slices/productVariationDetails";
 import bannerReducer from "../slices/BannerSlice";
 import blogReducer from "../slices/blogSlice";
 import favoriteProductReducer from "../slices/favoriteProductsSlice";
-import listFavoriteProductsReducer from "../slices/listFavoriteProducts";
 import categoryReducer from "../slices/adminCategories";
 import attributeReducer from "../slices/Attribute";
 import attributeValueReducer from "../slices/attributeValueSlice";
+
 export const store = configureStore({
   reducer: {
     home: homeReducer,
@@ -39,10 +39,8 @@ export const store = configureStore({
     banner: bannerReducer,
     blog: blogReducer,
     favoriteProduct: favoriteProductReducer,
-    listFavoriteProducts: listFavoriteProductsReducer,
-     category: categoryReducer,
-     attribute:attributeReducer,
-     attributeValue: attributeValueReducer,
-     
+    category: categoryReducer,
+    attribute: attributeReducer,
+    attributeValue: attributeValueReducer,
   },
 });

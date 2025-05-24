@@ -15,8 +15,10 @@ import Loading from "../components/Loading";
 import { fetchProductDetail } from "../slices/productDetailSlice";
 import { fetchProductVariationDetail } from "../slices/productVariationDetails";
 import numberFomat from "../../utils/numberFormat";
-import { fetchFavoriteProduct } from "../slices/favoriteProductsSlice";
-import { fetchListFavorite } from "../slices/listFavoriteProducts"; // Thêm dòng này
+import {
+  fetchFavoriteProduct,
+  fetchListFavorite,
+} from "../slices/favoriteProductsSlice";
 
 const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
