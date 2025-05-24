@@ -6,8 +6,11 @@ import numberFormat from "../../utils/numberFormat";
 import { toast } from "react-toastify";
 import checkLogin from "../../utils/checkLogin";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchFavoriteProduct } from "../slices/favoriteProductsSlice";
-import { fetchListFavorite } from "../slices/listFavoriteProducts";
+import {
+  deleteFavoriteProduct,
+  fetchFavoriteProduct,
+  fetchListFavorite,
+} from "../slices/favoriteProductsSlice";
 
 const Product = ({ product, discountPercent, nextProductDetail }) => {
   const dispatch = useDispatch();
@@ -15,10 +18,18 @@ const Product = ({ product, discountPercent, nextProductDetail }) => {
   const { t } = useTranslation();
   const [favorite, setFavorite] = useState(product.status);
   const navigate = useNavigate();
-  const handleUnFavorites = () => {
-    console.log("un");
-    setFavorite(false);
-    toast.success(t("products.removeFavorites"));
+  const handleUnFavorites = async () => {
+    if (!checkLogin()) {
+      return;
+    }
+    try {
+      await dispatch(deleteFavoriteProduct(product.product_id));
+      setFavorite(false);
+      toast.success(t("products.removeFavorites"));
+      dispatch(fetchListFavorite());
+    } catch (error) {
+      toast.error(error || t("products.errorAddingFavorite"));
+    }
   };
   const addToFavorites = async () => {
     if (!checkLogin()) {

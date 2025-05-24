@@ -6,8 +6,10 @@ import { toast } from "react-toastify";
 import checkLogin from "../../utils/checkLogin";
 import numberFormat from "../../utils/numberFormat";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchFavoriteProduct } from "../slices/favoriteProductsSlice";
-import { fetchListFavorite } from "../slices/listFavoriteProducts";
+import {
+  fetchFavoriteProduct,
+  fetchListFavorite,
+} from "../slices/favoriteProductsSlice";
 
 const ProductCard = ({ discountPercent, product }) => {
   const navigate = useNavigate();

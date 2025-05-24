@@ -3,14 +3,14 @@ import Breadcrumb from "../components/Breadcrumb";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import Loading from "../components/Loading";
-import { fetchListFavorite } from "../slices/listFavoriteProducts";
+import { fetchListFavorite } from "../slices/favoriteProductsSlice";
 import Product from "../components/Product";
 
 const FavoriteProducts = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { listFavorite, loading } = useSelector(
-    (state) => state.listFavoriteProducts
+    (state) => state.favoriteProduct
   );
 
   useEffect(() => {
@@ -39,17 +39,15 @@ const FavoriteProducts = () => {
       />
       <div className="container-fluid">
         <div className="row row-cols-1 row-cols-sm-2 row-cols-md-5 row-cols-lg-5 row-cols-xl-5">
-          {(Array.isArray(listFavorite?.data) ? listFavorite.data : []).map(
-            (item) => (
-              <Product
-                key={item.product?.product_id || item.product_id}
-                product={item.product || item}
-                discountPercent={getDiscountPercent(item.product || item)}
-                nextProductDetail={() => {}}
-              />
-            )
-          )}
-          {(!listFavorite?.data || listFavorite.data.length === 0) && (
+          {listFavorite.map((item) => (
+            <Product
+              key={item.product?.product_id || item.product_id}
+              product={item.product || item}
+              discountPercent={getDiscountPercent(item.product || item)}
+              nextProductDetail={() => {}}
+            />
+          ))}
+          {!listFavorite && (
             <h6 className="text-center text-muted fw-bold my-5 w-100">
               {t("products.noProductFound")}
             </h6>
