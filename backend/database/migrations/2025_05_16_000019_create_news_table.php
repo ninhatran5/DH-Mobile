@@ -11,7 +11,6 @@ return new class extends Migration
         Schema::create('news', function (Blueprint $table) {
             $table->id('news_id');
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
             $table->string('title', 255);
             $table->text('content');
             $table->text('image_url')->nullable();
@@ -19,7 +18,7 @@ return new class extends Migration
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->dateTime('deleted_at')->nullable();
 
-            $table->foreign('user_id')->references('user_id')->on('users');
+            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
         });
     }
 
