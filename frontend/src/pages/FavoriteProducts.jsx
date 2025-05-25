@@ -17,7 +17,7 @@ const FavoriteProducts = () => {
     dispatch(fetchListFavorite());
   }, [dispatch]);
 
-  // Hàm tính phần trăm giảm giá (nếu muốn hiển thị badge giảm giá)
+  // Hàm tính phần trăm giảm giá
   const parsePrice = (priceStr) =>
     parseInt(priceStr?.replace(/[^\d]/g, "")) || 0;
   const getDiscountPercent = (product) => {
@@ -39,15 +39,16 @@ const FavoriteProducts = () => {
       />
       <div className="container-fluid">
         <div className="row row-cols-1 row-cols-sm-2 row-cols-md-5 row-cols-lg-5 row-cols-xl-5">
-          {listFavorite?.data?.map((item) => (
-            <Product
-              key={item.product?.product_id || item.product_id}
-              product={item.product || item}
-              discountPercent={getDiscountPercent(item.product || item)}
-              nextProductDetail={() => {}}
-            />
-          ))}
-          {!listFavorite && (
+          {listFavorite && listFavorite.length > 0 ? (
+            listFavorite.map((item) => (
+              <Product
+                key={item.product?.product_id || item.product_id}
+                product={item.product || item}
+                discountPercent={getDiscountPercent(item.product || item)}
+                nextProductDetail={() => {}}
+              />
+            ))
+          ) : (
             <h6 className="text-center text-muted fw-bold my-5 w-100">
               {t("products.noProductFound")}
             </h6>
@@ -57,4 +58,5 @@ const FavoriteProducts = () => {
     </>
   );
 };
+
 export default FavoriteProducts;

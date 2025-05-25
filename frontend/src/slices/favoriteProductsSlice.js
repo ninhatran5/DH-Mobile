@@ -4,11 +4,12 @@ import { axiosConfig } from "../../utils/axiosConfig";
 // Initial state
 const initialState = {
   favoriteProducts: [],
-  listFavorite: [],
+  listFavorite: [], // ✅ luôn là mảng
   loading: false,
   error: null,
 };
 
+// Thêm sản phẩm yêu thích
 export const fetchFavoriteProduct = createAsyncThunk(
   "favoriteProduct/fetchFavoriteProduct",
   async (productId, thunkAPI) => {
@@ -26,12 +27,13 @@ export const fetchFavoriteProduct = createAsyncThunk(
   }
 );
 
+// Lấy danh sách yêu thích
 export const fetchListFavorite = createAsyncThunk(
   "favoriteProduct/fetchListFavorite",
   async (_, thunkAPI) => {
     try {
       const response = await axiosConfig.get("/listproductlike");
-      return { data: response.data.data || [] };
+      return response.data.data || [];
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Đã có lỗi xảy ra"
@@ -40,11 +42,12 @@ export const fetchListFavorite = createAsyncThunk(
   }
 );
 
+// Xoá sản phẩm yêu thích
 export const deleteFavoriteProduct = createAsyncThunk(
   "favoriteProduct/deleteFavoriteProduct",
   async (productId, thunkAPI) => {
     try {
-      const response = await axiosConfig.delete(`/productlike/${productId}`);
+      const response = await axiosConfig.delete(`/productunlike/${productId}`);
       if (response.data?.message === "Sản phẩm không tồn tại") {
         return thunkAPI.rejectWithValue("Sản phẩm không tồn tại");
       }
@@ -84,7 +87,7 @@ export const favoriteProductSlice = createSlice({
       })
       .addCase(fetchListFavorite.fulfilled, (state, action) => {
         state.loading = false;
-        state.listFavorite = action.payload; // action.payload là { data: [...] }
+        state.listFavorite = action.payload;
       })
       .addCase(fetchListFavorite.rejected, (state, action) => {
         state.loading = false;
@@ -98,14 +101,11 @@ export const favoriteProductSlice = createSlice({
       })
       .addCase(deleteFavoriteProduct.fulfilled, (state, action) => {
         state.loading = false;
-        // Loại bỏ sản phẩm đã xoá khỏi danh sách
-        state.favoriteProducts = state.favoriteProducts.filter(
-          (product) => product.product_id !== action.payload
-        );
         state.listFavorite = state.listFavorite.filter(
-          (product) => product.product_id !== action.payload
+          (product) => product.id !== action.payload
         );
       })
+
       .addCase(deleteFavoriteProduct.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
