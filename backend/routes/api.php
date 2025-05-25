@@ -161,4 +161,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('productlike/{id}', [ProductLikeController::class,'productlike']);
     Route::delete('productunlike/{id}', [ProductLikeController::class,'productunlike']);
     Route::get('listproductlike', [ProductLikeController::class,'listproductlike']);
+    Route::put('updatestatuslike/{id}', [ProductLikeController::class,'updatestatuslike']);
 });
