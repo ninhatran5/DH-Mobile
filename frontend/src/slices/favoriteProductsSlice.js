@@ -31,7 +31,6 @@ export const fetchListFavorite = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const response = await axiosConfig.get("/listproductlike");
-      console.log("🚀 ~ response:", response);
       return { data: response.data.data || [] };
     } catch (error) {
       return thunkAPI.rejectWithValue(
