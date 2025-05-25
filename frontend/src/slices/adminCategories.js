@@ -1,4 +1,3 @@
-// src/slices/categorySlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosConfig } from "../../utils/axiosConfig";
 

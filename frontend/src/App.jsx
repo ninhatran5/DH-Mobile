@@ -54,6 +54,8 @@ import EditCategory from "./pages/admin/EditCategories";
 import Attributes from "./pages/admin/Attribute";
 import Addattribute from "./pages/admin/AddAttributes";
 import EditAttribute from "./pages/admin/EditAttributes";
+import AddAttributevalues from "./pages/admin/AddAttributevalues";
+import EditAttributevalues from "./pages/admin/EditAttributevalues";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -258,6 +260,14 @@ const routerConfig = [
       {
         path: "Editattribute/:id",
         element: <EditAttribute/>
+      },
+      {
+        path: "AddAttributevalues/:attribute_id",
+        element: <AddAttributevalues />,
+      },
+      {
+        path: "EditAttributevalues/:value_id",
+        element: <EditAttributevalues />,
       }
     ],
   },

@@ -19,7 +19,7 @@ import categoryReducer from "../slices/adminCategories";
 import attributeReducer from "../slices/Attribute";
 import attributeValueReducer from "../slices/attributeValueSlice";
 import categorysReducer from "../slices/categorySlice";
-
+import adminAccountReducer from "../slices/adminAcccount";
 export const store = configureStore({
   reducer: {
     home: homeReducer,
@@ -42,5 +42,6 @@ export const store = configureStore({
     category: categoryReducer,
     attribute: attributeReducer,
     attributeValue: attributeValueReducer,
+    adminAccount: adminAccountReducer,
   },
 });
