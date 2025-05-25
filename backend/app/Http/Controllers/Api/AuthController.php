@@ -278,4 +278,31 @@ class AuthController extends Controller
             'message' => 'Mật khẩu đã được đổi thành công.',
         ]);
     }
+
+public function refreshToken(Request $request)
+{
+    $user = $request->user();
+
+    // Xoá token cũ
+    $user->currentAccessToken()->delete();
+
+    // Tạo token mới
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        'access_token' => $token,
+        'token_type' => 'Bearer',
+        'user' => [
+            'id' => $user->user_id,
+            'username' => $user->username,
+            'full_name' => $user->full_name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'address' => $user->address,
+            'role' => $user->role,
+        ]
+    ]);
+}
+
+    
 }
