@@ -329,7 +329,7 @@ const Home = () => {
               </div>
             </div>
           </div>
-          {listFavorite?.data ? (
+          {listFavorite && listFavorite.length > 0 ? (
             <Swiper
               modules={[Navigation]}
               navigation={{
@@ -346,7 +346,7 @@ const Home = () => {
                 1200: { slidesPerView: 4 },
               }}
             >
-              {listFavorite?.data?.slice(0, 5)?.map((item) => {
+              {listFavorite.slice(0, 5).map((item) => {
                 const discountPercent = isPercentDecrease
                   ? getDiscountPercent(item)
                   : null;
