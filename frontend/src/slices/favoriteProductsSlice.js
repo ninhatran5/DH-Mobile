@@ -31,7 +31,8 @@ export const fetchListFavorite = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const response = await axiosConfig.get("/listproductlike");
-      return response.data.data || [];
+      console.log("🚀 ~ response:", response);
+      return { data: response.data.data || [] };
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Đã có lỗi xảy ra"
@@ -84,7 +85,7 @@ export const favoriteProductSlice = createSlice({
       })
       .addCase(fetchListFavorite.fulfilled, (state, action) => {
         state.loading = false;
-        state.listFavorite = action.payload;
+        state.listFavorite = action.payload; // action.payload là { data: [...] }
       })
       .addCase(fetchListFavorite.rejected, (state, action) => {
         state.loading = false;

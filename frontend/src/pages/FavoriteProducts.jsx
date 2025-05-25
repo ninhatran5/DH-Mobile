@@ -39,7 +39,7 @@ const FavoriteProducts = () => {
       />
       <div className="container-fluid">
         <div className="row row-cols-1 row-cols-sm-2 row-cols-md-5 row-cols-lg-5 row-cols-xl-5">
-          {listFavorite.map((item) => (
+          {listFavorite?.data?.map((item) => (
             <Product
               key={item.product?.product_id || item.product_id}
               product={item.product || item}
