@@ -1,122 +1,205 @@
 .adminattributes {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  border-radius: 12px;
-  background: #f9f9f9;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  color: #333;
+  padding: 24px;
+  font-family: Arial, sans-serif;
 }
 
-.adminattributes h1 {
-  font-size: 1.8rem;
-  margin-bottom: 1.2rem;
-  color: #111;
-  font-weight: 600;
-}
-
-.adminattributes .header-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 1rem;
-}
-
-.adminattributes .btn-add {
-  background-color: #007aff;
-  color: #fff;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.adminattributes .btn-add:hover {
-  background-color: #0051b0;
-}
-
-.adminattributes .table-container {
-  overflow-x: auto;
-  border-radius: 8px;
-}
-
-.adminattributes .attribute-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 8px;
-  overflow: hidden;
-  font-size: 1rem;
-}
-
-.adminattributes .attribute-table thead {
-  background-color: #eaeaea;
-}
-
-.adminattributes .attribute-table th,
-.adminattributes .attribute-table td {
-  padding: 0.9rem 1rem;
-  text-align: left;
-}
-
-.adminattributes .attribute-table th {
-  font-weight: 600;
+h1 {
+  margin-bottom: 24px;
   color: #222;
 }
 
-.adminattributes .attribute-table td {
-  color: #333;
+.header-actions {
+  margin-bottom: 16px;
 }
 
-.adminattributes .attribute-table tbody tr:nth-child(even) {
-  background-color: #f5f5f5;
-}
-
-.adminattributes .attribute-table tbody tr:hover {
-  background-color: #f0f0f0;
-}
-
-.adminattributes .btn-edit {
-  background-color: #ffcc00;
-  color: #333;
+.btn-add {
+  background-color: #0d6efd;
+  color: white;
+  padding: 10px 18px;
   border: none;
-  padding: 0.4rem 0.8rem;
   border-radius: 6px;
-  font-size: 0.95rem;
-  cursor: pointer;
-  margin-right: 0.5rem;
-  transition: background-color 0.2s;
-}
-
-.adminattributes .btn-edit:hover {
-  background-color: #e6b800;
-}
-
-.adminattributes .btn-delete {
-  background-color: #ff3b30;
-  color: #fff;
-  border: none;
-  padding: 0.4rem 0.8rem;
-  border-radius: 6px;
-  font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
-.adminattributes .btn-delete:hover {
-  background-color: #d32f2f;
+.btn-add:hover {
+  background-color: #0a58ca;
 }
 
-.adminattributes .error {
-  color: #d32f2f;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
+.attribute-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.adminattributes .loading {
+.attribute-item {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px 24px;
+  margin-bottom: 18px;
+  background: #fafafa;
+}
+
+.attribute-row {
+  display: flex;
+  margin-bottom: 12px;
+}
+
+.attribute-label {
+  width: 130px;
+  font-weight: 700;
+  color: #333;
+}
+
+.attribute-data {
+  flex: 1;
   color: #555;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Value item */
+.value-item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background-color: #e3f2fd;
+  border-radius: 20px;
+  padding: 12px 20px 12px 12px;
+  font-size: 16px;
+  color: #0d6efd;
+  margin-right: 12px;
+  margin-bottom: 8px;
+  user-select: none;
+  gap: 8px;
+  min-width: 110px;
+}
+
+/* Nút xoá value (dấu ×) góc phải trên, nền đen, chữ trắng, cao hơn */
+.btn-delete-value {
+  position: absolute;
+  top: 2px;        /* nâng cao lên chút */
+  right: 4px;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+  color: white;
+  background-color: rgb(246, 4, 4);  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  user-select: none;
+}
+
+.btn-delete-value:hover {
+  background-color: #333; 
+}
+
+
+.btn-edit-value {
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: white;
+  background-color: #198754;
+  margin-left: 4px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.btn-edit-value:hover {
+  background-color: #145c32;
+}
+
+.value-text {
+  user-select: text;
+  padding-right: 4px;
+}
+
+.action-buttons {
+  margin-top: 12px;
+}
+
+.btn-edit {
+  background-color: #0d6efd;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  margin-right: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-edit:hover {
+  background-color: #0a58ca;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-delete:hover {
+  background-color: #9a1c1c;
+}
+
+.error {
+  color: red;
+  margin-bottom: 16px;
+}
+
+.loading {
+  color: #555;
+  margin-bottom: 16px;
+}
+.input-add-value {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  flex: 1;
+  max-width: 250px;
+}
+
+.btn-add-value {
+  background-color: #0d6efd;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.btn-add-value:hover {
+  background-color: #0a58ca;
+}
+.action-buttons {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px; 
 }
