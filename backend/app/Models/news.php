@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use app\Models\User;
+
 class news extends Model
 {
     //
@@ -20,8 +21,8 @@ class news extends Model
         'updated_at',
         'deleted_at',
     ];
-        public function user()
+    public function user()
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'user_id')->select(['user_id', 'full_name', 'image_url']);
     }
 }
