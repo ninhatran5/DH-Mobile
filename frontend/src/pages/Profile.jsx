@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { fetchProfile } from "../slices/profileSlice";
 import Loading from "../components/Loading";
+import { fetchListFavorite } from "../slices/favoriteProductsSlice";
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -15,8 +16,10 @@ const Profile = () => {
   const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
+  const { listFavorite } = useSelector((state) => state.favoriteProduct);
 
   useEffect(() => {
+    dispatch(fetchListFavorite());
     dispatch(fetchProfile());
   }, [dispatch]);
 
@@ -56,7 +59,7 @@ const Profile = () => {
     {
       id: 3,
       label: t("profile.statisticals.likedProducts"),
-      value: "10 sản phẩm",
+      value: listFavorite.length + " sản phẩm",
     },
   ];
   const orders = [

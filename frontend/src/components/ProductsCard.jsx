@@ -7,9 +7,11 @@ import checkLogin from "../../utils/checkLogin";
 import numberFormat from "../../utils/numberFormat";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  deleteFavoriteProduct,
   fetchFavoriteProduct,
   fetchListFavorite,
 } from "../slices/favoriteProductsSlice";
+import { fetchUpdateStatus } from "../slices/updateStatusSlice";
 
 const ProductCard = ({ discountPercent, product }) => {
   const navigate = useNavigate();
@@ -18,9 +20,17 @@ const ProductCard = ({ discountPercent, product }) => {
   const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
   const [favorite, setFavorite] = useState(product.favorite);
 
-  const handleUnFavorites = () => {
-    setFavorite(false);
-    toast.success(t("products.removeFavorites"));
+  const handleUnFavorites = async () => {
+    if (!checkLogin()) return;
+    try {
+      await dispatch(deleteFavoriteProduct(product.product_id)).unwrap();
+      setFavorite(false);
+      toast.success(t("products.removeFavorites"));
+      await dispatch(fetchUpdateStatus(product.product_id)).unwrap();
+      dispatch(fetchListFavorite());
+    } catch (error) {
+      toast.error(error?.message || t("products.errorRemovingFavorite"));
+    }
   };
 
   const nextProductDetail = (id) => {
