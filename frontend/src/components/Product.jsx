@@ -11,6 +11,7 @@ import {
   fetchFavoriteProduct,
   fetchListFavorite,
 } from "../slices/favoriteProductsSlice";
+import { fetchUpdateStatus } from "../slices/updateStatusSlice";
 
 const Product = ({ product, discountPercent, nextProductDetail }) => {
   const dispatch = useDispatch();
@@ -19,31 +20,30 @@ const Product = ({ product, discountPercent, nextProductDetail }) => {
   const [favorite, setFavorite] = useState(product.status);
   const navigate = useNavigate();
   const handleUnFavorites = async () => {
-    if (!checkLogin()) {
-      return;
-    }
+    if (!checkLogin()) return;
     try {
-      await dispatch(deleteFavoriteProduct(product.product_id));
+      await dispatch(deleteFavoriteProduct(product.product_id)).unwrap();
       setFavorite(false);
       toast.success(t("products.removeFavorites"));
+      await dispatch(fetchUpdateStatus(product.product_id)).unwrap();
       dispatch(fetchListFavorite());
     } catch (error) {
-      toast.error(error || t("products.errorAddingFavorite"));
+      toast.error(error?.message || t("products.errorRemovingFavorite"));
     }
   };
+
   const addToFavorites = async () => {
-    if (!checkLogin()) {
-      return;
-    }
+    if (!checkLogin()) return;
     try {
-      await dispatch(fetchFavoriteProduct(product.product_id));
+      await dispatch(fetchFavoriteProduct(product.product_id)).unwrap();
       setFavorite(true);
       toast.success(t("products.addedToFavorites"));
       dispatch(fetchListFavorite());
     } catch (error) {
-      toast.error(error || t("products.errorAddingFavorite"));
+      toast.error(error?.message || t("products.errorAddingFavorite"));
     }
   };
+
   const addToShoppingCart = () => {
     if (checkLogin()) {
       console.log("added");
