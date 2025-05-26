@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\AttributevalueController;
 use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
 use App\Http\Controllers\Api\VariantAttributeValuesController;
+use App\Http\Controllers\Api\VorcherController;
 
 // API Auth
 // http://127.0.0.1:8000/api
@@ -134,6 +135,15 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::delete('/forceDelete/{id}', 'forceDelete');
         Route::get('/trashed', 'trashed');
     });
+    // Vorcher
+    Route::prefix('vorchers')->controller(VorcherController::class)->group(function () {
+        Route::post('/', 'store');
+        Route::put('/{id}', 'update');
+        Route::delete('/{id}', 'destroy');
+        Route::put('/restore/{id}', 'restore');
+        Route::delete('/forceDelete/{id}', 'forceDelete');
+        Route::get('/trashed', 'trashed');
+    });
 });
 
 // Các route chỉ đọc (không cần quyền admin)
@@ -153,6 +163,8 @@ Route::get('variantattributevalues', [VariantAttributeValuesController::class, '
 Route::get('variantattributevalues/{id}', [VariantAttributeValuesController::class, 'show']); // lấy liên kết theo id
 Route::get('news', [NewsController::class, 'index']); // lấy danh sách tin tức
 Route::get('news/{id}', [NewsController::class, 'show']); // lấy tin tức theo id
+Route::get('vorchers', [VorcherController::class, 'index']); // lấy danh sách vorcher
+Route::get('vorchers/{id}', [VorcherController::class, 'show']); // lấy vorcher theo id
 
 
 
