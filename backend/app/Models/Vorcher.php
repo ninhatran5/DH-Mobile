@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Vorcher extends Model
 {
     //
+    use SoftDeletes;
     protected $table = 'vouchers';
     protected $primaryKey = 'voucher_id';
 
