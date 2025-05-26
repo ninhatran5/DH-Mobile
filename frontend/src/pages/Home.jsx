@@ -305,68 +305,69 @@ const Home = () => {
           </Swiper>
         </div>
       </section>
-
-      <section className="py-5 overflow-hidden">
-        <div className="container-fluid">
-          <div className="d-flex justify-content-between flex-wrap mb-4">
-            <h3 className="section-title cursor-pointer">
-              {t("home.productsYouLiked")}
-            </h3>
-            <div className="d-flex align-items-center gap-3">
-              <Link
-                to={"/favorite-products"}
-                className="btn-link text-decoration-none"
-              >
-                {t("home.productLikedViewAllBrands")}
-              </Link>
-              <div className="swiper-buttons">
-                <button className="swiper-prev brand-carousel-prev btn btn-yellow">
-                  ❮
-                </button>
-                <button className="swiper-next brand-carousel-next btn btn-yellow">
-                  ❯
-                </button>
+      {listFavorite && listFavorite.length > 0 && (
+        <section className="py-5 overflow-hidden">
+          <div className="container-fluid">
+            <div className="d-flex justify-content-between flex-wrap mb-4">
+              <h3 className="section-title cursor-pointer">
+                {t("home.productsYouLiked")}
+              </h3>
+              <div className="d-flex align-items-center gap-3">
+                <Link
+                  to={"/favorite-products"}
+                  className="btn-link text-decoration-none"
+                >
+                  {t("home.productLikedViewAllBrands")}
+                </Link>
+                <div className="swiper-buttons">
+                  <button className="swiper-prev brand-carousel-prev btn btn-yellow">
+                    ❮
+                  </button>
+                  <button className="swiper-next brand-carousel-next btn btn-yellow">
+                    ❯
+                  </button>
+                </div>
               </div>
             </div>
+            {listFavorite && listFavorite.length > 0 ? (
+              <Swiper
+                modules={[Navigation]}
+                navigation={{
+                  nextEl: ".brand-carousel-next",
+                  prevEl: ".brand-carousel-prev",
+                }}
+                spaceBetween={20}
+                speed={600}
+                breakpoints={{
+                  0: { slidesPerView: 2 },
+                  576: { slidesPerView: 2 },
+                  768: { slidesPerView: 2 },
+                  992: { slidesPerView: 3 },
+                  1200: { slidesPerView: 4 },
+                }}
+              >
+                {listFavorite.slice(0, 5).map((item) => {
+                  const discountPercent = isPercentDecrease
+                    ? getDiscountPercent(item)
+                    : null;
+                  return (
+                    <SwiperSlide key={item.product_id}>
+                      <ProductsCarousel
+                        item={item}
+                        discountPercent={discountPercent}
+                      />
+                    </SwiperSlide>
+                  );
+                })}
+              </Swiper>
+            ) : (
+              <div className="text-center text-muted py-4 fw-bold">
+                Bạn chưa có sản phẩm yêu thích nào.
+              </div>
+            )}
           </div>
-          {listFavorite && listFavorite.length > 0 ? (
-            <Swiper
-              modules={[Navigation]}
-              navigation={{
-                nextEl: ".brand-carousel-next",
-                prevEl: ".brand-carousel-prev",
-              }}
-              spaceBetween={20}
-              speed={600}
-              breakpoints={{
-                0: { slidesPerView: 2 },
-                576: { slidesPerView: 2 },
-                768: { slidesPerView: 2 },
-                992: { slidesPerView: 3 },
-                1200: { slidesPerView: 4 },
-              }}
-            >
-              {listFavorite.slice(0, 5).map((item) => {
-                const discountPercent = isPercentDecrease
-                  ? getDiscountPercent(item)
-                  : null;
-                return (
-                  <SwiperSlide key={item.product_id}>
-                    <ProductsCarousel
-                      item={item}
-                      discountPercent={discountPercent}
-                    />
-                  </SwiperSlide>
-                );
-              })}
-            </Swiper>
-          ) : (
-            <div className="text-center text-muted py-4 fw-bold">
-              Bạn chưa có sản phẩm yêu thích nào.
-            </div>
-          )}
-        </div>
-      </section>
+        </section>
+      )}
 
       <section>
         <div className="container-fluid">
