@@ -20,12 +20,22 @@ const FavoriteProducts = () => {
   // Hàm tính phần trăm giảm giá
   const parsePrice = (priceStr) =>
     parseInt(priceStr?.replace(/[^\d]/g, "")) || 0;
+
   const getDiscountPercent = (product) => {
     const original = parsePrice(product.price_original);
     const sale = parsePrice(product.price);
     if (!original || !sale || sale >= original) return null;
     return Math.floor(((original - sale) / original) * 100);
   };
+
+  // Danh sách sản phẩm đã thích, giữ nguyên status từ dữ liệu redux (đã đúng là favorite)
+  const processedList = listFavorite.map((item) => {
+    const product = item.product || item;
+    return {
+      ...product,
+      status: true, // Nếu chắc chắn đây là list favorite, hoặc có thể lấy status từ API
+    };
+  });
 
   return (
     <>
@@ -39,12 +49,12 @@ const FavoriteProducts = () => {
       />
       <div className="container-fluid">
         <div className="row row-cols-1 row-cols-sm-2 row-cols-md-5 row-cols-lg-5 row-cols-xl-5">
-          {listFavorite && listFavorite.length > 0 ? (
-            listFavorite.map((item) => (
+          {processedList.length > 0 ? (
+            processedList.map((product) => (
               <Product
-                key={item.product?.product_id || item.product_id}
-                product={item.product || item}
-                discountPercent={getDiscountPercent(item.product || item)}
+                key={product.product_id}
+                product={product}
+                discountPercent={getDiscountPercent(product)}
                 nextProductDetail={() => {}}
               />
             ))
