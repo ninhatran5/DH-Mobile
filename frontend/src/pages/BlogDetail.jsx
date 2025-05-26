@@ -8,7 +8,6 @@ import dayjs from "dayjs";
 import { fetchBlogDetail } from "../slices/blogDetailSlice";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { fetchBlogs } from "../slices/blogSlice";
 
 const BlogDetail = () => {
   const { id } = useParams();
@@ -16,17 +15,7 @@ const BlogDetail = () => {
 
   const dispatch = useDispatch();
   const { blogDetails, loading } = useSelector((state) => state.blogDetail);
-  const { news } = useSelector((state) => state.blog);
-  const currentIndex = news.findIndex((blog) => blog.id === parseInt(id));
-  const prevPost = currentIndex > 0 ? news[currentIndex - 1] : null;
-  const nextPost =
-    currentIndex < news.length - 1 ? news[currentIndex + 1] : null;
 
-  useEffect(() => {
-    if (news.length === 0) {
-      dispatch(fetchBlogs());
-    }
-  }, [dispatch, news.length]);
   useEffect(() => {
     dispatch(fetchBlogDetail(id));
   }, [id, dispatch]);

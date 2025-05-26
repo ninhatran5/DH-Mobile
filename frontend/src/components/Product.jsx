@@ -14,6 +14,7 @@ import {
 import { fetchUpdateStatus } from "../slices/updateStatusSlice";
 
 const Product = ({ product, discountPercent, nextProductDetail }) => {
+  console.log("🚀 ~ Product ~ product:", product);
   const dispatch = useDispatch();
   const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
   const { t } = useTranslation();
