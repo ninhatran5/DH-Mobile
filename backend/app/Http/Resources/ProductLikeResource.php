@@ -27,7 +27,7 @@ class ProductLikeResource extends JsonResource
                 'description'    => $this->product->description,
                 'price'          => number_format($this->product->price, 2),
                 'price_original' => number_format($this->product->price_original, 2),
-                'status'     => (bool) $this->status,
+                'status'     => (bool) $this->product->status,
                 'image_url'      => $this->product->image_url,
                 'created_at'     => $this->product->created_at->toDateTimeString(),
                 'updated_at'     => $this->product->updated_at->toDateTimeString(),
