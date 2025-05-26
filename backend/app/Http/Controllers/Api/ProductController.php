@@ -22,7 +22,7 @@ class ProductController extends Controller
     public function index()
     {
         //
-        $products = Product::all();
+        $products = Product::with('category')->get();
         return response()->json([
             'message' => 'Lấy danh sách sản phẩm thành công',
             'data' => $products,
@@ -100,7 +100,7 @@ class ProductController extends Controller
     public function show(string $id)
     {
         //
-        $product = Product::find($id);
+        $product = Product::with('category')->find($id);
         if ($product) {
             return response()->json($product, 200);
         } else {

@@ -218,7 +218,7 @@
                     "AttributeValue"
                 ],
                 "summary": "Lấy danh sách thuộc tính con",
-                "operationId": "1e557d4dba0de5124a36be44114ca5f2",
+                "operationId": "74f54aea03aa9d29c7fe19bbeebc1206",
                 "responses": {
                     "200": {
                         "description": "Thành công"
@@ -232,7 +232,7 @@
                     "AttributeValue"
                 ],
                 "summary": "Thêm thuộc tính con mới",
-                "operationId": "74f6a53b13253bffdaac98beecd8aa40",
+                "operationId": "d85dd97dbc93779c498cee987246a8c7",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -268,7 +268,7 @@
                     "AttributeValue"
                 ],
                 "summary": "Lấy thuộc tính con theo id",
-                "operationId": "b09953167a35b29d907bb84584041907",
+                "operationId": "f09ad21de71a4f6d58d49e8464742236",
                 "parameters": [
                     {
                         "name": "id",
@@ -295,7 +295,7 @@
                     "AttributeValue"
                 ],
                 "summary": "Cập nhật thuộc tính con theo id",
-                "operationId": "ccc0f31858673e8574ce09da77a7633a",
+                "operationId": "9aab3b49357ef5ec56cef6f62631830d",
                 "parameters": [
                     {
                         "name": "id",
@@ -342,7 +342,7 @@
                     "AttributeValue"
                 ],
                 "summary": "Xóa mềm thuộc tính con theo id",
-                "operationId": "88c1104a235a691f59ae9aa159a90e9c",
+                "operationId": "6973ba347953e097d4d2d2ec96dd4f5a",
                 "parameters": [
                     {
                         "name": "id",
@@ -369,7 +369,7 @@
                     "AttributeValue"
                 ],
                 "summary": "Lấy danh sách thuộc tính con đã xóa mềm",
-                "operationId": "126dbba9a4ecd6be62504d537a76e823",
+                "operationId": "8aaea04a5bd4a8dbd3d16c53e283d4fc",
                 "responses": {
                     "200": {
                         "description": "Thành công"
@@ -383,7 +383,7 @@
                     "AttributeValue"
                 ],
                 "summary": "Khôi phục thuộc tính con đã xóa mềm",
-                "operationId": "d1960307346546bd80b4f06ecb79c4da",
+                "operationId": "e25b41ec8a3c3ec6cd784dbbc5286f3f",
                 "parameters": [
                     {
                         "name": "id",
@@ -410,7 +410,7 @@
                     "AttributeValue"
                 ],
                 "summary": "Xóa vĩnh viễn thuộc tính con đã xóa mềm",
-                "operationId": "c06246ffd4e72c4f64437c70ecc7ea4e",
+                "operationId": "115dc07085dcbcb086e61f56969fbc39",
                 "parameters": [
                     {
                         "name": "id",
@@ -2004,6 +2004,74 @@
                     }
                 }
             }
+        },
+        "/api/vorchers/trashed": {
+            "get": {
+                "tags": [
+                    "Vorcher"
+                ],
+                "summary": "Lấy danh sách các vorcher đã bị xóa mềm",
+                "operationId": "e22728bc5acc00959fb34d1c393cf1a0",
+                "responses": {
+                    "200": {
+                        "description": "Lấy danh sách vorcher đã xóa thành công"
+                    }
+                }
+            }
+        },
+        "/api/vorchers/restore/{id}": {
+            "put": {
+                "tags": [
+                    "Vorcher"
+                ],
+                "summary": "Khôi phục một vorcher đã bị xóa mềm",
+                "operationId": "5fc52f158050ce90f4072ffedb253d35",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Khôi phục vorcher thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/vorchers/force-delete/{id}": {
+            "delete": {
+                "tags": [
+                    "Vorcher"
+                ],
+                "summary": "Xóa vĩnh viễn vorcher đã xóa mềm",
+                "operationId": "35cef9c013ea5b096d32c494268f19d4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa vĩnh viễn thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -2057,6 +2125,10 @@
         {
             "name": "VariantAttributeValues",
             "description": "VariantAttributeValues"
+        },
+        {
+            "name": "Vorcher",
+            "description": "Vorcher"
         }
     ]
 }
