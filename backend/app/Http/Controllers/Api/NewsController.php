@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Cloudinary\Cloudinary;
 
 
+
 class NewsController extends Controller
 {
     /**
@@ -20,8 +21,8 @@ class NewsController extends Controller
      */
     public function index()
     {
-        //
-        $news = news::all();
+        // Lấy danh sách tin tức kèm thông tin user
+        $news = news::with('user')->get();
         return response()->json([
             'message' => 'Lấy danh sách tin tức thành công',
             'data' => $news,
@@ -85,8 +86,8 @@ class NewsController extends Controller
      */
     public function show(string $id)
     {
-        //
-        $news = news::find($id);
+        // Lấy chi tiết tin tức kèm thông tin user
+        $news = news::with('user')->find($id);
         if ($news) {
             return response()->json([
                 'message' => 'Lấy thông tin thành công',
