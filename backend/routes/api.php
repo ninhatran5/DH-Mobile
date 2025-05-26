@@ -3,13 +3,14 @@
 use App\Http\Middleware\CheckAdmin;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\ProductLikeController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\AttributeController;
+use App\Http\Controllers\Api\ProductLikeController;
 use App\Http\Controllers\Api\AttributevalueController;
 use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
@@ -156,11 +157,30 @@ Route::get('news/{id}', [NewsController::class, 'show']); // lấy tin tức the
 
 
 
-//
-
+// product like
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('productlike/{id}', [ProductLikeController::class,'productlike']);
     Route::delete('productunlike/{id}', [ProductLikeController::class,'productunlike']);
     Route::get('listproductlike', [ProductLikeController::class,'listproductlike']);
     Route::put('updatestatuslike/{id}', [ProductController::class,'updatestatuslike']);
 });
+
+// cart and cart item
+Route::middleware('auth:sanctum')->group(function () {
+Route::post('cart', [CartController::class, 'Cart']);
+
+// // thêm sản phẩm vào giỏ hàng
+// Route::post('cart/add/{productId}', [CartController::class, 'addProductToCart']);
+// // cập nhật số lượng sản phẩm trong giỏ hàng
+// Route::put('cart/update/{productId}', [CartController::class, 'updateProductQuantity']);
+// // xóa sản phẩm khỏi giỏ hàng
+// Route::delete('cart/remove/{productId}', [CartController::class, 'removeProductFromCart']);
+// // lấy giỏ hàng của người dùng
+// Route::get('getCart', [CartController::class, 'getCart']);
+// // xóa toàn bộ giỏ hàng
+// Route::delete('cart/clear', [CartController::class, 'clearCart']);
+
+
+});
+
+
