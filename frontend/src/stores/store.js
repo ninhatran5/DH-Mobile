@@ -20,6 +20,7 @@ import attributeReducer from "../slices/Attribute";
 import attributeValueReducer from "../slices/attributeValueSlice";
 import categorysReducer from "../slices/categorySlice";
 import adminAccountReducer from "../slices/adminAcccount";
+import blogDetailReducer from "../slices/blogDetailSlice";
 export const store = configureStore({
   reducer: {
     home: homeReducer,
@@ -38,6 +39,7 @@ export const store = configureStore({
     productVariationDetail: productVariationDetailReducer,
     banner: bannerReducer,
     blog: blogReducer,
+    blogDetail: blogDetailReducer,
     favoriteProduct: favoriteProductReducer,
     category: categoryReducer,
     attribute: attributeReducer,
