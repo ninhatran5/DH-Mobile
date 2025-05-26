@@ -14,7 +14,11 @@ class VorcherController extends Controller
     public function index()
     {
         $vouchers = Vorcher::all();
-        return response()->json($vouchers);
+        return response()->json([
+            'message' => 'lấy danh sách voucher thành công',
+            'data' => $vouchers
+        ])->setStatusCode(200, 'OK',);
+
     }
 
     /**
@@ -31,7 +35,10 @@ class VorcherController extends Controller
             'is_active' => 'boolean',
         ]);
         $voucher = Vorcher::create($validated);
-        return response()->json($voucher, 201);
+        return response()->json([
+            'message' => 'Tạo voucher thành công',
+            'data' => $voucher
+        ])->setStatusCode(201, 'Created');
     }
 
     /**
@@ -40,7 +47,11 @@ class VorcherController extends Controller
     public function show(string $id)
     {
         $voucher = Vorcher::findOrFail($id);
-        return response()->json($voucher);
+        return response()->json([
+            'message' => 'Lấy voucher thành công',
+            'data' => $voucher
+        ])->setStatusCode(200, 'OK',);
+  
     }
 
     /**
@@ -58,7 +69,11 @@ class VorcherController extends Controller
             'is_active' => 'boolean',
         ]);
         $voucher->update($validated);
-        return response()->json($voucher);
+        return response()->json([
+            'message' => 'Cập nhật voucher thành công',
+            'data' => $voucher
+        ])->setStatusCode(200, 'OK',);
+        
     }
 
     /**
