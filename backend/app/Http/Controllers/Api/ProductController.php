@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\Product;
-use Illuminate\Http\Request;
 use Cloudinary\Cloudinary;
+use App\Models\ProductLike;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -301,6 +303,35 @@ class ProductController extends Controller
         $product->forceDelete();
         return response()->json([
             'message' => 'Xóa vĩnh viễn sản phẩm thành công',
+            'status' => 200,
+        ])->setStatusCode(200, 'OK');
+    }
+
+    public function updatestatuslike( $id)
+    {
+        $user = Auth::user();
+        $productlike = ProductLike::where('user_id', $user->user_id)
+            ->where('product_id', $id)
+            ->first();
+
+        if (!$productlike) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Sản phẩm không tồn tại trong danh sách yêu thích'
+            ]);
+        }
+        $product = Product::find($id);
+        if (!$product) {
+            return response()->json([
+                'message' => 'Sản phẩm không tồn tại',
+                'status' => 404,
+            ], 404);
+        }
+        $product->status = !$product->status;
+        $product->save();
+        return response()->json([
+            'message' => 'Cập nhật trạng thái sản phẩm thành công',
+            'data' => $product,
             'status' => 200,
         ])->setStatusCode(200, 'OK');
     }
