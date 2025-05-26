@@ -23,14 +23,14 @@ class Vorcher extends Model
     ];
 
     // Một voucher có thể được gán cho nhiều đơn hàng
-    // public function orders()
-    // {
-    //     return $this->hasMany(Order::class, 'voucher_id', 'voucher_id');
-    // }
+    public function orders()
+    {
+        return $this->hasMany(Orders::class, 'voucher_id', 'voucher_id');
+    }
 
-    // // Một voucher có thể được cấp cho nhiều user_vouchers
-    // public function userVouchers()
-    // {
-    //     return $this->hasMany(UserVoucher::class, 'voucher_id', 'voucher_id');
-    // }
+    // Một voucher có thể được cấp cho nhiều user_vouchers
+    public function userVouchers()
+    {
+        return $this->hasMany(User_vouchers::class, 'voucher_id', 'voucher_id');
+    }
 }
