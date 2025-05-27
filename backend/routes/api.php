@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\VorcherController;
+use App\Http\Controllers\Api\CartItemController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\AttributeController;
 use App\Http\Controllers\Api\ProductLikeController;
@@ -15,7 +17,6 @@ use App\Http\Controllers\Api\AttributevalueController;
 use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
 use App\Http\Controllers\Api\VariantAttributeValuesController;
-use App\Http\Controllers\Api\VorcherController;
 
 // API Auth
 // http://127.0.0.1:8000/api
@@ -182,15 +183,15 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('cart', [CartController::class, 'Cart']);
 
 // // thêm sản phẩm vào giỏ hàng
-// Route::post('cart/add/{productId}', [CartController::class, 'addProductToCart']);
+Route::post('cart/add/{id}', [CartItemController::class, 'addProductToCart']);
 // // cập nhật số lượng sản phẩm trong giỏ hàng
-// Route::put('cart/update/{productId}', [CartController::class, 'updateProductQuantity']);
+// Route::put('cart/update/{id}', [CartItemController::class, 'updateProductQuantity']);
 // // xóa sản phẩm khỏi giỏ hàng
-// Route::delete('cart/remove/{productId}', [CartController::class, 'removeProductFromCart']);
+// Route::delete('cart/remove/{id}', [CartItemController::class, 'removeProductFromCart']);
 // // lấy giỏ hàng của người dùng
-// Route::get('getCart', [CartController::class, 'getCart']);
+// Route::get('getCart', [CartItemController::class, 'getCart']);
 // // xóa toàn bộ giỏ hàng
-// Route::delete('cart/clear', [CartController::class, 'clearCart']);
+// Route::delete('cart/clear', [CartItemController::class, 'clearCart']);
 
 
 });
