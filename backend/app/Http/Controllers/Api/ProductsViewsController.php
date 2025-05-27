@@ -87,25 +87,6 @@ class ProductsViewsController extends Controller
             'data' => $views,
         ], 200);
     }
-    // lấy danh sách sản phẩm đã xem theo product_id
-    public function getViewsByProductId(Request $request, $product_id)
-    {
-        // kiểm tra xem product_id có tồn tại trong bảng products không
-        $views = ProductsViews::where('product_id', $product_id)->with(['user', 'product'])->get();
-        
-        if ($views->isEmpty()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No product views found for this product',
-            ], 404);
-        }
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'Product views retrieved successfully',
-            'data' => $views,
-        ], 200);
-    }
 
 }
 
