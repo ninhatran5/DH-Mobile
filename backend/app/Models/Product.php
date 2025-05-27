@@ -24,7 +24,7 @@ class Product extends Model
     ];
     public function category()
     {
-        return $this->belongsTo(Category::class, 'category_id', 'category_id')->select(['category_id','name']);
+        return $this->belongsTo(Category::class, 'category_id', 'category_id')->select(['category_id', 'name']);
     }
     public function productVariants()
     {
@@ -33,5 +33,9 @@ class Product extends Model
     public function specifications()
     {
         return $this->hasMany(ProductSpecifications::class, 'product_id', 'product_id');
+    }
+    public function productsViews()
+    {
+        return $this->hasMany(ProductsViews::class, 'product_id', 'product_id');
     }
 }
