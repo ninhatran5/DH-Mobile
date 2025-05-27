@@ -18,7 +18,7 @@ class VoucherSeeder extends Seeder
         $vorchers = collect(range(1, 10))->map(function () {
             return [
                 'code' => strtoupper(Str::random(18)),
-                'title' => 'Voucher ' . Str::random(5),
+                'title' => 'Voucher ' . Str::random(12),
                 'discount_amount' => rand(5, 50),
                 'min_order_value' => rand(50, 500),
                 'start_date' => now(),
@@ -29,6 +29,7 @@ class VoucherSeeder extends Seeder
         foreach ($vorchers as $vorcher) {
             Vorcher::create([
                 'code' => $vorcher['code'],
+                'title' => $vorcher['title'],
                 'discount_amount' => $vorcher['discount_amount'],
                 'min_order_value' => $vorcher['min_order_value'],
                 'start_date' => $vorcher['start_date'],
