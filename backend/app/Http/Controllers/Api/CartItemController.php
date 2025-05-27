@@ -174,4 +174,47 @@ class CartItemController extends Controller
             'cart_item' => $cartItem
         ], 200);
     }
+
+
+    public function removeProductFromCart(request $request, $id)
+    {
+        // Kiểm tra đăng nhập
+        $user = $request->user();
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Chưa đăng nhập'
+            ], 401);
+        }
+
+        // Tìm giỏ hàng của người dùng
+        $cart = Cart::where('user_id', $user->user_id)->first();
+        if (!$cart) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Giỏ hàng không tồn tại'
+            ], 404);
+        }
+
+        // Tìm sản phẩm trong giỏ hàng theo ID
+        $cartItem = CartItem::where('cart_id', $cart->cart_id)
+            ->where('variant_id', $id)
+            ->first();
+
+        if (!$cartItem) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Sản phẩm không có trong giỏ hàng'
+            ], 404);
+        }
+
+        // Xóa sản phẩm khỏi giỏ hàng
+        $cartItem->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Xóa sản phẩm khỏi giỏ hàng thành công'
+        ], 200);
+    }
+
 }
