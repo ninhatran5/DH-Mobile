@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\ProductLikeController;
 use App\Http\Controllers\Api\AttributevalueController;
 use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
+use App\Http\Controllers\Api\ProductsViewsController;
 use App\Http\Controllers\Api\VariantAttributeValuesController;
 
 // API Auth
@@ -144,6 +145,14 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::put('/restore/{id}', 'restore');
         Route::delete('/forceDelete/{id}', 'forceDelete');
         Route::get('/trashed', 'trashed');
+    });
+    // product views 
+    Route::prefix('productsviews')->controller(ProductsViewsController::class)->group(function () {
+        Route::post('/', 'addview'); // thêm sản phẩm đã xem
+        Route::delete('/{view_id}', 'deleteView'); // xóa sản phẩm đã xem theo view_id
+        Route::delete('/deleteall', 'deleteAllViews'); // xóa tất cả sản phẩm đã xem
+        Route::get('/getbyuser/{user_id}', 'getViewsByUserId'); // lấy sản phẩm đã xem theo user_id
+        // Route::get('/getall', 'getAllViews'); // lấy tất cả sản phẩm đã xem 
     });
 });
 

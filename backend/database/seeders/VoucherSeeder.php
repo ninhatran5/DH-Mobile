@@ -18,6 +18,7 @@ class VoucherSeeder extends Seeder
         $vorchers = collect(range(1, 10))->map(function () {
             return [
                 'code' => strtoupper(Str::random(18)),
+                'title' => 'Voucher ' . Str::random(5),
                 'discount_amount' => rand(5, 50),
                 'min_order_value' => rand(50, 500),
                 'start_date' => now(),
