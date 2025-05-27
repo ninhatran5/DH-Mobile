@@ -3,12 +3,49 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\User;
+use Cloudinary\Cloudinary;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Mail\ResetPasswordMail;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
+/**
+ *    @OA\Info(
+ *    title="APIs For DH Mobile ",
+ *    version="1.0.0",
+ *    ),
+ *    @OA\SecurityScheme(
+ *   securityScheme="bearerAuth",
+ *    in="header",
+ *    name="bearerAuth",
+ *    type="http",
+ *    scheme="bearer",
+ *    bearerFormat="JWT",
+ *    ),
+ */
 class AuthController extends Controller
 {
+
+    /**
+     * @OA\Post(
+     *     path="/api/login",
+     *     summary="Đăng nhập",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email","password"},
+     *             @OA\Property(property="email", type="string", format="email"),
+     *             @OA\Property(property="password", type="string", format="password")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Đăng nhập thành công"),
+     *     @OA\Response(response=401, description="Sai thông tin đăng nhập")
+     * )
+     */
     public function login(Request $request)
     {
         // Validate dữ liệu đầu vào
@@ -40,11 +77,20 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'phone' => $user->phone,
                 'address' => $user->address,
-                'role' => $user->role, 
+                'role' => $user->role,
             ]
         ]);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/logout",
+     *     summary="Đăng xuất",
+     *     tags={"Auth"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(response=200, description="Đăng xuất thành công")
+     * )
+     */
     public function logout(Request $request)
     {
         // Xóa token hiện tại
@@ -57,6 +103,26 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/register",
+     *     summary="Đăng ký tài khoản mới",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"username","full_name","email","password"},
+     *             @OA\Property(property="username", type="string"),
+     *             @OA\Property(property="full_name", type="string"),
+     *             @OA\Property(property="email", type="string", format="email"),
+     *             @OA\Property(property="password", type="string", format="password"),
+     *             @OA\Property(property="phone", type="string"),
+     *             @OA\Property(property="address", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Đăng ký thành công")
+     * )
+     */
     public function register(Request $request)
     {
         // Validate dữ liệu đầu vào
@@ -64,7 +130,13 @@ class AuthController extends Controller
             'username' => 'required|string|max:255',
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:28',
+                'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,28}$/'
+            ],
             'phone' => 'nullable|string|max:15',
             'address' => 'nullable|string|max:255',
         ]);
@@ -86,9 +158,151 @@ class AuthController extends Controller
                 'username' => $user->username,
                 'full_name' => $user->full_name,
                 'email' => $user->email,
-                'role' => $user->role, 
             ]
         ]);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/forgot-password",
+     *     summary="Gửi email đặt lại mật khẩu",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email"},
+     *             @OA\Property(property="email", type="string", format="email")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Gửi email thành công"),
+     *     @OA\Response(response=404, description="Email không tồn tại")
+     * )
+     */
+    public function forgotPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Email không tồn tại.',
+            ], 404);
+        }
+
+        // Tạo token
+        $token = Str::random(60);
+
+        // Lưu token vào bảng password_resets
+        DB::table('password_resets')->updateOrInsert(
+            ['email' => $user->email],
+            [
+                'token' => $token,
+                'created_at' => now(),
+            ]
+        );
+
+        // Gửi mail
+        Mail::to($user->email)->send(new ResetPasswordMail($user, $token));
+
+        return response()->json([
+            'message' => 'Đã gửi email đặt lại mật khẩu.',
+        ]);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/resetpassword",
+     *     summary="Đặt lại mật khẩu mới",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"token","password","password_confirmation"},
+     *             @OA\Property(property="token", type="string"),
+     *             @OA\Property(property="password", type="string", format="password"),
+     *             @OA\Property(property="password_confirmation", type="string", format="password")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Đặt lại mật khẩu thành công"),
+     *     @OA\Response(response=400, description="Token không hợp lệ hoặc đã hết hạn"),
+     *     @OA\Response(response=404, description="Email không tồn tại")
+     * )
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required|string',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:28',
+                'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,28}$/'
+            ],
+            'password_confirmation' => 'required|same:password',
+        ]);
+
+        // Kiểm tra token hợp lệ
+        $reset = DB::table('password_resets')->where('token', $request->token)->first();
+        if (!$reset) {
+            return response()->json([
+                'message' => 'Token không hợp lệ hoặc đã hết hạn.',
+            ], 400);
+        }
+
+        // Lấy user theo email trong password_resets
+        $user = User::where('email', $reset->email)->first();
+        if (!$user) {
+            return response()->json([
+                'message' => 'Email không tồn tại.',
+            ], 404);
+        }
+
+        // Kiểm tra mật khẩu mới không trùng với mật khẩu cũ
+        if (Hash::check($request->password, $user->password_hash)) {
+            return response()->json([
+                'message' => 'Mật khẩu mới không được trùng với mật khẩu cũ.',
+            ], 400);
+        }
+
+        $user->password_hash = Hash::make($request->password);
+        $user->save();
+
+        // Xoá token sau khi reset thành công
+        DB::table('password_resets')->where('email', $user->email)->delete();
+
+        return response()->json([
+            'message' => 'Mật khẩu đã được đổi thành công.',
+        ]);
+    }
+
+public function refreshToken(Request $request)
+{
+    $user = $request->user();
+
+    // Xoá token cũ
+    $user->currentAccessToken()->delete();
+
+    // Tạo token mới
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        'access_token' => $token,
+        'token_type' => 'Bearer',
+        'user' => [
+            'id' => $user->user_id,
+            'username' => $user->username,
+            'full_name' => $user->full_name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'address' => $user->address,
+            'role' => $user->role,
+        ]
+    ]);
+}
+
+    
 }

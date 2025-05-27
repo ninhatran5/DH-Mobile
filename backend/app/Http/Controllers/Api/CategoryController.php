@@ -5,12 +5,18 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Cloudinary\Cloudinary;
 use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/categories",
+     *     summary="Lấy danh sách danh mục",
+     *     tags={"Category"},
+     *     @OA\Response(response=200, description="Thành công")
+     * )
      */
     public function index()
     {
@@ -25,23 +31,49 @@ class CategoryController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/categories",
+     *     summary="Thêm danh mục mới",
+     *     tags={"Category"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name"},
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="description", type="string"),
+     *             @OA\Property(property="image_url", type="string", format="binary")
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Tạo thành công")
+     * )
      */
     public function store(Request $request)
     {
-        //
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => 'required|string|max:200',
             'description' => 'nullable|string|max:255',
-            'image_url' => 'nullable',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-        $category = Category::create($request->only(['name', 'description', 'image_url']));
+
+        // Nếu có ảnh upload thì upload lên Cloudinary
         if ($request->hasFile('image_url')) {
-            // Lưu ảnh vào thư mục public/category
-            $path = $request->file('image_url')->store('category', 'public');
-            $category->image_url = $path;
-            $category->save();
+            try {
+                $cloudinary = app(Cloudinary::class);
+                $uploadApi = $cloudinary->uploadApi();
+                $result = $uploadApi->upload($request->file('image_url')->getRealPath(), [
+                    'folder' => 'categories'
+                ]);
+                $validatedData['image_url'] = $result['secure_url'];
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Lỗi khi upload ảnh: ' . $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ], 500);
+            }
         }
+
+        $category = Category::create($validatedData);
         return response()->json([
             'message' => 'Thêm danh mục thành công',
             'data' => $category,
@@ -50,7 +82,19 @@ class CategoryController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/categories/{id}",
+     *     summary="Lấy danh mục theo id",
+     *     tags={"Category"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
      */
     public function show(string $id)
     {
@@ -64,40 +108,72 @@ class CategoryController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/api/categories/{id}",
+     *     summary="Cập nhật danh mục theo id",
+     *     tags={"Category"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name"},
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="description", type="string"),
+     *             @OA\Property(property="image_url", type="string", format="binary")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Cập nhật thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
-        $request->validate([
-            'name' => 'required|string|max:200',
-            'description' => 'nullable|string|max:255',
-            'image_url' => 'nullable',
-        ]);
-
-        // Bước 2: Tìm danh mục theo ID
         $category = Category::find($id);
-        if ($request->hasFile('image_url')) {
-            // Xoá ảnh cũ nếu có
-            if ($category->image_url) {
-                Storage::disk('public')->delete($category->image_url);
-            }
-
-            // Lưu ảnh mới
-            $path = $request->file('image_url')->store('category', 'public');
-            $validatedData['image_url'] = $path;
-        }
         if (!$category) {
             return response()->json([
                 'message' => 'Danh mục không tồn tại',
                 'status' => 404,
             ], 404);
         }
-
-        // Bước 3: Cập nhật dữ liệu
-        $category->update($request->only(['name', 'description', 'image_url']));
-
-        // Bước 4: Trả về phản hồi
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:200',
+            'description' => 'nullable|string|max:255',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+        // Nếu có ảnh mới được upload
+        if ($request->hasFile('image_url')) {
+            try {
+                $cloudinary = app(Cloudinary::class);
+                // Xóa ảnh cũ nếu có
+                if ($category->image_url) {
+                    $oldImageUrl = $category->image_url;
+                    $publicId = $this->getPublicIdFromUrl($oldImageUrl);
+                    if ($publicId) {
+                        $cloudinary->uploadApi()->destroy($publicId, [
+                            'resource_type' => 'image'
+                        ]);
+                    }
+                }
+                // Upload ảnh mới lên Cloudinary
+                $uploadApi = $cloudinary->uploadApi();
+                $result = $uploadApi->upload($request->file('image_url')->getRealPath(), [
+                    'folder' => 'categories'
+                ]);
+                $validatedData['image_url'] = $result['secure_url'];
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Lỗi khi upload ảnh: ' . $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ], 500);
+            }
+        }
+        $category->update($validatedData);
         return response()->json([
             'message' => 'Cập nhật danh mục thành công',
             'data' => $category,
@@ -106,7 +182,19 @@ class CategoryController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/categories/{id}",
+     *     summary="Xóa mềm danh mục theo id",
+     *     tags={"Category"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Xóa thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
      */
     public function destroy(string $id)
     {
@@ -124,7 +212,14 @@ class CategoryController extends Controller
             'status' => 200,
         ])->setStatusCode(200, 'OK');
     }
-    // xem danh sách danh mục đã xóa mềm 
+    /**
+     * @OA\Get(
+     *     path="/api/categories/trashed",
+     *     summary="Lấy danh sách danh mục đã xóa mềm",
+     *     tags={"Category"},
+     *     @OA\Response(response=200, description="Thành công")
+     * )
+     */
     public function trashed()
     {
 
@@ -144,7 +239,21 @@ class CategoryController extends Controller
             'status' => 200,
         ], 200);
     }
-    // khôi phục danh mục đã xóa mềm
+    /**
+     * @OA\Post(
+     *     path="/api/categories/restore/{id}",
+     *     summary="Khôi phục danh mục đã xóa mềm",
+     *     tags={"Category"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Khôi phục thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
+     */
     public function restore($id)
     {
         $category = Category::withTrashed()->find($id);
@@ -161,7 +270,21 @@ class CategoryController extends Controller
             'status' => 200,
         ])->setStatusCode(200, 'OK');
     }
-    // xóa vĩnh viễn danh mục đã xóa mềm
+    /**
+     * @OA\Delete(
+     *     path="/api/categories/force-delete/{id}",
+     *     summary="Xóa vĩnh viễn danh mục đã xóa mềm",
+     *     tags={"Category"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Xóa vĩnh viễn thành công"),
+     *     @OA\Response(response=404, description="Không tìm thấy")
+     * )
+     */
     public function forceDelete($id)
     {
         $category = Category::withTrashed()->find($id);
@@ -178,5 +301,16 @@ class CategoryController extends Controller
         ])->setStatusCode(200, 'OK');
     }
 
-
+    private function getPublicIdFromUrl($url)
+    {
+        if (empty($url)) {
+            return null;
+        }
+        $pattern = '/\/upload\/(?:v\d+\/)?(.+)$/';
+        if (preg_match($pattern, $url, $matches)) {
+            $publicId = preg_replace('/\.[^.]+$/', '', $matches[1]);
+            return $publicId;
+        }
+        return null;
+    }
 }

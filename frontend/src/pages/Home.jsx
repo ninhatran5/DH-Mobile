@@ -3,12 +3,6 @@ import { Pagination, Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-
-import banner1 from "../assets/images/banner1.jpg";
-import banner2 from "../assets/images/banner2.jpg";
-import banner3 from "../assets/images/banenr3.jpg";
-import banner4 from "../assets/images/4d6e937b1e03c66d7b23eaaa45668d55.jpg";
-import banner5 from "../assets/images/iphone-16-pro-max-thu-cu-moi-home.webp";
 import background from "../assets/images/background-pattern.jpg";
 import appleLogo from "../assets/images/Apple_logo_black.png";
 import xiaomiLogo from "../assets/images/Xiaomi_logo__2021-_.svg.png";
@@ -24,19 +18,43 @@ import sonyLogo from "../assets/images/sony.png";
 import masstelLogo from "../assets/images/Masstel-logo.png";
 import phone from "../assets/images/phone3x.png";
 import backgroundPhone from "../assets/images/bg-pattern-2.png";
-
-import iphone from "../assets/images/iphone-16-pro-max.webp";
-import Products from "../components/Products";
-import CardProduct from "../components/CardProducts";
+import Products from "../components/ListProducts";
 import Blogs from "../components/Blogs";
 import SliderLogoBrand from "../components/SliderLogoBrand";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
+import ListProductCard from "../components/ListProductCard";
+import ProductsCarousel from "../components/ProductsCarousel";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchBanners } from "../slices/homeSlice";
+import { fetchListFavorite } from "../slices/favoriteProductsSlice";
+import { fetchProducts } from "../slices/productSlice";
 
 const Home = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const banners = [banner1, banner2, banner3];
+  const isPercentDecrease = true;
+  // const banners = [banner1, banner2, banner3];
+
+  const dispatch = useDispatch();
+  const { banners } = useSelector((state) => state.home);
+  const { products, loading } = useSelector((state) => state.product);
+
+  const sliderBanner = banners.filter((banner) =>
+    banner.title.includes("Slider")
+  );
+  const smallBanner = banners.filter((banner) =>
+    banner.title.includes("Banner")
+  );
+
+  const { listFavorite } = useSelector((state) => state.favoriteProduct);
+  useEffect(() => {
+    dispatch(fetchListFavorite());
+    dispatch(fetchBanners());
+    dispatch(fetchProducts());
+  }, [dispatch]);
+
   const logoBrand = [
     { id: 1, name: "Apple", logo: appleLogo },
     { id: 2, name: "Xiaomi", logo: xiaomiLogo },
@@ -52,50 +70,27 @@ const Home = () => {
     { id: 12, name: "Masstel", logo: masstelLogo },
   ];
 
-  const products = [
-    {
-      id: 1,
-      price: "27.890.000đ",
-      title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
-      image: iphone,
-    },
-    {
-      id: 2,
-      price: "27.890.000đ",
-      title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
-      image: iphone,
-    },
-    {
-      id: 3,
-      price: "27.890.000đ",
-      title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
-      image: iphone,
-    },
-    {
-      id: 4,
-      price: "27.890.000đ",
-      title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
-      image: iphone,
-    },
-    {
-      id: 5,
-      price: "27.890.000đ",
-      title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
-      image: iphone,
-    },
-    {
-      id: 6,
-      price: "27.890.000đ",
-      title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
-      image: iphone,
-    },
-    {
-      id: 7,
-      price: "27.890.000đ",
-      title: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
-      image: iphone,
-    },
-  ];
+  const convertPriceToNumber = (priceString) => {
+    if (!priceString || typeof priceString !== "string") return 0;
+    return Number(priceString.replace(/\./g, "").replace("đ", ""));
+  };
+
+  const getDiscountPercent = (item) => {
+    const original = convertPriceToNumber(item?.product?.price_original);
+    const sale = convertPriceToNumber(item?.product?.price);
+
+    if (
+      !original ||
+      !sale ||
+      isNaN(original) ||
+      isNaN(sale) ||
+      sale >= original
+    )
+      return null;
+
+    // Làm tròn về phía dưới để luôn nhất quán
+    return Math.floor(((original - sale) / original) * 100);
+  };
 
   const services = [
     {
@@ -172,11 +167,6 @@ const Home = () => {
     },
   ];
 
-  const bannerAdvertisement = [banner4, banner5];
-
-  const nextProductDetail = (id) => {
-    navigate(`/product-detail/${id}`);
-  };
   const nextShop = () => {
     navigate("/products");
   };
@@ -202,15 +192,15 @@ const Home = () => {
                     modules={[Pagination, Autoplay]}
                     pagination={{ clickable: true }}
                     autoplay={{ delay: 3000, disableOnInteraction: false }}
-                    loop={true}
+                    loop={false}
                     className="main-swiper"
                   >
-                    {banners.map((image, index) => (
-                      <SwiperSlide key={index}>
+                    {sliderBanner.map((banner) => (
+                      <SwiperSlide key={banner.banner_id}>
                         <img
                           className="swiper-image w-100"
-                          src={image}
-                          alt={`Banner ${index + 1}`}
+                          src={banner.image_url}
+                          alt={banner.title}
                         />
                       </SwiperSlide>
                     ))}
@@ -315,92 +305,79 @@ const Home = () => {
           </Swiper>
         </div>
       </section>
-
-      <section className="py-5 overflow-hidden">
-        <div className="container-fluid">
-          <div className="d-flex justify-content-between flex-wrap mb-4">
-            <h3 className="section-title cursor-pointer">
-              {t("home.productsYouLiked")}
-            </h3>
-            <div className="d-flex align-items-center gap-3">
-              <Link
-                to={"/favorite-products"}
-                className="btn-link text-decoration-none"
-              >
-                {t("home.productLikedViewAllBrands")}
-              </Link>
-              <div className="swiper-buttons">
-                <button className="swiper-prev brand-carousel-prev btn btn-yellow">
-                  ❮
-                </button>
-                <button className="swiper-next brand-carousel-next btn btn-yellow">
-                  ❯
-                </button>
+      {listFavorite && listFavorite.length > 0 && (
+        <section className="py-5 overflow-hidden">
+          <div className="container-fluid">
+            <div className="d-flex justify-content-between flex-wrap mb-4">
+              <h3 className="section-title cursor-pointer">
+                {t("home.productsYouLiked")}
+              </h3>
+              <div className="d-flex align-items-center gap-3">
+                <Link
+                  to={"/favorite-products"}
+                  className="btn-link text-decoration-none"
+                >
+                  {t("home.productLikedViewAllBrands")}
+                </Link>
+                <div className="swiper-buttons">
+                  <button className="swiper-prev brand-carousel-prev btn btn-yellow">
+                    ❮
+                  </button>
+                  <button className="swiper-next brand-carousel-next btn btn-yellow">
+                    ❯
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-
-          <Swiper
-            modules={[Navigation]}
-            navigation={{
-              nextEl: ".brand-carousel-next",
-              prevEl: ".brand-carousel-prev",
-            }}
-            spaceBetween={20}
-            speed={600}
-            breakpoints={{
-              0: { slidesPerView: 2 },
-              576: { slidesPerView: 2 },
-              768: { slidesPerView: 2 },
-              992: { slidesPerView: 3 },
-              1200: { slidesPerView: 4 },
-            }}
-          >
-            {products.map((item) => (
-              <SwiperSlide key={item.id}>
-                <div
-                  className="card mb-3 p-3 rounded-4 shadow border-0"
-                  style={{ cursor: "pointer" }}
-                >
-                  <div className="row g-0">
-                    <div className="col-md-4">
-                      <img
-                        onClick={() => nextProductDetail(item.id)}
-                        src={item.image}
-                        className="img-fluid rounded"
-                        alt={item.title}
+            {listFavorite && listFavorite.length > 0 ? (
+              <Swiper
+                modules={[Navigation]}
+                navigation={{
+                  nextEl: ".brand-carousel-next",
+                  prevEl: ".brand-carousel-prev",
+                }}
+                spaceBetween={20}
+                speed={600}
+                breakpoints={{
+                  0: { slidesPerView: 2 },
+                  576: { slidesPerView: 2 },
+                  768: { slidesPerView: 2 },
+                  992: { slidesPerView: 3 },
+                  1200: { slidesPerView: 4 },
+                }}
+              >
+                {listFavorite.slice(0, 5).map((item) => {
+                  const discountPercent = isPercentDecrease
+                    ? getDiscountPercent(item)
+                    : null;
+                  return (
+                    <SwiperSlide key={item.product_id}>
+                      <ProductsCarousel
+                        item={item}
+                        discountPercent={discountPercent}
                       />
-                    </div>
-                    <div className="col-md-8">
-                      <div className="card-body py-0">
-                        <h5
-                          onClick={() => nextProductDetail(item.id)}
-                          className="card-title"
-                        >
-                          {item.title}
-                        </h5>
-                        <h6 style={{ color: "#e40303" }} className=" mb-0">
-                          {item.price}
-                        </h6>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
-      </section>
+                    </SwiperSlide>
+                  );
+                })}
+              </Swiper>
+            ) : (
+              <div className="text-center text-muted py-4 fw-bold">
+                Bạn chưa có sản phẩm yêu thích nào.
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       <section>
         <div className="container-fluid">
           <h3 className="my-5">{t("home.ourServices")}</h3>
         </div>
         <div className="container-fluid">
-          <div className="row row-cols-1 row-cols-sm-4 row-cols-lg-4">
+          <div className="row row-cols-1 row-cols-sm-4 row-cols-lg-4 pt-2 pb-3">
             {services.map((service) => (
               <div className="col" key={service.id}>
-                <div className="card mb-3 border-0">
+                <div className=" mb-3 border-0">
                   <div className="row">
                     <div className="col-md-2 text-dark mb-2">
                       {service.icon}
@@ -422,25 +399,32 @@ const Home = () => {
       <Products
         title={t("home.featuredProducts")}
         showHeader={true}
-        padding={"py-5"}
+        padding={"py-3"}
         filter={false}
+        limit={5}
+        products={products}
+        loading={loading}
       />
 
-      <CardProduct title={t("home.bestSellingProducts")} />
+      <ListProductCard title={t("home.bestSellingProducts")} />
 
-      <section className="py-2">
+      <section className="py-2 mt-4">
         <div className="container-fluid">
           <div className="row">
-            {bannerAdvertisement.map((item) => {
+            {smallBanner.map((banner) => {
               return (
                 <div
                   style={{ cursor: "pointer" }}
                   onClick={nextShop}
-                  key={item}
+                  key={banner.banner_id}
                   className="col-md-6 mb-3"
                 >
                   <div className="banner-ad">
-                    <img src={item} className="img-fluid" />
+                    <img
+                      src={banner.image_url}
+                      className="img-fluid"
+                      alt={banner.title}
+                    />
                   </div>
                 </div>
               );
@@ -450,9 +434,9 @@ const Home = () => {
       </section>
       <SliderLogoBrand />
 
-      <Blogs showHeader={true} padding={"py-5"} />
+      <Blogs limit={3} showHeader={true} padding={"py-5"} />
 
-      <section className="py-5 my-5">
+      <section className="py-5" style={{ marginTop: 100, marginBottom: 70 }}>
         <div className="container-fluid">
           <div
             className="bg-warning py-5 rounded-5"

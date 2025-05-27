@@ -1,37 +1,23 @@
-import { Link } from "react-router-dom";
 import "../assets/css/voucher.css";
 import Coupon from "../components/Coupon";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { fetchVouhcer } from "../slices/voucherSlice";
+import Loading from "../components/Loading";
 
 const Voucher = () => {
   const { t } = useTranslation();
-
-  const vouchers = [
-    {
-      id: 1,
-      title: "Giảm giá 200.000 VNĐ cho đơn hàng đầu tiên",
-      code: "BHNFASDIJFHIUASHJ",
-    },
-    {
-      id: 2,
-      title: "Giảm giá 10% cho khách hàng giới thiệu bạn bè",
-      code: "JMAKSJFDKASJFK",
-    },
-    {
-      id: 3,
-      title: "Tặng mã giảm giá 50.000 VNĐ cho đơn hàng kế tiếp",
-      code: "12312ASDFASFD",
-    },
-    {
-      id: 4,
-      title: "Giảm giá 20% cho sản phẩm phụ kiện",
-      code: "214DSFDSF",
-    },
-  ];
+  const dispatch = useDispatch();
+  const { vouchers, loading } = useSelector((state) => state.voucher);
+  useEffect(() => {
+    dispatch(fetchVouhcer());
+  }, [dispatch]);
 
   return (
     <>
+      {loading && <Loading />}
       <Breadcrumb
         title={t("breadcrumbVoucher.breadcrumbHeader")}
         mainItem={t("breadcrumbVoucher.breadcrumbTitleHome")}
@@ -43,7 +29,11 @@ const Voucher = () => {
         <div className="voucher_margin">
           <div className="row">
             {vouchers.map((voucher) => (
-              <Coupon key={voucher.id} voucher={voucher} />
+              <Coupon
+                key={voucher.voucher_id}
+                voucher={voucher}
+                isMyVoucher={true}
+              />
             ))}
           </div>
         </div>

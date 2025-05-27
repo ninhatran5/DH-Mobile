@@ -1,21 +1,42 @@
-import blogImage from "../assets/images/blog.jpg";
-import tungln from "../assets/images/tungln.jpg";
+import { BiSolidQuoteAltLeft } from "react-icons/bi";
 import "../assets/css/blogDetail.css";
 import { GrFormNextLink, GrFormPreviousLink } from "react-icons/gr";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import Loading from "../components/Loading";
+import dayjs from "dayjs";
+import { fetchBlogDetail } from "../slices/blogDetailSlice";
+import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
 const BlogDetail = () => {
+  const { id } = useParams();
+  const { t } = useTranslation();
+
+  const dispatch = useDispatch();
+  const { blogDetails, loading } = useSelector((state) => state.blogDetail);
+
+  useEffect(() => {
+    dispatch(fetchBlogDetail(id));
+  }, [id, dispatch]);
   return (
     <>
+      {loading && <Loading />}
       <section className="blog-hero spad">
         <div className="container">
           <div className="row d-flex justify-content-center">
             <div className="col-lg-9 text-center">
               <div className="blog__hero__text">
-                <h2>
-                  Are you one of the thousands of Iphone owners who has no idea
-                </h2>
+                <h2>{blogDetails?.title}</h2>
                 <ul>
-                  <li>By Nguyên tùng</li>
-                  <li>09/06/2025</li>
+                  <li>
+                    <span className="me-1">{t("blog.date")}</span>
+                    {dayjs(blogDetails?.create).format("DD/MM/YYYY")}
+                  </li>
+                  <li>
+                    <span className="me-1">{t("blog.update")}</span>
+                    {dayjs(blogDetails?.updated_at).format("DD/MM/YYYY")}
+                  </li>
                 </ul>
               </div>
             </div>
@@ -28,7 +49,7 @@ const BlogDetail = () => {
           <div className="row d-flex justify-content-center">
             <div className="col-lg-12">
               <div className="blog__details__pic">
-                <img src={blogImage} alt />
+                <img src={blogDetails?.image_url} alt={blogDetails?.title} />
               </div>
             </div>
             <div className="col-lg-8">
@@ -54,7 +75,9 @@ const BlogDetail = () => {
                   </p>
                 </div>
                 <div className="blog__details__quote">
-                  <i className="fa fa-quote-left" />
+                  <i>
+                    <BiSolidQuoteAltLeft style={{ fontSize: 22 }} />
+                  </i>
                   <p>
                     “When designing an advertisement for a particular product
                     many things should be researched like where it should be
@@ -86,10 +109,13 @@ const BlogDetail = () => {
                         style={{ display: "flex", alignItems: "end" }}
                       >
                         <div className="blog__details__author__pic">
-                          <img src={tungln} alt />
+                          <img
+                            src={blogDetails?.user?.image_url}
+                            alt={"Avatar"}
+                          />
                         </div>
                         <div className="blog__details__author__text">
-                          <h5>X$ng</h5>
+                          <h5>{blogDetails?.user?.full_name}</h5>
                         </div>
                       </div>
                     </div>
@@ -100,7 +126,6 @@ const BlogDetail = () => {
                     <div className="col-lg-6 col-md-6 col-sm-6">
                       <a
                         style={{ textDecoration: "none" }}
-                        href
                         className="blog__details__btns__item"
                       >
                         <p style={{ cursor: "pointer" }}>

@@ -4,8 +4,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Link, Outlet, useLocation } from "react-router-dom";
 import logo from "../../assets/images/logo2.png";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-// CSS inline cho sidebar thu gọn
 const sidebarCollapsedStyles = {
   submenu: {
     position: 'absolute',
@@ -48,17 +49,14 @@ const Homeadmin =()=>{
   }, []);
 
   useEffect(() => {
-    // Lưu trạng thái sidebar vào localStorage để đồng bộ giữa các thiết bị
     localStorage.setItem('sidebarCollapsed', isSidebarCollapsed);
   }, [isSidebarCollapsed]);
 
-  // Đọc trạng thái sidebar từ localStorage khi lần đầu load trang
   useEffect(() => {
     const storedSidebarState = localStorage.getItem('sidebarCollapsed');
     if (storedSidebarState !== null) {
       const collapsed = storedSidebarState === 'true';
       setIsSidebarCollapsed(collapsed);
-      // Đồng bộ trạng thái sidebar mobile theo desktop
       if (window.innerWidth > 768) {
         setIsSidebarActive(!collapsed);
       }
@@ -66,18 +64,14 @@ const Homeadmin =()=>{
   }, []);
 
   useEffect(() => {
-    // Xử lý khi thay đổi kích thước cửa sổ
     const handleResize = () => {
       if (window.innerWidth <= 768) {
-        // Trên thiết bị di động, ẩn sidebar mặc định
         setIsSidebarActive(false);
       } else {
-        // Trên máy tính, hiển thị sidebar theo trạng thái đã lưu
         setIsSidebarActive(!isSidebarCollapsed);
       }
     };
 
-    // Gọi handleResize ngay khi mount để thiết lập trạng thái ban đầu
     handleResize();
 
     window.addEventListener('resize', handleResize);
@@ -85,7 +79,6 @@ const Homeadmin =()=>{
   }, [isSidebarCollapsed]);
 
   useEffect(() => {
-    // Khi chuyển trang trên thiết bị di động, đóng sidebar
     if (window.innerWidth <= 768) {
       setIsSidebarActive(false);
     }
@@ -178,7 +171,6 @@ const Homeadmin =()=>{
 
   const handleNotificationClick = (e) => {
     e.preventDefault();
-    // Effect when clicking on notification
     const notificationBell = e.currentTarget.querySelector('.bi-bell');
     if (notificationBell) {
       notificationBell.classList.add('admin_dh-bell-ring');
@@ -188,6 +180,20 @@ const Homeadmin =()=>{
     }
   };
 
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    if (window.confirm("Bạn có chắc chắn muốn đăng xuất không?")) {
+      try {
+        localStorage.removeItem("adminToken");
+        localStorage.removeItem("adminID");
+        toast.success("Đăng xuất thành công");
+        navigate("/AdminLogin", { replace: true });
+      } catch (error) {
+        toast.error("Đã xảy ra lỗi khi đăng xuất. Vui lòng thử lại.");
+      }
+    }
+  };
   return(
     <>
       <div className={`admin_dh-wrapper ${isDarkMode ? 'dark-mode' : ''}`}>
@@ -211,7 +217,10 @@ const Homeadmin =()=>{
                 color: 'var(--admin_dh-danger)',
                 boxShadow: '0 2px 10px rgba(255, 69, 58, 0.2)',
                 width: '40px',
-                height: '40px'
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
             >
               <i className="bi bi-x-lg"></i>
@@ -275,6 +284,7 @@ const Homeadmin =()=>{
                   <div className={`admin_dh-submenu ${isDropdownActive('products') ? 'show' : ''}`}>
                     <div><Link to="/admin/product">Product List</Link></div>
                     <div><Link to="/admin/addproduct">Add Product</Link></div>
+                    <div><Link to="/admin/attribute">Attribute</Link></div>
                   </div>
                 </div>
               </div>
@@ -429,18 +439,11 @@ const Homeadmin =()=>{
             </div>
           </div>
 
-          <div style={{ height: '60px' }}></div>
-
-          <div className="admin_dh-sidebar-footer">
-            <div className="admin_dh-sidebar-footer-item" onClick={toggleDarkMode} data-title={isDarkMode ? 'Chế độ sáng' : 'Chế độ tối'}>
-              <i className={`bi bi-${isDarkMode ? 'sun' : 'moon'}`}></i>
-              <span>{isDarkMode ? 'Chế độ sáng' : 'Chế độ tối'}</span>
-            </div>
-            <div className="admin_dh-sidebar-footer-item" data-title="Cài đặt">
-              <i className="bi bi-gear"></i>
-              <span>Cài đặt</span>
-            </div>
-          </div>
+          <div style={{ height: '20px' }}></div>
+          
+          {/* Extra space for mobile view */}
+          <div className="d-md-none" style={{ height: '60px' }}></div>
+          
         </nav>
         {/* Page Content */}
         <div 
@@ -451,7 +454,7 @@ const Homeadmin =()=>{
           {/* Top Navigation */}
           <nav className="admin_dh-navbar navbar-expand-lg">
             <div className="container-fluid">
-              <div className="admin_dh-navbar-left" style={{ gap: 10 }}>
+              <div className="admin_dh-navbar-left" style={{ gap: 10, alignItems: 'center' }}>
                 {/* Nút menu cho desktop - giống với mobile */}
                 <button 
                   type="button" 
@@ -469,7 +472,7 @@ const Homeadmin =()=>{
                   className="btn admin_dh-btn d-md-none"
                   onClick={toggleMobileSidebar}
                   ref={sidebarOpenRef}
-                  style={{ backgroundColor: 'var(--admin_dh-primary)', color: 'white' }}
+                  style={{ backgroundColor: 'var(--admin_dh-primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 ><i className="bi bi-layout-sidebar" /></button>
                 <div className={`admin_dh-search-bar ${isSearchFocused ? 'focused' : ''}`}>
                   <i className="bi bi-search admin_dh-search-icon"></i>
@@ -570,7 +573,16 @@ const Homeadmin =()=>{
                     <li><a className="dropdown-item" href="#"><i className="bi bi-person me-2"></i>Hồ sơ</a></li>
                     <li><a className="dropdown-item" href="#"><i className="bi bi-gear me-2"></i>Cài đặt</a></li>
                     <li><hr className="dropdown-divider" /></li>
-                    <li><a className="dropdown-item" href="#"><i className="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
+                    <li>
+ <button
+    className="dropdown-item"
+    onClick={handleLogout}
+    style={{ textAlign: "left", width: "100%" }}
+  >
+    <i className="bi bi-box-arrow-right me-2"></i>
+    Đăng xuất
+  </button>
+</li>
                   </ul>
                 </div>
               </div>

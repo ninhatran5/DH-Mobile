@@ -14,6 +14,8 @@ class Product extends Model
     protected $fillable = [
         'name',
         'category_id',
+        'price',
+        'price_original',
         'description',
         'image_url',
         'created_at',
@@ -22,6 +24,18 @@ class Product extends Model
     ];
     public function category()
     {
-        return $this->belongsTo(Category::class, 'category_id', 'category_id');
+        return $this->belongsTo(Category::class, 'category_id', 'category_id')->select(['category_id', 'name']);
+    }
+    public function productVariants()
+    {
+        return $this->hasMany(ProductVariant::class, 'product_id', 'product_id');
+    }
+    public function specifications()
+    {
+        return $this->hasMany(ProductSpecifications::class, 'product_id', 'product_id');
+    }
+    public function productsViews()
+    {
+        return $this->hasMany(ProductsViews::class, 'product_id', 'product_id');
     }
 }

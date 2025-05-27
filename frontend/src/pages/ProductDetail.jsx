@@ -1,89 +1,88 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Modal } from "react-bootstrap";
-import iphone from "../assets/images/iphone-16-pro-max.webp";
-import iphone2 from "../assets/images/iphone-15-pro_2__2_1_1_1.webp";
-import iphone3 from "../assets/images/iphone-15-plus_1__1.webp";
 import { MdOutlineZoomInMap } from "react-icons/md";
 import Carousel from "react-bootstrap/Carousel";
 import "../assets/css/product-detail.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import Comment from "../components/Comment";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
+import { useSwipeable } from "react-swipeable";
+import checkLogin from "../../utils/checkLogin";
+import { useDispatch, useSelector } from "react-redux";
+import Loading from "../components/Loading";
+import { fetchProductDetail } from "../slices/productDetailSlice";
+import { fetchProductVariationDetail } from "../slices/productVariationDetails";
+import numberFomat from "../../utils/numberFormat";
+import {
+  fetchFavoriteProduct,
+  fetchListFavorite,
+} from "../slices/favoriteProductsSlice";
 
 const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
+  const [selectedVersion, setSelectedVersion] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(null);
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  const { productDetails, loading } = useSelector(
+    (state) => state.productDetail
+  );
+  const { productVariationDetails } = useSelector(
+    (state) => state.productVariationDetail
+  );
+  const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
+
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const productImages = [
-    { id: 1, image: iphone },
-    { id: 2, image: iphone2 },
-    { id: 3, image: iphone3 },
-  ];
+  const productImages = Array.isArray(productDetails.image_url)
+    ? productDetails.image_url.map((url, idx) => ({ id: idx + 1, image: url }))
+    : productDetails.image_url
+    ? [{ id: 1, image: productDetails.image_url }]
+    : [];
 
-  const phoneVersions = [
+  const phoneColor = [
     {
       id: 1,
-      version: "Titan đen",
+      color: "Titan đen",
     },
     {
       id: 2,
-      version: "Titan tự nhiên",
+      color: "Titan tự nhiên",
     },
     {
       id: 3,
-      version: "Titan trắng",
+      color: "Titan trắng",
     },
     {
       id: 4,
-      version: "Titan sa mạc",
+      color: "Titan sa mạc",
     },
   ];
 
-  const phoneColors = [
-    {
-      id: 1,
-      colors: "red",
-      values: "red",
-    },
-    {
-      id: 2,
-      colors: "green",
-      values: "green",
-    },
-    {
-      id: 3,
-      colors: "yellow",
-      values: "yellow",
-    },
-    {
-      id: 4,
-      colors: "blue",
-      values: "blue",
-    },
-  ];
-
-  const machineInformation = [
-    {
-      id: 1,
-      name: "iPhone 16 Pro Max",
-      price: "24.000.000đ",
-      desc: "iPhone 16 Pro Max mang đến thiết kế sang trọng với khung thép không gỉ và mặt lưng kính cường lực. Màn hình Super Retina XDR với công nghệ ProMotion cung cấp trải nghiệm hình ảnh mượt mà. Được trang bị chip A17 Bionic, nó mạnh mẽ và tiết kiệm năng lượng. Hệ thống camera cải tiến cho khả năng chụp ảnh và quay video ấn tượng, bao gồm chế độ ban đêm và video 4K. Hỗ trợ kết nối 5G, thời lượng pin lâu dài và chạy trên iOS mới nhất, iPhone 16 Pro Max là lựa chọn hoàn hảo cho những người yêu công nghệ.",
-    },
-  ];
-
-  const [currentImage, setCurrentImage] = useState(iphone);
+  const [currentImage, setCurrentImage] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const handleThumbnailClick = (image) => {
     setCurrentImage(image);
+    const index = productImages.findIndex((item) => item.image === image);
+    setActiveIndex(index);
   };
 
-  const handleShowModal = () => setShowModal(true);
+  const handleShowModal = () => {
+    const index = productImages.findIndex(
+      (item) => item.image === currentImage
+    );
+    setActiveIndex(index);
+    setShowModal(true);
+  };
+
   const handleCloseModal = () => setShowModal(false);
+
   const handleUpQuantity = () => {
     setQuantity((prev) => prev + 1);
   };
@@ -113,24 +112,74 @@ const ProductDetail = () => {
     }
   };
 
-  const addToFavorites = () => {
-    console.log("added");
-    toast.success(t("products.addedToFavorites"));
+  const addToFavorites = async () => {
+    if (!checkLogin()) {
+      return;
+    }
+    try {
+      await dispatch(fetchFavoriteProduct(productDetails.product_id));
+      toast.success(t("products.addedToFavorites"));
+      dispatch(fetchListFavorite()); // Thêm dòng này để cập nhật danh sách yêu thích
+    } catch (error) {
+      toast.error(error || t("products.errorAddingFavorite"));
+    }
   };
 
   const addToShoppingCart = () => {
-    console.log("added");
-    toast.success(t("products.addedToCart"));
-    navigate("/shopping-cart");
+    if (checkLogin()) {
+      console.log("added");
+      toast.success(t("products.addedToCart"));
+      navigate("/shopping-cart");
+    }
   };
+
+  const handleSelect = useCallback(
+    (index) => {
+      setActiveIndex(index);
+      setCurrentImage(productImages[index].image);
+    },
+    [productImages]
+  );
+
+  const handlers = useSwipeable({
+    onSwipedLeft: () => {
+      const nextIndex = (activeIndex + 1) % productImages.length;
+      handleSelect(nextIndex);
+    },
+    onSwipedRight: () => {
+      const prevIndex =
+        activeIndex === 0 ? productImages.length - 1 : activeIndex - 1;
+      handleSelect(prevIndex);
+    },
+    trackMouse: true,
+    preventScrollOnSwipe: true,
+    delta: 5,
+    swipeDuration: 250,
+    touchEventOptions: { passive: true },
+    rotationAngle: 0,
+  });
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchProductDetail(id));
+      dispatch(fetchProductVariationDetail(id));
+    }
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    if (productImages.length > 0) {
+      setCurrentImage(productImages[0].image);
+    }
+  }, [productImages]);
 
   return (
     <>
+      {loading && <Loading />}
       <Breadcrumb
         title={t("breadcrumbProductDetail.breadcrumbHeader")}
         mainItem={t("breadcrumbProductDetail.breadcrumbTitleHome")}
         mainItem2={t("breadcrumbProductDetail.breadcrumbTitleProduct")}
-        secondaryItem={"iPhone 16 Pro Max"}
+        secondaryItem={productDetails.name}
         linkMainItem={"/"}
         linkMainItem2={"/products"}
       />
@@ -143,7 +192,8 @@ const ProductDetail = () => {
                 src={currentImage}
                 alt="iPhone"
                 className="img-fluid"
-                style={{ maxHeight: "400px" }}
+                style={{ maxHeight: "400px", cursor: "pointer" }}
+                onClick={handleShowModal}
               />
               <button
                 className="btn-zoom btn position-absolute"
@@ -168,7 +218,9 @@ const ProductDetail = () => {
                   key={item.id}
                   src={item.image}
                   alt="thumbnail"
-                  className="img-thumbnail mx-1"
+                  className={`img-thumbnail mx-1 ${
+                    item.image === currentImage ? "active" : ""
+                  }`}
                   onClick={() => handleThumbnailClick(item.image)}
                 />
               ))}
@@ -176,78 +228,129 @@ const ProductDetail = () => {
           </div>
 
           <Modal show={showModal} onHide={handleCloseModal} centered size="lg">
-            <Modal.Body className="text-center">
-              <Carousel data-bs-theme="dark">
-                {productImages.map((item) => (
-                  <Carousel.Item key={item.id}>
-                    <img
-                      className="d-block w-100"
-                      src={item.image}
-                      alt="First slide"
-                    />
-                  </Carousel.Item>
-                ))}
-              </Carousel>
+            <Modal.Header closeButton className="border-0"></Modal.Header>
+            <Modal.Body className="text-center p-0">
+              <div {...handlers} className="carousel-swipeable-container">
+                <Carousel
+                  data-bs-theme="dark"
+                  interval={null}
+                  activeIndex={activeIndex}
+                  onSelect={handleSelect}
+                  indicators={false}
+                  touch={false}
+                  slide={true}
+                >
+                  {productImages.map((item) => (
+                    <Carousel.Item key={item.id}>
+                      <img
+                        className="d-block w-100"
+                        src={item.image}
+                        alt="Product image"
+                        draggable={false}
+                        loading="eager"
+                      />
+                    </Carousel.Item>
+                  ))}
+                </Carousel>
+              </div>
             </Modal.Body>
           </Modal>
 
           <div className="col-md-6">
-            {machineInformation.map((item) => (
-              <div key={item.id}>
-                <h2 className="mb-3">{item.name}</h2>
-                <h4 className="text-price mb-3">{item.price}</h4>
-                <p className="text-muted">{item.desc}</p>
+            <div key={productDetails.product_id}>
+              <h2 className="mb-3">{productDetails.name}</h2>
+              <div className="price">
+                <h4 className="text-price_sale">
+                  {numberFomat(productVariationDetails.price)}
+                </h4>
+                <p className="text-price_original">
+                  {numberFomat(productVariationDetails?.price_original)}
+                </p>
               </div>
-            ))}
+              <p className="text-muted">
+                {t("productDetail.quantity")}:{" "}
+                <span className="fw-bold me-1">
+                  {productVariationDetails.stock}
+                </span>
+                {t("productDetail.product")}
+              </p>
+              <p className="text-muted">{productDetails.description}</p>
+            </div>
 
             <div className="mb-3">
-              <label className="font-weight-bold mb-2">
+              <label className="font-weight-bold mt-3">
                 {t("productDetail.selectVersion")}:
               </label>
               <div className="d-flex justify-content-start version-button-group">
-                {phoneVersions.map((phoneVersion) => (
+                {productVariationDetails?.attribute_values?.map(
+                  (phoneVersion) => (
+                    <button
+                      key={phoneVersion.attribute_id}
+                      className={`btn btn-outline-secondary mx-1 ${
+                        selectedVersion === phoneVersion.attribute_id
+                          ? "active"
+                          : ""
+                      }`}
+                      onClick={() =>
+                        setSelectedVersion(
+                          selectedVersion === phoneVersion.attribute_id
+                            ? null
+                            : phoneVersion.attribute_id
+                        )
+                      }
+                    >
+                      {phoneVersion.value}
+                    </button>
+                  )
+                )}
+              </div>
+            </div>
+            <div className="mb-4">
+              <label className="font-weight-bold mt-2">
+                {t("productDetail.selectColor")}:
+              </label>
+              <div className="d-flex justify-content-start version-button-group">
+                {phoneColor.map((phoneVersion) => (
                   <button
                     key={phoneVersion.id}
-                    className="btn btn-outline-secondary mx-1"
+                    className={`btn btn-outline-secondary mx-1 ${
+                      selectedColor === phoneVersion.id ? "active" : ""
+                    }`}
+                    onClick={() =>
+                      setSelectedColor(
+                        selectedColor === phoneVersion.id
+                          ? null
+                          : phoneVersion.id
+                      )
+                    }
                   >
-                    {phoneVersion.version}
+                    {phoneVersion.color}
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="mb-4">
-              <label className="font-weight-bold mb-2">
-                {t("productDetail.selectColor")}:
+            <div style={{ marginTop: 40 }}>
+              <label className="font-weight-bold mb-2 me-3">
+                {t("productDetail.quantity")}:
               </label>
-              <div className="d-flex justify-content-start">
-                {phoneColors.map((phoneColor) => (
-                  <div
-                    key={phoneColor.id}
-                    className="color-circle mx-1"
-                    style={{ backgroundColor: phoneColor.colors }}
-                    onClick={() => console.log(phoneColor.values)}
-                  ></div>
-                ))}
+              <div className="quantity-group mb-4">
+                <button onClick={handleDownQuantity} className="btn-quantity">
+                  -
+                </button>
+                <input
+                  type="number"
+                  className="input-quantity hide-spinner"
+                  onChange={handleChangQuantity}
+                  min={1}
+                  value={quantity}
+                  onKeyDown={handleKeyDown}
+                />
+                <button onClick={handleUpQuantity} className="btn-quantity">
+                  +
+                </button>
               </div>
             </div>
-            <div className="quantity-group mb-4">
-              <button onClick={handleDownQuantity} className="btn-quantity">
-                -
-              </button>
-              <input
-                type="number"
-                className="input-quantity hide-spinner"
-                onChange={handleChangQuantity}
-                min={1}
-                value={quantity}
-                onKeyDown={handleKeyDown}
-              />
-              <button onClick={handleUpQuantity} className="btn-quantity">
-                +
-              </button>
-            </div>
-
             <div style={{ display: "flex", gap: 5 }}>
               <button
                 onClick={addToFavorites}
@@ -303,16 +406,7 @@ const ProductDetail = () => {
             {activeTab === "description" && (
               <div className="tab-pane fade show active">
                 <p className="desc_productdetai">
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
-                  This is the most powerful iPhone ever made. Sleek, fast...
+                  {productDetails.description}
                 </p>
               </div>
             )}

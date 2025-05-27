@@ -10,7 +10,7 @@ const ProductList = () => {
  
   const products = [
     {
-      id: 1,
+      id: 8,
       name: "MacBook Pro 14-inch",
       image: "https://example.com/macbook-pro.jpg",
       price: "45,990,000₫",
@@ -20,7 +20,7 @@ const ProductList = () => {
       lastUpdated: "2024-02-20"
     },
     {
-      id: 1,
+      id: 7,
       name: "MacBook Pro 14-inch",
       image: "https://example.com/macbook-pro.jpg",
       price: "45,990,000₫",
@@ -38,7 +38,7 @@ const ProductList = () => {
       status: "Còn hàng",
       lastUpdated: "2024-02-20"
     },{
-      id: 1,
+      id: 5,
       name: "MacBook Pro 14-inch",
       image: "https://example.com/macbook-pro.jpg",
       price: "45,990,000₫",
@@ -47,7 +47,7 @@ const ProductList = () => {
       status: "Còn hàng",
       lastUpdated: "2024-02-20"
     },{
-      id: 1,
+      id: 4,
       name: "MacBook Pro 14-inch",
       image: "https://example.com/macbook-pro.jpg",
       price: "45,990,000₫",
@@ -56,7 +56,7 @@ const ProductList = () => {
       status: "Còn hàng",
       lastUpdated: "2024-02-20"
     },{
-      id: 1,
+      id: 3,
       name: "MacBook Pro 14-inch",
       image: "https://example.com/macbook-pro.jpg",
       price: "45,990,000₫",
@@ -212,9 +212,9 @@ const ProductList = () => {
                     <button className="admin_dh-action-btn admin_dh-edit-btn" title="Sửa">
                       <i className="bi bi-pencil" style={{ color: '#0071e3' }}></i>
                     </button>
-                    <button className="admin_dh-action-btn" title="Xem">
+                    <Link to={`/admin/product/${product.id}`} className="admin_dh-action-btn" title="Xem chi tiết">
                       <i className="bi bi-eye" style={{ color: '#5ac8fa' }}></i>
-                    </button>
+                    </Link>
                     <button className="admin_dh-action-btn admin_dh-delete-btn" title="Xóa">
                       <i className="bi bi-trash" style={{ color: '#ff3b30' }}></i>
                     </button>

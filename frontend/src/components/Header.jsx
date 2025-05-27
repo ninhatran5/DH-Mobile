@@ -9,17 +9,41 @@ import Anh from "../assets/images/england.png";
 import "../assets/css/header.css";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
-import iphone from "../assets/images/iphone-16-pro-max.webp";
-import { FaRegHeart } from "react-icons/fa";
-import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProfile } from "../slices/profileSlice";
+import Loading from "./Loading";
+import Product from "./Product";
 
 export default function Header() {
+  const dispatch = useDispatch();
+  const { profile } = useSelector((state) => state.profile);
+  const { products, loading } = useSelector((state) => state.product);
+  const { productsVariants } = useSelector((state) => state.productsVariant);
+  const token = localStorage.getItem("token");
   const location = useLocation();
   const { i18n } = useTranslation();
   const [searchItem, setSearchItem] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const convertPriceToNumber = (priceString) => {
+    if (!priceString) return NaN;
+    return Number(priceString.replace(/[^0-9.-]+/g, ""));
+  };
+  const getDiscountPercent = (product, variant) => {
+    const original = convertPriceToNumber(
+      variant?.price_original ?? product.priceOriginal ?? product.price_original
+    );
+    const sale = convertPriceToNumber(variant?.price ?? product.price);
+    if (
+      isNaN(original) ||
+      isNaN(sale) ||
+      sale >= original ||
+      !original ||
+      !sale
+    )
+      return null;
+    return Math.round(((original - sale) / original) * 100);
+  };
   const navigate = useNavigate();
-
   useEffect(() => {
     setSearchResults([]);
     setSearchItem("");
@@ -31,6 +55,7 @@ export default function Header() {
 
   const { t } = useTranslation();
 
+  const userID = localStorage.getItem("userID");
   const iconNavbars = [
     {
       id: 1,
@@ -117,68 +142,6 @@ export default function Header() {
       link: "/introduce",
     },
   ];
-  const products = [
-    {
-      id: 1,
-      name: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
-      price: "27.890.000đ",
-      image: iphone,
-    },
-    {
-      id: 2,
-      name: "Samsung Galaxy S22 Ultra 512GB",
-      price: "29.990.000đ",
-      image: iphone,
-    },
-    {
-      id: 3,
-      name: "Samsung Galaxy S22 Ultra 512GB",
-      price: "29.990.000đ",
-      image: iphone,
-    },
-    {
-      id: 4,
-      name: "Samsung Galaxy S22 Ultra 512GB",
-      price: "29.990.000đ",
-      image: iphone,
-    },
-    {
-      id: 5,
-      name: "Samsung Galaxy S22 Ultra 512GB",
-      price: "29.990.000đ",
-      image: iphone,
-    },
-    {
-      id: 6,
-      name: "Samsung Galaxy S22 Ultra 512GB",
-      price: "29.990.000đ",
-      image: iphone,
-    },
-    {
-      id: 7,
-      name: "Samsung Galaxy S22 Ultra 512GB",
-      price: "29.990.000đ",
-      image: iphone,
-    },
-    {
-      id: 8,
-      name: "Samsung Galaxy S22 Ultra 512GB",
-      price: "29.990.000đ",
-      image: iphone,
-    },
-    {
-      id: 9,
-      name: "Samsung Galaxy S22 Ultra 512GB",
-      price: "29.990.000đ",
-      image: iphone,
-    },
-    {
-      id: 10,
-      name: "Samsung Galaxy S22 Ultra 512GB",
-      price: "29.990.000đ",
-      image: iphone,
-    },
-  ];
 
   const changeInputSearch = (event) => {
     const value = event.target.value;
@@ -216,13 +179,21 @@ export default function Header() {
   const handleNextProductDetail = (id) => {
     navigate(`/product-detail/${id}`);
   };
+
+  useEffect(() => {
+    dispatch(fetchProfile());
+  }, [dispatch]);
   return (
     <>
       <div>
-        {/* <div className="preloader-wrapper">
-          <div className="preloader"></div>
-        </div> */}
-        <header className={searchResults.length > 0 ? "position-fixed w-100 bg-white" : ""} style={searchResults.length > 0 ? { top: 0, left: 0, zIndex: 1000 } : {}}>
+        <header
+          className={
+            searchResults.length > 0 ? "position-fixed w-100 bg-white" : ""
+          }
+          style={
+            searchResults.length > 0 ? { top: 0, left: 0, zIndex: 1000 } : {}
+          }
+        >
           <div className="container-fluid">
             <div className="row py-3 border-bottom">
               <div className="col-sm-4 col-lg-3 text-center text-sm-start">
@@ -299,6 +270,26 @@ export default function Header() {
                         >
                           {item.icon}
                         </a>
+                      ) : item.id === 2 ? (
+                        <div
+                          onClick={() => {
+                            const token = localStorage.getItem("token");
+                            navigate(token ? `/profile/${userID}` : "/login");
+                          }}
+                          className="rounded-circle bg-light p-2 mx-1"
+                          style={{
+                            width: "40px",
+                            height: "40px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: 23,
+                            color: "black",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {item.icon}
+                        </div>
                       ) : (
                         <Link
                           to={item.link}
@@ -318,15 +309,19 @@ export default function Header() {
                       )}
                     </li>
                   ))}
-
-                  <li className="d-xxl-none"></li>
                 </ul>
 
-                <div className="cart text-end d-none d-lg-block">
-                  <button className="border-0 bg-transparent d-flex flex-column gap-2 lh-1 text-end">
-                    <span className="fs-6 text-muted">{t("header.hello")}</span>
-                    <span className="cart-total fs-5 fw-bold">Nguyên Tùng</span>
-                  </button>
+                <div className="border-0 bg-transparent d-flex flex-column gap-2 lh-1 text-end">
+                  <span className="fs-6 text-muted">{t("header.hello")}</span>
+                  {token ? (
+                    <span className="cart-total fs-5 fw-bold text-dark">
+                      {profile?.user?.full_name}
+                    </span>
+                  ) : (
+                    <span className="cart-total fs-5 fw-bold text-dark">
+                      {t("header.client")}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -485,7 +480,7 @@ export default function Header() {
                 <ul className="search-results list-group mt-3">
                   {searchResults.map((product) => (
                     <li
-                      key={product.id}
+                      key={product.product_id}
                       className="list-group-item list-group-item-action"
                       onClick={() => {
                         setSearchResults([]);
@@ -495,19 +490,30 @@ export default function Header() {
                       style={{ cursor: "pointer" }}
                     >
                       <div className="d-flex align-items-center gap-2">
-                        <img
-                          src={product.image}
-                          alt={product.name}
+                        <div
                           style={{
                             width: "50px",
-                            height: "50px",
-                            objectFit: "cover",
+                            flexShrink: 0,
+                            overflow: "hidden",
+                            borderRadius: "8px",
+                            backgroundColor: "#f9f9f9",
                           }}
-                        />
+                        >
+                          <img
+                            src={product.image_url}
+                            alt={product.name}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                              display: "block",
+                            }}
+                          />
+                        </div>
                         <div>
-                          <div className="fw-bold">{product.name}</div>
+                          <div className="fw-bold">{product?.name}</div>
                           <div style={{ color: "#e74c3c" }} className="fw-bold">
-                            {product.price}
+                            {productsVariants?.price}
                           </div>
                         </div>
                       </div>
@@ -524,75 +530,44 @@ export default function Header() {
           </div>
         </div>
       </div>
+      {loading && <Loading />}
       {/* Desktop search results */}
       {searchResults.length > 0 && (
         <div
           className="search-results position-fixed bg-white border rounded w-100 d-none d-lg-block p-3"
-          style={{ 
-            height: "calc(100vh - 180px)", 
+          style={{
+            height: "calc(100vh - 180px)",
             top: "180px",
             left: 0,
-            overflowY: "auto", 
-            zIndex: 999
+            overflowY: "auto",
+            zIndex: 999,
           }}
         >
           <div className="container-fluid">
             <div className="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
-              {searchResults.map((product) => (
-                <div className="col" key={product.id}>
-                  <div className="product-item">
-                    <a
-                      onClick={() => {
-                        toast.success(t("products.addedToFavorites"));
-                      }}
-                      style={{ cursor: "pointer" }}
-                      className="btn-wishlist"
-                    >
-                      <FaRegHeart style={{ fontSize: 20 }} />
-                    </a>
-                    <figure>
-                      <Link
-                        to={`/product-detail/${product.id}`}
-                        title={product.name}
-                      >
-                        <img src={product.image} className="tab-image" />
-                      </Link>
-                    </figure>
-                    <h3>
-                      <Link
-                        to={`/product-detail/${product.id}`}
-                        onClick={() => {
-                          setSearchResults([]);
-                          setSearchItem("");
-                        }}
-                        style={{
-                          cursor: "pointer",
-                          color: "inherit",
-                          textDecoration: "none",
-                        }}
-                      >
-                        {product.name}
-                      </Link>
-                    </h3>
-                    <span className="price">{product.price}</span>
-                    <div className="d-flex align-items-center justify-content-between">
-                      <a
-                        onClick={() => {
-                          toast.success(t("products.addedToCart"));
-                          setSearchResults([]);
-                          setSearchItem("");
-                          navigate('/shopping-cart')
-                        }}
-                        style={{ cursor: "pointer" }}
-                        className="nav-link"
-                      >
-                        {t("products.addToCart")}
-                        <iconify-icon icon="uil:shopping-cart" />
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              ))}
+              {searchResults.map((product) => {
+                // Tìm variant phù hợp với product
+                const matchedVariant = productsVariants.find(
+                  (variant) => variant.product_id === product.product_id
+                );
+                const discountPercent = getDiscountPercent(
+                  product,
+                  matchedVariant
+                );
+                return (
+                  <Product
+                    key={product.product_id}
+                    product={product}
+                    discountPercent={discountPercent}
+                    nextProductDetail={() => {
+                      setSearchResults([]);
+                      setSearchItem("");
+                      navigate(`/product-detail/${product.product_id}`);
+                    }}
+                    productsVariants={matchedVariant}
+                  />
+                );
+              })}
             </div>
           </div>
         </div>
@@ -601,12 +576,12 @@ export default function Header() {
       {searchItem.trim() !== "" && searchResults.length === 0 && (
         <div
           className="no-results position-fixed bg-white border rounded w-100 p-2 d-none d-lg-block"
-          style={{ 
-            height: "calc(100vh - 180px)", 
+          style={{
+            height: "calc(100vh - 180px)",
             top: "180px",
             left: 0,
-            overflowY: "auto", 
-            zIndex: 999
+            overflowY: "auto",
+            zIndex: 999,
           }}
         >
           <div className="container-fluid">

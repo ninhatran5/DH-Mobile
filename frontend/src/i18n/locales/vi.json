@@ -15,7 +15,7 @@
     "servicesDailyDealsDesc": "Khuyến mãi mới mỗi ngày dành riêng cho bạn",
     "featuredProducts": "Sản Phẩm Nổi Bật",
     "goToShop": "Đi đến shop →",
-    "bestSellingProducts": "Sản Phẩm Bán Chạy",
+    "bestSellingProducts": "Đề Xuất Nổi Bật",
     "partners": "ĐỐI TÁC VÀ KHÁCH HÀNG",
     "blog": "Tin Tức",
     "seeAll": "Xem tất cả →",
@@ -45,13 +45,15 @@
     "feedback_with_us": "Phản hồi với chúng tôi",
     "we_are_pleased_to_hear": "Chúng tôi rất sẵn lòng lắng nghe các ý kiến của bạn",
     "email_address": "Địa chỉ Email",
-    "send": "Gửi"
+    "send": "Gửi",
+    "client": "Quý Khách"
   },
   "products": {
     "trademark": "Thương hiệu",
     "price": "Khoảng giá",
     "lowToHigh": "Giá Thấp - Cao",
     "highToLow": "Giá Cao - Thấp",
+    "deleteFilter": "Xóa bộ lọc",
     "readyStock": "Sẵn hàng",
     "addToCart": "Thêm vào giỏ hàng",
     "all": "Tất cả",
@@ -63,10 +65,15 @@
     "duoi10tr": "Dưới 10 triệu",
     "10-20trieu": "10-20 triệu",
     "tren20trieu": "Trên 20 triệu",
-    "noProductFound": "Không tìm thấy sản phẩm"
+    "noProductFound": "Không tìm thấy sản phẩm",
+    "errorAddingFavorite": "Đã xảy ra lỗi khi thêm vào danh sách yêu thích",
+    "searchPlaceholder": "Tìm kiếm...",
+    "search": "Tìm kiếm"
   },
   "blog": {
-    "poster": "Người đăng"
+    "poster": "Người đăng",
+    "date": "Ngày đăng:",
+    "update": "Cập nhật:"
   },
   "chatBot": {
     "chat": "Trò chuyện",
@@ -83,13 +90,16 @@
     "addToFavorites": "Thêm vào yêu thích",
     "describe": "Mô tả",
     "parameter": "Thông số kỹ thuật",
-    "comment": "Bình luận"
+    "comment": "Bình luận",
+    "quantity": "Số lượng",
+    "product": "Sản Phẩm"
   },
   "breadcrumbVoucher": {
     "breadcrumbHeader": "Mã Giảm Giá",
+    "breadcrumbHeaderForMe": "Mã Giảm Giá Của Tôi",
     "breadcrumbTitleHome": "Trang chủ",
     "breadcrumbDesc": "Copy mã và sử dụng",
-    "success": "Đã sao chép mã voucher",
+    "success": "Đã sao chép mã mã giảm giá",
     "err": "Lỗi khi sao chép:"
   },
   "breadcrumbLiked": {
@@ -242,7 +252,20 @@
     "totalPrice": "Tổng tiền",
     "discount": "Mã giảm giá",
     "totalMoney": "Tổng tiền",
-    "payNow": "THANH TOÁN"
+    "payNow": "THANH TOÁN",
+    "fullNameRequired": "Họ và tên là bắt buộc",
+    "fullNameMinLength": "Họ và tên phải có ít nhất 2 ký tự",
+    "phoneRequired": "Số điện thoại là bắt buộc",
+    "phoneInvalid": "Số điện thoại phải gồm 10 hoặc 11 chữ số",
+    "cityRequired": "Tỉnh/Thành phố là bắt buộc",
+    "districtRequired": "Quận/Huyện là bắt buộc",
+    "wardRequired": "Phường/Xã là bắt buộc",
+    "addressDetailRequired": "Chi tiết địa chỉ là bắt buộc",
+    "addressDetailMinLength": "Chi tiết địa chỉ phải có ít nhất 5 ký tự",
+    "paymentMethodRequired": "Phương thức thanh toán là bắt buộc",
+    "phoneMustStartWithZero": "Số điện thoại phải bắt đầu bằng số 0.",
+    "phoneLengthInvalid": "Số điện thoại phải có độ dài 10 hoặc 11 chữ số.",
+    "phoneMustBeNumber": "Số điện thoại chỉ được chứa các chữ số."
   },
   "breadcrumb": {
     "home": "Trang chủ",
@@ -259,14 +282,17 @@
     "title": "Hồ Sơ Cá Nhân",
     "home": "Trang chủ",
     "editProfile": "Chỉnh sửa",
+    "returnProfile": "Quay lại trang hồ sơ",
+    "forgotPassword": "Thay đổi mật khẩu",
     "introduction": "Giới thiệu",
     "description": "Xin chào",
     "personalInfo": "Thông tin cá nhân",
+    "titleHello": ", chào mừng bạn đến với DH Moblie",
     "personalInformations": {
       "name": "Họ tên:",
       "phone": "Số điện thoại:",
       "email": "Email:",
-      "hometown": "Quê quán:"
+      "hometown": "Địa chỉ:"
     },
     "features": "Các tính năng",
     "featuresList": {
@@ -335,10 +361,11 @@
     "forgot_password": "Quên mật khẩu",
     "login_button": "Đăng nhập",
     "password": "Mật khẩu",
-    "username": "Họ tên",
+    "username": "Tên người dùng",
+    "fullname": "Họ tên",
     "login": "Bạn đã có tài khoản?",
     "newPassword": "Mật khẩu mới",
-    "confirmPassword": "Mật khẩu mới",
+    "confirmPassword": "Xác nhận mật khẩu",
     "register_button": "Đăng ký",
     "send": "Gửi",
     "loginNotificationSuccess": "Đăng nhập thành công! Chào mừng bạn trở lại.",
@@ -353,13 +380,47 @@
       "emailInvalid": "Địa chỉ Email không hợp lệ",
       "passwordRequired": "Không được bỏ trống Mật Khẩu",
       "passwordInvalid": "Mật khẩu 8–16 ký tự, có chữ hoa, số, ký tự đặc biệt",
-      "usernameRequired": "Không được bỏ trống Họ tên",
-      "usernameMinLength": "Họ tên ít nhất 3 kí tự",
+      "usernameRequired": "Không được bỏ trống Tên người dùng",
+      "usernameMinLength": "Tên người dùng ít nhất 3 kí tự",
+      "fullnameRequired": "Không được bỏ trống Họ tên",
+      "fullnameMinLength": "Họ tên ít nhất 3 kí tự",
       "newPasswordRequired": "Không được bỏ trống Mật Khẩu Mới",
       "newPasswordInvalid": "Mật khẩu 8–16 ký tự, có chữ hoa, số, ký tự đặc biệt",
       "confirmPasswordRequired": "Không được bỏ trống Xác Nhận Mật Khẩu",
       "confirmPasswordInvalid": "Mật khẩu không khớp",
       "newPasswordCannotMatchOld": "Mật khẩu mới không được trùng mật khẩu cũ"
     }
+  },
+  "editProfile": {
+    "brumTitle": "Chỉnh Sửa Hồ Sơ Cá Nhân",
+    "accountInfo": "Thông tin tài khoản",
+    "wards": "Phường/Xã",
+    "district": "Quận/Huyện",
+    "city": "Tỉnh/Thành Phố",
+    "fullAddress": "Địa chỉ cụ thể",
+    "upload": "Tải ảnh lên",
+    "image": "Ảnh hồ sơ",
+    "buttonUpdate": "Cập nhật",
+    "selectWard": "Chọn Phường/Xã",
+    "selectDistrict": "Chọn Quận/Huyện",
+    "selectCity": "Chọn Tỉnh/Thành Phố",
+    "validate": {
+      "nameRequired": "Họ tên là bắt buộc",
+      "phoneRequired": "Số điện thoại là bắt buộc",
+      "phonePattern": "Số điện thoại chỉ chứa số",
+      "phoneMinLength": "Số điện thoại phải từ 9 số trở lên",
+      "phoneMaxLength": "Số điện thoại tối đa 12 số",
+      "emailRequired": "Email là bắt buộc",
+      "emailPattern": "Email không hợp lệ",
+      "wardRequired": "Phường/Xã là bắt buộc",
+      "districtRequired": "Quận/Huyện là bắt buộc",
+      "cityRequired": "Tỉnh/Thành Phố là bắt buộc",
+      "addressRequired": "Địa chỉ là bắt buộc"
+    }
+  },
+  "voucher": {
+    "saveSuccess": "Đã lưu mã giảm giá",
+    "iconSave": "Lưu",
+    "iconCopy": "Sao chép"
   }
 }

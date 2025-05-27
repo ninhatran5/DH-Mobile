@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useRoutes } from "react-router-dom";
 import "../src/assets/css/style.css";
 import Home from "./pages/Home";
@@ -44,12 +43,31 @@ import VoucherList from "./pages/admin/VoucherList";
 import AddVoucher from "./pages/admin/AddVoucher";
 import ListBanner from "./pages/admin/ListBanner";
 import CommentsList from "./pages/admin/CommentsList";
-
-const withLayoutClient = (Component) => {
-  return (
+import ShowProduct from "./pages/admin/ShowProduct";
+import ScrollToTop from "../utils/ScrollToTop";
+import RequireAuth from "./components/RequireAuth";
+import ProtectedRoute from "./pages/admin/ProtectedRoute";
+import AdminLogin from "./pages/admin/AdminLogin";
+import PublicRouteAdmin from "./components/PublicRouteAdmin";
+import EditBanner from "./pages/admin/EditBanner";
+import EditCategory from "./pages/admin/EditCategories";
+import Attributes from "./pages/admin/Attribute";
+import Addattribute from "./pages/admin/AddAttributes";
+import EditAttribute from "./pages/admin/EditAttributes";
+import AddAttributevalues from "./pages/admin/AddAttributevalues";
+import EditAttributevalues from "./pages/admin/EditAttributevalues";
+import MyDiscountCode from "./pages/MyDiscountCode";
+const withLayoutClient = (Component, requireAuth = false) => {
+  const wrappedComponent = (
     <Layout>
       <Component />
     </Layout>
+  );
+
+  return requireAuth ? (
+    <RequireAuth>{wrappedComponent}</RequireAuth>
+  ) : (
+    wrappedComponent
   );
 };
 
@@ -76,23 +94,27 @@ const routerConfig = [
   },
   {
     path: "/shopping-cart",
-    element: withLayoutClient(ShoppingCart),
+    element: withLayoutClient(ShoppingCart, true),
   },
   {
     path: "/checkout",
-    element: withLayoutClient(CheckOut),
+    element: withLayoutClient(CheckOut, true),
   },
   {
     path: "/change-checkout",
-    element: withLayoutClient(ChangeCheckout),
+    element: withLayoutClient(ChangeCheckout, true),
   },
   {
     path: "/thank-you",
-    element: withLayoutClient(ThanksYou),
+    element: withLayoutClient(ThanksYou, true),
   },
   {
     path: "/vouchers",
     element: withLayoutClient(Voucher),
+  },
+  {
+    path: "/my-discount-code",
+    element: withLayoutClient(MyDiscountCode, true),
   },
   {
     path: "/check-imei",
@@ -111,12 +133,12 @@ const routerConfig = [
     element: withLayoutClient(DeliveryPolicy),
   },
   {
-    path: "/profile",
-    element: withLayoutClient(Profile),
+    path: "/profile/:id",
+    element: withLayoutClient(Profile, true),
   },
   {
-    path: "/edit-profile",
-    element: withLayoutClient(EditProfile),
+    path: "/edit-profile/:id",
+    element: withLayoutClient(EditProfile, true),
   },
   {
     path: "/product-detail/:id",
@@ -124,15 +146,15 @@ const routerConfig = [
   },
   {
     path: "/favorite-products",
-    element: withLayoutClient(FavoriteProducts),
+    element: withLayoutClient(FavoriteProducts, true),
   },
   {
     path: "/order-history",
-    element: withLayoutClient(OrderTable),
+    element: withLayoutClient(OrderTable, true),
   },
   {
     path: "/order-detail/:id",
-    element: withLayoutClient(OrderDetail),
+    element: withLayoutClient(OrderDetail, true),
   },
   {
     path: "/login",
@@ -153,7 +175,12 @@ const routerConfig = [
 
   {
     path: "/admin",
-    element: <HomeAdmin />,
+    element: (
+      <ProtectedRoute>
+        <HomeAdmin />,
+      </ProtectedRoute>
+    ),
+
     children: [
       {
         path: "",
@@ -162,6 +189,10 @@ const routerConfig = [
       {
         path: "product",
         element: <ProductList />,
+      },
+      {
+        path: "product/:id",
+        element: <ShowProduct />,
       },
       {
         path: "addproduct",
@@ -185,42 +216,75 @@ const routerConfig = [
       },
 
       {
-        path:"addaccount",
-        element:<AddAccount/>
+        path: "addaccount",
+        element: <AddAccount />,
       },
       {
-        path:"orders",
-        element:<OrdersList/>
+        path: "orders",
+        element: <OrdersList />,
       },
       {
-        path:"orders-completed",
-        element:<OrdersCompleted/>
+        path: "orders-completed",
+        element: <OrdersCompleted />,
       },
       {
-        path:"orders-cancelled",
-        element:<OrdersCancelled/>
+        path: "orders-cancelled",
+        element: <OrdersCancelled />,
       },
       {
-        path:"vouchers",
-        element:<VoucherList/>
+        path: "vouchers",
+        element: <VoucherList />,
       },
       {
-        path:"addvoucher",
-        element:<AddVoucher/>
+        path: "addvoucher",
+        element: <AddVoucher />,
       },
       {
-        path:"banners",
-        element:<ListBanner/>
+        path: "banners",
+        element: <ListBanner />,
       },
       {
-        path:"comments",
-        element:<CommentsList/>
-      }
-    ]         
+        path: "editbanner/:id",
+        element: <EditBanner />,
+      },
+      {
+        path: "comments",
+        element: <CommentsList />,
+      },
+      {
+        path: "EditCategories/:id",
+        element: <EditCategory />,
+      },
+      {
+        path: "attribute",
+        element: <Attributes />,
+      },
+      {
+        path: "Addattribute",
+        element: <Addattribute />,
+      },
+      {
+        path: "Editattribute/:id",
+        element: <EditAttribute />,
+      },
+      {
+        path: "AddAttributevalues/:attribute_id",
+        element: <AddAttributevalues />,
+      },
+      {
+        path: "EditAttributevalues/:value_id",
+        element: <EditAttributevalues />,
+      },
+    ],
   },
-
-
-
+  {
+    path: "/AdminLogin",
+    element: (
+      <PublicRouteAdmin>
+        <AdminLogin />
+      </PublicRouteAdmin>
+    ),
+  },
   {
     path: "*",
     element: <ErrorPage />,
@@ -229,7 +293,12 @@ const routerConfig = [
 
 function App() {
   const routers = useRoutes(routerConfig);
-  return <>{routers}</>;
+  return (
+    <>
+      <ScrollToTop />
+      {routers}
+    </>
+  );
 }
 
 export default App;

@@ -194,18 +194,12 @@ a {
   -moz-appearance: none;
   appearance: none;
   border-radius: 0.75rem;
-  -webkit-transition:
-    border-color 0.15s ease-in-out,
+  -webkit-transition: border-color 0.15s ease-in-out,
     -webkit-box-shadow 0.15s ease-in-out;
-  transition:
-    border-color 0.15s ease-in-out,
+  transition: border-color 0.15s ease-in-out,
     -webkit-box-shadow 0.15s ease-in-out;
-  transition:
-    border-color 0.15s ease-in-out,
-    box-shadow 0.15s ease-in-out;
-  transition:
-    border-color 0.15s ease-in-out,
-    box-shadow 0.15s ease-in-out,
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out,
     -webkit-box-shadow 0.15s ease-in-out;
 }
 
@@ -235,4 +229,8 @@ a {
 .radio-input {
   display: flex;
   gap: 5px;
+}
+.error_message_checkout {
+  color: red !important;
+  margin-top: -5px;
 }

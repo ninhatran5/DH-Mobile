@@ -60,11 +60,32 @@
   flex-direction: row-reverse;
 }
 
-.avatar {
-  width: 35px;
-  height: 35px;
+/* Avatar khung ngoài */
+.avatar_chat {
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
+  overflow: hidden;
   margin: 0 10px;
+  flex-shrink: 0;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+/* Ảnh avatar */
+.avatar {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  min-width: 36px;
+  min-height: 36px;
+  max-width: 36px;
+  max-height: 36px;
 }
 
 .bubble {
@@ -216,9 +237,17 @@
     max-width: 85%;
   }
 
+  .avatar_chat {
+    width: 30px;
+    height: 30px;
+  }
   .avatar {
     width: 30px;
     height: 30px;
+    min-width: 30px;
+    min-height: 30px;
+    max-width: 30px;
+    max-height: 30px;
   }
 
   .input-container {

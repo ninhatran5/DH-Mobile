@@ -4,13 +4,14 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable, HasFactory;
+    use HasApiTokens, Notifiable, HasFactory, SoftDeletes;
 
     protected $primaryKey = 'user_id'; // thay vì "id"
     public $incrementing = true;
@@ -24,6 +25,9 @@ class User extends Authenticatable
         'full_name',
         'phone',
         'address',
+        'ward',
+        'district',
+        'city',
         'image_url',
     ];
 
@@ -35,5 +39,20 @@ class User extends Authenticatable
     public function getAuthPassword()
     {
         return $this->password_hash;
+    }
+
+    public function productlikes()
+    {
+        return $this->hasMany(ProductLike::class, 'user_id', 'user_id');
+    }
+
+    public function carts()
+    {
+        return $this->hasMany(Cart::class, 'user_id', 'user_id');
+    }
+
+    public function productsViews()
+    {
+        return $this->hasMany(ProductsViews::class, 'user_id', 'user_id');
     }
 }

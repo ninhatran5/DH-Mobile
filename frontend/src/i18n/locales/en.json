@@ -15,7 +15,7 @@
     "servicesDailyDealsDesc": "New promotions every day just for you",
     "featuredProducts": "Featured Products",
     "goToShop": "Go to shop →",
-    "bestSellingProducts": "Best Selling Products",
+    "bestSellingProducts": "Featured Recommendations",
     "partners": "PARTNERS AND CUSTOMERS",
     "blog": "Blog",
     "seeAll": "See all →",
@@ -28,6 +28,7 @@
     "voucher": "Vouchers",
     "blog": "Blog",
     "introduce": "About Us",
+    "deleteFilter": "Delete Filter",
     "service": "Services",
     "warrantyPolicy": "Warranty Policy",
     "returnPolicy": "Return Policy",
@@ -45,7 +46,8 @@
     "feedback_with_us": "Feedback to Us",
     "we_are_pleased_to_hear": "We are pleased to hear your opinions",
     "email_address": "Email Address",
-    "send": "Send"
+    "send": "Send",
+    "client": "Customer"
   },
   "products": {
     "trademark": "Brand",
@@ -63,10 +65,15 @@
     "duoi10tr": "Under 420 USD",
     "10-20trieu": "420-830 USD",
     "tren20trieu": "Over 830 USD",
-    "noProductFound": "No product found"
+    "noProductFound": "No product found",
+    "errorAddingFavorite": "An error occurred while adding to the favorites list.",
+    "searchPlaceholder": "Search Product...",
+    "search": "Search"
   },
   "blog": {
-    "poster": "Posted by"
+    "poster": "Posted by",
+    "date": "Published on:",
+    "update": "Last updated:"
   },
   "chatBot": {
     "chat": "Chat",
@@ -84,10 +91,13 @@
     "addToFavorites": "Add to Favorites",
     "describe": "Description",
     "parameter": "Specifications",
-    "comment": "Comments"
+    "comment": "Comments",
+    "quantity": "Quantity",
+    "product": "Products"
   },
   "breadcrumbVoucher": {
     "breadcrumbHeader": "Vouchers",
+    "breadcrumbHeaderForMe": "My Vouchers",
     "breadcrumbTitleHome": "Home",
     "breadcrumbTitleMain": "Vouchers",
     "success": "Voucher code copied",
@@ -243,7 +253,20 @@
     "totalPrice": "Total Price",
     "discount": "Discount Code",
     "totalMoney": "Total Amount",
-    "payNow": "PAY NOW"
+    "payNow": "PAY NOW",
+    "fullNameRequired": "Full name is required",
+    "fullNameMinLength": "Full name must be at least 2 characters",
+    "phoneRequired": "Phone number is required",
+    "phoneInvalid": "Phone number must be 10 or 11 digits",
+    "cityRequired": "City is required",
+    "districtRequired": "District is required",
+    "wardRequired": "Ward is required",
+    "addressDetailRequired": "Address detail is required",
+    "addressDetailMinLength": "Address detail must be at least 5 characters",
+    "paymentMethodRequired": "Payment method is required",
+    "phoneMustStartWithZero": "Phone number must start with 0.",
+    "phoneLengthInvalid": "Phone number must be 10 or 11 digits long.",
+    "phoneMustBeNumber": "Phone number must contain only digits."
   },
   "breadcrumb": {
     "home": "Home",
@@ -260,14 +283,18 @@
     "title": "Personal Profile",
     "home": "Home",
     "editProfile": "Edit",
+    "returnProfile": "Return to profile page",
+    "forgotPassword": "Change password",
     "introduction": "Introduction",
     "description": "Hello",
     "personalInfo": "Personal Information",
+    "titleHello": ", welcome to DH Mobile",
+
     "personalInformations": {
       "name": "Full Name:",
       "phone": "Phone Number:",
       "email": "Email:",
-      "hometown": "Hometown:"
+      "hometown": "Address:"
     },
     "features": "Features",
     "featuresList": {
@@ -339,7 +366,8 @@
     "forgot_password": "Forgot Password",
     "login_button": "Log In",
     "password": "Password",
-    "username": "Full Name",
+    "username": "User Name",
+    "fullname": "Full Name",
     "login": "Have an account?",
     "newPassword": "New Password",
     "confirmPassword": "Confirm Password",
@@ -357,13 +385,47 @@
       "emailInvalid": "Invalid email address",
       "passwordRequired": "Password is required",
       "passwordInvalid": "Password: 8–16 chars, include uppercase, digit & special.",
-      "usernameRequired": "Full name is required",
-      "usernameMinLength": "Full name must be at least 3 characters",
+      "usernameRequired": "User Name is required",
+      "usernameMinLength": "User Name must be at least 3 characters",
+      "fullnameRequired": "Full name is required",
+      "fullnameMinLength": "Full name must be at least 3 characters",
       "newPasswordRequired": "New password is required",
       "newPasswordInvalid": "Password: 8–16 chars, include uppercase, digit & special.",
       "confirmPasswordRequired": "Confirm password is required",
       "confirmPasswordInvalid": "Passwords do not match",
       "newPasswordCannotMatchOld": "New password must not be the same as the old password"
     }
+  },
+  "editProfile": {
+    "brumTitle": "Edit Personal Profile",
+    "accountInfo": "Account Information",
+    "wards": "Ward",
+    "district": "District",
+    "city": "City/Province",
+    "fullAddress": "Full Address",
+    "upload": "Upload Image",
+    "image": "Profile Image",
+    "buttonUpdate": "Update",
+    "selectWard": "Select Ward",
+    "selectDistrict": "Select District",
+    "selectCity": "Select City/Province",
+    "validate": {
+      "nameRequired": "Full name is required",
+      "phoneRequired": "Phone number is required",
+      "phonePattern": "Phone number must contain digits only",
+      "phoneMinLength": "Phone number must be at least 9 digits",
+      "phoneMaxLength": "Phone number must not exceed 12 digits",
+      "emailRequired": "Email is required",
+      "emailPattern": "Invalid email format",
+      "wardRequired": "Ward is required",
+      "districtRequired": "District is required",
+      "cityRequired": "City/Province is required",
+      "addressRequired": "Full address is required"
+    }
+  },
+  "voucher": {
+    "saveSuccess": "Voucher saved successfully",
+    "iconSave": "Save",
+    "iconCopy": "Copy"
   }
 }

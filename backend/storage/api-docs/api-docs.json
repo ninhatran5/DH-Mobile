@@ -1,0 +1,2134 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "APIs For DH Mobile ",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/attributes": {
+            "get": {
+                "tags": [
+                    "Attribute"
+                ],
+                "summary": "Lấy danh sách thuộc tính",
+                "operationId": "e43bb61719a288d8fb189dff99cd2160",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Attribute"
+                ],
+                "summary": "Thêm thuộc tính mới",
+                "operationId": "6d0a530c5b0cb1921e99524ef52ef2ee",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tạo thành công"
+                    }
+                }
+            }
+        },
+        "/api/attributes/{id}": {
+            "get": {
+                "tags": [
+                    "Attribute"
+                ],
+                "summary": "Lấy thuộc tính theo id",
+                "operationId": "14fd9c9788eb5b8cfab1abcb89bd378f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Attribute"
+                ],
+                "summary": "Cập nhật thuộc tính theo id",
+                "operationId": "c1c833d4bbe26a6bb90f5598778ad25b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Cập nhật thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Attribute"
+                ],
+                "summary": "Xóa mềm thuộc tính theo id",
+                "operationId": "9fe4406bc5be371603024a4a8ca44a1f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/attributes/trashed": {
+            "get": {
+                "tags": [
+                    "Attribute"
+                ],
+                "summary": "Lấy danh sách thuộc tính đã xóa mềm",
+                "operationId": "58a91ca1160264b14c95474cac219794",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/attributes/restore/{id}": {
+            "post": {
+                "tags": [
+                    "Attribute"
+                ],
+                "summary": "Khôi phục thuộc tính đã xóa mềm",
+                "operationId": "a648156252b0bd5792c16ea5d7dd59dd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Khôi phục thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/attributes/force-delete/{id}": {
+            "delete": {
+                "tags": [
+                    "Attribute"
+                ],
+                "summary": "Xóa vĩnh viễn thuộc tính đã xóa mềm",
+                "operationId": "2672e7d4e3a6882a2dabe36d5ad4328e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa vĩnh viễn thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/attributevalue": {
+            "get": {
+                "tags": [
+                    "AttributeValue"
+                ],
+                "summary": "Lấy danh sách thuộc tính con",
+                "operationId": "74f54aea03aa9d29c7fe19bbeebc1206",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/attributevalues": {
+            "post": {
+                "tags": [
+                    "AttributeValue"
+                ],
+                "summary": "Thêm thuộc tính con mới",
+                "operationId": "d85dd97dbc93779c498cee987246a8c7",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "attribute_id",
+                                    "value"
+                                ],
+                                "properties": {
+                                    "attribute_id": {
+                                        "type": "integer"
+                                    },
+                                    "value": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tạo thành công"
+                    }
+                }
+            }
+        },
+        "/api/attributevalue/{id}": {
+            "get": {
+                "tags": [
+                    "AttributeValue"
+                ],
+                "summary": "Lấy thuộc tính con theo id",
+                "operationId": "f09ad21de71a4f6d58d49e8464742236",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/attributevalues/{id}": {
+            "put": {
+                "tags": [
+                    "AttributeValue"
+                ],
+                "summary": "Cập nhật thuộc tính con theo id",
+                "operationId": "9aab3b49357ef5ec56cef6f62631830d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "attribute_id",
+                                    "value"
+                                ],
+                                "properties": {
+                                    "attribute_id": {
+                                        "type": "integer"
+                                    },
+                                    "value": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cập nhật thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "AttributeValue"
+                ],
+                "summary": "Xóa mềm thuộc tính con theo id",
+                "operationId": "6973ba347953e097d4d2d2ec96dd4f5a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/attributevalue/trashed": {
+            "get": {
+                "tags": [
+                    "AttributeValue"
+                ],
+                "summary": "Lấy danh sách thuộc tính con đã xóa mềm",
+                "operationId": "8aaea04a5bd4a8dbd3d16c53e283d4fc",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/attributevalue/restore/{id}": {
+            "post": {
+                "tags": [
+                    "AttributeValue"
+                ],
+                "summary": "Khôi phục thuộc tính con đã xóa mềm",
+                "operationId": "e25b41ec8a3c3ec6cd784dbbc5286f3f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Khôi phục thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/attributevalue/force-delete/{id}": {
+            "delete": {
+                "tags": [
+                    "AttributeValue"
+                ],
+                "summary": "Xóa vĩnh viễn thuộc tính con đã xóa mềm",
+                "operationId": "115dc07085dcbcb086e61f56969fbc39",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa vĩnh viễn thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Đăng nhập",
+                "operationId": "222b2625838e3c57e017987f73598fda",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Đăng nhập thành công"
+                    },
+                    "401": {
+                        "description": "Sai thông tin đăng nhập"
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Đăng xuất",
+                "operationId": "ad65cbbd4e9f201619eae184a5961a98",
+                "responses": {
+                    "200": {
+                        "description": "Đăng xuất thành công"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Đăng ký tài khoản mới",
+                "operationId": "8e4e3cb7b46126f4696379d3c7eeb4ad",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "full_name",
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "type": "string"
+                                    },
+                                    "full_name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "phone": {
+                                        "type": "string"
+                                    },
+                                    "address": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Đăng ký thành công"
+                    }
+                }
+            }
+        },
+        "/api/forgot-password": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Gửi email đặt lại mật khẩu",
+                "operationId": "20d78161b19ac6afb56924e74974ec46",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Gửi email thành công"
+                    },
+                    "404": {
+                        "description": "Email không tồn tại"
+                    }
+                }
+            }
+        },
+        "/api/resetpassword": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Đặt lại mật khẩu mới",
+                "operationId": "a9fedc6cda3dede35abaf22af722b19c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "token",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "token": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Đặt lại mật khẩu thành công"
+                    },
+                    "400": {
+                        "description": "Token không hợp lệ hoặc đã hết hạn"
+                    },
+                    "404": {
+                        "description": "Email không tồn tại"
+                    }
+                }
+            }
+        },
+        "/api/getbanners": {
+            "get": {
+                "tags": [
+                    "Banner"
+                ],
+                "summary": "Lấy toàn bộ danh sách banner",
+                "operationId": "5d70754fab28e25682241a1c5518a173",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/getbanners/{id}": {
+            "get": {
+                "tags": [
+                    "Banner"
+                ],
+                "summary": "Lấy banner theo id",
+                "operationId": "b1d6e50f34b1865adb11fd57afdfd7cb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/updatebanners/{id}": {
+            "post": {
+                "tags": [
+                    "Banner"
+                ],
+                "summary": "Cập nhật banner theo id",
+                "operationId": "ac5883f28f08786658dfd2029c83260c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "link_url": {
+                                        "type": "string"
+                                    },
+                                    "image_url": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cập nhật thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/categories": {
+            "get": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Lấy danh sách danh mục",
+                "operationId": "ac9c4d978ea4e5b72915ca9728e5b8b1",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Thêm danh mục mới",
+                "operationId": "cca49a87d9b0ebb9a98ad7c154b71737",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "image_url": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tạo thành công"
+                    }
+                }
+            }
+        },
+        "/api/categories/{id}": {
+            "get": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Lấy danh mục theo id",
+                "operationId": "09767bb2e47dde77dd1e2591428b0ae1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Cập nhật danh mục theo id",
+                "operationId": "7dcf71887e585de7f881e9eb98d86126",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "image_url": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cập nhật thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Xóa mềm danh mục theo id",
+                "operationId": "9b61b65823f4a21f182506b34ddf805c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/categories/trashed": {
+            "get": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Lấy danh sách danh mục đã xóa mềm",
+                "operationId": "f384cb25ac4c41a40ccd857ebff0febd",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/categories/restore/{id}": {
+            "post": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Khôi phục danh mục đã xóa mềm",
+                "operationId": "d371c3a635b76dc6698ffcd7521f14cb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Khôi phục thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/categories/force-delete/{id}": {
+            "delete": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Xóa vĩnh viễn danh mục đã xóa mềm",
+                "operationId": "5a72a93c1f0ececf2c3c30478f2a2d0b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa vĩnh viễn thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/news": {
+            "get": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Lấy danh sách tin tức",
+                "operationId": "a03e1a336bc332d11c385fe176757db9",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Thêm tin tức mới",
+                "operationId": "a3204d8708e05a4132ae88fec0ac3fe8",
+                "responses": {
+                    "201": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/news/{id}": {
+            "get": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Lấy chi tiết tin tức",
+                "operationId": "fdc889540fee482bc9fb94d60c177807",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Cập nhật tin tức",
+                "operationId": "da566c1c8fc4c29c380894496b4111aa",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Xóa mềm tin tức",
+                "operationId": "293b8000120d24698c27cfc8c20b40ed",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/news/restore/{id}": {
+            "post": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Khôi phục tin tức đã xóa mềm",
+                "operationId": "98b0b551c77375c0424bf729fd69146a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/news/trashed": {
+            "get": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Lấy danh sách tin tức đã xóa mềm",
+                "operationId": "ef7c628369d572c116d847ed507a276c",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/news/force-delete/{id}": {
+            "delete": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Xóa vĩnh viễn tin tức",
+                "operationId": "f9b040dc871848b04ea753421d92f825",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/products": {
+            "get": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Lấy danh sách sản phẩm",
+                "operationId": "d97d1c3727cbac49708b85f7d11f7d58",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Thêm sản phẩm mới",
+                "operationId": "785644b7d7dd38af4b51dafd0fbc1b6d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "category_id"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "category_id": {
+                                        "type": "integer"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "image_url": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tạo thành công"
+                    }
+                }
+            }
+        },
+        "/api/products/{id}": {
+            "get": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Lấy sản phẩm theo id",
+                "operationId": "c87fb2e4d617e7b36c712cad358acdb8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Cập nhật sản phẩm theo id",
+                "operationId": "416e4959a3919547eb609d87e3db9135",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "category_id"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "category_id": {
+                                        "type": "integer"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "image_url": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cập nhật thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Xóa mềm sản phẩm theo id",
+                "operationId": "b49ce9f3cb168b233245548fb4ef36d3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/products/trashed": {
+            "get": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Lấy danh sách sản phẩm đã xóa mềm",
+                "operationId": "e038afe43fc15f1175feac875ff8ed9f",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/products/restore/{id}": {
+            "post": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Khôi phục sản phẩm đã xóa mềm",
+                "operationId": "8443951086f85a747f880128c7ec4010",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Khôi phục thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/products/force-delete/{id}": {
+            "delete": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Xóa vĩnh viễn sản phẩm đã xóa mềm",
+                "operationId": "13145ae4262518de6c86a0c5231b1a60",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa vĩnh viễn thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/product-specifications": {
+            "get": {
+                "tags": [
+                    "ProductSpecifications"
+                ],
+                "summary": "Lấy danh sách thông số kỹ thuật sản phẩm",
+                "operationId": "0ea66054f91cfd32da23b017c58c87fa",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "ProductSpecifications"
+                ],
+                "summary": "Thêm thông số kỹ thuật sản phẩm mới",
+                "operationId": "2c61b467d76763faf6db73f79702afc0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "product_id",
+                                    "spec_name",
+                                    "spec_value"
+                                ],
+                                "properties": {
+                                    "product_id": {
+                                        "type": "integer"
+                                    },
+                                    "spec_name": {
+                                        "type": "string"
+                                    },
+                                    "spec_value": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tạo thành công"
+                    }
+                }
+            }
+        },
+        "/api/product-specifications/{id}": {
+            "get": {
+                "tags": [
+                    "ProductSpecifications"
+                ],
+                "summary": "Lấy thông số kỹ thuật sản phẩm theo id",
+                "operationId": "91c9ec0b7ccd4ae05d990884fc5f91a7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "ProductSpecifications"
+                ],
+                "summary": "Cập nhật thông số kỹ thuật sản phẩm theo id",
+                "operationId": "4ffe5c3a155d3fc29dc861402bdf3622",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "product_id",
+                                    "spec_name",
+                                    "spec_value"
+                                ],
+                                "properties": {
+                                    "product_id": {
+                                        "type": "integer"
+                                    },
+                                    "spec_name": {
+                                        "type": "string"
+                                    },
+                                    "spec_value": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cập nhật thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "ProductSpecifications"
+                ],
+                "summary": "Xóa mềm thông số kỹ thuật sản phẩm theo id",
+                "operationId": "93e9a04f17df25e5ba8284f0f91c1429",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/product-specifications/trashed": {
+            "get": {
+                "tags": [
+                    "ProductSpecifications"
+                ],
+                "summary": "Lấy danh sách thông số kỹ thuật sản phẩm đã xóa mềm",
+                "operationId": "6aa58d60647c94a696fdb8a17b3d47e4",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/product-specifications/restore/{id}": {
+            "post": {
+                "tags": [
+                    "ProductSpecifications"
+                ],
+                "summary": "Khôi phục thông số kỹ thuật đã xóa mềm",
+                "operationId": "c0a7bf6de759f06ed7b66d2923eb63bb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Khôi phục thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/product-specifications/force-delete/{id}": {
+            "delete": {
+                "tags": [
+                    "ProductSpecifications"
+                ],
+                "summary": "Xóa vĩnh viễn thông số kỹ thuật đã xóa mềm",
+                "operationId": "5bf49c83e02131e3f34c54b52ef0a3fa",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa vĩnh viễn thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/productvariants": {
+            "get": {
+                "tags": [
+                    "ProductVariants"
+                ],
+                "summary": "Lấy danh sách biến thể sản phẩm",
+                "operationId": "bb95655e7025feba0b09af9969bcb00e",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "ProductVariants"
+                ],
+                "summary": "Thêm biến thể sản phẩm mới",
+                "operationId": "9377725d7c0dcfe61e3fa56fd4717f92",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "product_id",
+                                    "sku",
+                                    "price",
+                                    "stock"
+                                ],
+                                "properties": {
+                                    "product_id": {
+                                        "type": "integer"
+                                    },
+                                    "sku": {
+                                        "type": "string"
+                                    },
+                                    "price": {
+                                        "type": "number"
+                                    },
+                                    "price_original": {
+                                        "type": "number"
+                                    },
+                                    "image_url": {
+                                        "type": "string"
+                                    },
+                                    "stock": {
+                                        "type": "integer"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tạo thành công"
+                    }
+                }
+            }
+        },
+        "/api/productvariants/{id}": {
+            "get": {
+                "tags": [
+                    "ProductVariants"
+                ],
+                "summary": "Lấy chi tiết biến thể sản phẩm",
+                "operationId": "158bdb0cecf38c9df0d218f80354d900",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "ProductVariants"
+                ],
+                "summary": "Cập nhật biến thể sản phẩm",
+                "operationId": "fef0c23fd2391b7a996df5aca9a215c1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "sku",
+                                    "price",
+                                    "stock"
+                                ],
+                                "properties": {
+                                    "sku": {
+                                        "type": "string"
+                                    },
+                                    "price": {
+                                        "type": "number"
+                                    },
+                                    "price_original": {
+                                        "type": "number"
+                                    },
+                                    "image_url": {
+                                        "type": "string"
+                                    },
+                                    "stock": {
+                                        "type": "integer"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cập nhật thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "ProductVariants"
+                ],
+                "summary": "Xóa mềm biến thể sản phẩm",
+                "operationId": "38cf9a346b577937b489e78a77cf4fb3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/productvariants/trashed": {
+            "get": {
+                "tags": [
+                    "ProductVariants"
+                ],
+                "summary": "Lấy danh sách biến thể sản phẩm đã xóa mềm",
+                "operationId": "c0ce7e19da28e5353be1757253bf6702",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/productvariants/restore/{id}": {
+            "post": {
+                "tags": [
+                    "ProductVariants"
+                ],
+                "summary": "Khôi phục biến thể sản phẩm đã xóa mềm",
+                "operationId": "da84c139d3bcbb5000c56166341f894f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Khôi phục thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/productvariants/force-delete/{id}": {
+            "delete": {
+                "tags": [
+                    "ProductVariants"
+                ],
+                "summary": "Xóa vĩnh viễn biến thể sản phẩm đã xóa mềm",
+                "operationId": "422ae655d34f962b13874f920316d4dc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa vĩnh viễn thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/variant-attribute-values": {
+            "get": {
+                "tags": [
+                    "VariantAttributeValues"
+                ],
+                "summary": "Lấy danh sách liên kết biến thể - giá trị thuộc tính",
+                "operationId": "9ea7bb8fe666ae49af9a38e5a247e550",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "VariantAttributeValues"
+                ],
+                "summary": "Tạo liên kết biến thể - giá trị thuộc tính mới",
+                "operationId": "68e3288822140b408e8a9438bfe8d72e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "variant_id",
+                                    "value_id"
+                                ],
+                                "properties": {
+                                    "variant_id": {
+                                        "type": "integer"
+                                    },
+                                    "value_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tạo thành công"
+                    }
+                }
+            }
+        },
+        "/api/variant-attribute-values/{id}": {
+            "get": {
+                "tags": [
+                    "VariantAttributeValues"
+                ],
+                "summary": "Lấy chi tiết liên kết biến thể - giá trị thuộc tính",
+                "operationId": "48ac7a8b6db1d7344d9022746e0e81f5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "VariantAttributeValues"
+                ],
+                "summary": "Cập nhật liên kết biến thể - giá trị thuộc tính",
+                "operationId": "acfcc3ca74daf2f7cf9a5b8464bedfa6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "variant_id": {
+                                        "type": "integer"
+                                    },
+                                    "value_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cập nhật thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "VariantAttributeValues"
+                ],
+                "summary": "Xóa mềm liên kết biến thể - giá trị thuộc tính",
+                "operationId": "ee6c33361cc8d36f4458c7f288e7a121",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/variant-attribute-values/trashed": {
+            "get": {
+                "tags": [
+                    "VariantAttributeValues"
+                ],
+                "summary": "Lấy danh sách liên kết đã xóa mềm",
+                "operationId": "926f480d6fb751ec7d00a38691ba9709",
+                "responses": {
+                    "200": {
+                        "description": "Thành công"
+                    }
+                }
+            }
+        },
+        "/api/variant-attribute-values/{id}/restore": {
+            "put": {
+                "tags": [
+                    "VariantAttributeValues"
+                ],
+                "summary": "Khôi phục liên kết đã xóa mềm",
+                "operationId": "86472b2e29f4e55bec6f6d8c6e7df507",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Khôi phục thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/variant-attribute-values/{id}/force": {
+            "delete": {
+                "tags": [
+                    "VariantAttributeValues"
+                ],
+                "summary": "Xóa vĩnh viễn liên kết đã xóa mềm",
+                "operationId": "1be28d68037c9a5c16d56d85f049f9cb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa vĩnh viễn thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/vorchers/trashed": {
+            "get": {
+                "tags": [
+                    "Vorcher"
+                ],
+                "summary": "Lấy danh sách các vorcher đã bị xóa mềm",
+                "operationId": "e22728bc5acc00959fb34d1c393cf1a0",
+                "responses": {
+                    "200": {
+                        "description": "Lấy danh sách vorcher đã xóa thành công"
+                    }
+                }
+            }
+        },
+        "/api/vorchers/restore/{id}": {
+            "put": {
+                "tags": [
+                    "Vorcher"
+                ],
+                "summary": "Khôi phục một vorcher đã bị xóa mềm",
+                "operationId": "5fc52f158050ce90f4072ffedb253d35",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Khôi phục vorcher thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        },
+        "/api/vorchers/force-delete/{id}": {
+            "delete": {
+                "tags": [
+                    "Vorcher"
+                ],
+                "summary": "Xóa vĩnh viễn vorcher đã xóa mềm",
+                "operationId": "35cef9c013ea5b096d32c494268f19d4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Xóa vĩnh viễn thành công"
+                    },
+                    "404": {
+                        "description": "Không tìm thấy"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "name": "bearerAuth",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Attribute",
+            "description": "Attribute"
+        },
+        {
+            "name": "AttributeValue",
+            "description": "AttributeValue"
+        },
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
+            "name": "Banner",
+            "description": "Banner"
+        },
+        {
+            "name": "Category",
+            "description": "Category"
+        },
+        {
+            "name": "News",
+            "description": "News"
+        },
+        {
+            "name": "Product",
+            "description": "Product"
+        },
+        {
+            "name": "ProductSpecifications",
+            "description": "ProductSpecifications"
+        },
+        {
+            "name": "ProductVariants",
+            "description": "ProductVariants"
+        },
+        {
+            "name": "VariantAttributeValues",
+            "description": "VariantAttributeValues"
+        },
+        {
+            "name": "Vorcher",
+            "description": "Vorcher"
+        }
+    ]
+}
