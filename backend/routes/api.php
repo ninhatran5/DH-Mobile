@@ -185,11 +185,11 @@ Route::post('cart', [CartController::class, 'Cart']);
 // // thêm sản phẩm vào giỏ hàng
 Route::post('cart/add/{id}', [CartItemController::class, 'addProductToCart']);
 // // cập nhật số lượng sản phẩm trong giỏ hàng
-// Route::put('cart/update/{id}', [CartItemController::class, 'updateProductQuantity']);
-// // xóa sản phẩm khỏi giỏ hàng
-// Route::delete('cart/remove/{id}', [CartItemController::class, 'removeProductFromCart']);
+Route::post('cart/updateProductQuantity/{id}', [CartItemController::class, 'updateProductQuantity']);
 // // lấy giỏ hàng của người dùng
 Route::get('getCart', [CartItemController::class, 'getCart']);
+// // xóa sản phẩm khỏi giỏ hàng
+// Route::delete('cart/remove/{id}', [CartItemController::class, 'removeProductFromCart']);
 // // xóa toàn bộ giỏ hàng
 // Route::delete('cart/clear', [CartItemController::class, 'clearCart']);
 
