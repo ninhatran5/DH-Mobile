@@ -113,9 +113,14 @@ const Profile = () => {
   };
   const features = [
     {
-      id: 2,
+      id: 1,
       name: t("profile.featuresList.favoriteProducts"),
       links: "/favorite-products",
+    },
+    {
+      id: 2,
+      name: t("breadcrumbVoucher.breadcrumbHeaderForMe"),
+      links: "/my-discount-code",
     },
     {
       id: 3,

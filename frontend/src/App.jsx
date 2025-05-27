@@ -56,6 +56,7 @@ import Addattribute from "./pages/admin/AddAttributes";
 import EditAttribute from "./pages/admin/EditAttributes";
 import AddAttributevalues from "./pages/admin/AddAttributevalues";
 import EditAttributevalues from "./pages/admin/EditAttributevalues";
+import MyDiscountCode from "./pages/MyDiscountCode";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -109,7 +110,11 @@ const routerConfig = [
   },
   {
     path: "/vouchers",
-    element: withLayoutClient(Voucher, true),
+    element: withLayoutClient(Voucher),
+  },
+  {
+    path: "/my-discount-code",
+    element: withLayoutClient(MyDiscountCode, true),
   },
   {
     path: "/check-imei",
@@ -170,11 +175,12 @@ const routerConfig = [
 
   {
     path: "/admin",
-    element: 
+    element: (
       <ProtectedRoute>
-      <HomeAdmin />,
-</ProtectedRoute>,
-    
+        <HomeAdmin />,
+      </ProtectedRoute>
+    ),
+
     children: [
       {
         path: "",
@@ -238,8 +244,8 @@ const routerConfig = [
         element: <ListBanner />,
       },
       {
-        path:"editbanner/:id",
-        element:<EditBanner/>
+        path: "editbanner/:id",
+        element: <EditBanner />,
       },
       {
         path: "comments",
@@ -251,15 +257,15 @@ const routerConfig = [
       },
       {
         path: "attribute",
-        element:<Attributes />,
+        element: <Attributes />,
       },
       {
         path: "Addattribute",
-        element:<Addattribute/>
+        element: <Addattribute />,
       },
       {
         path: "Editattribute/:id",
-        element: <EditAttribute/>
+        element: <EditAttribute />,
       },
       {
         path: "AddAttributevalues/:attribute_id",
@@ -268,18 +274,17 @@ const routerConfig = [
       {
         path: "EditAttributevalues/:value_id",
         element: <EditAttributevalues />,
-      }
+      },
     ],
   },
-{
+  {
     path: "/AdminLogin",
     element: (
       <PublicRouteAdmin>
         <AdminLogin />
       </PublicRouteAdmin>
     ),
-  }
-  ,
+  },
   {
     path: "*",
     element: <ErrorPage />,

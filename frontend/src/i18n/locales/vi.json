@@ -96,9 +96,10 @@
   },
   "breadcrumbVoucher": {
     "breadcrumbHeader": "Mã Giảm Giá",
+    "breadcrumbHeaderForMe": "Mã Giảm Giá Của Tôi",
     "breadcrumbTitleHome": "Trang chủ",
     "breadcrumbDesc": "Copy mã và sử dụng",
-    "success": "Đã sao chép mã voucher",
+    "success": "Đã sao chép mã mã giảm giá",
     "err": "Lỗi khi sao chép:"
   },
   "breadcrumbLiked": {
@@ -416,5 +417,10 @@
       "cityRequired": "Tỉnh/Thành Phố là bắt buộc",
       "addressRequired": "Địa chỉ là bắt buộc"
     }
+  },
+  "voucher": {
+    "saveSuccess": "Đã lưu mã giảm giá",
+    "iconSave": "Lưu",
+    "iconCopy": "Sao chép"
   }
 }
