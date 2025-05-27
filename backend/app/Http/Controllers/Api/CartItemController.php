@@ -81,4 +81,35 @@ class CartItemController extends Controller
             'cart_item' => $cartItem
         ], 201);
     }
+
+
+
+    public function  getCart(request $request) {
+
+        $user = $request->user();
+        if (!$user) {
+            return response()->json([
+                'message' => 'Chưa đăng nhập',
+            ], 401);
+        }
+
+        // Lấy giỏ hàng của người dùng
+        $cart = Cart::where('user_id', $user->user_id)->first();
+
+        if (!$cart) {
+            return response()->json([
+                'message' => 'Giỏ hàng không tồn tại',
+            ], 404);
+        }
+
+        // Lấy tất cả các sản phẩm trong giỏ hàng
+        $cartItems = CartItem::where('cart_id', $cart->cart_id)
+            ->with('variant') // Tải thông tin biến thể sản phẩm
+            ->get();
+
+        return response()->json([
+            'message' => 'Lấy giỏ hàng thành công',
+            'cart_items' => $cartItems
+        ], 200);
+    }
 }
