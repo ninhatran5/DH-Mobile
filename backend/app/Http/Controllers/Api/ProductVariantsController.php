@@ -20,12 +20,40 @@ class ProductVariantsController extends Controller
      */
     public function index()
     {
-        $variants = ProductVariant::with(['product', 'attributeValues'])->get();
+        $variants = ProductVariant::with(['product', 'attributeValues.attribute'])->get();
+        
+        // Biến đổi dữ liệu để nhóm theo attribute
+        $variants = $variants->map(function ($variant) {
+            $attributes = [];
+            
+            // Nhóm các giá trị theo attribute_id
+            $variant->attributeValues->each(function ($value) use (&$attributes) {
+                $attributeId = $value->attribute_id;
+                if (!isset($attributes[$attributeId])) {
+                    $attributes[$attributeId] = [
+                        'attribute_id' => $attributeId,
+                        'name' => $value->attribute->name,
+                        'values' => []
+                    ];
+                }
+                $attributes[$attributeId]['values'][] = [
+                    'value_id' => $value->value_id,
+                    'value' => $value->value
+                ];
+            });
+            
+            // Chuyển attributes từ array thành collection
+            $variant->attributes = array_values($attributes);
+            unset($variant->attributeValues);
+            
+            return $variant;
+        });
+
         return response()->json([
+            'status' => true,
             'message' => 'Lấy danh sách biến thể sản phẩm thành công',
-            'data' => $variants,
-            'status' => 200,
-        ])->setStatusCode(200, 'OK');
+            'data' => $variants
+        ], 200);
     }
 
     /**
