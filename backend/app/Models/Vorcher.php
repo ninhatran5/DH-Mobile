@@ -15,6 +15,7 @@ class Vorcher extends Model
     protected $fillable = [
         'code',
         'discount_amount',
+        'title',
         'min_order_value',
         'start_date',
         'end_date',
