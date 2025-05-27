@@ -21,6 +21,7 @@ class Vorcher extends Model
         'is_active',
         'created_at',
         'updated_at',
+        'deleted_at'
     ];
 
     // Một voucher có thể được gán cho nhiều đơn hàng
