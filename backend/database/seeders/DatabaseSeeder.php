@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -11,6 +12,7 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
+    // php artisan migrate:fresh --seed
     public function run(): void
     {
         // User::factory(10)->create();
@@ -31,6 +33,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             BannerSeeder::class,
             NewsSeeder::class,
+            VoucherSeeder::class,
         ]);
     }
 }
