@@ -23,6 +23,10 @@ import adminAccountReducer from "../slices/adminAcccount";
 import blogDetailReducer from "../slices/blogDetailSlice";
 import voucherReducer from "../slices/voucherSlice";
 import adminProductReducer from "../slices/adminproductsSlice";
+
+import adminProductSpecificationsReducer from "../slices/adminProductSpecificationsSlice";
+import adminProductVariantsReducer from "../slices/AdminProductVariants";
+
 export const store = configureStore({
   reducer: {
     home: homeReducer,
@@ -49,5 +53,9 @@ export const store = configureStore({
     attributeValue: attributeValueReducer,
     adminAccount: adminAccountReducer,
     adminproduct: adminProductReducer,
+
+    adminProductSpecifications: adminProductSpecificationsReducer,
+    adminProductVariants: adminProductVariantsReducer,
+
   },
 });
