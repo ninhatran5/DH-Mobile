@@ -18,6 +18,8 @@ return new class extends Migration
             $table->boolean('is_active')->default(1);
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->dateTime('deleted_at')->nullable();
+            
         });
     }
 
