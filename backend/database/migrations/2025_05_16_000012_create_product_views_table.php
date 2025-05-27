@@ -13,14 +13,14 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('product_id')->nullable();
             $table->dateTime('viewed_at')->useCurrent();
-
             $table->foreign('user_id')->references('user_id')->on('users');
             $table->foreign('product_id')->references('product_id')->on('products');
+            $table->timestamps(); // Thêm dòng này
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('product_views');
+        Schema::dropIfExists('products_views');
     }
 };
