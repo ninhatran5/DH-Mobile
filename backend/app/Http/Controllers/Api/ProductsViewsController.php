@@ -13,8 +13,8 @@ class ProductsViewsController extends Controller
     {
         // kiểm tra dữ liệu đầu vào gửi lên frontend
         $validated = $request->validate([
-            'product_id' => 'required|integer|exists:products,id',
-            'user_id' => 'nullable|integer|exists:users,id',      
+            'product_id' => 'required|integer|exists:products,product_id',
+            'user_id' => 'nullable|integer|exists:users,user_id', // nếu bảng users dùng user_id, còn nếu là id thì để users,id
         ]);
         $view = ProductsViews::create([
             'user_id' => $validated['user_id'] ?? null,
@@ -31,7 +31,7 @@ class ProductsViewsController extends Controller
     // public function getAllViews(Request $request)
     // {
     //     $views = ProductsViews::with(['user', 'product'])->get();
-        
+
     //     return response()->json([
     //         'success' => true,
     //         'message' => 'All product views retrieved successfully',
@@ -46,26 +46,26 @@ class ProductsViewsController extends Controller
         if (!$view) {
             return response()->json([
                 'success' => false,
-                'message' => 'Product view not found',
+                'message' => 'xóa bản ghi thất bại, không tìm thấy view_id',
             ], 404);
         }
-        
+
         // xóa bản ghi
         $view->delete();
-        
+
         return response()->json([
             'success' => true,
-            'message' => 'Product view deleted successfully',
+            'message' => 'xóa bản ghi thành công',
         ], 200);
     }
     public function deleteAllViews(Request $request)
     {
         // xóa tất cả bản ghi trong bảng products_views
         ProductsViews::truncate();
-        
+
         return response()->json([
             'success' => true,
-            'message' => 'All product views deleted successfully',
+            'message' => 'xóa tất cả bản ghi thành công',
         ], 200);
     }
     // lấy danh sách sản phẩm đã xem của người dùng theo user_id
@@ -73,20 +73,18 @@ class ProductsViewsController extends Controller
     {
         // kiểm tra xem user_id có tồn tại trong bảng users không
         $views = ProductsViews::where('user_id', $user_id)->with(['user', 'product'])->get();
-        
+
         if ($views->isEmpty()) {
             return response()->json([
                 'success' => false,
-                'message' => 'No product views found for this user',
+                'message' => 'không tìm thấy sản phẩm đã xem của người dùng này',
             ], 404);
         }
-        
+
         return response()->json([
             'success' => true,
-            'message' => 'Product views retrieved successfully',
+            'message' => 'Danh sách sản phẩm đã xem của người dùng',
             'data' => $views,
         ], 200);
     }
-
 }
-
