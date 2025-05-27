@@ -97,6 +97,7 @@
   },
   "breadcrumbVoucher": {
     "breadcrumbHeader": "Vouchers",
+    "breadcrumbHeaderForMe": "My Vouchers",
     "breadcrumbTitleHome": "Home",
     "breadcrumbTitleMain": "Vouchers",
     "success": "Voucher code copied",
@@ -421,5 +422,10 @@
       "cityRequired": "City/Province is required",
       "addressRequired": "Full address is required"
     }
+  },
+  "voucher": {
+    "saveSuccess": "Voucher saved successfully",
+    "iconSave": "Save",
+    "iconCopy": "Copy"
   }
 }

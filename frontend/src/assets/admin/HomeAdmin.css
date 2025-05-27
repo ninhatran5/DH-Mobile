@@ -33,9 +33,14 @@
   --admin_dh-glass-border: rgba(255, 255, 255, 0.2);
   --admin_dh-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   --admin_dh-glow-primary: 0 0 15px rgba(0, 113, 227, 0.2);
-  --admin_dh-active-gradient: linear-gradient(90deg, rgba(0, 113, 227, 0.1) 0%, rgba(0, 113, 227, 0) 100%);
+  --admin_dh-active-gradient: linear-gradient(
+    90deg,
+    rgba(0, 113, 227, 0.1) 0%,
+    rgba(0, 113, 227, 0) 100%
+  );
   --admin_dh-card-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  --admin_dh-card-shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.08), 0 2px 5px rgba(0, 0, 0, 0.05);
+  --admin_dh-card-shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.08),
+    0 2px 5px rgba(0, 0, 0, 0.05);
   --admin_dh-backdrop-blur: 15px;
   --admin_dh-backdrop-saturation: 180%;
   --admin_dh-nav-highlight: rgba(0, 113, 227, 0.08);
@@ -56,7 +61,8 @@
   --admin_dh-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   --admin_dh-glow-primary: 0 0 15px rgba(0, 113, 227, 0.3);
   --admin_dh-card-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-  --admin_dh-card-shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.25), 0 2px 5px rgba(0, 0, 0, 0.15);
+  --admin_dh-card-shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.25),
+    0 2px 5px rgba(0, 0, 0, 0.15);
   --admin_dh-backdrop-blur: 20px;
   --admin_dh-backdrop-saturation: 120%;
   --admin_dh-nav-highlight: rgba(0, 113, 227, 0.15);
@@ -64,7 +70,8 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "San Francisco",
+    "Helvetica Neue", Helvetica, Arial, sans-serif;
   background-color: var(--admin_dh-bg);
   color: var(--admin_dh-text);
   line-height: 1.5;
@@ -81,7 +88,8 @@ body {
   min-height: 100vh;
   position: relative;
   background-color: var(--admin_dh-bg);
-  transition: background-color 0.3s ease, color 0.3s ease, var(--admin_dh-transition);
+  transition: background-color 0.3s ease, color 0.3s ease,
+    var(--admin_dh-transition);
 }
 
 /* Sidebar Styles */
@@ -92,13 +100,16 @@ body {
   top: 0;
   left: 0;
   height: 100vh;
-  transition: width 0.3s cubic-bezier(0.34, 1.2, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+  transition: width 0.3s cubic-bezier(0.34, 1.2, 0.64, 1),
+    transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
   z-index: 1000;
   border-right: 1px solid var(--admin_dh-border);
   overflow-y: auto;
   box-shadow: var(--admin_dh-box-shadow);
-  backdrop-filter: blur(var(--admin_dh-backdrop-blur)) saturate(var(--admin_dh-backdrop-saturation));
-  -webkit-backdrop-filter: blur(var(--admin_dh-backdrop-blur)) saturate(var(--admin_dh-backdrop-saturation));
+  backdrop-filter: blur(var(--admin_dh-backdrop-blur))
+    saturate(var(--admin_dh-backdrop-saturation));
+  -webkit-backdrop-filter: blur(var(--admin_dh-backdrop-blur))
+    saturate(var(--admin_dh-backdrop-saturation));
   display: flex;
   flex-direction: column;
   will-change: transform, width;
@@ -141,8 +152,10 @@ body {
   position: sticky;
   top: 0;
   background-color: var(--admin_dh-glass-bg);
-  backdrop-filter: blur(var(--admin_dh-backdrop-blur)) saturate(var(--admin_dh-backdrop-saturation));
-  -webkit-backdrop-filter: blur(var(--admin_dh-backdrop-blur)) saturate(var(--admin_dh-backdrop-saturation));
+  backdrop-filter: blur(var(--admin_dh-backdrop-blur))
+    saturate(var(--admin_dh-backdrop-saturation));
+  -webkit-backdrop-filter: blur(var(--admin_dh-backdrop-blur))
+    saturate(var(--admin_dh-backdrop-saturation));
   z-index: 2;
 }
 
@@ -240,7 +253,8 @@ body {
 }
 
 .admin_dh-nav-section {
-  padding: var(--admin_dh-spacing-md) var(--admin_dh-spacing-md) var(--admin_dh-spacing-xs);
+  padding: var(--admin_dh-spacing-md) var(--admin_dh-spacing-md)
+    var(--admin_dh-spacing-xs);
   position: relative;
 }
 
@@ -252,7 +266,11 @@ body {
   content: "";
   display: block;
   height: 1px;
-  background: linear-gradient(90deg, var(--admin_dh-border) 0%, transparent 100%);
+  background: linear-gradient(
+    90deg,
+    var(--admin_dh-border) 0%,
+    transparent 100%
+  );
   margin-top: var(--admin_dh-spacing-lg);
   opacity: 0.5;
 }
@@ -461,11 +479,13 @@ body {
 
 /* Đảm bảo hiệu ứng mượt mà khi chuyển trạng thái sidebar */
 .admin_dh-sidebar {
-  transition: width 0.3s cubic-bezier(0.34, 1.2, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+  transition: width 0.3s cubic-bezier(0.34, 1.2, 0.64, 1),
+    transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
 }
 
 #admin_dh-content {
-  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Hiệu ứng hover đẹp hơn khi sidebar thu gọn */
@@ -534,7 +554,8 @@ body {
 #admin_dh-content {
   width: calc(100% - var(--admin_dh-sidebar-width));
   margin-left: var(--admin_dh-sidebar-width);
-  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -551,8 +572,10 @@ body {
   padding: var(--admin_dh-spacing-md) var(--admin_dh-spacing-lg);
   background-color: var(--admin_dh-glass-bg);
   border-bottom: 1px solid var(--admin_dh-border);
-  backdrop-filter: blur(var(--admin_dh-backdrop-blur)) saturate(var(--admin_dh-backdrop-saturation));
-  -webkit-backdrop-filter: blur(var(--admin_dh-backdrop-blur)) saturate(var(--admin_dh-backdrop-saturation));
+  backdrop-filter: blur(var(--admin_dh-backdrop-blur))
+    saturate(var(--admin_dh-backdrop-saturation));
+  -webkit-backdrop-filter: blur(var(--admin_dh-backdrop-blur))
+    saturate(var(--admin_dh-backdrop-saturation));
   position: sticky;
   top: 0;
   z-index: 990;
@@ -609,7 +632,11 @@ body {
   left: 50%;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.2) 0%,
+    transparent 70%
+  );
   transform: translate(-50%, -50%) scale(0);
   border-radius: 50%;
   opacity: 0;
@@ -876,15 +903,19 @@ body {
 .admin_dh-main-content {
   padding: var(--admin_dh-spacing-lg);
   flex: 1;
-  background: linear-gradient(180deg, 
-    rgba(0, 113, 227, 0.02) 0%, 
-    rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 113, 227, 0.02) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
 }
 
 .dark-mode .admin_dh-main-content {
-  background: linear-gradient(180deg, 
-    rgba(0, 113, 227, 0.03) 0%, 
-    rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 113, 227, 0.03) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
 }
 
 /* Cards with improved macOS style */
@@ -916,8 +947,8 @@ body {
   justify-content: space-between;
 }
 
-.admin_dh-card-header h5, 
-.admin_dh-card-header h4, 
+.admin_dh-card-header h5,
+.admin_dh-card-header h4,
 .admin_dh-card-header h3 {
   margin-bottom: 0;
   font-weight: 600;
@@ -984,24 +1015,24 @@ body {
 }
 
 @media (max-width: 768px) {
-  .admin_dh-grid-2, 
-  .admin_dh-grid-3, 
+  .admin_dh-grid-2,
+  .admin_dh-grid-3,
   .admin_dh-grid-4 {
     grid-template-columns: 1fr;
   }
-  
+
   .admin_dh-main-content {
     padding: var(--admin_dh-spacing-md);
   }
-  
+
   .admin_dh-navbar-left {
     gap: 10px;
   }
-  
+
   .admin_dh-navbar-left > * {
     margin: 0;
   }
-  
+
   #admin_dh-sidebarOpen + .admin_dh-search-bar {
     margin-left: 6px;
     padding-left: 0;
@@ -1042,20 +1073,20 @@ body {
     width: var(--admin_dh-sidebar-width) !important;
     transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
   }
-  
+
   .admin_dh-sidebar-active {
     transform: translateX(0) !important;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2) !important;
   }
-  
+
   #admin_dh-content {
     width: 100% !important;
     margin-left: 0 !important;
   }
-  
+
   /* Hiệu ứng mờ nền khi mở sidebar trên mobile */
   .admin_dh-content-dimmed::after {
-    content: '';
+    content: "";
     position: fixed;
     top: 0;
     left: 0;
@@ -1066,21 +1097,22 @@ body {
     -webkit-backdrop-filter: blur(3px);
     z-index: 1040;
     opacity: 0;
-    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), backdrop-filter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      backdrop-filter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     pointer-events: none;
   }
-  
+
   .admin_dh-content-active.admin_dh-content-dimmed::after {
     opacity: 1;
     pointer-events: auto;
   }
-  
+
   .admin_dh-search-bar {
     max-width: 180px;
     min-width: 120px;
     margin-left: 6px;
   }
-  
+
   .admin_dh-search-bar.focused {
     max-width: 220px;
   }
@@ -1088,7 +1120,7 @@ body {
   .admin_dh-navbar .container-fluid {
     padding: 0 var(--admin_dh-spacing-sm);
   }
-  
+
   .admin_dh-navbar-right {
     gap: var(--admin_dh-spacing-xs);
   }
@@ -1096,8 +1128,12 @@ body {
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .admin_dh-fade-in {
@@ -1165,7 +1201,7 @@ html {
 }
 
 #admin_dh-sidebar:hover::-webkit-scrollbar-thumb {
-  background: rgba(142, 142, 147, 0.3); 
+  background: rgba(142, 142, 147, 0.3);
 }
 
 /* Hover-only scrollbar for sidebar on macOS (if supported) */
@@ -1173,7 +1209,7 @@ html {
   #admin_dh-sidebar::-webkit-scrollbar-thumb {
     background: transparent;
   }
-  
+
   #admin_dh-sidebar:hover::-webkit-scrollbar-thumb {
     background: rgba(142, 142, 147, 0.3);
   }
@@ -1194,7 +1230,8 @@ html {
 
 /* Thêm CSS mới để đảm bảo sidebar luôn hoạt động đúng */
 #admin_dh-sidebar {
-  transition: width 0.3s cubic-bezier(0.34, 1.2, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+  transition: width 0.3s cubic-bezier(0.34, 1.2, 0.64, 1),
+    transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
   will-change: transform, width;
 }
 
@@ -1204,7 +1241,8 @@ html {
 }
 
 #admin_dh-content {
-  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .admin_dh-content-expanded {
@@ -1261,7 +1299,8 @@ html {
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: opacity 0.2s ease,
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: var(--admin_dh-box-shadow);
   z-index: 1050;
   font-size: 0.85rem;
@@ -1289,13 +1328,13 @@ html {
   }
 }
 
-#admin_dh-sidebarCollapse.admin_dh-active, 
+#admin_dh-sidebarCollapse.admin_dh-active,
 #admin_dh-sidebarOpen.admin_dh-active {
   animation: admin_dh-ring-effect 0.8s;
 }
 
 /* Cập nhật style cho nút toggle sidebar */
-#admin_dh-sidebarCollapse, 
+#admin_dh-sidebarCollapse,
 #admin_dh-sidebarOpen {
   margin-right: 0;
   width: 40px;
@@ -1309,18 +1348,18 @@ html {
   flex-shrink: 0;
 }
 
-#admin_dh-sidebarCollapse:hover, 
+#admin_dh-sidebarCollapse:hover,
 #admin_dh-sidebarOpen:hover {
   transform: scale(1.1);
   box-shadow: 0 4px 12px rgba(0, 113, 227, 0.4);
 }
 
-#admin_dh-sidebarCollapse:active, 
+#admin_dh-sidebarCollapse:active,
 #admin_dh-sidebarOpen:active {
   transform: scale(0.95);
 }
 
-#admin_dh-sidebarCollapse i, 
+#admin_dh-sidebarCollapse i,
 #admin_dh-sidebarOpen i {
   font-size: 1.2rem;
 }
@@ -1338,7 +1377,7 @@ html {
   }
 }
 
-#admin_dh-sidebarCollapse.admin_dh-active, 
+#admin_dh-sidebarCollapse.admin_dh-active,
 #admin_dh-sidebarOpen.admin_dh-active {
   animation: admin_dh-ring-effect 0.8s;
 }
@@ -1365,7 +1404,9 @@ html {
 }
 
 .admin_dh-sidebar-collapsed.admin_dh-sidebar-active .admin_dh-nav-link i,
-.admin_dh-sidebar-collapsed.admin_dh-sidebar-active .admin_dh-dropdown-toggle i:first-child {
+.admin_dh-sidebar-collapsed.admin_dh-sidebar-active
+  .admin_dh-dropdown-toggle
+  i:first-child {
   margin: 0;
 }
 
@@ -1402,7 +1443,8 @@ html {
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: opacity 0.2s ease,
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: var(--admin_dh-box-shadow);
   z-index: 1050;
   font-size: 0.85rem;
@@ -1433,7 +1475,8 @@ html {
   visibility: hidden;
   z-index: 1050;
   transform: translateX(10px);
-  transition: max-height 0.3s ease, opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
+  transition: max-height 0.3s ease, opacity 0.3s ease, transform 0.3s ease,
+    visibility 0s linear 0.3s;
 }
 
 .admin_dh-sidebar-collapsed .admin_dh-submenu.show {
@@ -1449,7 +1492,8 @@ html {
   list-style-type: none;
   padding-left: calc(var(--admin_dh-spacing-md) + 32px);
   max-height: 0;
-  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease-in-out;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.2s ease-in-out;
   opacity: 0;
   overflow: hidden;
   margin-top: 0;
@@ -1457,7 +1501,8 @@ html {
 
 .admin_dh-submenu.show {
   max-height: 500px;
-  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in-out;
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s ease-in-out;
   margin-top: var(--admin_dh-spacing-xs);
   margin-bottom: var(--admin_dh-spacing-xs);
   opacity: 1;
@@ -1538,17 +1583,39 @@ html {
 
 /* Hiệu ứng rung chuông thông báo */
 @keyframes admin_dh-bell-ring {
-  0% { transform: rotate(0); }
-  10% { transform: rotate(20deg); }
-  20% { transform: rotate(-20deg); }
-  30% { transform: rotate(15deg); }
-  40% { transform: rotate(-15deg); }
-  50% { transform: rotate(8deg); }
-  60% { transform: rotate(-8deg); }
-  70% { transform: rotate(4deg); }
-  80% { transform: rotate(-4deg); }
-  90% { transform: rotate(0); }
-  100% { transform: rotate(0); }
+  0% {
+    transform: rotate(0);
+  }
+  10% {
+    transform: rotate(20deg);
+  }
+  20% {
+    transform: rotate(-20deg);
+  }
+  30% {
+    transform: rotate(15deg);
+  }
+  40% {
+    transform: rotate(-15deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
+  60% {
+    transform: rotate(-8deg);
+  }
+  70% {
+    transform: rotate(4deg);
+  }
+  80% {
+    transform: rotate(-4deg);
+  }
+  90% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(0);
+  }
 }
 
 .admin_dh-bell-ring {
@@ -1591,19 +1658,19 @@ html {
   .admin_dh-sidebar-nav {
     padding-bottom: 40px !important;
   }
-  
+
   /* Add extra padding at the bottom of the sidebar for mobile to prevent content from being cut off */
   #admin_dh-sidebar {
     padding-bottom: 60px;
   }
-  
+
   /* Fix mobile menu button alignment */
   #admin_dh-sidebarOpen {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
   }
-  
+
   /* Ensure button content is centered */
   #admin_dh-sidebarOpen i {
     display: flex;
@@ -1621,7 +1688,6 @@ html {
 
 /* Thêm khoảng trắng cuối trang website */
 
-
 @media (max-width: 768px) {
   .admin_dh-footer-space {
     height: 40px;
@@ -1633,7 +1699,7 @@ html {
   #admin_dh-sidebar {
     padding-bottom: 80px;
   }
-  
+
   /* Ensure last menu items are visible */
   .admin_dh-sidebar-nav {
     padding-bottom: 60px !important;

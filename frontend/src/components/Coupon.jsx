@@ -3,8 +3,10 @@ import { FaCopy } from "react-icons/fa6";
 import { useRef } from "react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import { HiSave } from "react-icons/hi";
+import dayjs from "dayjs";
 
-const Coupon = ({ voucher }) => {
+const Coupon = ({ voucher, isMyVoucher }) => {
   const inputRef = useRef(null);
   const { t } = useTranslation();
   const handleCopyVoucher = () => {
@@ -15,6 +17,10 @@ const Coupon = ({ voucher }) => {
       .writeText(inputRef.current.value)
       .then(() => toast.success(t("breadcrumbVoucher.success")))
       .catch((err) => console.error(t("breadcrumbVoucher.err"), err));
+  };
+
+  const handleSaveVoucher = () => {
+    toast.success(t("voucher.saveSuccess"));
   };
 
   return (
@@ -31,10 +37,24 @@ const Coupon = ({ voucher }) => {
         </div>
 
         <div className="voucher-content pl-4">
-          {/* Nút sao chép */}
           <div className="btn_copy_voucher">
-            <FaCopy onClick={handleCopyVoucher} style={{ cursor: "pointer" }} />
-            <span className="tooltip">Copy</span>
+            {isMyVoucher ? (
+              <>
+                <HiSave
+                  onClick={handleSaveVoucher}
+                  style={{ cursor: "pointer", width: 28 }}
+                />
+                <span className="tooltip">{t("voucher.iconSave")}</span>
+              </>
+            ) : (
+              <>
+                <FaCopy
+                  onClick={handleCopyVoucher}
+                  style={{ cursor: "pointer" }}
+                />
+                <span className="tooltip">{t("voucher.iconCopy")}</span>
+              </>
+            )}
           </div>
 
           <small className="fw-bold">{voucher.code}</small>
@@ -42,12 +62,15 @@ const Coupon = ({ voucher }) => {
             ref={inputRef}
             value={voucher.code}
             readOnly
-            style={{ position: "absolute", left: "-9999px" }} // ẩn đi
+            style={{ position: "absolute", left: "-9999px" }}
           />
 
           <h5 className="voucher-heading">{voucher.title}</h5>
           <div className="voucher-info">
-            <span>{t("breadcrumbVoucher.breadcrumbDesc")}</span>
+            <span>
+              {dayjs(voucher.start_date).format("HH:mm | DD.MM.YYYY")} -{" "}
+              {dayjs(voucher.end_date).format("HH:mm | DD.MM.YYYY")}
+            </span>
           </div>
         </div>
       </div>
