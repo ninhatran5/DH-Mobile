@@ -189,7 +189,7 @@ Route::post('cart/add/{id}', [CartItemController::class, 'addProductToCart']);
 // // xóa sản phẩm khỏi giỏ hàng
 // Route::delete('cart/remove/{id}', [CartItemController::class, 'removeProductFromCart']);
 // // lấy giỏ hàng của người dùng
-// Route::get('getCart', [CartItemController::class, 'getCart']);
+Route::get('getCart', [CartItemController::class, 'getCart']);
 // // xóa toàn bộ giỏ hàng
 // Route::delete('cart/clear', [CartItemController::class, 'clearCart']);
 
