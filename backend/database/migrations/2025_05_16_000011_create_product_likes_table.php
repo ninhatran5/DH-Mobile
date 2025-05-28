@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id('like_id');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('product_id');
-            // $table->boolean('status')->default(false );
+            $table->boolean('status')->default(false );
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->unique(['user_id', 'product_id']);
