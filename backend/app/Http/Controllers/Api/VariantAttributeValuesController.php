@@ -18,10 +18,39 @@ class VariantAttributeValuesController extends Controller
      */
     public function index()
     {
-        $items = VariantAttributeValue::with(['variant', 'value'])->get();
+        $items = VariantAttributeValue::with(['variant', 'value.attribute'])->get();
+        
+        // Group variants by variant_id
+        $groupedItems = $items->groupBy('variant_id')->map(function ($variantGroup) {
+            $variant = $variantGroup->first()->variant;
+            
+            // Format attributes with both value_id and attribute value
+            $attributes = $variantGroup->map(function ($item) {
+                return [
+                    'value_id' => $item->value_id,
+                    'name' => strtolower($item->value->attribute->name),
+                    'value' => $item->value->value
+                ];
+            })->values();
+
+            $variantData = [
+                'variant_id' => $variant->variant_id,
+                'product_id' => $variant->product_id,
+                'sku' => $variant->sku,
+                'price' => $variant->price,
+                'price_original' => $variant->price_original,
+                'image_url' => $variant->image_url,
+                'stock' => $variant->stock,
+                'is_active' => $variant->is_active,
+                'attributes' => $attributes
+            ];
+
+            return $variantData;
+        });
+
         return response()->json([
             'message' => 'Lấy danh sách liên kết biến thể - giá trị thuộc tính thành công',
-            'data' => $items,
+            'data' => $groupedItems->values(),
             'status' => 200,
         ], 200);
     }
