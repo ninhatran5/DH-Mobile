@@ -104,6 +104,9 @@ class CartItemController extends Controller
 
         $cartItems = CartItem::where('cart_id', $cart->cart_id)
             ->with([
+                'variant' => function($query) {
+                    $query->select('variant_id', 'product_id', 'image_url', 'price');
+                },
                 'variant.product' => function ($query) {
                     $query->select('product_id', 'name');
                 },
@@ -117,26 +120,16 @@ class CartItemController extends Controller
 
         // Format lại dữ liệu cart items
         $formattedCartItems = $cartItems->map(function ($item) {
-            // Lấy và format attributes theo từng loại
-            $storage = [];
-            $color = [];
-            $ram = [];
-            
+            // Nhóm các thuộc tính theo tên
+            $attributes = [];
             foreach ($item->variant->variantAttributeValues as $attrValue) {
-                $attributeName = $attrValue->value->attribute->name;
+                $attributeName = strtolower($attrValue->value->attribute->name);
                 $attributeValue = $attrValue->value->value;
                 
-                switch(strtolower($attributeName)) {
-                    case 'storage':
-                        $storage[] = $attributeValue;
-                        break;
-                    case 'color':
-                        $color[] = $attributeValue;
-                        break;
-                    case 'ram':
-                        $ram[] = $attributeValue;
-                        break;
+                if (!isset($attributes[$attributeName])) {
+                    $attributes[$attributeName] = [];
                 }
+                $attributes[$attributeName][] = $attributeValue;
             }
 
             return [
@@ -144,9 +137,9 @@ class CartItemController extends Controller
                 'product' => [
                     'name' => $item->variant->product->name,
                     'variant_id' => $item->variant->variant_id,
-                    'storage' => $storage,
-                    'color' => $color,
-                    'ram' => $ram
+                    'product_id' => $item->variant->product->product_id,
+                    'image' => $item->variant->image_url,
+                    'attributes' => $attributes
                 ],
                 'quantity' => $item->quantity,
                 'price' => $item->price_snapshot,
