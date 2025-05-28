@@ -17,7 +17,7 @@ class ProductVariant extends Model
         'price',
         'price_original',
         'image_url',
-        'stock_quantity',
+        'stock',
         'deleted_at',
         'created_at',
         'updated_at',
