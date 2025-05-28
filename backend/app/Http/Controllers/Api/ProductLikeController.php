@@ -110,27 +110,27 @@ class ProductLikeController extends Controller
     }
 
 
-    // public function updatestatuslike($id)
-    // {
-    //     $user = Auth::user();
-    //     $productlike = ProductLike::where('user_id', $user->user_id)
-    //         ->where('product_id', $id)
-    //         ->first();
+    public function updatestatuslike($id)
+    {
+        $user = Auth::user();
+        $productlike = ProductLike::where('user_id', $user->user_id)
+            ->where('product_id', $id)
+            ->first();
 
-    //     if (!$productlike) {
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => 'Sản phẩm không tồn tại trong danh sách yêu thích'
-    //         ]);
-    //     }
+        if (!$productlike) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Sản phẩm không tồn tại trong danh sách yêu thích'
+            ]);
+        }
 
-    //     $productlike->status = !$productlike->status;
-    //     $productlike->save();
+        $productlike->status = !$productlike->status;
+        $productlike->save();
 
-    //     return response()->json([
-    //         'status' => true,
-    //         'message' => 'Cập nhật trạng thái thành công',
-    //         'data' => new ProductLikeResource($productlike)
-    //     ]);
-    // }
+        return response()->json([
+            'status' => true,
+            'message' => 'Cập nhật trạng thái thành công',
+            'data' => new ProductLikeResource($productlike)
+        ]);
+    }
 }
