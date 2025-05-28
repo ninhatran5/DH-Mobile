@@ -105,7 +105,7 @@ class CartItemController extends Controller
 
         // Lấy tất cả các sản phẩm trong giỏ hàng
         $cartItems = CartItem::where('cart_id', $cart->cart_id)
-            ->with('variant') // Tải thông tin biến thể sản phẩm
+            ->with('variant.product') // Tải thông tin biến thể sản phẩm
             ->get();
 
         return response()->json([
