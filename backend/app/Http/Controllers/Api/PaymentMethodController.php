@@ -7,7 +7,15 @@ use App\Models\Payment_methods;
 
 class PaymentMethodController extends Controller
 {
-    //
+    public function getPaymentMethods(){
+        $paymentMethods = Payment_methods::all();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy danh sách phương thức thanh toán thành công',
+            'data' => $paymentMethods
+        ]);
+    }
 
     public function addPayment(request $request){
           $Paymentdata = $request->validate([

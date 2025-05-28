@@ -211,6 +211,9 @@ Route::delete('cart/clear', [CartItemController::class, 'clearCart']);
 // payment
 
 Route::middleware('auth:sanctum')->group(function () {
+
+Route::get('getPaymentMethods', [PaymentMethodController::class, 'getPaymentMethods']);
+
     Route::middleware(CheckAdmin::class)->group(function () {
        Route::post('addPayment' , [PaymentMethodController::class, 'addPayment']);
     });
