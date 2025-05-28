@@ -7,7 +7,6 @@ use App\Models\Payment_methods;
 
 class PaymentMethodController extends Controller
 {
-    //
     public function getPaymentMethods(){
         $paymentMethods = Payment_methods::all();
 

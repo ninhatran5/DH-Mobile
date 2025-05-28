@@ -57,6 +57,7 @@ import EditAttribute from "./pages/admin/EditAttributes";
 import AddAttributevalues from "./pages/admin/AddAttributevalues";
 import EditAttributevalues from "./pages/admin/EditAttributevalues";
 import MyDiscountCode from "./pages/MyDiscountCode";
+import EditProduct from "./pages/admin/EditProducts";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -275,6 +276,10 @@ const routerConfig = [
         path: "EditAttributevalues/:value_id",
         element: <EditAttributevalues />,
       },
+      {
+        path: "EditProduct/:id",
+        element: <EditProduct />,
+      }
     ],
   },
   {
