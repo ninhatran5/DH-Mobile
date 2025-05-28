@@ -23,10 +23,9 @@ import adminAccountReducer from "../slices/adminAcccount";
 import blogDetailReducer from "../slices/blogDetailSlice";
 import voucherReducer from "../slices/voucherSlice";
 import adminProductReducer from "../slices/adminproductsSlice";
-
 import adminProductSpecificationsReducer from "../slices/adminProductSpecificationsSlice";
 import adminProductVariantsReducer from "../slices/AdminProductVariants";
-
+import cartReducer from "../slices/cartSlice";
 export const store = configureStore({
   reducer: {
     home: homeReducer,
@@ -46,6 +45,7 @@ export const store = configureStore({
     banner: bannerReducer,
     blog: blogReducer,
     blogDetail: blogDetailReducer,
+    cart: cartReducer,
     favoriteProduct: favoriteProductReducer,
     voucher: voucherReducer,
     category: categoryReducer,
