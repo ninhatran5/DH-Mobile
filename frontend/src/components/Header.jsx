@@ -56,10 +56,37 @@ export default function Header() {
   const { t } = useTranslation();
 
   const userID = localStorage.getItem("userID");
+  const cartCount = useSelector((state) => state.cart.carts?.length || 0);
   const iconNavbars = [
     {
       id: 1,
-      icon: <FiShoppingCart />,
+      icon: (
+        <span style={{ position: "relative", display: "inline-block" }}>
+          <FiShoppingCart />
+          {cartCount > 0 && (
+            <span
+              style={{
+                position: "absolute",
+                top: -5,
+                right: -12,
+                background: "red",
+                color: "white",
+                borderRadius: "100%",
+                width: 20,
+                height: 20,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 12,
+                fontWeight: "bold",
+                zIndex: 2,
+              }}
+            >
+              {cartCount}
+            </span>
+          )}
+        </span>
+      ),
       link: "/shopping-cart",
     },
     {
