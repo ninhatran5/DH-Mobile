@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Middleware\CheckAdmin;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -154,6 +155,10 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::get('/getbyuser/{user_id}', 'getViewsByUserId'); // lấy sản phẩm đã xem theo user_id
         // Route::get('/getall', 'getAllViews'); // lấy tất cả sản phẩm đã xem 
     });
+
+
+
+
 });
 
 // Các route chỉ đọc (không cần quyền admin)
@@ -202,6 +207,14 @@ Route::delete('cart/remove/{id}', [CartItemController::class, 'removeProductFrom
 // // xóa toàn bộ giỏ hàng
 Route::delete('cart/clear', [CartItemController::class, 'clearCart']);
 
+
+// payment
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware(CheckAdmin::class)->group(function () {
+       Route::post('addPayment' , [PaymentMethodController::class, 'addPayment']);
+    });
+});
 
 });
 
