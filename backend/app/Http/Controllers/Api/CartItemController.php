@@ -84,7 +84,7 @@ class CartItemController extends Controller
 
 
 
-    public function  getCart(request $request)
+    public function getCart(request $request)
     {
 
         $user = $request->user();
@@ -94,7 +94,6 @@ class CartItemController extends Controller
             ], 401);
         }
 
-        // Lấy giỏ hàng của người dùng
         $cart = Cart::where('user_id', $user->user_id)->first();
 
         if (!$cart) {
@@ -103,16 +102,67 @@ class CartItemController extends Controller
             ], 404);
         }
 
-        // Lấy tất cả các sản phẩm trong giỏ hàng
         $cartItems = CartItem::where('cart_id', $cart->cart_id)
-            ->with('variant.product') // Tải thông tin biến thể sản phẩm
+            ->with([
+                'variant.product' => function ($query) {
+                    $query->select('product_id', 'name');
+                },
+                'variant.variantAttributeValues.value.attribute'
+            ])
             ->get();
+        // Tính tổng tiền của giỏ hàng
+        $totalAmount = $cartItems->sum(function ($item) {
+            return $item->price_snapshot * $item->quantity;
+        });
+
+        // Format lại dữ liệu cart items
+        $formattedCartItems = $cartItems->map(function ($item) {
+            // Lấy và format attributes theo từng loại
+            $storage = [];
+            $color = [];
+            $ram = [];
+            
+            foreach ($item->variant->variantAttributeValues as $attrValue) {
+                $attributeName = $attrValue->value->attribute->name;
+                $attributeValue = $attrValue->value->value;
+                
+                switch(strtolower($attributeName)) {
+                    case 'storage':
+                        $storage[] = $attributeValue;
+                        break;
+                    case 'color':
+                        $color[] = $attributeValue;
+                        break;
+                    case 'ram':
+                        $ram[] = $attributeValue;
+                        break;
+                }
+            }
+
+            return [
+                'cart_item_id' => $item->cart_item_id,
+                'product' => [
+                    'name' => $item->variant->product->name,
+                    'variant_id' => $item->variant->variant_id,
+                    'storage' => $storage,
+                    'color' => $color,
+                    'ram' => $ram
+                ],
+                'quantity' => $item->quantity,
+                'price' => $item->price_snapshot,
+                'subtotal' => $item->price_snapshot * $item->quantity
+            ];
+        });
 
         return response()->json([
-            'status' => $cartItems->count() > 0,
+            'status' => true,
             'message' => $cartItems->count() > 0 ? 'Lấy giỏ hàng thành công' : 'Giỏ hàng không có sản phẩm',
-            'total_carts' => $cartItems->count() ?? 0,
-            'cart_items' => $cartItems
+            'data' => [
+                'cart_id' => $cart->cart_id,
+                'total_items' => $cartItems->count(),
+                'total_amount' => $totalAmount,
+                'items' => $formattedCartItems
+            ]
         ], 200);
     }
 
@@ -147,7 +197,7 @@ class CartItemController extends Controller
         $cartItem = CartItem::where('cart_id', $cart->cart_id)
             ->where('variant_id', $id)
             ->first();
-            
+
         if (!$cartItem) {
             return response()->json([
                 'status' => false,
@@ -245,5 +295,4 @@ class CartItemController extends Controller
             'message' => 'Đã xóa tất cả sản phẩm trong giỏ hàng'
         ], 200);
     }
-
 }
