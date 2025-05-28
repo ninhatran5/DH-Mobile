@@ -307,34 +307,34 @@ class ProductController extends Controller
         ])->setStatusCode(200, 'OK');
     }
 
-    public function updatestatuslike( $id)
-    {
-        $user = Auth::user();
-        $productlike = ProductLike::where('user_id', $user->user_id)
-            ->where('product_id', $id)
-            ->first();
+    // public function updatestatuslike( $id)
+    // {
+    //     $user = Auth::user();
+    //     $productlike = ProductLike::where('user_id', $user->user_id)
+    //         ->where('product_id', $id)
+    //         ->first();
 
-        if (!$productlike) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Sản phẩm không tồn tại trong danh sách yêu thích'
-            ]);
-        }
-        $product = Product::find($id);
-        if (!$product) {
-            return response()->json([
-                'message' => 'Sản phẩm không tồn tại',
-                'status' => 404,
-            ], 404);
-        }
-        $product->status = !$product->status;
-        $product->save();
-        return response()->json([
-            'message' => 'Cập nhật trạng thái sản phẩm thành công',
-            'data' => $product,
-            'status' => 200,
-        ])->setStatusCode(200, 'OK');
-    }
+    //     if (!$productlike) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Sản phẩm không tồn tại trong danh sách yêu thích'
+    //         ]);
+    //     }
+    //     $product = Product::find($id);
+    //     if (!$product) {
+    //         return response()->json([
+    //             'message' => 'Sản phẩm không tồn tại',
+    //             'status' => 404,
+    //         ], 404);
+    //     }
+    //     $product->status = !$product->status;
+    //     $product->save();
+    //     return response()->json([
+    //         'message' => 'Cập nhật trạng thái sản phẩm thành công',
+    //         'data' => $product,
+    //         'status' => 200,
+    //     ])->setStatusCode(200, 'OK');
+    // }
 
     private function getPublicIdFromUrl($url)
     {
