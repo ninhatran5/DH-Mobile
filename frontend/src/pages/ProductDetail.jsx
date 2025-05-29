@@ -110,13 +110,29 @@ const ProductDetail = () => {
   };
 
   const addToShoppingCart = () => {
+    // Validate số lượng
+    if (!quantity || quantity < 1) {
+      toast.warn(t("products.errorMin"));
+      return;
+    }
+
+    // Validate chọn đủ thuộc tính
+    const attributes = productVariationDetails?.data?.attributes || [];
+    const requiredCount = attributes.length;
+    const selectedCount = Object.keys(selectedOptions).length;
+    if (requiredCount > 0 && selectedCount < requiredCount) {
+      toast.warn(t("Vui lòng chọn đầy đủ phiên bản sản phẩm!"));
+      return;
+    }
+
     if (checkLogin()) {
       const payload = {
         product_id: productDetails.product_id,
         quantity,
         variant_id: productVariationDetails?.data?.variant_id,
+        // Nếu cần gửi selectedOptions thì thêm vào đây
       };
-      console.log("Payload gửi lên:", payload);
+      console.log(payload);
       dispatch(fetchAddToCart(payload));
       // toast.success(t("products.addedToCart"));
     }
@@ -296,10 +312,19 @@ const ProductDetail = () => {
                               : ""
                           }`}
                           onClick={() =>
-                            setSelectedOptions((prev) => ({
-                              ...prev,
-                              [attr.attribute_id]: val.value_id,
-                            }))
+                            setSelectedOptions((prev) => {
+                              // Nếu đang chọn rồi thì bỏ chọn
+                              if (prev[attr.attribute_id] === val.value_id) {
+                                const newOptions = { ...prev };
+                                delete newOptions[attr.attribute_id];
+                                return newOptions;
+                              }
+                              // Nếu chưa chọn thì chọn
+                              return {
+                                ...prev,
+                                [attr.attribute_id]: val.value_id,
+                              };
+                            })
                           }
                         >
                           {val.value}
