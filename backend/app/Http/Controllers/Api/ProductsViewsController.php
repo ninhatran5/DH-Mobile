@@ -8,6 +8,23 @@ use Illuminate\Http\Request;
 
 class ProductsViewsController extends Controller
 {
+        /**
+     * @OA\Post(
+     *     path="/api/productsviews/addview",
+     *     summary="Ghi nhận lượt xem sản phẩm",
+     *     tags={"ProductsViews"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"product_id"},
+     *             @OA\Property(property="product_id", type="integer", example=1),
+     *             @OA\Property(property="user_id", type="integer", example=2, nullable=true)
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Product view recorded successfully"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
+     */
     // khi người dùng xem sản phẩm, sẽ lưu lại thông tin vào bảng products_views
     public function addview(Request $request)
     {
@@ -38,6 +55,21 @@ class ProductsViewsController extends Controller
     //         'data' => $views,
     //     ], 200);
     // }
+        /**
+     * @OA\Delete(
+     *     path="/api/productsviews/{view_id}",
+     *     summary="Xóa một bản ghi lượt xem sản phẩm theo view_id",
+     *     tags={"ProductsViews"},
+     *     @OA\Parameter(
+     *         name="view_id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="xóa bản ghi thành công"),
+     *     @OA\Response(response=404, description="xóa bản ghi thất bại, không tìm thấy view_id")
+     * )
+     */
     //  xóa một bản ghi trong bảng products_views theo view_id
     public function deleteView(Request $request, $view_id)
     {
@@ -58,6 +90,14 @@ class ProductsViewsController extends Controller
             'message' => 'xóa bản ghi thành công',
         ], 200);
     }
+    /**
+     * @OA\Delete(
+     *     path="/api/productsviews",
+     *     summary="Xóa tất cả bản ghi lượt xem sản phẩm",
+     *     tags={"ProductsViews"},
+     *     @OA\Response(response=200, description="xóa tất cả bản ghi thành công")
+     * )
+     */
     public function deleteAllViews(Request $request)
     {
         // xóa tất cả bản ghi trong bảng products_views
@@ -68,6 +108,21 @@ class ProductsViewsController extends Controller
             'message' => 'xóa tất cả bản ghi thành công',
         ], 200);
     }
+        /**
+     * @OA\Get(
+     *     path="/api/productsviews/user/{user_id}",
+     *     summary="Lấy danh sách sản phẩm đã xem của người dùng theo user_id",
+     *     tags={"ProductsViews"},
+     *     @OA\Parameter(
+     *         name="user_id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Danh sách sản phẩm đã xem của người dùng"),
+     *     @OA\Response(response=404, description="không tìm thấy sản phẩm đã xem của người dùng này")
+     * )
+     */
     // lấy danh sách sản phẩm đã xem của người dùng theo user_id
     public function getViewsByUserId(Request $request, $user_id)
     {

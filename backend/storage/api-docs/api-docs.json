@@ -1794,6 +1794,115 @@
                 }
             }
         },
+        "/api/productsviews/addview": {
+            "post": {
+                "tags": [
+                    "ProductsViews"
+                ],
+                "summary": "Ghi nhận lượt xem sản phẩm",
+                "operationId": "ed37286a1fc2b097c64666a2e45e3a83",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "product_id"
+                                ],
+                                "properties": {
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 2,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Product view recorded successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/productsviews/{view_id}": {
+            "delete": {
+                "tags": [
+                    "ProductsViews"
+                ],
+                "summary": "Xóa một bản ghi lượt xem sản phẩm theo view_id",
+                "operationId": "896d49e19b3cf4c3a8facb0785cd2f95",
+                "parameters": [
+                    {
+                        "name": "view_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "xóa bản ghi thành công"
+                    },
+                    "404": {
+                        "description": "xóa bản ghi thất bại, không tìm thấy view_id"
+                    }
+                }
+            }
+        },
+        "/api/productsviews": {
+            "delete": {
+                "tags": [
+                    "ProductsViews"
+                ],
+                "summary": "Xóa tất cả bản ghi lượt xem sản phẩm",
+                "operationId": "8c972009eb3f5b70b466fe8adf3627f5",
+                "responses": {
+                    "200": {
+                        "description": "xóa tất cả bản ghi thành công"
+                    }
+                }
+            }
+        },
+        "/api/productsviews/user/{user_id}": {
+            "get": {
+                "tags": [
+                    "ProductsViews"
+                ],
+                "summary": "Lấy danh sách sản phẩm đã xem của người dùng theo user_id",
+                "operationId": "4533a5a12c577a8b5f7920d82272236a",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Danh sách sản phẩm đã xem của người dùng"
+                    },
+                    "404": {
+                        "description": "không tìm thấy sản phẩm đã xem của người dùng này"
+                    }
+                }
+            }
+        },
         "/api/variant-attribute-values": {
             "get": {
                 "tags": [
@@ -2121,6 +2230,10 @@
         {
             "name": "ProductVariants",
             "description": "ProductVariants"
+        },
+        {
+            "name": "ProductsViews",
+            "description": "ProductsViews"
         },
         {
             "name": "VariantAttributeValues",
