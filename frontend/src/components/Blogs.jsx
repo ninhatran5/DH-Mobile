@@ -29,6 +29,9 @@ export default function Blogs({
   useEffect(() => {
     setCurrentPage(1);
   }, [news]);
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage]);
 
   // Lấy news cho trang hiện tại
   const paginatedNews = news

@@ -1,73 +1,108 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FaShippingFast } from "react-icons/fa";
-import { FaArrowDownShortWide, FaArrowUpWideShort } from "react-icons/fa6";
+import {
+  FaArrowDownShortWide,
+  FaArrowUpWideShort,
+  FaFilter,
+} from "react-icons/fa6";
 import { MdDeleteSweep } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import Loading from "../components/Loading";
 import Product from "./Product";
 import "../assets/css/products.css";
 import { fetchCategory } from "../slices/categorySlice";
-import { FaFilter } from "react-icons/fa6";
 
-// Hàm lọc theo danh mục
-const filterByCategory = (products, selectedCategoryId) => {
-  if (!selectedCategoryId) return products;
-  return products.filter(
-    (p) => String(p.category_id) === String(selectedCategoryId)
-  );
-};
+// Filter helpers
+const filterByCategory = (products, selectedCategoryId) =>
+  !selectedCategoryId
+    ? products
+    : products.filter(
+        (p) => String(p.category_id) === String(selectedCategoryId)
+      );
 
-// Hàm lọc theo giá
 const filterByPrice = (products, priceFilter, parsePrice) => {
-  if (priceFilter === "duoi-10tr") {
+  if (priceFilter === "duoi-10tr")
     return products.filter((p) => parsePrice(p.price) < 10000000);
-  } else if (priceFilter === "10-20tr") {
-    return products.filter(
-      (p) => parsePrice(p.price) >= 10000000 && parsePrice(p.price) <= 20000000
-    );
-  } else if (priceFilter === "tren-20tr") {
+  if (priceFilter === "10-20tr")
+    return products.filter((p) => {
+      const price = parsePrice(p.price);
+      return price >= 10000000 && price <= 20000000;
+    });
+  if (priceFilter === "tren-20tr")
     return products.filter((p) => parsePrice(p.price) > 20000000);
-  }
   return products;
 };
 
-// Hàm lọc còn hàng
-const filterByStock = (products, readyStock, productsVariant) => {
-  if (!readyStock) return products;
-  return products.filter((p) => {
-    // Tìm variant theo product_id
-    const variants = productsVariant?.filter(
-      (v) => String(v.product_id) === String(p.product_id)
-    );
-    if (!variants || variants.length === 0) return false;
-    // Nếu có ít nhất 1 variant còn hàng
-    return variants.some((v) => (v.stock ?? 0) > 0);
-  });
-};
+const filterByStock = (products, readyStock, productsVariant) =>
+  !readyStock
+    ? products
+    : products.filter((p) => {
+        const variants = productsVariant?.filter(
+          (v) => String(v.product_id) === String(p.product_id)
+        );
+        return (
+          variants &&
+          variants.length > 0 &&
+          variants.some((v) => (v.stock ?? 0) > 0)
+        );
+      });
 
-// Hàm tìm kiếm theo tên
-const filterBySearch = (products, searchTerm) => {
-  if (!searchTerm) return products;
-  return products.filter((p) =>
-    p.name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-};
+const filterBySearch = (products, searchTerm) =>
+  !searchTerm
+    ? products
+    : products.filter((p) =>
+        p.name?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
 
-// Hàm sắp xếp
 const sortProducts = (products, sortOrder, parsePrice) => {
-  if (sortOrder === "lowToHigh") {
+  if (sortOrder === "lowToHigh")
     return products
       .slice()
       .sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
-  } else if (sortOrder === "highToLow") {
+  if (sortOrder === "highToLow")
     return products
       .slice()
       .sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
-  }
   return products;
 };
+
+const filterVariants = (variants, memory, ram, color) =>
+  variants.filter((variant) => {
+    let match = true;
+    if (memory)
+      match =
+        match &&
+        variant.attributes.some(
+          (attr) =>
+            attr.name.toLowerCase() === "storage" &&
+            attr.values.some(
+              (val) => String(val.value).replace("GB", "") === String(memory)
+            )
+        );
+    if (ram)
+      match =
+        match &&
+        variant.attributes.some(
+          (attr) =>
+            attr.name.toLowerCase() === "ram" &&
+            attr.values.some(
+              (val) => String(val.value).replace("GB", "") === String(ram)
+            )
+        );
+    if (color)
+      match =
+        match &&
+        variant.attributes.some(
+          (attr) =>
+            attr.name.toLowerCase() === "color" &&
+            attr.values.some(
+              (val) => val.value.toLowerCase() === color.toLowerCase()
+            )
+        );
+    return match;
+  });
 
 export default function ListProducts({
   title,
@@ -79,11 +114,13 @@ export default function ListProducts({
   loading,
   productsVariant,
   showPagination = true,
+  productsPerPage = 5,
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  // Filter states
   const [priceFilter, setPriceFilter] = useState("");
   const [sortOrder, setSortOrder] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
@@ -94,7 +131,6 @@ export default function ListProducts({
   const [colorFilter, setColorFilter] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 5;
 
   const { categorys } = useSelector((state) => state.categorys);
 
@@ -112,126 +148,12 @@ export default function ListProducts({
     dispatch(fetchCategory());
   }, [dispatch]);
 
-  // Lấy danh sách RAM, Storage, Color duy nhất từ productsVariant
-  const ramOptions = Array.from(
-    new Set(
-      (productsVariant || []).flatMap((variant) =>
-        (variant.attributes || [])
-          .filter((attr) => attr.name.toLowerCase() === "ram")
-          .flatMap((attr) =>
-            attr.values.map((val) => val.value.replace("GB", ""))
-          )
-      )
-    )
-  );
+  // Scroll to top when page/filter changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage]);
 
-  const memoryOptions = Array.from(
-    new Set(
-      (productsVariant || []).flatMap((variant) =>
-        (variant.attributes || [])
-          .filter((attr) => attr.name.toLowerCase() === "storage")
-          .flatMap((attr) =>
-            attr.values.map((val) => val.value.replace("GB", ""))
-          )
-      )
-    )
-  );
-
-  const colorOptions = Array.from(
-    new Set(
-      (productsVariant || []).flatMap((variant) =>
-        (variant.attributes || [])
-          .filter((attr) => attr.name.toLowerCase() === "color")
-          .flatMap((attr) => attr.values.map((val) => val.value))
-      )
-    )
-  );
-
-  // Lọc variant theo filter
-  const filterVariants = (variants, memory, ram, color) => {
-    return variants.filter((variant) => {
-      let match = true;
-      if (memory) {
-        match =
-          match &&
-          variant.attributes.some(
-            (attr) =>
-              attr.name.toLowerCase() === "storage" &&
-              attr.values.some(
-                (val) => String(val.value).replace("GB", "") === String(memory)
-              )
-          );
-      }
-      if (ram) {
-        match =
-          match &&
-          variant.attributes.some(
-            (attr) =>
-              attr.name.toLowerCase() === "ram" &&
-              attr.values.some(
-                (val) => String(val.value).replace("GB", "") === String(ram)
-              )
-          );
-      }
-      if (color) {
-        match =
-          match &&
-          variant.attributes.some(
-            (attr) =>
-              attr.name.toLowerCase() === "color" &&
-              attr.values.some(
-                (val) => val.value.toLowerCase() === color.toLowerCase()
-              )
-          );
-      }
-      return match;
-    });
-  };
-
-  // Lọc sản phẩm theo các variant còn lại
-  const filteredVariants = filterVariants(
-    productsVariant || [],
-    memoryFilter,
-    ramFilter,
-    colorFilter
-  );
-  const filteredProductIds = [
-    ...new Set(filteredVariants.map((v) => v.product_id)),
-  ];
-
-  // Sau khi đã filter và sort xong:
-  let filteredProducts = Array.isArray(products) ? products : [];
-  if (memoryFilter || ramFilter || colorFilter) {
-    filteredProducts = filteredProducts.filter((p) =>
-      filteredProductIds.includes(p.product_id)
-    );
-  }
-  filteredProducts = filterByCategory(filteredProducts, selectedCategoryId);
-  filteredProducts = filterByPrice(filteredProducts, priceFilter, parsePrice);
-  filteredProducts = filterByStock(
-    filteredProducts,
-    readyStock,
-    productsVariant
-  );
-  filteredProducts = filterBySearch(filteredProducts, searchTerm);
-  filteredProducts = sortProducts(filteredProducts, sortOrder, parsePrice);
-
-  // Áp dụng limit nếu có
-  let limitedProducts = filteredProducts;
-  if (limit && Number.isInteger(limit) && limit > 0) {
-    limitedProducts = filteredProducts.slice(0, limit);
-  }
-
-  // Tính tổng số trang trên limitedProducts
-  const totalPages = Math.ceil(limitedProducts.length / productsPerPage);
-
-  // Lấy sản phẩm cho trang hiện tại
-  const paginatedProducts = limitedProducts.slice(
-    (currentPage - 1) * productsPerPage,
-    currentPage * productsPerPage
-  );
-
-  // Khi filter thay đổi thì về trang 1
+  // Reset page when filter changes
   useEffect(() => {
     setCurrentPage(1);
   }, [
@@ -244,6 +166,107 @@ export default function ListProducts({
     readyStock,
     searchTerm,
   ]);
+
+  // Options
+  const ramOptions = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          (productsVariant || []).flatMap((variant) =>
+            (variant.attributes || [])
+              .filter((attr) => attr.name.toLowerCase() === "ram")
+              .flatMap((attr) =>
+                attr.values.map((val) => val.value.replace("GB", ""))
+              )
+          )
+        )
+      ),
+    [productsVariant]
+  );
+  const memoryOptions = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          (productsVariant || []).flatMap((variant) =>
+            (variant.attributes || [])
+              .filter((attr) => attr.name.toLowerCase() === "storage")
+              .flatMap((attr) =>
+                attr.values.map((val) => val.value.replace("GB", ""))
+              )
+          )
+        )
+      ),
+    [productsVariant]
+  );
+  const colorOptions = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          (productsVariant || []).flatMap((variant) =>
+            (variant.attributes || [])
+              .filter((attr) => attr.name.toLowerCase() === "color")
+              .flatMap((attr) => attr.values.map((val) => val.value))
+          )
+        )
+      ),
+    [productsVariant]
+  );
+
+  // Filtered products
+  const filteredProducts = useMemo(() => {
+    let filtered = Array.isArray(products) ? products : [];
+    // Filter by variant
+    if (memoryFilter || ramFilter || colorFilter) {
+      const filteredVariants = filterVariants(
+        productsVariant || [],
+        memoryFilter,
+        ramFilter,
+        colorFilter
+      );
+      const filteredProductIds = [
+        ...new Set(filteredVariants.map((v) => v.product_id)),
+      ];
+      filtered = filtered.filter((p) =>
+        filteredProductIds.includes(p.product_id)
+      );
+    }
+    filtered = filterByCategory(filtered, selectedCategoryId);
+    filtered = filterByPrice(filtered, priceFilter, parsePrice);
+    filtered = filterByStock(filtered, readyStock, productsVariant);
+    filtered = filterBySearch(filtered, searchTerm);
+    filtered = sortProducts(filtered, sortOrder, parsePrice);
+    return filtered;
+  }, [
+    products,
+    productsVariant,
+    memoryFilter,
+    ramFilter,
+    colorFilter,
+    selectedCategoryId,
+    priceFilter,
+    readyStock,
+    searchTerm,
+    sortOrder,
+  ]);
+
+  // Limit products if needed
+  const limitedProducts = useMemo(() => {
+    if (limit && Number.isInteger(limit) && limit > 0) {
+      return filteredProducts.slice(0, limit);
+    }
+    return filteredProducts;
+  }, [filteredProducts, limit]);
+
+  // Pagination
+  const totalPages = Math.ceil(limitedProducts.length / productsPerPage);
+  const paginatedProducts = useMemo(
+    () =>
+      limitedProducts.slice(
+        (currentPage - 1) * productsPerPage,
+        currentPage * productsPerPage
+      ),
+    [limitedProducts, currentPage, productsPerPage]
+  );
 
   return (
     <>
@@ -262,7 +285,6 @@ export default function ListProducts({
                   {t("products.filter")}
                 </button>
               </div>
-
               {showFilters && (
                 <div className="filter-bar-wrapper show">
                   <div className="filter-extended">

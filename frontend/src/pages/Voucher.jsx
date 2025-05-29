@@ -25,6 +25,10 @@ const Voucher = () => {
     setCurrentPage(1);
   }, [vouchers]);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage]);
+
   const paginatedVouchers = vouchers
     ? vouchers.slice(
         (currentPage - 1) * vouchersPerPage,
