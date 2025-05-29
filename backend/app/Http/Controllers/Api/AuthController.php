@@ -279,30 +279,62 @@ class AuthController extends Controller
         ]);
     }
 
-public function refreshToken(Request $request)
-{
-    $user = $request->user();
+    /**
+     * @OA\Post(
+     *     path="/api/refresh",
+     *     summary="Làm mới token",
+     *     tags={"Auth"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Token đã được làm mới thành công",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="access_token", type="string"),
+     *             @OA\Property(property="token_type", type="string"),
+     *             @OA\Property(property="user", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Token không hợp lệ hoặc đã hết hạn"
+     *     )
+     * )
+     */
+    public function refreshToken(Request $request)
+    {
+        try {
+            $user = $request->user();
+            
+            // Kiểm tra token hiện tại có hợp lệ không
+            if (!$user || !$user->currentAccessToken()) {
+                return response()->json([
+                    'message' => 'Token không hợp lệ hoặc đã hết hạn.'
+                ], 401);
+            }
 
-    // Xoá token cũ
-    $user->currentAccessToken()->delete();
+            // Xoá token cũ
+            $user->currentAccessToken()->delete();
 
-    // Tạo token mới
-    $token = $user->createToken('auth_token')->plainTextToken;
+            // Tạo token mới
+            $token = $user->createToken('auth_token')->plainTextToken;
 
-    return response()->json([
-        'access_token' => $token,
-        'token_type' => 'Bearer',
-        'user' => [
-            'id' => $user->user_id,
-            'username' => $user->username,
-            'full_name' => $user->full_name,
-            'email' => $user->email,
-            'phone' => $user->phone,
-            'address' => $user->address,
-            'role' => $user->role,
-        ]
-    ]);
-}
-
-    
+            return response()->json([
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'user' => [
+                    'id' => $user->user_id,
+                    'username' => $user->username,
+                    'full_name' => $user->full_name,
+                    'email' => $user->email,
+                    'phone' => $user->phone,
+                    'address' => $user->address,
+                    'role' => $user->role,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Có lỗi xảy ra khi làm mới token.'
+            ], 500);
+        }
+    }
 }
