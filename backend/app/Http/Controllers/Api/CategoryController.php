@@ -54,7 +54,13 @@ class CategoryController extends Controller
             'description' => 'nullable|string|max:255',
             'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-
+        // Kiểm tra tên danh mục đã tồn tại chưa (không phân biệt hoa thường)
+        if (Category::whereRaw('LOWER(name) = ?', [strtolower($validatedData['name'])])->exists()) {
+            return response()->json([
+                'message' => 'Tên danh mục đã tồn tại',
+                'status' => 422,
+            ], 422);
+        }
         // Nếu có ảnh upload thì upload lên Cloudinary
         if ($request->hasFile('image_url')) {
             try {
