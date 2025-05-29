@@ -21,6 +21,43 @@ import {
 } from "../slices/favoriteProductsSlice";
 import { fetchAddToCart } from "../slices/cartSlice";
 
+// Hàm tổng hợp tất cả thuộc tính từ variants
+function getAllAttributes(variants) {
+  const attrMap = {};
+  variants.forEach((variant) => {
+    variant.attributes.forEach((attr) => {
+      if (!attrMap[attr.attribute_id]) {
+        attrMap[attr.attribute_id] = {
+          attribute_id: attr.attribute_id,
+          name: attr.name,
+          values: [],
+        };
+      }
+      attr.values.forEach((val) => {
+        if (
+          !attrMap[attr.attribute_id].values.some(
+            (v) => v.value_id === val.value_id
+          )
+        ) {
+          attrMap[attr.attribute_id].values.push(val);
+        }
+      });
+    });
+  });
+  return Object.values(attrMap);
+}
+
+// Hàm tìm variant_id phù hợp với lựa chọn
+function findVariantId(variants, selectedOptions) {
+  return (
+    variants.find((variant) =>
+      variant.attributes.every(
+        (attr) => selectedOptions[attr.attribute_id] === attr.values[0].value_id
+      )
+    )?.variant_id || null
+  );
+}
+
 const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
   const [selectedOptions, setSelectedOptions] = useState({});
@@ -34,12 +71,13 @@ const ProductDetail = () => {
   );
   console.log(
     "🚀 ~ ProductDetail ~ productVariationDetails:",
-    productVariationDetails.data
+    productVariationDetails
   );
   const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
 
   const { t } = useTranslation();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const productImages = Array.isArray(productDetails.image_url)
     ? productDetails.image_url.map((url, idx) => ({ id: idx + 1, image: url }))
     : productDetails.image_url
@@ -109,6 +147,11 @@ const ProductDetail = () => {
     }
   };
 
+  // Lấy danh sách variants từ API
+  const variants = productVariationDetails?.data?.variants || [];
+  const allAttributes = getAllAttributes(variants);
+  const variantId = findVariantId(variants, selectedOptions);
+
   const addToShoppingCart = () => {
     // Validate số lượng
     if (!quantity || quantity < 1) {
@@ -117,11 +160,17 @@ const ProductDetail = () => {
     }
 
     // Validate chọn đủ thuộc tính
-    const attributes = productVariationDetails?.data?.attributes || [];
-    const requiredCount = attributes.length;
-    const selectedCount = Object.keys(selectedOptions).length;
-    if (requiredCount > 0 && selectedCount < requiredCount) {
+    if (
+      allAttributes.length > 0 &&
+      Object.keys(selectedOptions).length < allAttributes.length
+    ) {
       toast.warn(t("Vui lòng chọn đầy đủ phiên bản sản phẩm!"));
+      return;
+    }
+
+    // Validate variant_id
+    if (!variantId) {
+      toast.warn(t("Không tìm thấy biến thể phù hợp!"));
       return;
     }
 
@@ -129,12 +178,10 @@ const ProductDetail = () => {
       const payload = {
         product_id: productDetails.product_id,
         quantity,
-        variant_id: productVariationDetails?.data?.variant_id,
-        // Nếu cần gửi selectedOptions thì thêm vào đây
+        variant_id: variantId,
       };
-      console.log(payload);
       dispatch(fetchAddToCart(payload));
-      // toast.success(t("products.addedToCart"));
+      toast.success(t("products.addedToCart"));
     }
   };
 
@@ -287,7 +334,7 @@ const ProductDetail = () => {
                 {t("productDetail.selectVersion")}:
               </label>
               <div className="d-flex flex-column gap-2 version-button-group">
-                {productVariationDetails?.data?.attributes?.map((attr) => (
+                {allAttributes.map((attr) => (
                   <div
                     key={attr.attribute_id}
                     className="d-flex align-items-center mb-2"

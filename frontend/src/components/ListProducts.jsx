@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FaShippingFast } from "react-icons/fa";
@@ -77,7 +77,8 @@ export default function ListProducts({
   limit,
   products,
   loading,
-  productsVariant, // <-- đã có dòng này
+  productsVariant,
+  showPagination = true,
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -92,6 +93,8 @@ export default function ListProducts({
   const [ramFilter, setRamFilter] = useState("");
   const [colorFilter, setColorFilter] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 5;
 
   const { categorys } = useSelector((state) => state.categorys);
 
@@ -109,40 +112,138 @@ export default function ListProducts({
     dispatch(fetchCategory());
   }, [dispatch]);
 
-  // Hàm lọc theo bộ nhớ
-  const filterByMemory = (products, memory) => {
-    if (!memory) return products;
-    return products.filter((p) => String(p.memory) === String(memory));
+  // Lấy danh sách RAM, Storage, Color duy nhất từ productsVariant
+  const ramOptions = Array.from(
+    new Set(
+      (productsVariant || []).flatMap((variant) =>
+        (variant.attributes || [])
+          .filter((attr) => attr.name.toLowerCase() === "ram")
+          .flatMap((attr) =>
+            attr.values.map((val) => val.value.replace("GB", ""))
+          )
+      )
+    )
+  );
+
+  const memoryOptions = Array.from(
+    new Set(
+      (productsVariant || []).flatMap((variant) =>
+        (variant.attributes || [])
+          .filter((attr) => attr.name.toLowerCase() === "storage")
+          .flatMap((attr) =>
+            attr.values.map((val) => val.value.replace("GB", ""))
+          )
+      )
+    )
+  );
+
+  const colorOptions = Array.from(
+    new Set(
+      (productsVariant || []).flatMap((variant) =>
+        (variant.attributes || [])
+          .filter((attr) => attr.name.toLowerCase() === "color")
+          .flatMap((attr) => attr.values.map((val) => val.value))
+      )
+    )
+  );
+
+  // Lọc variant theo filter
+  const filterVariants = (variants, memory, ram, color) => {
+    return variants.filter((variant) => {
+      let match = true;
+      if (memory) {
+        match =
+          match &&
+          variant.attributes.some(
+            (attr) =>
+              attr.name.toLowerCase() === "storage" &&
+              attr.values.some(
+                (val) => String(val.value).replace("GB", "") === String(memory)
+              )
+          );
+      }
+      if (ram) {
+        match =
+          match &&
+          variant.attributes.some(
+            (attr) =>
+              attr.name.toLowerCase() === "ram" &&
+              attr.values.some(
+                (val) => String(val.value).replace("GB", "") === String(ram)
+              )
+          );
+      }
+      if (color) {
+        match =
+          match &&
+          variant.attributes.some(
+            (attr) =>
+              attr.name.toLowerCase() === "color" &&
+              attr.values.some(
+                (val) => val.value.toLowerCase() === color.toLowerCase()
+              )
+          );
+      }
+      return match;
+    });
   };
 
-  // Hàm lọc theo RAM
-  const filterByRam = (products, ram) => {
-    if (!ram) return products;
-    return products.filter((p) => String(p.ram) === String(ram));
-  };
+  // Lọc sản phẩm theo các variant còn lại
+  const filteredVariants = filterVariants(
+    productsVariant || [],
+    memoryFilter,
+    ramFilter,
+    colorFilter
+  );
+  const filteredProductIds = [
+    ...new Set(filteredVariants.map((v) => v.product_id)),
+  ];
 
-  // Hàm lọc theo màu sắc
-  const filterByColor = (products, color) => {
-    if (!color) return products;
-    return products.filter(
-      (p) => String(p.color)?.toLowerCase() === String(color).toLowerCase()
-    );
-  };
-
-  // Áp dụng các bộ lọc và tìm kiếm
+  // Sau khi đã filter và sort xong:
   let filteredProducts = Array.isArray(products) ? products : [];
+  if (memoryFilter || ramFilter || colorFilter) {
+    filteredProducts = filteredProducts.filter((p) =>
+      filteredProductIds.includes(p.product_id)
+    );
+  }
   filteredProducts = filterByCategory(filteredProducts, selectedCategoryId);
   filteredProducts = filterByPrice(filteredProducts, priceFilter, parsePrice);
   filteredProducts = filterByStock(
     filteredProducts,
     readyStock,
     productsVariant
-  ); // <-- truyền thêm productsVariant
+  );
   filteredProducts = filterBySearch(filteredProducts, searchTerm);
-  filteredProducts = filterByMemory(filteredProducts, memoryFilter);
-  filteredProducts = filterByRam(filteredProducts, ramFilter);
-  filteredProducts = filterByColor(filteredProducts, colorFilter);
   filteredProducts = sortProducts(filteredProducts, sortOrder, parsePrice);
+
+  // Áp dụng limit nếu có
+  let limitedProducts = filteredProducts;
+  if (limit && Number.isInteger(limit) && limit > 0) {
+    limitedProducts = filteredProducts.slice(0, limit);
+  }
+
+  // Tính tổng số trang trên limitedProducts
+  const totalPages = Math.ceil(limitedProducts.length / productsPerPage);
+
+  // Lấy sản phẩm cho trang hiện tại
+  const paginatedProducts = limitedProducts.slice(
+    (currentPage - 1) * productsPerPage,
+    currentPage * productsPerPage
+  );
+
+  // Khi filter thay đổi thì về trang 1
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    memoryFilter,
+    ramFilter,
+    colorFilter,
+    priceFilter,
+    sortOrder,
+    selectedCategoryId,
+    readyStock,
+    searchTerm,
+  ]);
 
   return (
     <>
@@ -212,17 +313,17 @@ export default function ListProducts({
                       </select>
                     </div>
                     <div className="filter-group">
-                      <label>Bộ nhớ:</label>
+                      <label>{t("products.storage")}:</label>
                       <select
                         value={memoryFilter}
                         onChange={(e) => setMemoryFilter(e.target.value)}
                       >
-                        <option value="">Tất cả</option>
-                        <option value="64">64GB</option>
-                        <option value="128">128GB</option>
-                        <option value="256">256GB</option>
-                        <option value="512">512GB</option>
-                        {/* Thêm các option khác nếu cần */}
+                        <option value="">{t("products.all")}</option>
+                        {memoryOptions.map((mem) => (
+                          <option key={mem} value={mem}>
+                            {mem}GB
+                          </option>
+                        ))}
                       </select>
                     </div>
                     <div className="filter-group">
@@ -231,26 +332,26 @@ export default function ListProducts({
                         value={ramFilter}
                         onChange={(e) => setRamFilter(e.target.value)}
                       >
-                        <option value="">Tất cả</option>
-                        <option value="4">4GB</option>
-                        <option value="6">6GB</option>
-                        <option value="8">8GB</option>
-                        <option value="12">12GB</option>
-                        {/* Thêm các option khác nếu cần */}
+                        <option value="">{t("products.all")}</option>
+                        {ramOptions.map((ram) => (
+                          <option key={ram} value={ram}>
+                            {ram}GB
+                          </option>
+                        ))}
                       </select>
                     </div>
                     <div className="filter-group">
-                      <label>Màu sắc:</label>
+                      <label>{t("products.color")}:</label>
                       <select
                         value={colorFilter}
                         onChange={(e) => setColorFilter(e.target.value)}
                       >
-                        <option value="">Tất cả</option>
-                        <option value="đen">Đen</option>
-                        <option value="trắng">Trắng</option>
-                        <option value="xanh">Xanh</option>
-                        <option value="đỏ">Đỏ</option>
-                        {/* Thêm các option khác nếu cần */}
+                        <option value="">{t("products.all")}</option>
+                        {colorOptions.map((color) => (
+                          <option key={color} value={color}>
+                            {color}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -352,7 +453,7 @@ export default function ListProducts({
                     role="tabpanel"
                     aria-labelledby="nav-all-tab"
                   >
-                    {filteredProducts.length === 0 ? (
+                    {paginatedProducts.length === 0 ? (
                       <div
                         className="w-100 d-flex justify-content-center align-items-center"
                         style={{ minHeight: 200 }}
@@ -363,10 +464,7 @@ export default function ListProducts({
                       </div>
                     ) : (
                       <div className="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
-                        {(limit
-                          ? filteredProducts.slice(0, limit)
-                          : filteredProducts
-                        ).map((product) => {
+                        {paginatedProducts.map((product) => {
                           const discountPercent = getDiscountPercent(product);
                           return (
                             <Product
@@ -381,6 +479,56 @@ export default function ListProducts({
                             />
                           );
                         })}
+                      </div>
+                    )}
+                    {/* PHÂN TRANG */}
+                    {showPagination && totalPages > 1 && (
+                      <div className="d-flex justify-content-center my-4">
+                        <nav>
+                          <ul className="pagination">
+                            <li
+                              className={`page-item${
+                                currentPage === 1 ? " disabled" : ""
+                              }`}
+                            >
+                              <button
+                                className="page-link"
+                                onClick={() => setCurrentPage(currentPage - 1)}
+                                disabled={currentPage === 1}
+                              >
+                                &laquo;
+                              </button>
+                            </li>
+                            {Array.from({ length: totalPages }, (_, i) => (
+                              <li
+                                key={i + 1}
+                                className={`page-item${
+                                  currentPage === i + 1 ? " active" : ""
+                                }`}
+                              >
+                                <button
+                                  className="page-link"
+                                  onClick={() => setCurrentPage(i + 1)}
+                                >
+                                  {i + 1}
+                                </button>
+                              </li>
+                            ))}
+                            <li
+                              className={`page-item${
+                                currentPage === totalPages ? " disabled" : ""
+                              }`}
+                            >
+                              <button
+                                className="page-link"
+                                onClick={() => setCurrentPage(currentPage + 1)}
+                                disabled={currentPage === totalPages}
+                              >
+                                &raquo;
+                              </button>
+                            </li>
+                          </ul>
+                        </nav>
                       </div>
                     )}
                   </div>

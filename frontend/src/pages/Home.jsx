@@ -35,7 +35,6 @@ const Home = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isPercentDecrease = true;
-  // const banners = [banner1, banner2, banner3];
 
   const dispatch = useDispatch();
   const { banners } = useSelector((state) => state.home);
@@ -404,6 +403,7 @@ const Home = () => {
         limit={5}
         products={products}
         loading={loading}
+        showPagination={false}
       />
 
       <ListProductCard title={t("home.bestSellingProducts")} />
@@ -434,7 +434,12 @@ const Home = () => {
       </section>
       <SliderLogoBrand />
 
-      <Blogs limit={3} showHeader={true} padding={"py-5"} />
+      <Blogs
+        limit={3}
+        showHeader={true}
+        padding={"py-5"}
+        showPagination={false}
+      />
 
       <section className="py-5" style={{ marginTop: 100, marginBottom: 70 }}>
         <div className="container-fluid">
