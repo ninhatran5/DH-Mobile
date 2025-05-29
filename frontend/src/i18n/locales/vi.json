@@ -69,7 +69,9 @@
     "errorAddingFavorite": "Đã xảy ra lỗi khi thêm vào danh sách yêu thích",
     "searchPlaceholder": "Tìm kiếm...",
     "search": "Tìm kiếm",
-    "filter": "Bộ lọc"
+    "filter": "Bộ lọc",
+    "storage": "Bộ nhớ",
+    "color": "Màu sắc"
   },
   "blog": {
     "poster": "Người đăng",
@@ -289,6 +291,8 @@
     "description": "Xin chào",
     "personalInfo": "Thông tin cá nhân",
     "titleHello": ", chào mừng bạn đến với DH Moblie",
+    "product": "sản phẩm",
+    "order": "đơn hàng",
     "personalInformations": {
       "name": "Họ tên:",
       "phone": "Số điện thoại:",

@@ -69,7 +69,9 @@
     "errorAddingFavorite": "An error occurred while adding to the favorites list.",
     "searchPlaceholder": "Search Product...",
     "search": "Search",
-    "filter": "Filter"
+    "filter": "Filter",
+    "storage": "Storage",
+    "color": "Color"
   },
   "blog": {
     "poster": "Posted by",
@@ -290,7 +292,8 @@
     "description": "Hello",
     "personalInfo": "Personal Information",
     "titleHello": ", welcome to DH Mobile",
-
+    "product": "Products",
+    "order": "Orders",
     "personalInformations": {
       "name": "Full Name:",
       "phone": "Phone Number:",

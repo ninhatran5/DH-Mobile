@@ -49,7 +49,7 @@ const Profile = () => {
     {
       id: 1,
       label: t("profile.statisticals.orders"),
-      value: "5 đơn hàng",
+      value: `5 ${t("profile.order")}`,
     },
     {
       id: 2,
@@ -59,7 +59,7 @@ const Profile = () => {
     {
       id: 3,
       label: t("profile.statisticals.likedProducts"),
-      value: listFavorite.length + " sản phẩm",
+      value: listFavorite.length + ` ${t("profile.product")}`,
     },
   ];
   const orders = [

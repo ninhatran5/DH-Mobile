@@ -131,3 +131,36 @@
   border: 1px solid #e40303;
   box-shadow: 0 4px 16px rgba(228, 3, 3, 0.12);
 }
+
+@media (max-width: 768px) {
+  .filter-bar-wrapper.show {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+  .filter-bar-wrapper.show {
+    width: 100%;
+    min-width: unset;
+    max-width: 100%;
+    padding: 12px 8px;
+    box-shadow: none;
+    border-radius: 0;
+    background: #fff;
+    position: static;
+    overflow-x: auto;
+  }
+  .filter-extended {
+    flex-direction: column !important;
+    gap: 10px;
+    width: 100%;
+  }
+  .filter-group {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .filter-buttons {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    margin-top: 10px;
+  }
+}
