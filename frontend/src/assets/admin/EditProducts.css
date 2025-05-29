@@ -138,3 +138,83 @@
 .error {
   color: red;
 }
+/* Container bao quanh danh sách biến thể */
+.variant-list-container {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #ccc;
+}
+
+/* Khung danh sách dạng scroll ngang */
+.variant-list {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  padding: 10px 0;
+}
+
+/* Card từng biến thể */
+.variant-card {
+  min-width: 300px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  background-color: #f9f9f9;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+/* Ảnh thumbnail biến thể */
+.variant-card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-top: 8px;
+}
+
+/* Khung chứa nút sửa/xoá */
+.variant-card-buttons {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+/* Nút sửa */
+.variant-card-buttons button.edit-btn {
+  flex: 1;
+  background-color: #f0ad4e;
+  border: none;
+  padding: 6px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Nút xoá */
+.variant-card-buttons button.delete-btn {
+  flex: 1;
+  background-color: #d9534f;
+  border: none;
+  padding: 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+}
+
+/* Scroll bar đẹp hơn (tuỳ chọn) */
+.variant-list::-webkit-scrollbar {
+  height: 8px;
+}
+
+.variant-list::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+
+.variant-list::-webkit-scrollbar-track {
+  background: transparent;
+}

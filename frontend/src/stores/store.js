@@ -26,6 +26,7 @@ import adminProductReducer from "../slices/adminproductsSlice";
 import adminProductSpecificationsReducer from "../slices/adminProductSpecificationsSlice";
 import adminProductVariantsReducer from "../slices/AdminProductVariants";
 import cartReducer from "../slices/cartSlice";
+import variantAttributeValueReducer from "../slices/variantAttributeValueSlice";
 export const store = configureStore({
   reducer: {
     home: homeReducer,
@@ -53,6 +54,7 @@ export const store = configureStore({
     attributeValue: attributeValueReducer,
     adminAccount: adminAccountReducer,
     adminproduct: adminProductReducer,
+    variantAttributeValue: variantAttributeValueReducer,
 
     adminProductSpecifications: adminProductSpecificationsReducer,
     adminProductVariants: adminProductVariantsReducer,
