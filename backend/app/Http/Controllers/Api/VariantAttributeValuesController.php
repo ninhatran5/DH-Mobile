@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\ProductVariant;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\AttributeValue;
 use App\Models\VariantAttributeValue;
 
 class VariantAttributeValuesController extends Controller
@@ -21,11 +22,11 @@ class VariantAttributeValuesController extends Controller
     public function index()
     {
         $items = VariantAttributeValue::with(['variant', 'value.attribute'])->get();
-        
+
         // Group variants by variant_id
         $groupedItems = $items->groupBy('variant_id')->map(function ($variantGroup) {
             $variant = $variantGroup->first()->variant;
-            
+
             // Format attributes with both value_id and attribute value
             $attributes = $variantGroup->map(function ($item) {
                 return [
@@ -79,6 +80,28 @@ class VariantAttributeValuesController extends Controller
             'variant_id' => 'required|integer|exists:product_variants,variant_id',
             'value_id' => 'required|integer|exists:attribute_values,value_id',
         ]);
+        $value = AttributeValue::with('attribute')->find($request->value_id);
+        if (!$value) {
+            return response()->json([
+                'message' => 'Giá trị thuộc tính không tồn tại',
+                'status' => 404,
+            ], 404);
+        }
+        $attribute_id = $value->attribute_id;
+
+        // Kiểm tra đã tồn tại thuộc tính này cho variant chưa
+        $exists = VariantAttributeValue::where('variant_id', $request->variant_id)
+            ->whereHas('value', function ($q) use ($attribute_id) {
+                $q->where('attribute_id', $attribute_id);
+            })
+            ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'message' => 'Biến thể này đã có thuộc tính này rồi',
+                'status' => 422,
+            ], 422);
+        }
         $item = VariantAttributeValue::create($request->only(['variant_id', 'value_id']));
         return response()->json([
             'message' => 'Tạo liên kết biến thể - giá trị thuộc tính thành công',
@@ -105,7 +128,7 @@ class VariantAttributeValuesController extends Controller
     public function show(string $variant_id)
     {
         $items = VariantAttributeValue::with(['variant', 'value.attribute'])
-            ->whereHas('variant', function($query) use ($variant_id) {
+            ->whereHas('variant', function ($query) use ($variant_id) {
                 $query->where('variant_id', $variant_id);
             })->get();
 
@@ -226,7 +249,6 @@ class VariantAttributeValuesController extends Controller
                 'data' => $updatedData['data'],
                 'status' => 200,
             ], 200);
-
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
