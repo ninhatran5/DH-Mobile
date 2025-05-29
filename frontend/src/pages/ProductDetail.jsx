@@ -23,20 +23,18 @@ import { fetchAddToCart } from "../slices/cartSlice";
 
 const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
-  const [selectedVersion, setSelectedVersion] = useState(null);
-  const [selectedColor, setSelectedColor] = useState(null);
+  const [selectedOptions, setSelectedOptions] = useState({});
   const { id } = useParams();
   const dispatch = useDispatch();
   const { productDetails, loading } = useSelector(
     (state) => state.productDetail
   );
-  console.log("🚀 ~ ProductDetail ~ productDetails:", productDetails);
   const { productVariationDetails } = useSelector(
     (state) => state.productVariationDetail
   );
   console.log(
     "🚀 ~ ProductDetail ~ productVariationDetails:",
-    productVariationDetails
+    productVariationDetails.data
   );
   const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
 
@@ -47,25 +45,6 @@ const ProductDetail = () => {
     : productDetails.image_url
     ? [{ id: 1, image: productDetails.image_url }]
     : [];
-
-  const phoneColor = [
-    {
-      id: 1,
-      color: "Titan đen",
-    },
-    {
-      id: 2,
-      color: "Titan tự nhiên",
-    },
-    {
-      id: 3,
-      color: "Titan trắng",
-    },
-    {
-      id: 4,
-      color: "Titan sa mạc",
-    },
-  ];
 
   const [currentImage, setCurrentImage] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -135,11 +114,11 @@ const ProductDetail = () => {
       const payload = {
         product_id: productDetails.product_id,
         quantity,
-        variant_id: productVariationDetails?.variant_id,
+        variant_id: productVariationDetails?.data?.variant_id,
       };
       console.log("Payload gửi lên:", payload);
       dispatch(fetchAddToCart(payload));
-      toast.success(t("products.addedToCart"));
+      // toast.success(t("products.addedToCart"));
     }
   };
 
@@ -280,7 +259,7 @@ const ProductDetail = () => {
               <p className="text-muted">
                 {t("productDetail.quantity")}:{" "}
                 <span className="fw-bold me-1">
-                  {productVariationDetails.stock}
+                  {productVariationDetails?.data?.stock}
                 </span>
                 {t("productDetail.product")}
               </p>
@@ -291,55 +270,46 @@ const ProductDetail = () => {
               <label className="font-weight-bold mt-3">
                 {t("productDetail.selectVersion")}:
               </label>
-              <div className="d-flex justify-content-start version-button-group">
-                {productVariationDetails?.attribute_values?.map(
-                  (phoneVersion) => (
-                    <button
-                      key={phoneVersion.attribute_id}
-                      className={`btn btn-outline-secondary mx-1 ${
-                        selectedVersion === phoneVersion.attribute_id
-                          ? "active"
-                          : ""
-                      }`}
-                      onClick={() =>
-                        setSelectedVersion(
-                          selectedVersion === phoneVersion.attribute_id
-                            ? null
-                            : phoneVersion.attribute_id
-                        )
-                      }
-                    >
-                      {phoneVersion.value}
-                    </button>
-                  )
-                )}
-              </div>
-            </div>
-            <div className="mb-4">
-              <label className="font-weight-bold mt-2">
-                {t("productDetail.selectColor")}:
-              </label>
-              <div className="d-flex justify-content-start version-button-group">
-                {phoneColor.map((phoneVersion) => (
-                  <button
-                    key={phoneVersion.id}
-                    className={`btn btn-outline-secondary mx-1 ${
-                      selectedColor === phoneVersion.id ? "active" : ""
-                    }`}
-                    onClick={() =>
-                      setSelectedColor(
-                        selectedColor === phoneVersion.id
-                          ? null
-                          : phoneVersion.id
-                      )
-                    }
+              <div className="d-flex flex-column gap-2 version-button-group">
+                {productVariationDetails?.data?.attributes?.map((attr) => (
+                  <div
+                    key={attr.attribute_id}
+                    className="d-flex align-items-center mb-2"
                   >
-                    {phoneVersion.color}
-                  </button>
+                    <label
+                      style={{
+                        minWidth: 80,
+                        fontWeight: 600,
+                        marginRight: 8,
+                      }}
+                    >
+                      {attr.name}:
+                    </label>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      {attr.values.map((val) => (
+                        <button
+                          key={val.value_id}
+                          className={`btn btn-outline-secondary mx-1 ${
+                            selectedOptions?.[attr.attribute_id] ===
+                            val.value_id
+                              ? "active"
+                              : ""
+                          }`}
+                          onClick={() =>
+                            setSelectedOptions((prev) => ({
+                              ...prev,
+                              [attr.attribute_id]: val.value_id,
+                            }))
+                          }
+                        >
+                          {val.value}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
-
             <div style={{ marginTop: 40 }}>
               <label className="font-weight-bold mb-2 me-3">
                 {t("productDetail.quantity")}:
