@@ -132,12 +132,42 @@ class ProductVariantsController extends Controller
      */
     public function show(string $id)
     {
-        $variant = ProductVariant::with(['product', 'attributeValues'])->find($id);
-        if ($variant) {
-            return response()->json($variant, 200);
-        } else {
-            return response()->json(['message' => 'Không tìm thấy biến thể sản phẩm'], 404);
+        $variant = ProductVariant::with(['product', 'attributeValues.attribute'])->find($id);
+        
+        if (!$variant) {
+            return response()->json([
+                'message' => 'Không tìm thấy biến thể sản phẩm',
+                'status' => 404,
+            ], 404);
         }
+
+        $attributes = [];
+            
+        // Nhóm các giá trị theo attribute_id
+        foreach ($variant->attributeValues as $value) {
+            $attributeId = $value->attribute_id;
+            if (!isset($attributes[$attributeId])) {
+                $attributes[$attributeId] = [
+                    'attribute_id' => $attributeId,
+                    'name' => $value->attribute->name,
+                    'values' => []
+                ];
+            }
+            $attributes[$attributeId]['values'][] = [
+                'value_id' => $value->value_id,
+                'value' => $value->value
+            ];
+        }
+            
+        // Chuyển attributes từ array thành collection và gán vào variant
+        $variant->attributes = array_values($attributes);
+        unset($variant->attributeValues);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy chi tiết biến thể sản phẩm thành công',
+            'data' => $variant
+        ], 200);
     }
 
     /**
