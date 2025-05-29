@@ -132,41 +132,55 @@ class ProductVariantsController extends Controller
      */
     public function show(string $id)
     {
-        $variant = ProductVariant::with(['product', 'attributeValues.attribute'])->find($id);
+        $variants = ProductVariant::with(['product', 'attributeValues.attribute'])
+            ->where('product_id', $id)
+            ->get();
         
-        if (!$variant) {
+        if ($variants->isEmpty()) {
             return response()->json([
-                'message' => 'Không tìm thấy biến thể sản phẩm',
+                'message' => 'Không tìm thấy biến thể nào của sản phẩm này',
                 'status' => 404,
             ], 404);
         }
 
-        $attributes = [];
+        // Biến đổi dữ liệu để nhóm theo attribute cho từng variant
+        $formattedVariants = $variants->map(function ($variant) {
+            $attributes = [];
             
-        // Nhóm các giá trị theo attribute_id
-        foreach ($variant->attributeValues as $value) {
-            $attributeId = $value->attribute_id;
-            if (!isset($attributes[$attributeId])) {
-                $attributes[$attributeId] = [
-                    'attribute_id' => $attributeId,
-                    'name' => $value->attribute->name,
-                    'values' => []
+            // Nhóm các giá trị theo attribute_id
+            foreach ($variant->attributeValues as $value) {
+                $attributeId = $value->attribute_id;
+                if (!isset($attributes[$attributeId])) {
+                    $attributes[$attributeId] = [
+                        'attribute_id' => $attributeId,
+                        'name' => $value->attribute->name,
+                        'values' => []
+                    ];
+                }
+                $attributes[$attributeId]['values'][] = [
+                    'value_id' => $value->value_id,
+                    'value' => $value->value
                 ];
             }
-            $attributes[$attributeId]['values'][] = [
-                'value_id' => $value->value_id,
-                'value' => $value->value
-            ];
-        }
             
-        // Chuyển attributes từ array thành collection và gán vào variant
-        $variant->attributes = array_values($attributes);
-        unset($variant->attributeValues);
+            // Chuyển attributes từ array thành collection
+            $variant->attributes = array_values($attributes);
+            unset($variant->attributeValues);
+            
+            return $variant;
+        });
+
+        // Lấy thông tin sản phẩm từ variant đầu tiên
+        $product = $variants->first()->product;
 
         return response()->json([
             'status' => true,
-            'message' => 'Lấy chi tiết biến thể sản phẩm thành công',
-            'data' => $variant
+            'message' => 'Lấy danh sách biến thể của sản phẩm thành công',
+            'data' => [
+                'product_id' => $product->product_id,
+                'name' => $product->name,
+                'variants' => $formattedVariants
+            ]
         ], 200);
     }
 
