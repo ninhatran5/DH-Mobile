@@ -304,14 +304,15 @@ class AuthController extends Controller
     {
         try {
             $user = $request->user();
-            
-            // Kiểm tra token hiện tại có hợp lệ không
+
+            // Kiểm tra user và token có tồn tại không
             if (!$user || !$user->currentAccessToken()) {
                 return response()->json([
                     'message' => 'Token không hợp lệ hoặc đã hết hạn.'
                 ], 401);
             }
 
+            // Luôn tạo token mới, bất kể token cũ còn hạn hay không
             // Xoá token cũ
             $user->currentAccessToken()->delete();
 
@@ -319,6 +320,7 @@ class AuthController extends Controller
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return response()->json([
+                'message' => 'Token đã được làm mới thành công.',
                 'access_token' => $token,
                 'token_type' => 'Bearer',
                 'user' => [

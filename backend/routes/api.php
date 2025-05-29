@@ -28,8 +28,6 @@ Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::put('/resetpassword', [AuthController::class, 'resetPassword']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/refreshToken', [AuthController::class, 'refreshToken']);
-    Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refreshToken']);
 });
 
@@ -179,10 +177,11 @@ Route::get('news/{id}', [NewsController::class, 'show']); // lấy tin tức the
 Route::get('vorchers', [VorcherController::class, 'index']); // lấy danh sách vorcher
 Route::get('vorchers/{id}', [VorcherController::class, 'show']); // lấy vorcher theo id
 
-
-
-Route::post('/', 'addview'); // thêm sản phẩm đã xem
-Route::get('/getbyuser/{user_id}', 'getViewsByUserId'); // lấy sản phẩm đã xem theo user_id
+// Product Views
+Route::prefix('productsviews')->controller(ProductsViewsController::class)->group(function () {
+    Route::post('/', 'addview'); // thêm sản phẩm đã xem
+    Route::get('/getbyuser/{user_id}', 'getViewsByUserId'); // lấy sản phẩm đã xem theo user_id
+});
 
 
 // product like
