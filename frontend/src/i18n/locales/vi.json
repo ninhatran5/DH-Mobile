@@ -68,7 +68,8 @@
     "noProductFound": "Không tìm thấy sản phẩm",
     "errorAddingFavorite": "Đã xảy ra lỗi khi thêm vào danh sách yêu thích",
     "searchPlaceholder": "Tìm kiếm...",
-    "search": "Tìm kiếm"
+    "search": "Tìm kiếm",
+    "filter": "Bộ lọc"
   },
   "blog": {
     "poster": "Người đăng",
