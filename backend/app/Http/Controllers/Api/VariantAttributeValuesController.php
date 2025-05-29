@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\ProductVariant;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use App\Models\VariantAttributeValue;
 
 class VariantAttributeValuesController extends Controller
@@ -87,11 +89,11 @@ class VariantAttributeValuesController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/variant-attribute-values/{id}",
-     *     summary="Lấy chi tiết liên kết biến thể - giá trị thuộc tính",
+     *     path="/api/variant-attribute-values/{variant_id}",
+     *     summary="Lấy tất cả thuộc tính của một biến thể",
      *     tags={"VariantAttributeValues"},
      *     @OA\Parameter(
-     *         name="id",
+     *         name="variant_id",
      *         in="path",
      *         required=true,
      *         @OA\Schema(type="integer")
@@ -100,29 +102,55 @@ class VariantAttributeValuesController extends Controller
      *     @OA\Response(response=404, description="Không tìm thấy")
      * )
      */
-    public function show(string $id)
+    public function show(string $variant_id)
     {
-        $item = VariantAttributeValue::with(['variant', 'value'])->find($id);
-        if (!$item) {
+        $items = VariantAttributeValue::with(['variant', 'value.attribute'])
+            ->whereHas('variant', function($query) use ($variant_id) {
+                $query->where('variant_id', $variant_id);
+            })->get();
+
+        if ($items->isEmpty()) {
             return response()->json([
-                'message' => 'Không tìm thấy liên kết biến thể - giá trị thuộc tính',
+                'message' => 'Không tìm thấy thuộc tính của biến thể',
                 'status' => 404,
             ], 404);
         }
+
+        $variant = $items->first()->variant;
+        $attributes = $items->map(function ($item) {
+            return [
+                'value_id' => $item->value_id,
+                'name' => strtolower($item->value->attribute->name),
+                'value' => $item->value->value
+            ];
+        })->values();
+
+        $variantData = [
+            'variant_id' => $variant->variant_id,
+            'product_id' => $variant->product_id,
+            'sku' => $variant->sku,
+            'price' => $variant->price,
+            'price_original' => $variant->price_original,
+            'image_url' => $variant->image_url,
+            'stock' => $variant->stock,
+            'is_active' => $variant->is_active,
+            'attributes' => $attributes
+        ];
+
         return response()->json([
-            'message' => 'Lấy chi tiết liên kết thành công',
-            'data' => $item,
+            'message' => 'Lấy thuộc tính của biến thể thành công',
+            'data' => $variantData,
             'status' => 200,
         ], 200);
     }
 
     /**
      * @OA\Put(
-     *     path="/api/variant-attribute-values/{id}",
-     *     summary="Cập nhật liên kết biến thể - giá trị thuộc tính",
+     *     path="/api/variant-attribute-values/{variant_id}",
+     *     summary="Cập nhật thuộc tính của biến thể",
      *     tags={"VariantAttributeValues"},
      *     @OA\Parameter(
-     *         name="id",
+     *         name="variant_id",
      *         in="path",
      *         required=true,
      *         @OA\Schema(type="integer")
@@ -130,33 +158,83 @@ class VariantAttributeValuesController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="variant_id", type="integer"),
-     *             @OA\Property(property="value_id", type="integer")
+     *             @OA\Property(
+     *                 property="attributes",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="value_id", type="integer")
+     *                 )
+     *             )
      *         )
      *     ),
      *     @OA\Response(response=200, description="Cập nhật thành công"),
-     *     @OA\Response(response=404, description="Không tìm thấy")
+     *     @OA\Response(response=404, description="Không tìm thấy biến thể"),
+     *     @OA\Response(response=422, description="Dữ liệu không hợp lệ")
      * )
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $variant_id)
     {
-        $item = VariantAttributeValue::find($id);
-        if (!$item) {
+        // Kiểm tra biến thể tồn tại
+        $variant = ProductVariant::find($variant_id);
+        if (!$variant) {
             return response()->json([
-                'message' => 'Không tìm thấy liên kết biến thể - giá trị thuộc tính',
+                'message' => 'Không tìm thấy biến thể',
                 'status' => 404,
             ], 404);
         }
-        $request->validate([
-            'variant_id' => 'sometimes|integer|exists:product_variants,variant_id',
-            'value_id' => 'sometimes|integer|exists:attribute_values,value_id',
-        ]);
-        $item->update($request->only(['variant_id', 'value_id']));
-        return response()->json([
-            'message' => 'Cập nhật liên kết thành công',
-            'data' => $item,
-            'status' => 200,
-        ], 200);
+
+        // Validate dữ liệu đầu vào
+        if ($request->isJson()) {
+            $request->validate([
+                'attributes' => 'required|array',
+                'attributes.*.value_id' => 'required|integer|exists:attribute_values,value_id',
+            ]);
+            $attributeValues = collect($request->attributes)->pluck('value_id')->toArray();
+        } else {
+            $request->validate([
+                'value_id' => 'required|array',
+                'value_id.*' => 'required|integer|exists:attribute_values,value_id',
+            ]);
+            $attributeValues = $request->value_id;
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Xóa tất cả các thuộc tính hiện tại của biến thể
+            VariantAttributeValue::where('variant_id', $variant_id)->delete();
+
+            // Thêm các thuộc tính mới
+            $attributes = [];
+            foreach ($attributeValues as $value_id) {
+                $attributes[] = [
+                    'variant_id' => $variant_id,
+                    'value_id' => $value_id,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ];
+            }
+            VariantAttributeValue::insert($attributes);
+
+            DB::commit();
+
+            // Lấy dữ liệu mới sau khi cập nhật
+            $updatedData = $this->show($variant_id)->original;
+
+            return response()->json([
+                'message' => 'Cập nhật thuộc tính biến thể thành công',
+                'data' => $updatedData['data'],
+                'status' => 200,
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Có lỗi xảy ra khi cập nhật thuộc tính',
+                'error' => $e->getMessage(),
+                'status' => 500,
+            ], 500);
+        }
     }
 
     /**
