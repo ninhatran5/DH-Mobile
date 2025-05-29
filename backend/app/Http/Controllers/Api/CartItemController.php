@@ -151,6 +151,7 @@ class CartItemController extends Controller
             'status' => true,
             'message' => $cartItems->count() > 0 ? 'Lấy giỏ hàng thành công' : 'Giỏ hàng không có sản phẩm',
             'data' => [
+                'user_id' => $user->user_id,
                 'cart_id' => $cart->cart_id,
                 'total_items' => $cartItems->count(),
                 'total_amount' => $totalAmount,
