@@ -68,7 +68,8 @@
     "noProductFound": "No product found",
     "errorAddingFavorite": "An error occurred while adding to the favorites list.",
     "searchPlaceholder": "Search Product...",
-    "search": "Search"
+    "search": "Search",
+    "filter": "Filter"
   },
   "blog": {
     "poster": "Posted by",
