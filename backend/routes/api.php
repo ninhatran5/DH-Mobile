@@ -27,8 +27,8 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::put('/resetpassword', [AuthController::class, 'resetPassword']);
 Route::middleware('auth:sanctum')->group(function () {
-Route::post('/logout', [AuthController::class, 'logout']);
-Route::get('/refreshToken', [AuthController::class, 'refreshToken']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/refreshToken', [AuthController::class, 'refreshToken']);
 });
 
 
@@ -149,16 +149,12 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
     });
     // product views 
     Route::prefix('productsviews')->controller(ProductsViewsController::class)->group(function () {
-        Route::post('/', 'addview'); // thêm sản phẩm đã xem
+
         Route::delete('/{view_id}', 'deleteView'); // xóa sản phẩm đã xem theo view_id
         Route::delete('/deleteall', 'deleteAllViews'); // xóa tất cả sản phẩm đã xem
-        Route::get('/getbyuser/{user_id}', 'getViewsByUserId'); // lấy sản phẩm đã xem theo user_id
+
         // Route::get('/getall', 'getAllViews'); // lấy tất cả sản phẩm đã xem 
     });
-
-
-
-
 });
 
 // Các route chỉ đọc (không cần quyền admin)
@@ -183,42 +179,42 @@ Route::get('vorchers/{id}', [VorcherController::class, 'show']); // lấy vorche
 
 
 
+Route::post('/', 'addview'); // thêm sản phẩm đã xem
+Route::get('/getbyuser/{user_id}', 'getViewsByUserId'); // lấy sản phẩm đã xem theo user_id
+
 
 // product like
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('productlike/{id}', [ProductLikeController::class,'productlike']);
-    Route::delete('productunlike/{id}', [ProductLikeController::class,'productunlike']);
-    Route::get('listproductlike', [ProductLikeController::class,'listproductlike']);
-    Route::put('updatestatuslike/{id}', [ProductLikeController::class,'updatestatuslike']);
+    Route::post('productlike/{id}', [ProductLikeController::class, 'productlike']);
+    Route::delete('productunlike/{id}', [ProductLikeController::class, 'productunlike']);
+    Route::get('listproductlike', [ProductLikeController::class, 'listproductlike']);
+    Route::put('updatestatuslike/{id}', [ProductLikeController::class, 'updatestatuslike']);
 });
 
 // cart and cart item
 Route::middleware('auth:sanctum')->group(function () {
-Route::post('cart', [CartController::class, 'Cart']);
+    Route::post('cart', [CartController::class, 'Cart']);
 
-// // thêm sản phẩm vào giỏ hàng
-Route::post('cart/add/{id}', [CartItemController::class, 'addProductToCart']);
-// // cập nhật số lượng sản phẩm trong giỏ hàng
-Route::post('cart/updateProductQuantity/{id}', [CartItemController::class, 'updateProductQuantity']);
-// // lấy giỏ hàng của người dùng
-Route::get('getCart', [CartItemController::class, 'getCart']);
-// // xóa sản phẩm khỏi giỏ hàng
-Route::delete('cart/remove/{id}', [CartItemController::class, 'removeProductFromCart']);
-// // xóa toàn bộ giỏ hàng
-Route::delete('cart/clear', [CartItemController::class, 'clearCart']);
+    // // thêm sản phẩm vào giỏ hàng
+    Route::post('cart/add/{id}', [CartItemController::class, 'addProductToCart']);
+    // // cập nhật số lượng sản phẩm trong giỏ hàng
+    Route::post('cart/updateProductQuantity/{id}', [CartItemController::class, 'updateProductQuantity']);
+    // // lấy giỏ hàng của người dùng
+    Route::get('getCart', [CartItemController::class, 'getCart']);
+    // // xóa sản phẩm khỏi giỏ hàng
+    Route::delete('cart/remove/{id}', [CartItemController::class, 'removeProductFromCart']);
+    // // xóa toàn bộ giỏ hàng
+    Route::delete('cart/clear', [CartItemController::class, 'clearCart']);
 
 
-// payment
+    // payment
 
-Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware('auth:sanctum')->group(function () {
 
-Route::get('getPaymentMethods', [PaymentMethodController::class, 'getPaymentMethods']);
+        Route::get('getPaymentMethods', [PaymentMethodController::class, 'getPaymentMethods']);
 
-    Route::middleware(CheckAdmin::class)->group(function () {
-       Route::post('addPayment' , [PaymentMethodController::class, 'addPayment']);
+        Route::middleware(CheckAdmin::class)->group(function () {
+            Route::post('addPayment', [PaymentMethodController::class, 'addPayment']);
+        });
     });
 });
-
-});
-
-
