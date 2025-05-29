@@ -20,6 +20,7 @@ import {
   fetchListFavorite,
 } from "../slices/favoriteProductsSlice";
 import { fetchAddToCart } from "../slices/cartSlice";
+import { fetchSpecification } from "../slices/specificationsSlice";
 
 // Hàm tổng hợp tất cả thuộc tính từ variants
 function getAllAttributes(variants) {
@@ -69,10 +70,7 @@ const ProductDetail = () => {
   const { productVariationDetails } = useSelector(
     (state) => state.productVariationDetail
   );
-  console.log(
-    "🚀 ~ ProductDetail ~ productVariationDetails:",
-    productVariationDetails
-  );
+  const { specifications } = useSelector((state) => state.specification);
   const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
 
   const { t } = useTranslation();
@@ -215,6 +213,7 @@ const ProductDetail = () => {
     if (id) {
       dispatch(fetchProductDetail(id));
       dispatch(fetchProductVariationDetail(id));
+      dispatch(fetchSpecification(id));
     }
   }, [dispatch, id]);
 
@@ -465,11 +464,12 @@ const ProductDetail = () => {
             {activeTab === "info" && (
               <div className="tab-pane fade show active">
                 <ul className="desc_productdetai mb-0">
-                  <li>Weight: 0.79kg</li>
-                  <li>Dimensions: 110 x 33 x 100 cm</li>
-                  <li>Materials: 60% aluminum</li>
-                  <li>Color options: Red, Blue, Grey, White</li>
-                  <li>Sizes available: S, M, L, XL</li>
+                  {specifications?.map((spec) => (
+                    <li key={spec.spec_id}>
+                      <span className="fw-bold me-2">{spec.spec_name}:</span>
+                      <span>{spec.spec_value}</span>
+                    </li>
+                  ))}
                 </ul>
               </div>
             )}
