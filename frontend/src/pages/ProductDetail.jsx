@@ -3,7 +3,7 @@ import { Modal } from "react-bootstrap";
 import { MdOutlineZoomInMap } from "react-icons/md";
 import Carousel from "react-bootstrap/Carousel";
 import "../assets/css/product-detail.css";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import Comment from "../components/Comment";
 import Breadcrumb from "../components/Breadcrumb";
@@ -19,6 +19,7 @@ import {
   fetchFavoriteProduct,
   fetchListFavorite,
 } from "../slices/favoriteProductsSlice";
+import { fetchAddToCart } from "../slices/cartSlice";
 
 const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
@@ -29,12 +30,16 @@ const ProductDetail = () => {
   const { productDetails, loading } = useSelector(
     (state) => state.productDetail
   );
+  console.log("🚀 ~ ProductDetail ~ productDetails:", productDetails);
   const { productVariationDetails } = useSelector(
     (state) => state.productVariationDetail
   );
+  console.log(
+    "🚀 ~ ProductDetail ~ productVariationDetails:",
+    productVariationDetails
+  );
   const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
 
-  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const productImages = Array.isArray(productDetails.image_url)
@@ -127,9 +132,14 @@ const ProductDetail = () => {
 
   const addToShoppingCart = () => {
     if (checkLogin()) {
-      console.log("added");
+      const payload = {
+        product_id: productDetails.product_id,
+        quantity,
+        variant_id: productVariationDetails?.variant_id,
+      };
+      console.log("Payload gửi lên:", payload);
+      dispatch(fetchAddToCart(payload));
       toast.success(t("products.addedToCart"));
-      navigate("/shopping-cart");
     }
   };
 
@@ -261,10 +271,10 @@ const ProductDetail = () => {
               <h2 className="mb-3">{productDetails.name}</h2>
               <div className="price">
                 <h4 className="text-price_sale">
-                  {numberFomat(productVariationDetails.price)}
+                  {numberFomat(productDetails.price)}
                 </h4>
                 <p className="text-price_original">
-                  {numberFomat(productVariationDetails?.price_original)}
+                  {numberFomat(productDetails?.price_original)}
                 </p>
               </div>
               <p className="text-muted">
