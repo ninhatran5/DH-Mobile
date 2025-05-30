@@ -17,7 +17,7 @@ import {
   deleteVariantAttributeValue,
   updateVariantAttributeValue,
 } from "../../slices/variantAttributeValueSlice";
-
+import { fetchAttributeValues } from "../../slices/attributeValueSlice";
 import "../../assets/admin/EditProducts.css";
 
 const AdminProductEdit = () => {
@@ -25,7 +25,6 @@ const AdminProductEdit = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // === admin product states ===
   const { adminproducts, loading, error } = useSelector(
     (state) => state.adminproduct
   );
@@ -36,15 +35,17 @@ const AdminProductEdit = () => {
   } = useSelector((state) => state.adminProductSpecifications);
   const { categories, loading: categoriesLoading, error: categoriesError } =
     useSelector((state) => state.category);
+    
+  const { attributeValues, loading: attributeValuesLoading } = useSelector(
+    (state) => state.attributeValue
+  );
 
-  // === variant attribute values states ===
   const {
     variantAttributeValues,
     loading: variantLoading,
     error: variantError,
   } = useSelector((state) => state.variantAttributeValue);
 
-  // === form data for admin product ===
   const [formData, setFormData] = useState({
     name: "",
     price: "",
@@ -57,7 +58,6 @@ const AdminProductEdit = () => {
   const [imagePreview, setImagePreview] = useState("");
   const [specificationsData, setSpecificationsData] = useState([]);
 
-  // === form & edit states for variant attribute values ===
   const [editingVariant, setEditingVariant] = useState(null);
   const [variantFormData, setVariantFormData] = useState({
     sku: "",
@@ -77,7 +77,12 @@ const AdminProductEdit = () => {
       dispatch(fetchCategories());
     }
     dispatch(fetchVariantAttributeValues());
+    dispatch(fetchAttributeValues()); 
   }, [dispatch, adminproducts, categories]);
+
+  useEffect(() => {
+    dispatch(fetchAttributeValues());
+  }, [dispatch]);
 
   useEffect(() => {
     const product = adminproducts.find((p) => String(p.product_id) === id);
@@ -193,6 +198,7 @@ const AdminProductEdit = () => {
       stock: variant.stock,
       image_url: variant.image_url,
       is_active: variant.is_active === 1 ? 1 : 0,
+      attributes: variant.attributes ? [...variant.attributes] : [], // Copy attributes array
     });
   };
 
@@ -484,15 +490,40 @@ const AdminProductEdit = () => {
                           </label>
                         </div>
                         <div style={{ marginBottom: "8px" }}>
-                          <label>URL ảnh: </label>
+                          <label>Chọn ảnh: </label>
                           <input
-                            type="text"
-                            name="image_url"
-                            value={variantFormData.image_url}
-                            onChange={handleVariantChange}
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onloadend = () => {
+                                  setVariantFormData(prev => ({
+                                    ...prev,
+                                    image_url: reader.result
+                                  }));
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
                             style={{ width: "100%", padding: "6px" }}
                           />
                         </div>
+                        
+                        {variantFormData.image_url && (
+                          <div style={{ marginBottom: "12px" }}>
+                            <img 
+                              src={variantFormData.image_url} 
+                              alt="Preview"
+                              style={{ 
+                                maxWidth: "150px", 
+                                borderRadius: "4px",
+                                marginTop: "8px" 
+                              }} 
+                            />
+                          </div>
+                        )}
 
                         <div style={{ marginTop: "12px" }}>
                           <label>Thuộc tính:</label>
@@ -502,29 +533,41 @@ const AdminProductEdit = () => {
                               style={{ marginBottom: "6px", display: "flex", alignItems: "center", gap: "8px" }}
                             >
                               <span style={{ minWidth: "100px" }}>{attr.name}:</span>
-                              <input
-                                type="text"
+                              <select
                                 value={
-                                  variantFormData.attributes?.[index]?.value ||
-                                  attr.value
+                                  variantFormData.attributes?.[index]?.value_id ||
+                                  attr.value_id
                                 }
                                 onChange={(e) => {
-                                  const newAttrs = variantFormData.attributes
-                                    ? [...variantFormData.attributes]
-                                    : [...editingVariant.attributes];
-                                  newAttrs[index] = {
-                                    ...newAttrs[index],
-                                    value: e.target.value,
-                                    name: attr.name,
-                                    value_id: attr.value_id,
-                                  };
-                                  setVariantFormData((prev) => ({
-                                    ...prev,
-                                    attributes: newAttrs,
-                                  }));
+                                  const selectedValue = attributeValues.find(
+                                    (av) => av.value_id === parseInt(e.target.value)
+                                  );
+                                  if (selectedValue) {
+                                    const newAttrs = variantFormData.attributes
+                                      ? [...variantFormData.attributes]
+                                      : [...editingVariant.attributes];
+                                    newAttrs[index] = {
+                                      value_id: selectedValue.value_id,
+                                      name: selectedValue.attribute.name,
+                                      value: selectedValue.value
+                                    };
+                                    setVariantFormData((prev) => ({
+                                      ...prev,
+                                      attributes: newAttrs,
+                                    }));
+                                  }
                                 }}
                                 style={{ flex: 1, padding: "6px" }}
-                              />
+                              >
+                                <option value="">-- Chọn giá trị --</option>
+                                {Array.isArray(attributeValues) && attributeValues
+                                  .filter((av) => av.attribute?.name === attr.name)
+                                  .map((av) => (
+                                    <option key={av.value_id} value={av.value_id}>
+                                      {av.value}
+                                    </option>
+                                  ))}
+                              </select>
                             </div>
                           ))}
                         </div>
@@ -565,7 +608,6 @@ const AdminProductEdit = () => {
                         </div>
                       </div>
                     ) : (
-                      // VIEW MODE
                       <>
                         <div>
                           <strong>SKU:</strong> {variant.sku}
