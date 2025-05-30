@@ -19,7 +19,6 @@ import categoryReducer from "../slices/adminCategories";
 import attributeReducer from "../slices/Attribute";
 import attributeValueReducer from "../slices/attributeValueSlice";
 import categorysReducer from "../slices/categorySlice";
-import adminAccountReducer from "../slices/adminAcccount";
 import blogDetailReducer from "../slices/blogDetailSlice";
 import voucherReducer from "../slices/voucherSlice";
 import adminProductReducer from "../slices/adminproductsSlice";
@@ -54,7 +53,6 @@ export const store = configureStore({
     category: categoryReducer,
     attribute: attributeReducer,
     attributeValue: attributeValueReducer,
-    adminAccount: adminAccountReducer,
     adminproduct: adminProductReducer,
     variantAttributeValue: variantAttributeValueReducer,
     specification: specificationReducer,

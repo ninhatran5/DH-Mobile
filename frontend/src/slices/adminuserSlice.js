@@ -60,7 +60,7 @@ export const addUser = createAsyncThunk(
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
-      const res = await axiosConfig.post("/getuser", newUserData, {
+      const res = await axiosConfig.post("/createuser", newUserData, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
