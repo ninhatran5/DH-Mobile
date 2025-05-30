@@ -21,29 +21,10 @@ class AttributevalueController extends Controller
     {
         //
         // Lấy tất cả AttributeValue kèm thuộc tính cha
-        $attributeValue = AttributeValue::with('attribute')->get();
-
-        // Nhóm theo tên thuộc tính cha (ví dụ: Màu sắc, Dung lượng)
-        $grouped = $attributeValue->groupBy(function ($item) {
-            return $item->attribute->name ?? 'Không xác định';
-        });
-
-        // Định dạng lại dữ liệu trả về
-        $result = $grouped->map(function ($items, $name) {
-            return [
-                'attribute_name' => $name,
-                'values' => $items->map(function ($item) {
-                    return [
-                        'id' => $item->value_id,
-                        'value' => $item->value,
-                        'attribute_id' => $item->attribute_id,
-                    ];
-                })->values()
-            ];
-        })->values();
+        $attributeValue = AttributeValue::all();
         return response()->json([
             'message' => 'Lấy danh sách thuộc tính thành công',
-            'data' => $result,
+            'data' => $attributeValue,
             'status' => 200,
         ])->setStatusCode(200, 'OK');
     }
