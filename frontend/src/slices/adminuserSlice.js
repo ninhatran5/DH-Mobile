@@ -7,7 +7,7 @@ const initialState = {
   error: null,
 };
 
-
+// Lấy danh sách user
 export const fetchUsers = createAsyncThunk(
   "adminuser/fetchUsers",
   async (_, { rejectWithValue }) => {
@@ -19,8 +19,8 @@ export const fetchUsers = createAsyncThunk(
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      console.log("Fetch users res.data:", res.data); 
-      return res.data.user; 
+      console.log("Fetch users res.data:", res.data);
+      return res.data.user || [];
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.message || "Lỗi khi gọi API lấy danh sách user"
@@ -28,7 +28,6 @@ export const fetchUsers = createAsyncThunk(
     }
   }
 );
-
 
 // Xóa user
 export const deleteUser = createAsyncThunk(
@@ -76,7 +75,7 @@ export const addUser = createAsyncThunk(
   }
 );
 
-// Sửa user
+// Cập nhật user
 export const updateUser = createAsyncThunk(
   "adminuser/updateUser",
   async ({ id, updatedData }, { rejectWithValue }) => {
@@ -85,7 +84,7 @@ export const updateUser = createAsyncThunk(
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
       const res = await axiosConfig.post(
-        `/getuser/${id}?_method=PUT`,
+        `/updateuser/${id}?_method=PUT`,
         updatedData,
         {
           headers: {
@@ -95,11 +94,11 @@ export const updateUser = createAsyncThunk(
         }
       );
 
-      const updatedUser = res.data.data;
-      console.log("User đã cập nhật:", updatedUser);
-      return updatedUser;
+      console.log("Response updateUser API:", res.data);
+
+      // Nếu API trả về user đã cập nhật ở res.data.data
+      return res.data.data || null;
     } catch (err) {
-      console.error("Lỗi khi cập nhật user:", err);
       return rejectWithValue(
         err.response?.data?.message || "Lỗi khi cập nhật user"
       );
@@ -120,7 +119,7 @@ const adminuserSlice = createSlice({
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.loading = false;
-        state.users = action.payload || []; // đảm bảo luôn là mảng
+        state.users = action.payload || [];
       })
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;
@@ -165,9 +164,16 @@ const adminuserSlice = createSlice({
       .addCase(updateUser.fulfilled, (state, action) => {
         state.loading = false;
         const updatedUser = action.payload;
+
+        if (!updatedUser || !updatedUser.user_id) {
+          console.warn("Payload cập nhật không hợp lệ hoặc thiếu user_id");
+          return;
+        }
+
         const index = state.users.findIndex(
           (user) => user.user_id === updatedUser.user_id
         );
+
         if (index !== -1) {
           state.users[index] = updatedUser;
         }

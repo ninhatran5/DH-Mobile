@@ -13,8 +13,8 @@ function EditAttributeValue() {
   const [valueData, setValueData] = useState({});
 
   useEffect(() => {
-    console.log("✅ attributeValues:", attributeValues);
-    console.log("✅ value_id param:", value_id);
+    console.log(" attributeValues:", attributeValues);
+    console.log(" value_id param:", value_id);
 
     let currentValue = null;
     Object.values(attributeValues).forEach(arr => {

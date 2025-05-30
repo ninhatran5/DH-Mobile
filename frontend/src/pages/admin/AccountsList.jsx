@@ -97,10 +97,11 @@ const ListUser = () => {
                       </td>
                       <td className="adminuser-text-center adminuser-actions">
                         <FaEdit
-                          className="adminuser-icon adminuser-icon-edit"
-                          onClick={() => console.log("Sửa", user)}
-                          title="Sửa user"
-                        />
+  className="adminuser-icon adminuser-icon-edit"
+  onClick={() => navigate(`/admin/editaccount/${user.user_id}`)}
+  title="Sửa user"
+/>
+
                         <FaTrash
                           className="adminuser-icon adminuser-icon-delete"
                           onClick={() => handleDelete(user.user_id)}
