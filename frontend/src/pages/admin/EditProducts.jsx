@@ -37,7 +37,7 @@ const AdminProductEdit = () => {
     useSelector((state) => state.category);
     
   const { attributeValues, loading: attributeValuesLoading } = useSelector(
-    (state) => state.attributeValue
+    (state) => state.attributeValue || {}
   );
 
   const {
@@ -77,8 +77,12 @@ const AdminProductEdit = () => {
       dispatch(fetchCategories());
     }
     dispatch(fetchVariantAttributeValues());
-    dispatch(fetchAttributeValues()); 
   }, [dispatch, adminproducts, categories]);
+  
+  // Fetch attribute values khi component mount
+  useEffect(() => {
+    dispatch(fetchAttributeValues());
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(fetchAttributeValues());
@@ -527,49 +531,50 @@ const AdminProductEdit = () => {
 
                         <div style={{ marginTop: "12px" }}>
                           <label>Thuộc tính:</label>
-                          {editingVariant.attributes.map((attr, index) => (
-                            <div
-                              key={attr.value_id}
-                              style={{ marginBottom: "6px", display: "flex", alignItems: "center", gap: "8px" }}
-                            >
-                              <span style={{ minWidth: "100px" }}>{attr.name}:</span>
-                              <select
-                                value={
-                                  variantFormData.attributes?.[index]?.value_id ||
-                                  attr.value_id
-                                }
-                                onChange={(e) => {
-                                  const selectedValue = attributeValues.find(
-                                    (av) => av.value_id === parseInt(e.target.value)
-                                  );
-                                  if (selectedValue) {
-                                    const newAttrs = variantFormData.attributes
-                                      ? [...variantFormData.attributes]
-                                      : [...editingVariant.attributes];
-                                    newAttrs[index] = {
-                                      value_id: selectedValue.value_id,
-                                      name: selectedValue.attribute.name,
-                                      value: selectedValue.value
-                                    };
-                                    setVariantFormData((prev) => ({
-                                      ...prev,
-                                      attributes: newAttrs,
-                                    }));
-                                  }
-                                }}
-                                style={{ flex: 1, padding: "6px" }}
+                          {editingVariant.attributes.map((attr, index) => {
+                            const attributeName = attr.name.toLowerCase();
+                            const attrValues = attributeValues[attributeName === 'color' ? 1 : 
+                                                            attributeName === 'storage' ? 2 : 
+                                                            attributeName === 'ram' ? 3 : null] || [];
+                            
+                            return (
+                              <div
+                                key={attr.value_id}
+                                style={{ marginBottom: "6px", display: "flex", alignItems: "center", gap: "8px" }}
                               >
-                                <option value="">-- Chọn giá trị --</option>
-                                {Array.isArray(attributeValues) && attributeValues
-                                  .filter((av) => av.attribute?.name === attr.name)
-                                  .map((av) => (
+                                <span style={{ minWidth: "100px" }}>{attr.name}:</span>
+                                <select
+                                  value={variantFormData.attributes?.[index]?.value_id || attr.value_id}
+                                  onChange={(e) => {
+                                    const selectedId = parseInt(e.target.value);
+                                    const selectedValue = attrValues.find(av => av.value_id === selectedId);
+                                    
+                                    if (selectedValue) {
+                                      const newAttrs = [...(variantFormData.attributes || [])];
+                                      newAttrs[index] = {
+                                        value_id: selectedValue.value_id,
+                                        name: attr.name,
+                                        value: selectedValue.value
+                                      };
+                                      setVariantFormData(prev => ({
+                                        ...prev,
+                                        attributes: newAttrs
+                                      }));
+                                    }
+                                  }}
+                                  style={{ flex: 1, padding: "6px" }}
+                                  disabled={attributeValuesLoading}
+                                >
+                                  <option value="">-- Chọn giá trị --</option>
+                                  {attrValues.map((av) => (
                                     <option key={av.value_id} value={av.value_id}>
                                       {av.value}
                                     </option>
                                   ))}
-                              </select>
-                            </div>
-                          ))}
+                                </select>
+                              </div>
+                            );
+                          })}
                         </div>
 
                         <div style={{ marginTop: "12px" }}>
