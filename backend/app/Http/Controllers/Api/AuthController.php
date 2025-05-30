@@ -127,7 +127,7 @@ class AuthController extends Controller
     {
         // Validate dữ liệu đầu vào
         $request->validate([
-            'username' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users,username',
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => [
@@ -150,6 +150,7 @@ class AuthController extends Controller
             'phone' => $request->phone,
             'address' => $request->address,
         ]);
+
 
         return response()->json([
             'message' => 'Đăng ký thành công.',
