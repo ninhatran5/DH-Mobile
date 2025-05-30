@@ -44,14 +44,35 @@ export const updateVariantAttributeValue = createAsyncThunk(
   async ({ id, updatedData }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const res = await axiosConfig.put(
+      
+      const formattedData = {
+        sku: updatedData.sku || "",
+        price: parseFloat(updatedData.price) || 0,
+        price_original: parseFloat(updatedData.price_original) || 0,
+        stock: parseInt(updatedData.stock) || 0,
+        is_active: updatedData.is_active ? 1 : 0,
+        image_url: updatedData.image_url || "",
+        attributes: Array.isArray(updatedData.attributes) 
+          ? updatedData.attributes.map(attr => ({
+              value_id: parseInt(attr.value_id),
+              name: attr.name || "",
+              value: attr.value || ""
+            }))
+          : []
+      };
+
+      console.log('Sending update request with data:', formattedData);
+
+      const res = await axiosConfig.post( 
         `/variantattributevalues/${id}`,
-        updatedData,
+        formattedData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
+            "Accept": "application/json"
           },
+          timeout: 10000 // Add timeout
         }
       );
       return res.data.data;
