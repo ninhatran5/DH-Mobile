@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import {
   fetchAdminProducts,
@@ -17,8 +19,267 @@ import {
   deleteVariantAttributeValue,
   updateVariantAttributeValue,
 } from "../../slices/variantAttributeValueSlice";
-import { fetchAttributeValues } from "../../slices/attributeValueSlice";
+import { 
+  fetchAdminProductVariants,
+  updateAdminProductVariant,
+} from "../../slices/AdminProductVariants";
+import { 
+  fetchAttributeValues,
+} from "../../slices/attributeValueSlice";
 import "../../assets/admin/EditProducts.css";
+
+const VariantDisplay = ({ variant, onEdit, onDelete }) => {
+  return (
+    <>
+      <div>
+        <strong>SKU:</strong> {variant.sku}
+      </div>
+      <div>
+        <strong>Giá:</strong> {variant.price}
+      </div>
+      <div>
+        <strong>Giá gốc:</strong> {variant.price_original}
+      </div>
+      <div>
+        <strong>Tồn kho:</strong> {variant.stock}
+      </div>
+      <div>
+        <strong>Trạng thái:</strong>{" "}
+        {variant.is_active ? "✅ Active" : "❌ Inactive"}
+      </div>
+      <div>
+        <strong>Thuộc tính:</strong>
+        <ul
+          style={{
+            margin: "6px 0 0 12px",
+            padding: 0,
+            listStyle: "disc",
+          }}
+        >
+          {variant.attributes.map((attr) => (
+            <li key={attr.value_id}>
+              {attr.name}: {attr.value}
+            </li>
+          ))}
+        </ul>
+      </div>
+      {variant.image_url && (
+        <img
+          src={variant.image_url}
+          alt={variant.sku}
+          style={{ maxWidth: "100px", marginTop: "10px" }}
+        />
+      )}
+      <div style={{ marginTop: "10px" }}>
+        <button
+          className="btn btn-warning"
+          onClick={() => onEdit(variant)}
+          style={{ marginRight: "6px" }}
+        >
+          Cập nhật
+        </button>
+        <button
+          className="btn btn-danger"
+          onClick={() => onDelete(variant.variant_id)}
+        >
+          Xoá
+        </button>
+      </div>
+    </>
+  );
+};
+
+const VariantEditForm = ({ 
+  variantFormData, 
+  editingVariant,
+  attributeValues,
+  attributeValuesLoading,
+  onChange,
+  onUpdateVariant,
+  onUpdateAttributes,
+  onCancel 
+}) => {
+  return (
+    <div>
+      <div style={{ marginBottom: "8px" }}>
+        <label>SKU: </label>
+        <input
+          type="text"
+          name="sku"
+          value={variantFormData.sku}
+          onChange={onChange}
+          style={{ width: "100%", padding: "6px" }}
+        />
+      </div>
+      <div style={{ marginBottom: "8px" }}>
+        <label>Giá: </label>
+        <input
+          type="number"
+          name="price"
+          value={variantFormData.price}
+          onChange={onChange}
+          style={{ width: "100%", padding: "6px" }}
+        />
+      </div>
+      <div style={{ marginBottom: "8px" }}>
+        <label>Giá gốc: </label>
+        <input
+          type="number"
+          name="price_original"
+          value={variantFormData.price_original || ""}
+          onChange={onChange}
+          style={{ width: "100%", padding: "6px" }}
+        />
+      </div>
+      <div style={{ marginBottom: "8px" }}>
+        <label>Tồn kho: </label>
+        <input
+          type="number"
+          name="stock"
+          value={variantFormData.stock}
+          onChange={onChange}
+          style={{ width: "100%", padding: "6px" }}
+        />
+      </div>
+      <div style={{ marginBottom: "8px" }}>
+        <label>
+          Trạng thái:
+          <input
+            type="checkbox"
+            name="is_active"
+            checked={!!variantFormData.is_active}
+            onChange={onChange}
+            style={{ marginLeft: "8px" }}
+          />
+        </label>
+      </div>
+      <div style={{ marginBottom: "8px" }}>
+        <label>Chọn ảnh: </label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            const file = e.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                onChange({
+                  target: {
+                    name: 'image_url',
+                    value: reader.result
+                  }
+                });
+              };
+              reader.readAsDataURL(file);
+            }
+          }}
+          style={{ width: "100%", padding: "6px" }}
+        />
+      </div>
+      
+      {variantFormData.image_url && (
+        <div style={{ marginBottom: "12px" }}>
+          <img 
+            src={variantFormData.image_url} 
+            alt="Preview"
+            style={{ 
+              maxWidth: "150px", 
+              borderRadius: "4px",
+              marginTop: "8px" 
+            }} 
+          />
+        </div>
+      )}
+
+      <div style={{ marginTop: "12px", marginBottom: "20px" }}>
+        <button
+          className="btn btn-primary"
+          onClick={(e) => {
+            e.preventDefault();
+            onUpdateVariant();
+          }}
+          style={{ marginRight: "6px" }}
+        >
+          Lưu thông tin sản phẩm
+        </button>
+      </div>
+
+      <div style={{ marginTop: "20px", borderTop: "1px solid #ddd", paddingTop: "20px" }}>
+        <label style={{ fontWeight: "bold", fontSize: "16px", marginBottom: "12px", display: "block" }}>Thuộc tính:</label>
+        {editingVariant.attributes.map((attr, index) => {
+          const attributeName = attr.name.toLowerCase();
+          const attrValues = attributeValues[attributeName === 'color' ? 1 : 
+                                          attributeName === 'storage' ? 2 : 
+                                          attributeName === 'ram' ? 3 : null] || [];
+          
+          return (
+            <div
+              key={attr.value_id}
+              style={{ marginBottom: "6px", display: "flex", alignItems: "center", gap: "8px" }}
+            >
+              <span style={{ minWidth: "100px" }}>{attr.name}:</span>
+              <select
+                value={variantFormData.attributes?.[index]?.value_id || attr.value_id}
+                onChange={(e) => {
+                  const selectedId = parseInt(e.target.value);
+                  const selectedValue = attrValues.find(av => av.value_id === selectedId);
+                  
+                  if (selectedValue) {
+                    const newAttrs = [...(variantFormData.attributes || [])];
+                    newAttrs[index] = {
+                      value_id: selectedValue.value_id,
+                      name: attr.name,
+                      value: selectedValue.value,
+                      attribute_id: selectedValue.attribute_id // Thêm attribute_id vào
+                    };
+                    onChange({
+                      target: {
+                        name: 'attributes',
+                        value: newAttrs
+                      }
+                    });
+                  }
+                }}
+                style={{ flex: 1, padding: "6px" }}
+                disabled={attributeValuesLoading}
+              >
+                <option value="">-- Chọn giá trị --</option>
+                {attrValues.map((av) => (
+                  <option key={av.value_id} value={av.value_id}>
+                    {av.value}
+                  </option>
+                ))}
+              </select>
+            </div>
+          );
+        })}
+
+        <div style={{ marginTop: "12px" }}>
+          <button
+            className="btn btn-success"
+            onClick={(e) => {
+              e.preventDefault();
+              const updatedAttributes = variantFormData.attributes || editingVariant.attributes;
+              onUpdateAttributes(editingVariant.variant_id, updatedAttributes);
+            }}
+            style={{ marginRight: "6px" }}
+          >
+            Lưu thuộc tính
+          </button>
+          <button
+            className="btn btn-secondary"
+            onClick={(e) => {
+              e.preventDefault();
+              onCancel();
+            }}
+          >
+            Hủy
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const AdminProductEdit = () => {
   const { id } = useParams();
@@ -46,6 +307,12 @@ const AdminProductEdit = () => {
     error: variantError,
   } = useSelector((state) => state.variantAttributeValue);
 
+  const {
+    productVariants,
+    loading: productVariantsLoading,
+    error: productVariantsError,
+  } = useSelector((state) => state.adminProductVariants);
+
   const [formData, setFormData] = useState({
     name: "",
     price: "",
@@ -60,12 +327,15 @@ const AdminProductEdit = () => {
 
   const [editingVariant, setEditingVariant] = useState(null);
   const [variantFormData, setVariantFormData] = useState({
+    variant_id: "",
+    product_id: id,
     sku: "",
     price: "",
     price_original: "",
     stock: 0,
     image_url: "",
     is_active: 1,
+    attributes: []
   });
 
   useEffect(() => {
@@ -77,6 +347,7 @@ const AdminProductEdit = () => {
       dispatch(fetchCategories());
     }
     dispatch(fetchVariantAttributeValues());
+    dispatch(fetchAdminProductVariants());
   }, [dispatch, adminproducts, categories]);
   
   // Fetch attribute values khi component mount
@@ -146,24 +417,24 @@ const AdminProductEdit = () => {
           })
         ).unwrap();
       }
-      alert("Cập nhật thông số kỹ thuật thành công!");
+      toast.success("Cập nhật thông số kỹ thuật thành công!");
     } catch (err) {
-      alert("Cập nhật thông số kỹ thuật thất bại: " + err);
+      toast.error("Cập nhật thông số kỹ thuật thất bại: " + err);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name.trim()) {
-      alert("Tên sản phẩm không được để trống");
+      toast.warning("Tên sản phẩm không được để trống");
       return;
     }
     if (!formData.price || isNaN(formData.price)) {
-      alert("Giá sản phẩm không hợp lệ");
+      toast.warning("Giá sản phẩm không hợp lệ");
       return;
     }
     if (!formData.category_id) {
-      alert("Vui lòng chọn danh mục");
+      toast.warning("Vui lòng chọn danh mục");
       return;
     }
 
@@ -180,10 +451,10 @@ const AdminProductEdit = () => {
 
     try {
       await dispatch(updateAdminProduct({ id, updatedData })).unwrap();
-      alert("Cập nhật sản phẩm thành công!");
+      toast.success("Cập nhật sản phẩm thành công!");
       navigate("/admin/product");
     } catch (err) {
-      alert("Cập nhật thất bại: " + err);
+      toast.error("Cập nhật thất bại: " + err);
     }
   };
 
@@ -196,13 +467,15 @@ const AdminProductEdit = () => {
   const startEditVariant = (variant) => {
     setEditingVariant(variant);
     setVariantFormData({
-      sku: variant.sku,
-      price: variant.price,
+      variant_id: variant.variant_id,
+      product_id: id,
+      sku: variant.sku || "",
+      price: variant.price || "",
       price_original: variant.price_original || "",
-      stock: variant.stock,
-      image_url: variant.image_url,
+      stock: variant.stock || 0,
+      image_url: variant.image_url || "",
       is_active: variant.is_active === 1 ? 1 : 0,
-      attributes: variant.attributes ? [...variant.attributes] : [], // Copy attributes array
+      attributes: variant.attributes ? [...variant.attributes] : []
     });
   };
 
@@ -215,19 +488,102 @@ const AdminProductEdit = () => {
     }
   };
 
-  const handleUpdateVariant = async () => {
-    if (!editingVariant) return;
+  const handleUpdateAttributes = async (variantId, attributes) => {
     try {
+      console.log('Updating attributes:', attributes);
+      
       await dispatch(
         updateVariantAttributeValue({
-          id: editingVariant.variant_id,
-          updatedData: variantFormData,
+          id: variantId,
+          updatedData: {
+            attributes: attributes.map(attr => ({
+              value_id: parseInt(attr.value_id),
+              name: attr.name,
+              value: attr.value
+            }))
+          }
         })
       ).unwrap();
-      alert("Cập nhật variant thành công!");
+      
+      toast.success("Cập nhật thuộc tính thành công!");
       setEditingVariant(null);
+      dispatch(fetchVariantAttributeValues());
     } catch (err) {
-      alert("Cập nhật variant thất bại: " + err);
+      toast.error("Cập nhật thuộc tính thất bại: " + err);
+    }
+  };
+
+  const handleUpdateVariant = async () => {
+    if (!editingVariant) return;
+
+    try {
+      // Validate dữ liệu
+      if (!variantFormData.sku) {
+        toast.error("Vui lòng nhập SKU");
+        return;
+      }
+      if (!variantFormData.price) {
+        toast.error("Vui lòng nhập giá");
+        return;
+      }
+
+      // Convert các trường sang kiểu dữ liệu phù hợp 
+      const productId = parseInt(id);
+      if (isNaN(productId)) {
+        toast.error("product_id không hợp lệ");
+        return;
+      }
+
+      // Tạo FormData để gửi cả file và dữ liệu
+      const formData = new FormData();
+      
+      // Đảm bảo các trường bắt buộc được gửi đi
+      if (!productId || !variantFormData.sku || !variantFormData.price) {
+        toast.error("Vui lòng điền đầy đủ thông tin bắt buộc");
+        return;
+      }
+      
+      formData.append('product_id', productId.toString());  // Đảm bảo gửi dưới dạng string
+      formData.append('sku', variantFormData.sku);
+      formData.append('price', variantFormData.price.toString());
+      
+      if (variantFormData.price_original) {
+        formData.append('price_original', variantFormData.price_original.toString());
+      }
+      formData.append('stock', (variantFormData.stock || 0).toString());
+      formData.append('is_active', variantFormData.is_active ? '1' : '0');
+
+      // Convert base64 image to file if exists
+      if (variantFormData.image_url && variantFormData.image_url.startsWith('data:image')) {
+        const response = await fetch(variantFormData.image_url);
+        const blob = await response.blob();
+        const file = new File([blob], 'variant_image.jpg', { type: 'image/jpeg' });
+        formData.append('image_url', file);
+      } else if (variantFormData.image_url) {
+        formData.append('image_url', variantFormData.image_url);
+      }
+
+      // Gửi request cập nhật
+      await dispatch(
+        updateAdminProductVariant({
+          id: editingVariant.variant_id,
+          updatedData: formData
+        })
+      ).unwrap();
+
+      toast.success("Cập nhật variant thành công!");
+      setEditingVariant(null);
+      
+      // Refresh data from both endpoints to ensure synchronization
+      await Promise.all([
+        dispatch(fetchAdminProductVariants()),
+        dispatch(fetchVariantAttributeValues())
+      ]);
+      
+      // Force reload the current page to refresh all data
+      window.location.reload();
+    } catch (err) {
+      toast.error("Cập nhật thất bại: " + err);
     }
   };
 
@@ -416,12 +772,12 @@ const AdminProductEdit = () => {
                 Cập nhật thông số kỹ thuật
               </button>
             </div>
+              <h4>Biến thể </h4>
 
             <div
               className="variant-list"
               style={{ marginTop: "30px", maxWidth: "700px" }}
             >
-              <h4>Variants (Phiên bản sản phẩm)</h4>
 
               {variantAttributeValues
                 .filter((variant) => String(variant.product_id) === id)
@@ -440,235 +796,22 @@ const AdminProductEdit = () => {
                     {editingVariant &&
                     editingVariant.variant_id === variant.variant_id ? (
                       // FORM EDITING VARIANT
-                      <div>
-                        <div style={{ marginBottom: "8px" }}>
-                          <label>SKU: </label>
-                          <input
-                            type="text"
-                            name="sku"
-                            value={variantFormData.sku}
-                            onChange={handleVariantChange}
-                            style={{ width: "100%", padding: "6px" }}
-                          />
-                        </div>
-                        <div style={{ marginBottom: "8px" }}>
-                          <label>Giá: </label>
-                          <input
-                            type="number"
-                            name="price"
-                            value={variantFormData.price}
-                            onChange={handleVariantChange}
-                            style={{ width: "100%", padding: "6px" }}
-                          />
-                        </div>
-                        <div style={{ marginBottom: "8px" }}>
-                          <label>Giá gốc: </label>
-                          <input
-                            type="number"
-                            name="price_original"
-                            value={variantFormData.price_original || ""}
-                            onChange={handleVariantChange}
-                            style={{ width: "100%", padding: "6px" }}
-                          />
-                        </div>
-                        <div style={{ marginBottom: "8px" }}>
-                          <label>Tồn kho: </label>
-                          <input
-                            type="number"
-                            name="stock"
-                            value={variantFormData.stock}
-                            onChange={handleVariantChange}
-                            style={{ width: "100%", padding: "6px" }}
-                          />
-                        </div>
-                        <div style={{ marginBottom: "8px" }}>
-                          <label>
-                            Trạng thái:
-                            <input
-                              type="checkbox"
-                              name="is_active"
-                              checked={!!variantFormData.is_active}
-                              onChange={handleVariantChange}
-                              style={{ marginLeft: "8px" }}
-                            />
-                          </label>
-                        </div>
-                        <div style={{ marginBottom: "8px" }}>
-                          <label>Chọn ảnh: </label>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => {
-                              const file = e.target.files[0];
-                              if (file) {
-                                const reader = new FileReader();
-                                reader.onloadend = () => {
-                                  setVariantFormData(prev => ({
-                                    ...prev,
-                                    image_url: reader.result
-                                  }));
-                                };
-                                reader.readAsDataURL(file);
-                              }
-                            }}
-                            style={{ width: "100%", padding: "6px" }}
-                          />
-                        </div>
-                        
-                        {variantFormData.image_url && (
-                          <div style={{ marginBottom: "12px" }}>
-                            <img 
-                              src={variantFormData.image_url} 
-                              alt="Preview"
-                              style={{ 
-                                maxWidth: "150px", 
-                                borderRadius: "4px",
-                                marginTop: "8px" 
-                              }} 
-                            />
-                          </div>
-                        )}
-
-                        <div style={{ marginTop: "12px" }}>
-                          <label>Thuộc tính:</label>
-                          {editingVariant.attributes.map((attr, index) => {
-                            const attributeName = attr.name.toLowerCase();
-                            const attrValues = attributeValues[attributeName === 'color' ? 1 : 
-                                                            attributeName === 'storage' ? 2 : 
-                                                            attributeName === 'ram' ? 3 : null] || [];
-                            
-                            return (
-                              <div
-                                key={attr.value_id}
-                                style={{ marginBottom: "6px", display: "flex", alignItems: "center", gap: "8px" }}
-                              >
-                                <span style={{ minWidth: "100px" }}>{attr.name}:</span>
-                                <select
-                                  value={variantFormData.attributes?.[index]?.value_id || attr.value_id}
-                                  onChange={(e) => {
-                                    const selectedId = parseInt(e.target.value);
-                                    const selectedValue = attrValues.find(av => av.value_id === selectedId);
-                                    
-                                    if (selectedValue) {
-                                      const newAttrs = [...(variantFormData.attributes || [])];
-                                      newAttrs[index] = {
-                                        value_id: selectedValue.value_id,
-                                        name: attr.name,
-                                        value: selectedValue.value
-                                      };
-                                      setVariantFormData(prev => ({
-                                        ...prev,
-                                        attributes: newAttrs
-                                      }));
-                                    }
-                                  }}
-                                  style={{ flex: 1, padding: "6px" }}
-                                  disabled={attributeValuesLoading}
-                                >
-                                  <option value="">-- Chọn giá trị --</option>
-                                  {attrValues.map((av) => (
-                                    <option key={av.value_id} value={av.value_id}>
-                                      {av.value}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-                            );
-                          })}
-                        </div>
-
-                        <div style={{ marginTop: "12px" }}>
-                          <button
-                            className="btn btn-primary"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              const updatedAttributes =
-                                variantFormData.attributes || editingVariant.attributes;
-
-                              dispatch(
-                                updateVariantAttributeValue({
-                                  id: editingVariant.variant_id,
-                                  updatedData: {
-                                    ...variantFormData,
-                                    attributes: updatedAttributes,
-                                  },
-                                })
-                              ).then(() => {
-                                setEditingVariant(null);
-                              });
-                            }}
-                            style={{ marginRight: "6px" }}
-                          >
-                            Lưu
-                          </button>
-                          <button
-                            className="btn btn-secondary"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              setEditingVariant(null);
-                            }}
-                          >
-                            Hủy
-                          </button>
-                        </div>
-                      </div>
+                      <VariantEditForm
+                        variantFormData={variantFormData}
+                        editingVariant={editingVariant}
+                        attributeValues={attributeValues}
+                        attributeValuesLoading={attributeValuesLoading}
+                        onChange={handleVariantChange}
+                        onUpdateVariant={handleUpdateVariant}
+                        onUpdateAttributes={handleUpdateAttributes}
+                        onCancel={() => setEditingVariant(null)}
+                      />
                     ) : (
-                      <>
-                        <div>
-                          <strong>SKU:</strong> {variant.sku}
-                        </div>
-                        <div>
-                          <strong>Giá:</strong> {variant.price}
-                        </div>
-                        <div>
-                          <strong>Giá gốc:</strong> {variant.price_original}
-                        </div>
-                        <div>
-                          <strong>Tồn kho:</strong> {variant.stock}
-                        </div>
-                        <div>
-                          <strong>Trạng thái:</strong>{" "}
-                          {variant.is_active ? "✅ Active" : "❌ Inactive"}
-                        </div>
-                        <div>
-                          <strong>Thuộc tính:</strong>
-                          <ul
-                            style={{
-                              margin: "6px 0 0 12px",
-                              padding: 0,
-                              listStyle: "disc",
-                            }}
-                          >
-                            {variant.attributes.map((attr) => (
-                              <li key={attr.value_id}>
-                                {attr.name}: {attr.value}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                        {variant.image_url && (
-                          <img
-                            src={variant.image_url}
-                            alt={variant.sku}
-                            style={{ maxWidth: "100px", marginTop: "10px" }}
-                          />
-                        )}
-                        <div style={{ marginTop: "10px" }}>
-                          <button
-                            className="btn btn-warning"
-                            onClick={() => startEditVariant(variant)}
-                            style={{ marginRight: "6px" }}
-                          >
-                            Cập nhật
-                          </button>
-                          <button
-                            className="btn btn-danger"
-                            onClick={() => handleDeleteVariant(variant.variant_id)}
-                          >
-                            Xoá
-                          </button>
-                        </div>
-                      </>
+                      <VariantDisplay
+                        variant={variant}
+                        onEdit={startEditVariant}
+                        onDelete={handleDeleteVariant}
+                      />
                     )}
                   </div>
                 ))}

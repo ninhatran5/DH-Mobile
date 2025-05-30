@@ -28,20 +28,45 @@ export const updateAdminProductVariant = createAsyncThunk(
       if (!token) {
         return rejectWithValue("Token không tồn tại hoặc hết hạn");
       }
-      // Bắt buộc có product_id trong updatedData
-      if (!updatedData.product_id) {
-        return rejectWithValue("Trường product_id là bắt buộc");
+
+      let payload;
+      let contentType;
+
+      if (updatedData instanceof FormData) {
+        // Validate FormData fields
+        if (!updatedData.get('product_id') || !updatedData.get('sku') || !updatedData.get('price')) {
+          return rejectWithValue("Thiếu thông tin bắt buộc (product_id, sku, price)");
+        }
+        payload = updatedData;
+        contentType = "multipart/form-data";
+      } else {
+        // Validate regular object fields
+        if (!updatedData.product_id || !updatedData.sku || !updatedData.price) {
+          return rejectWithValue("Thiếu thông tin bắt buộc (product_id, sku, price)");
+        }
+        // If not FormData, convert numeric fields
+        payload = {
+          ...updatedData,
+          product_id: parseInt(updatedData.product_id),
+          price: parseFloat(updatedData.price),
+          price_original: updatedData.price_original ? parseFloat(updatedData.price_original) : null,
+          stock: parseInt(updatedData.stock || 0),
+          is_active: updatedData.is_active ? 1 : 0
+        };
+        contentType = "application/json";
       }
+
       const res = await axiosConfig.post(
         `/productvariants/${id}?_method=PUT`,
-        updatedData,
+        payload,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+            "Content-Type": contentType
+          }
         }
       );
+
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Lỗi khi cập nhật");
@@ -64,7 +89,7 @@ const adminProductVariantsSlice = createSlice({
         state.productVariants = action.payload;
       })
       .addCase(fetchAdminProductVariants.rejected, (state, action) => {
-        state.loading = false;
+        state.loading = false; 
         state.error = action.payload;
       })
       .addCase(updateAdminProductVariant.pending, (state) => {
