@@ -1,83 +1,80 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import '../../assets/admin/AddAccount.module.css';
+import { toast } from 'react-toastify';
+import { addUser } from '../../slices/adminuserSlice';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddAccount = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     username: '',
+    full_name: '',
     email: '',
-    password: '',
-    confirmPassword: '',
-    firstName: '',
-    lastName: '',
     phone: '',
-    role: 'user',
-    status: 'active',
-    avatar: null
+    address: '',
+    ward: '',
+    district: '',
+    city: '',
+    role: '',
+    status: '',
+    image_url: null,
+    password: ''  
   });
+
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData(prevState => ({
-        ...prevState,
-        avatar: file
-      }));
-      // Create preview URL
+      setFormData((prev) => ({ ...prev, image_url: file }));
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
+      reader.onloadend = () => setImagePreview(reader.result);
       reader.readAsDataURL(file);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (formData.password !== formData.confirmPassword) {
-      alert('Mật khẩu không khớp');
-      return;
-    }
-    
     setLoading(true);
 
     try {
       const formDataToSend = new FormData();
-      
-      // Add all form fields to FormData
-      Object.keys(formData).forEach(key => {
-        if (key !== 'confirmPassword') { // Don't send confirmPassword to server
+
+      Object.keys(formData).forEach((key) => {
+        if (formData[key] === null || formData[key] === undefined) {
+          formDataToSend.append(key, '');
+        } else {
           formDataToSend.append(key, formData[key]);
         }
       });
 
-      const response = await fetch('/api/accounts', {
-        method: 'POST',
-        body: formDataToSend // Using FormData to handle file upload
-      });
+      console.log('Dữ liệu gửi lên server:');
+      for (let pair of formDataToSend.entries()) {
+        console.log(pair[0] + ':', pair[1]);
+      }
 
-      if (response.ok) {
+      const resultAction = await dispatch(addUser(formDataToSend));
+
+      if (addUser.fulfilled.match(resultAction)) {
+        toast.success('Tạo tài khoản thành công!');
         navigate('/admin/accounts');
       } else {
-        const error = await response.json();
-        alert(error.message || 'Không thể tạo tài khoản');
+        console.error('Lỗi từ server:', resultAction.payload);
+        toast.error(resultAction.payload || 'Không thể tạo tài khoản');
       }
     } catch (error) {
-      console.error('Error adding account:', error);
-      alert('Lỗi khi thêm tài khoản. Vui lòng thử lại.');
+      console.error('Lỗi submit:', error);
+      toast.error('Lỗi khi tạo tài khoản');
     } finally {
       setLoading(false);
     }
@@ -93,9 +90,9 @@ const AddAccount = () => {
           <Form onSubmit={handleSubmit}>
             <Row>
               <Col md={8}>
+                {/* Các trường form */}
                 <Row>
                   <Col md={6}>
-                    {/* Username */}
                     <Form.Group className="mb-3">
                       <Form.Label>Tên đăng nhập <span className="text-danger">*</span></Form.Label>
                       <Form.Control
@@ -109,7 +106,6 @@ const AddAccount = () => {
                     </Form.Group>
                   </Col>
                   <Col md={6}>
-                    {/* Email */}
                     <Form.Group className="mb-3">
                       <Form.Label>Email <span className="text-danger">*</span></Form.Label>
                       <Form.Control
@@ -118,15 +114,15 @@ const AddAccount = () => {
                         value={formData.email}
                         onChange={handleInputChange}
                         required
-                        placeholder="Nhập địa chỉ email"
+                        placeholder="Nhập email"
                       />
                     </Form.Group>
                   </Col>
                 </Row>
 
+                {/* Thêm trường mật khẩu */}
                 <Row>
                   <Col md={6}>
-                    {/* Password */}
                     <Form.Group className="mb-3">
                       <Form.Label>Mật khẩu <span className="text-danger">*</span></Form.Label>
                       <Form.Control
@@ -139,54 +135,22 @@ const AddAccount = () => {
                       />
                     </Form.Group>
                   </Col>
-                  <Col md={6}>
-                    {/* Confirm Password */}
-                    <Form.Group className="mb-3">
-                      <Form.Label>Xác nhận mật khẩu <span className="text-danger">*</span></Form.Label>
-                      <Form.Control
-                        type="password"
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="Nhập lại mật khẩu"
-                      />
-                    </Form.Group>
-                  </Col>
                 </Row>
 
                 <Row>
                   <Col md={6}>
-                    {/* First Name */}
                     <Form.Group className="mb-3">
-                      <Form.Label>Tên</Form.Label>
+                      <Form.Label>Họ tên</Form.Label>
                       <Form.Control
                         type="text"
-                        name="firstName"
-                        value={formData.firstName}
+                        name="full_name"
+                        value={formData.full_name}
                         onChange={handleInputChange}
-                        placeholder="Nhập tên"
+                        placeholder="Nhập họ tên"
                       />
                     </Form.Group>
                   </Col>
                   <Col md={6}>
-                    {/* Last Name */}
-                    <Form.Group className="mb-3">
-                      <Form.Label>Họ</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="lastName"
-                        value={formData.lastName}
-                        onChange={handleInputChange}
-                        placeholder="Nhập họ"
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
-
-                <Row>
-                  <Col md={6}>
-                    {/* Phone */}
                     <Form.Group className="mb-3">
                       <Form.Label>Số điện thoại</Form.Label>
                       <Form.Control
@@ -198,8 +162,61 @@ const AddAccount = () => {
                       />
                     </Form.Group>
                   </Col>
+                </Row>
+                <Row>
                   <Col md={6}>
-                    {/* Role */}
+                    <Form.Group className="mb-3">
+                      <Form.Label>Địa chỉ</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleInputChange}
+                        placeholder="Nhập địa chỉ"
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Phường / Xã</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="ward"
+                        value={formData.ward}
+                        onChange={handleInputChange}
+                        placeholder="Nhập phường / xã"
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Quận / Huyện</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="district"
+                        value={formData.district}
+                        onChange={handleInputChange}
+                        placeholder="Nhập quận / huyện"
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Thành phố</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleInputChange}
+                        placeholder="Nhập thành phố"
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col md={6}>
                     <Form.Group className="mb-3">
                       <Form.Label>Vai trò</Form.Label>
                       <Form.Select
@@ -213,25 +230,24 @@ const AddAccount = () => {
                       </Form.Select>
                     </Form.Group>
                   </Col>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Trạng thái</Form.Label>
+                      <Form.Select
+                        name="status"
+                        value={formData.status}
+                        onChange={handleInputChange}
+                      >
+                        <option value="active">Hoạt động</option>
+                        <option value="inactive">Không hoạt động</option>
+                        <option value="suspended">Tạm khóa</option>
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
                 </Row>
-
-                {/* Status */}
-                <Form.Group className="mb-3">
-                  <Form.Label>Trạng thái</Form.Label>
-                  <Form.Select
-                    name="status"
-                    value={formData.status}
-                    onChange={handleInputChange}
-                  >
-                    <option value="active">Hoạt động</option>
-                    <option value="inactive">Không hoạt động</option>
-                    <option value="suspended">Tạm khóa</option>
-                  </Form.Select>
-                </Form.Group>
               </Col>
 
               <Col md={4}>
-                {/* Avatar */}
                 <Form.Group className="mb-3">
                   <Form.Label>Ảnh đại diện</Form.Label>
                   <div className="image-upload-container">
@@ -256,24 +272,22 @@ const AddAccount = () => {
                       onChange={handleAvatarChange}
                       className="mb-2"
                     />
-                    <small className="text-muted">
-                      Định dạng: JPG, PNG. Tối đa 2MB
-                    </small>
+                    <small className="text-muted">Định dạng: JPG, PNG. Tối đa 2MB</small>
                   </div>
                 </Form.Group>
               </Col>
             </Row>
 
             <div className="d-flex justify-content-end gap-2 mt-4">
-              <Button 
-                variant="secondary" 
+              <Button
+                variant="secondary"
                 type="button"
                 onClick={() => navigate('/admin/accounts')}
               >
                 Hủy
               </Button>
-              <Button 
-                variant="primary" 
+              <Button
+                variant="primary"
                 type="submit"
                 disabled={loading}
               >
@@ -293,4 +307,4 @@ const AddAccount = () => {
   );
 };
 
-export default AddAccount; 
+export default AddAccount;
