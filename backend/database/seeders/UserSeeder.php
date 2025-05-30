@@ -76,6 +76,36 @@ class UserSeeder extends Seeder
                 'role' => 'customer',
                 'created_at' => '2025-05-22 06:14:22',
                 'updated_at' => '2025-05-22 06:29:00'
+            ],
+            [
+                'username' => 'hquan12323',
+                'password_hash' => Hash::make('Quanhp@123'),
+                'email' => 'hquan12323@gmail.com',
+                'full_name' => 'Hoàng Quân',
+                'phone' => '0987654321',
+                'address' => 'Hải Phòng',
+                'ward' => 'Phường Thượng Lý',
+                'district' => 'Quận Hồng Bàng',
+                'city' => 'Thành phố Hải Phòng',
+                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1747896461/users/default-admin.jpg',
+                'role' => 'admin',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'username' => 'duyhung05',
+                'password_hash' => Hash::make('Hunghp@123'),
+                'email' => 'duyhung05@gmail.com',
+                'full_name' => 'Duy Hưng',
+                'phone' => '0123456789',
+                'address' => 'Hải Phòng',
+                'ward' => 'Phường Quán Toan',
+                'district' => 'Quận Hồng Bàng',
+                'city' => 'Thành phố Hải Phòng',
+                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1747896461/users/default-admin.jpg',
+                'role' => 'admin',
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ];
 
@@ -84,4 +114,3 @@ class UserSeeder extends Seeder
         }
     }
 }
-

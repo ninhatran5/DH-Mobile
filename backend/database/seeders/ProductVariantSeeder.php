@@ -30,22 +30,22 @@ class ProductVariantSeeder extends Seeder
         $variants = [
             [
                 'storage' => '256',
-                'price' => 1199.99,
-                'price_original' => 1299.99,
+                'price' => 31990000,
+                'price_original' => 33990000,
                 'stock' => 100,
                 'image_url' => 'https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100/https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-pro-max-blue-thumbnew-600x600.jpg'
             ],
             [
                 'storage' => '512',
-                'price' => 1399.99,
-                'price_original' => 1499.99,
+                'price' => 35990000,
+                'price_original' => 37990000,
                 'stock' => 75,
                 'image_url' => 'https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100/https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-pro-max-black-thumbnew-600x600.jpg'
             ],
             [
                 'storage' => '1TB',
-                'price' => 1599.99,
-                'price_original' => 1699.99,
+                'price' => 41990000,
+                'price_original' => 43990000,
                 'stock' => 50,
                 'image_url' => 'https://img.tgdd.vn/imgt/f_webp,fit_outside,quality_100/https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-pro-max-white-thumbnew-600x600.jpg'
             ]
@@ -71,22 +71,22 @@ class ProductVariantSeeder extends Seeder
         $variants = [
             [
                 'storage' => '256',
-                'price' => 1199.99,
-                'price_original' => 1299.99,
+                'price' => 29490000,
+                'price_original' => 31490000,
                 'stock' => 100,
                 'image_url' => 'https://cdn2.cellphones.com.vn/x358,webp,q100/media/catalog/product/s/2/s24-ultra-xam.png'
             ],
             [
                 'storage' => '512',
-                'price' => 1299.99,
-                'price_original' => 1399.99,
+                'price' => 32490000,
+                'price_original' => 34490000,
                 'stock' => 75,
                 'image_url' => 'https://cdn2.cellphones.com.vn/x358,webp,q100/media/catalog/product/s/2/s24-ultra-den.png'
             ],
             [
                 'storage' => '1TB',
-                'price' => 1499.99,
-                'price_original' => 1599.99,
+                'price' => 37490000,
+                'price_original' => 39490000,
                 'stock' => 50,
                 'image_url' => 'https://cdn2.cellphones.com.vn/x358,webp,q100/media/catalog/product/s/2/s24-ultra-gold.png'
             ]
@@ -126,15 +126,15 @@ class ProductVariantSeeder extends Seeder
         $variants = [
             [
                 'storage' => '128',
-                'price' => 699.99,
-                'price_original' => 799.99,
+                'price' => 16990000,
+                'price_original' => 18990000,
                 'stock' => 100,
                 'image_url' => str_contains(strtolower($productName), 'xiaomi') ? $xiaomiImages[0] : $oppoImages[0]
             ],
             [
                 'storage' => '256',
-                'price' => 799.99,
-                'price_original' => 899.99,
+                'price' => 19990000,
+                'price_original' => 21990000,
                 'stock' => 75,
                 'image_url' => str_contains(strtolower($productName), 'xiaomi') ? $xiaomiImages[1] : $oppoImages[1]
             ]
