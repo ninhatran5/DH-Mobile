@@ -45,34 +45,25 @@ export const updateVariantAttributeValue = createAsyncThunk(
     try {
       const token = localStorage.getItem("adminToken");
       
-      const formattedData = {
-        sku: updatedData.sku || "",
-        price: parseFloat(updatedData.price) || 0,
-        price_original: parseFloat(updatedData.price_original) || 0,
-        stock: parseInt(updatedData.stock) || 0,
-        is_active: updatedData.is_active ? 1 : 0,
-        image_url: updatedData.image_url || "",
-        attributes: Array.isArray(updatedData.attributes) 
-          ? updatedData.attributes.map(attr => ({
-              value_id: parseInt(attr.value_id),
-              name: attr.name || "",
-              value: attr.value || ""
-            }))
-          : []
-      };
+      // Format data dạng value_id[] = [1,2,3]
+      const formData = new FormData();
+      if (Array.isArray(updatedData.attributes)) {
+        updatedData.attributes.forEach(attr => {
+          formData.append('value_id[]', attr.value_id);
+        });
+      }
 
-      console.log('Sending update request with data:', formattedData);
+      console.log('Sending update request with FormData:', formData);
 
       const res = await axiosConfig.post( 
         `/variantattributevalues/${id}`,
-        formattedData,
+        formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
             "Accept": "application/json"
           },
-          timeout: 10000 // Add timeout
+          timeout: 10000 
         }
       );
       return res.data.data;
