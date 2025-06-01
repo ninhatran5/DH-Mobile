@@ -30,62 +30,154 @@ import "../../assets/admin/EditProducts.css";
 
 const VariantDisplay = ({ variant, onEdit, onDelete }) => {
   return (
-    <>
-      <div>
-        <strong>SKU:</strong> {variant.sku}
+    <div className="variant-display" style={{ width: "100%" }}>
+      <div style={{ 
+        display: "flex",
+        alignItems: "center",
+        gap: "16px",
+        padding: "16px",
+        borderBottom: "1px solid #eee"
+      }}>
+        {/* Ảnh sản phẩm */}
+        <div style={{ 
+          width: "100px",
+          height: "100px",
+          flexShrink: 0,
+          borderRadius: "8px",
+          overflow: "hidden",
+          backgroundColor: "#f8f8f8"
+        }}>
+          {variant.image_url ? (
+            <img
+              src={variant.image_url}
+              alt={variant.sku}
+              style={{ 
+                width: "100%",
+                height: "100%",
+                objectFit: "contain"
+              }}
+            />
+          ) : (
+            <div style={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center"
+            }}>
+              <i className="bi bi-image text-muted" style={{ fontSize: "2rem" }}></i>
+            </div>
+          )}
+        </div>
+
+        {/* Thông tin cơ bản */}
+        <div style={{ flex: "1" }}>
+          <div style={{ 
+            fontSize: "16px",
+            fontWeight: "500",
+            color: "#333",
+            marginBottom: "12px"
+          }}>
+            SKU: {variant.sku}
+          </div>
+          
+          <div style={{ 
+            display: "flex", 
+            alignItems: "center", 
+            gap: "15px",
+            marginBottom: "8px" 
+          }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
+              <span style={{ color: "#666", fontSize: "15px" }}>Giá:</span>
+              <span style={{ 
+                fontSize: "16px",
+                fontWeight: "600",
+                color: "#2563EB"
+              }}>
+                {parseInt(variant.price).toLocaleString('vi-VN')}đ
+              </span>
+              {variant.price_original && (
+                <span style={{ 
+                  fontSize: "14px",
+                  color: "#666",
+                  textDecoration: "line-through"
+                }}>
+                  {parseInt(variant.price_original).toLocaleString('vi-VN')}đ
+                </span>
+              )}
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span style={{ color: "#666" }}>Tồn kho:</span>
+              <span style={{ fontWeight: "500" }}>{variant.stock}</span>
+            </div>
+          </div>
+
+          {/* Thuộc tính */}
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span style={{ color: "#666" }}>Thuộc tính:</span>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+              {variant.attributes.map((attr) => (
+                <span 
+                  key={attr.value_id}
+                  style={{              padding: "6px 12px",
+              backgroundColor: "#f3f4f6",
+              borderRadius: "6px",
+              fontSize: "14px"
+                  }}
+                >
+                  {attr.name}: {attr.value}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Nút thao tác */}
+        <div style={{ 
+          display: "flex",
+          gap: "8px",
+          flexShrink: 0
+        }}>
+          <button
+            onClick={() => onEdit(variant)}
+            style={{
+              padding: "8px 16px",
+              border: "1px solid #eab308",
+              borderRadius: "6px",
+              backgroundColor: "#fef9c3",
+              color: "#854d0e",
+              fontSize: "15px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "4px"
+            }}
+          >
+            <i className="bi bi-pencil"></i>
+            Cập nhật
+          </button>
+          <button
+            onClick={() => onDelete(variant.variant_id)}
+            style={{
+              padding: "10px 20px",
+              border: "1px solid #dc2626",
+              borderRadius: "8px",
+              backgroundColor: "#fee2e2",
+              color: "#991b1b",
+              fontSize: "15px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "4px"
+            }}
+          >
+            <i className="bi bi-trash"></i>
+            Xoá
+          </button>
+        </div>
       </div>
-      <div>
-        <strong>Giá:</strong> {variant.price}
-      </div>
-      <div>
-        <strong>Giá gốc:</strong> {variant.price_original}
-      </div>
-      <div>
-        <strong>Tồn kho:</strong> {variant.stock}
-      </div>
-      <div>
-        <strong>Trạng thái:</strong>{" "}
-        {variant.is_active ? "✅ Active" : "❌ Inactive"}
-      </div>
-      <div>
-        <strong>Thuộc tính:</strong>
-        <ul
-          style={{
-            margin: "6px 0 0 12px",
-            padding: 0,
-            listStyle: "disc",
-          }}
-        >
-          {variant.attributes.map((attr) => (
-            <li key={attr.value_id}>
-              {attr.name}: {attr.value}
-            </li>
-          ))}
-        </ul>
-      </div>
-      {variant.image_url && (
-        <img
-          src={variant.image_url}
-          alt={variant.sku}
-          style={{ maxWidth: "100px", marginTop: "10px" }}
-        />
-      )}
-      <div style={{ marginTop: "10px" }}>
-        <button
-          className="btn btn-warning"
-          onClick={() => onEdit(variant)}
-          style={{ marginRight: "6px" }}
-        >
-          Cập nhật
-        </button>
-        <button
-          className="btn btn-danger"
-          onClick={() => onDelete(variant.variant_id)}
-        >
-          Xoá
-        </button>
-      </div>
-    </>
+    </div>
   );
 };
 
@@ -139,18 +231,6 @@ const VariantEditForm = ({
           onChange={onChange}
           style={{ width: "100%", padding: "6px" }}
         />
-      </div>
-      <div style={{ marginBottom: "8px" }}>
-        <label>
-          Trạng thái:
-          <input
-            type="checkbox"
-            name="is_active"
-            checked={!!variantFormData.is_active}
-            onChange={onChange}
-            style={{ marginLeft: "8px" }}
-          />
-        </label>
       </div>
       <div style={{ marginBottom: "8px" }}>
         <label>Chọn ảnh: </label>
@@ -578,14 +658,29 @@ const AdminProductEdit = () => {
         return;
       }
 
+      // Format attributes
+      const formattedAttributes = variantFormData.attributes.map(attr => ({
+        variant_attribute_value_id: attr.variant_attribute_value_id,
+        value_id: attr.value_id,
+        attribute_id: attr.attribute_id,
+        name: attr.name,
+        value: attr.value
+      }));
+
+      // First update variant attributes
+      await dispatch(
+        updateVariantAttributeValue({
+          id: editingVariant.variant_id,
+          updatedData: {
+            variant_id: editingVariant.variant_id,
+            attributes: formattedAttributes
+          }
+        })
+      ).unwrap();
+
+      // Then update variant info
       const formData = new FormData();
-      
-      if (!productId || !variantFormData.sku || !variantFormData.price) {
-        toast.error("Vui lòng điền đầy đủ thông tin bắt buộc");
-        return;
-      }
-      
-      formData.append('product_id', productId.toString());  // Đảm bảo gửi dưới dạng string
+      formData.append('product_id', productId.toString());
       formData.append('sku', variantFormData.sku);
       formData.append('price', variantFormData.price.toString());
       
@@ -595,35 +690,21 @@ const AdminProductEdit = () => {
       formData.append('stock', (variantFormData.stock || 0).toString());
       formData.append('is_active', variantFormData.is_active ? '1' : '0');
 
-      // Convert base64 image to file if exists
-      if (variantFormData.image_url && variantFormData.image_url.startsWith('data:image')) {
-        const response = await fetch(variantFormData.image_url);
-        const blob = await response.blob();
-        const file = new File([blob], 'variant_image.jpg', { type: 'image/jpeg' });
-        formData.append('image_url', file);
-      } else if (variantFormData.image_url) {
-        formData.append('image_url', variantFormData.image_url);
+      // Xử lý ảnh
+      if (variantFormData.image_url) {
+        if (variantFormData.image_url.startsWith('data:image')) {
+          // Nếu là ảnh mới (base64), chuyển đổi thành file
+          const response = await fetch(variantFormData.image_url);
+          const blob = await response.blob();
+          const file = new File([blob], 'variant_image.jpg', { type: 'image/jpeg' });
+          formData.append('image_url', file);
+        } else if (variantFormData.image_url !== editingVariant.image_url) {
+          // Nếu là URL mới khác với URL cũ
+          formData.append('image_url', variantFormData.image_url);
+        }
       }
 
-      // Format attributes cho API
-      const formattedAttributes = variantFormData.attributes.map(attr => ({
-        variant_attribute_value_id: attr.variant_attribute_value_id,
-        value_id: parseInt(attr.value_id),
-        attribute_id: attr.attribute_id,
-        name: attr.name,
-        value: attr.value
-      }));
-
-      // Add attributes vào formData
-      formattedAttributes.forEach((attr, index) => {
-        formData.append(`attributes[${index}][variant_attribute_value_id]`, attr.variant_attribute_value_id || '');
-        formData.append(`attributes[${index}][value_id]`, attr.value_id);
-        formData.append(`attributes[${index}][attribute_id]`, attr.attribute_id);
-        formData.append(`attributes[${index}][name]`, attr.name);
-        formData.append(`attributes[${index}][value]`, attr.value);
-      });
-
-      // Gửi request cập nhật variant (bao gồm cả attributes)
+      // Update variant info
       await dispatch(
         updateAdminProductVariant({
           id: editingVariant.variant_id,
@@ -649,265 +730,409 @@ const AdminProductEdit = () => {
       
       // Fetch lại dữ liệu variants mới
       await dispatch(fetchVariantAttributeValues());
-      
-      // Reset form và trạng thái editing
-      setEditingVariant(null);
-      setVariantFormData({
-        variant_id: "",
-        product_id: id,
-        sku: "",
-        price: "",
-        price_original: "",
-        stock: 0,
-        image_url: "",
-        is_active: 1,
-        attributes: []
-      });
     } catch (err) {
+      console.error("Error updating:", err);
       toast.error("Cập nhật thất bại: " + err);
     }
   };
 
   return (
-    <div className="admineditproduct-container" style={{ padding: "10px" }}>
-      <div className="admineditproduct-header" style={{ marginBottom: "20px" }}>
-        <h1 className="admineditproduct-title">Chỉnh sửa sản phẩm</h1>
-        <Link to="/admin/product" className="admineditproduct-back-link">
+    <div className="admineditproduct-container" style={{ 
+      padding: "5px 10px",
+      maxWidth: "1200px",
+      margin: "0 auto"
+    }}>
+      <div className="admineditproduct-header" style={{ 
+        marginBottom: "0px",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "10px 0",
+        borderBottom: "2px solid #eee"
+      }}>
+        <h1 className="admineditproduct-title" style={{ margin: 0 }}>Chỉnh sửa sản phẩm</h1>
+        <Link to="/admin/product" className="btn btn-outline-primary">
           <i className="bi bi-arrow-left"></i> Quay lại
         </Link>
       </div>
 
-      {(loading || specsLoading || categoriesLoading) && <p>Đang tải...</p>}
+      {(loading || specsLoading || categoriesLoading) && (
+        <div className="text-center p-4">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Đang tải...</span>
+          </div>
+        </div>
+      )}
+      
       {(error || specsError || categoriesError) && (
-        <p className="error">{error || specsError || categoriesError}</p>
+        <div className="alert alert-danger">
+          {error || specsError || categoriesError}
+        </div>
       )}
 
-      {!loading &&
-        !specsLoading &&
-        !categoriesLoading &&
-        !error &&
-        !specsError &&
-        !categoriesError && (
-          <>
-            <form
-              onSubmit={handleSubmit}
-              className="admineditproduct-form"
-              style={{ maxWidth: "600px" }}
-            >
-              {[
-                {
-                  label: "Tên sản phẩm",
-                  type: "text",
-                  name: "name",
-                  required: true,
-                },
-                {
-                  label: "Giá khuyến mại",
-                  type: "number",
-                  name: "price",
-                  required: true,
-                },
-                { label: "Giá Gốc", type: "number", name: "price_original" },
-              ].map(({ label, type, name, required }) => (
-                <div
-                  key={name}
-                  className="admineditproduct-form-group"
-                  style={{ marginBottom: "12px" }}
-                >
-                  <label>{label}</label>
-                  <input
-                    type={type}
-                    name={name}
-                    value={formData[name]}
-                    onChange={handleInputChange}
-                    required={required}
-                    style={{ width: "100%", padding: "6px" }}
-                  />
-                </div>
-              ))}
-
-              <div
-                className="admineditproduct-form-group"
-                style={{ marginBottom: "12px" }}
-              >
-                <label>Chọn tệp ảnh</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="admineditproduct-file-input"
-                />
-              </div>
-
-              {imagePreview && (
-                <div
-                  className="admineditproduct-image-preview"
-                  style={{ marginBottom: "12px" }}
-                >
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    style={{ maxWidth: "150px", borderRadius: "4px" }}
-                  />
-                </div>
-              )}
-
-              <div
-                className="admineditproduct-form-group"
-                style={{ marginBottom: "12px" }}
-              >
-                <label>Danh mục</label>
-                <select
-                  name="category_id"
-                  value={formData.category_id}
-                  onChange={handleInputChange}
-                  required
-                  style={{ width: "100%", padding: "6px" }}
-                >
-                  <option value="">-- Chọn danh mục --</option>
-                  {categories.map((cat) => (
-                    <option key={cat.category_id} value={cat.category_id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div
-                className="admineditproduct-form-group"
-                style={{ marginBottom: "12px" }}
-              >
-                <label>Trạng thái</label>
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleInputChange}
-                  style={{ width: "100%", padding: "6px" }}
-                >
-                  <option value="Còn hàng">Còn hàng</option>
-                  <option value="Hết hàng">Hết hàng</option>
-                </select>
-              </div>
-
-              <div
-                className="admineditproduct-form-group"
-                style={{ marginBottom: "12px" }}
-              >
-                <label>Mô tả</label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  rows={3}
-                  style={{ width: "100%", padding: "6px" }}
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="btn btn-success"
-                style={{ marginTop: "12px" }}
-              >
-                Cập nhật sản phẩm
-              </button>
-            </form>
-
-            <div
-              className="specification"
-              style={{ marginTop: "30px", maxWidth: "600px" }}
-            >
-              <h4>Thông số kỹ thuật</h4>
-              {specificationsData.map((spec, index) => (
-                <div
-                  className="specification-row"
-                  key={spec.spec_id || index}
-                  style={{ display: "flex", gap: "10px", marginBottom: "10px" }}
-                >
-                  <input
-                    type="text"
-                    className="spec-input"
-                    placeholder="Tên thông số"
-                    value={spec.spec_name || ""}
-                    onChange={(e) =>
-                      handleSpecificationChange(index, "spec_name", e.target.value)
-                    }
-                    style={{ flex: 1, padding: "6px" }}
-                  />
-                  <input
-                    type="text"
-                    className="spec-input"
-                    placeholder="Giá trị"
-                    value={spec.spec_value || ""}
-                    onChange={(e) =>
-                      handleSpecificationChange(index, "spec_value", e.target.value)
-                    }
-                    style={{ flex: 1, padding: "6px" }}
-                  />
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={handleUpdateSpecifications}
-                className="btn btn-primary"
-              >
-                Cập nhật thông số kỹ thuật
-              </button>
-            </div>
-              <h4>Biến thể </h4>
-
-            <div
-              className="variant-list"
-              style={{ marginTop: "30px", maxWidth: "700px" }}
-            >
-
-              {console.log("Danh sách biến thể:", variantAttributeValues)}
-              {variantAttributeValues
-                .filter((variant) => String(variant.product_id) === id)
-                .map((variant) => {
-                  console.log("Biến thể sau khi filter:", variant);
-                  // Chỉ hiển thị form edit nếu đang edit variant này và chưa có variant nào khác đang được edit
-                  const isEditing = editingVariant && editingVariant.variant_id === variant.variant_id;
-                  
-                  return (
+      {!loading && !specsLoading && !categoriesLoading && !error && !specsError && !categoriesError && (
+        <div className="row g-3">
+          {/* Main product information column */}
+          <div className="col-md-6">
+            <div className="card shadow-sm">
+              <div className="card-body">
+                <h4 className="card-title mb-4">Thông tin cơ bản</h4>
+                <form onSubmit={handleSubmit} className="admineditproduct-form">
+                  {[
+                    {
+                      label: "Tên sản phẩm",
+                      type: "text",
+                      name: "name",
+                      required: true,
+                    },
+                    {
+                      label: "Giá khuyến mại",
+                      type: "number",
+                      name: "price",
+                      required: true,
+                    },
+                    { label: "Giá Gốc", type: "number", name: "price_original" },
+                  ].map(({ label, type, name, required }) => (
                     <div
-                      key={variant.variant_id}
-                      data-variant-id={variant.variant_id}
-                      className="variant-card"
-                      style={{
-                        border: "1px solid #ccc",
-                        padding: "10px",
-                        marginBottom: "10px",
-                        borderRadius: "4px",
-                        backgroundColor: "#f9f9f9",
-                      }}
+                      key={name}
+                      className="admineditproduct-form-group"
+                      style={{ marginBottom: "12px" }}
                     >
-                      {isEditing ? (
-                        <VariantEditForm
-                          variantFormData={variantFormData}
-                          editingVariant={editingVariant}
-                          attributeValues={attributeValues}
-                          attributeValuesLoading={attributeValuesLoading}
-                          onChange={handleVariantChange}
-                          onUpdateVariant={handleUpdateVariant}
-                          onCancel={() => setEditingVariant(null)}
-                        />
-                      ) : (
-                        <VariantDisplay
-                          variant={variant}
-                          onEdit={() => {
-                            if (!editingVariant) { // Chỉ cho phép edit nếu không có variant nào đang được edit
-                              startEditVariant(variant);
+                      <label>{label}</label>
+                      <input
+                        type={type}
+                        name={name}
+                        value={formData[name]}
+                        onChange={handleInputChange}
+                        required={required}
+                        style={{ width: "100%", padding: "6px" }}
+                      />
+                    </div>
+                  ))}
+
+                  <div
+                    className="admineditproduct-form-group"
+                    style={{ marginBottom: "12px" }}
+                  >
+                    <label>Chọn tệp ảnh</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="admineditproduct-file-input"
+                    />
+                  </div>
+
+                  {imagePreview && (
+                    <div
+                      className="admineditproduct-image-preview"
+                      style={{ marginBottom: "12px" }}
+                    >
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        style={{ maxWidth: "150px", borderRadius: "4px" }}
+                      />
+                    </div>
+                  )}
+
+                  <div
+                    className="admineditproduct-form-group"
+                    style={{ marginBottom: "12px" }}
+                  >
+                    <label>Danh mục</label>
+                    <select
+                      name="category_id"
+                      value={formData.category_id}
+                      onChange={handleInputChange}
+                      required
+                      style={{ width: "100%", padding: "6px" }}
+                    >
+                      <option value="">-- Chọn danh mục --</option>
+                      {categories.map((cat) => (
+                        <option key={cat.category_id} value={cat.category_id}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div
+                    className="admineditproduct-form-group"
+                    style={{ marginBottom: "12px" }}
+                  >
+                    <label>Trạng thái</label>
+                    <select
+                      name="status"
+                      value={formData.status}
+                      onChange={handleInputChange}
+                      style={{ width: "100%", padding: "6px" }}
+                    >
+                      <option value="Còn hàng">Còn hàng</option>
+                      <option value="Hết hàng">Hết hàng</option>
+                    </select>
+                  </div>
+
+                  <div
+                    className="admineditproduct-form-group"
+                    style={{ marginBottom: "12px" }}
+                  >
+                    <label>Mô tả</label>
+                    <textarea
+                      name="description"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      rows={3}
+                      style={{ width: "100%", padding: "6px" }}
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="btn btn-success"
+                    style={{ marginTop: "12px" }}
+                  >
+                    Cập nhật sản phẩm
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          {/* Thông số kỹ thuật section */}
+          <div className="col-md-6">
+            <div className="card shadow-sm">
+              <div className="card-body">
+                <h4 className="card-title mb-4">Thông số kỹ thuật</h4>
+                <div className="specification"
+                  style={{ marginTop: "30px", maxWidth: "600px" }}
+                >
+                  {specificationsData.map((spec, index) => (
+                    <div
+                      className="specification-row"
+                      key={spec.spec_id || index}
+                      style={{ display: "flex", gap: "10px", marginBottom: "10px" }}
+                    >
+                      <input
+                        type="text"
+                        className="spec-input"
+                        placeholder="Tên thông số"
+                        value={spec.spec_name || ""}
+                        onChange={(e) =>
+                          handleSpecificationChange(index, "spec_name", e.target.value)
+                        }
+                        style={{ flex: 1, padding: "6px" }}
+                      />
+                      <input
+                        type="text"
+                        className="spec-input"
+                        placeholder="Giá trị"
+                        value={spec.spec_value || ""}
+                        onChange={(e) =>
+                          handleSpecificationChange(index, "spec_value", e.target.value)
+                        }
+                        style={{ flex: 1, padding: "6px" }}
+                      />
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={handleUpdateSpecifications}
+                    className="btn btn-primary"
+                  >
+                    Cập nhật thông số kỹ thuật
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Variants section */}
+          <div className="col-12">
+            <div className="card shadow-sm">
+              <div className="card-body">
+                <h4 className="card-title mb-4">Biến thể sản phẩm</h4>
+                <div className="variants-list" style={{ 
+                  border: "1px solid #e1e1e1",
+                  borderRadius: "8px",
+                  backgroundColor: "#fff",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.05)"
+                }}>
+                  {variantAttributeValues
+                    .filter((variant) => String(variant.product_id) === id)
+                    .map((variant) => {
+                      console.log("Biến thể sau khi filter:", variant);
+                      // Chỉ hiển thị form edit nếu đang edit variant này và chưa có variant nào khác đang được edit
+                      const isEditing = editingVariant && editingVariant.variant_id === variant.variant_id;
+                      
+                      return (
+                        <div
+                          key={variant.variant_id}
+                          data-variant-id={variant.variant_id}
+                          className="variant-item"
+                          style={{
+                            backgroundColor: "#fff",
+                            transition: "background-color 0.2s",
+                            ":hover": {
+                              backgroundColor: "#f9fafb"
                             }
                           }}
-                          onDelete={handleDeleteVariant}
-                        />
-                      )}
+                        >
+                          {isEditing ? (
+                            <VariantEditForm
+                              variantFormData={variantFormData}
+                              editingVariant={editingVariant}
+                              attributeValues={attributeValues}
+                              attributeValuesLoading={attributeValuesLoading}
+                              onChange={handleVariantChange}
+                              onUpdateVariant={handleUpdateVariant}
+                              onCancel={() => setEditingVariant(null)}
+                            />
+                          ) : (
+                            <VariantDisplay
+                              variant={variant}
+                              onEdit={() => {
+                                if (!editingVariant) {
+                                  startEditVariant(variant);
+                                }
+                              }}
+                              onDelete={handleDeleteVariant}
+                            />
+                          )}
+                        </div>
+                      );
+                    })}
+                </div>
+
+                {/* Phần quản lý biến thể sản phẩm */}
+                <div className="variants-grid">
+                  {productVariants.map((variant, index) => (
+                    <div key={index} className="variant-card card mb-3">
+                      <div className="card-body">
+                        <div className="d-flex justify-content-between align-items-start mb-3">
+                          <h5 className="card-title mb-0">Biến thể #{index + 1}</h5>
+                          <button
+                            type="button"
+                            className="btn btn-outline-danger btn-sm"
+                            onClick={() => handleDeleteVariant(variant.variant_id)}
+                          >
+                            <i className="bi bi-trash"></i>
+                          </button>
+                        </div>
+
+                        <div className="row g-3">
+                          <div className="col-md-4">
+                            <label className="form-label">Hình ảnh</label>
+                            <div 
+                              className="variant-image-container mb-2"
+                              style={{
+                                width: "100%",
+                                aspectRatio: "1",
+                                border: "1px solid #dee2e6",
+                                borderRadius: "4px",
+                                overflow: "hidden"
+                              }}
+                            >
+                              {variant.image_url ? (
+                                <img
+                                  src={variant.image_url}
+                                  alt={`Biến thể ${index + 1}`}
+                                  style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    objectFit: "cover"
+                                  }}
+                                />
+                              ) : (
+                                <div className="d-flex align-items-center justify-content-center h-100 bg-light">
+                                  <i className="bi bi-image text-muted" style={{ fontSize: "2rem" }}></i>
+                                </div>
+                              )}
+                            </div>
+                            <input
+                              type="file"
+                              className="form-control"
+                              accept="image/*"
+                              onChange={(e) => handleVariantImageUpload(index, e)}
+                            />
+                          </div>
+
+                          <div className="col-md-8">
+                            <div className="row g-2">
+                              <div className="col-sm-6">
+                                <label className="form-label">Giá</label>
+                                <div className="input-group">
+                                  <span className="input-group-text">₫</span>
+                                  <input
+                                    type="number"
+                                    className="form-control"
+                                    value={variant.price}
+                                    onChange={(e) => handleVariantChange(index, 'price', e.target.value)}
+                                    min="0"
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="col-sm-6">
+                                <label className="form-label">Số lượng</label>
+                                <input
+                                  type="number"
+                                  className="form-control"
+                                  value={variant.stock}
+                                  onChange={(e) => handleVariantChange(index, 'stock', e.target.value)}
+                                  min="0"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="mt-3">
+                              <label className="form-label">Thuộc tính</label>
+                              <div className="variant-attributes">
+                                {variant.attributes?.map((attr, attrIndex) => (
+                                  <div key={attrIndex} className="input-group mb-2">
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      placeholder="Tên thuộc tính"
+                                      value={attr.name}
+                                      onChange={(e) => handleVariantAttributeChange(index, attrIndex, 'name', e.target.value)}
+                                    />
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      placeholder="Giá trị"
+                                      value={attr.value}
+                                      onChange={(e) => handleVariantAttributeChange(index, attrIndex, 'value', e.target.value)}
+                                    />
+                                    <button
+                                      type="button"
+                                      className="btn btn-outline-danger"
+                                      onClick={() => handleRemoveVariantAttribute(index, attrIndex)}
+                                    >
+                                      <i className="bi bi-trash"></i>
+                                    </button>
+                                  </div>
+                                ))}
+                                <button
+                                  type="button"
+                                  className="btn btn-outline-primary btn-sm"
+                                  onClick={() => handleAddVariantAttribute(index)}
+                                >
+                                  <i className="bi bi-plus"></i> Thêm thuộc tính
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  );
-                })}
+                  ))}
+                </div>
+              </div>
             </div>
-          </>
-        )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
