@@ -45,11 +45,21 @@ export const updateVariantAttributeValue = createAsyncThunk(
     try {
       const token = localStorage.getItem("adminToken");
       
-      // Format data dạng value_id[] = [1,2,3]
+      // Format data as FormData
       const formData = new FormData();
+      
+      // Add update mode flag
+      formData.append('update_mode', updatedData.update_mode || 'update');
+      
+      // Add variant ID
+      formData.append('variant_id', updatedData.variant_id);
+      
+      // Add attributes with relationship IDs
       if (Array.isArray(updatedData.attributes)) {
-        updatedData.attributes.forEach(attr => {
-          formData.append('value_id[]', attr.value_id);
+        updatedData.attributes.forEach((attr, index) => {
+          formData.append(`value_id[${index}]`, attr.value_id);
+          formData.append(`variant_attribute_value_id[${index}]`, attr.variant_attribute_value_id || '');
+          formData.append(`attribute_id[${index}]`, attr.attribute_id);
         });
       }
 
@@ -66,10 +76,12 @@ export const updateVariantAttributeValue = createAsyncThunk(
           timeout: 10000 
         }
       );
+
       return res.data.data;
     } catch (err) {
+      console.error("Error updating variant attributes:", err);
       return rejectWithValue(
-        err.response?.data?.message || "Lỗi khi cập nhật giá trị"
+        err.response?.data?.message || "Lỗi khi cập nhật thuộc tính"
       );
     }
   }
