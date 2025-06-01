@@ -59,14 +59,14 @@ function AttributePage() {
 
   return (
     <div className="adminattributes">
-      <h1>Danh sách Attributes</h1>
+      <h1>Danh sách thuộc tính</h1>
 
       {error && <p className="error">{error}</p>}
       {loading && <p className="loading">Đang tải...</p>}
 
       <div className="header-actions">
         <Link to="/admin/Addattribute">
-          <button className="btn-add">+ Thêm mới Attribute</button>
+          <button className="btn-add">+ Thêm mới thuộc tính</button>
         </Link>
       </div>
 
@@ -76,12 +76,12 @@ function AttributePage() {
           return (
             <li key={attr.attribute_id} className="attribute-item">
               <div className="attribute-row">
-                <span className="attribute-label">Attribute Name:</span>
+                <span className="attribute-label">Tên thuộc tính:</span>
                 <span className="attribute-data">{attr.name}</span>
               </div>
               {values.length > 0 && (
                 <div className="attribute-row">
-                  <span className="attribute-label">Values:</span>
+                  <span className="attribute-label">Giá trị:</span>
                   <span className="attribute-data">
                     {values.map((value) => (
                       <div key={value.value_id} className="value-item">
@@ -123,7 +123,7 @@ function AttributePage() {
     Xoá
   </button>
   <Link to={`/admin/AddAttributevalues/${attr.attribute_id}`}>
-    <button className="btn-add-value ml">+ Thêm Value</button>
+    <button className="btn-add-value ml">+ Thêm thuộc tính</button>
   </Link>
 </div>
 

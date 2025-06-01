@@ -8,7 +8,6 @@ const EditBanner = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const { selectedBanner, loading } = useSelector((state) => state.banner);
 
   const [formData, setFormData] = useState({
@@ -57,39 +56,31 @@ const EditBanner = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!formData.title.trim()) {
-    alert("Vui lòng nhập tiêu đề.");
-    return;
-  }
+    const data = new FormData();
+    data.append("title", formData.title); // Send original title
+    data.append("link_url", formData.link_url);
+    data.append("is_active", formData.is_active ? 1 : 0);
 
-  const data = new FormData();
-  data.append("title", formData.title);
-  data.append("link_url", formData.link_url);
-  data.append("is_active", formData.is_active ? 1 : 0);
+    if (file) {
+      data.append("image_url", file);
+    }
 
-  if (file) {
-    data.append("image_url", file); 
-  }
-
-  setUploading(true);
-  try {
-    const resultAction = await dispatch(updateBanner({ id, data })).unwrap();
-    console.log("Update result:", resultAction);
-
-    await dispatch(fetchBannerById(id)); 
-
-    alert("Cập nhật thành công!");
-    navigate("/admin/banners");
-  } catch (err) {
-    console.error("Lỗi cập nhật banner:", err);
-    alert("Lỗi cập nhật: " + (err.message || err));
-  } finally {
-    setUploading(false);
-  }
-};
-
+    setUploading(true);
+    try {
+      const resultAction = await dispatch(updateBanner({ id, data })).unwrap();
+      console.log("Update result:", resultAction);
+      await dispatch(fetchBannerById(id));
+      alert("Cập nhật thành công!");
+      navigate("/admin/banners");
+    } catch (err) {
+      console.error("Lỗi cập nhật banner:", err);
+      alert("Lỗi cập nhật: " + (err.message || err));
+    } finally {
+      setUploading(false);
+    }
+  };
 
   return (
     <div className="edit-banner-container">
@@ -100,11 +91,12 @@ const EditBanner = () => {
           type="text"
           name="title"
           value={formData.title}
-          onChange={handleChange}
-          required
+          disabled
+          readOnly
+          className="disabled-input"
         />
 
-        <label>Ảnh hiện tại:</label>
+        <label>Ảnh banner:</label>
         {preview ? (
           <img src={preview} alt="preview" className="preview-image" />
         ) : (
@@ -112,7 +104,11 @@ const EditBanner = () => {
         )}
 
         <label>Chọn ảnh mới:</label>
-<input type="file" accept="image/*" onChange={handleFileChange} />
+        <input 
+          type="file" 
+          accept="image/*" 
+          onChange={handleFileChange}
+        />
 
         <label>Link Banner:</label>
         <input
@@ -122,14 +118,14 @@ const EditBanner = () => {
           onChange={handleChange}
         />
 
-        <label>
+        <label className="checkbox-label">
           <input
             type="checkbox"
             name="is_active"
             checked={formData.is_active}
             onChange={handleChange}
           />
-          Hiển thị banner
+          <span>Hiển thị banner</span>
         </label>
 
         <button type="submit" disabled={uploading} className="btn-submit">
