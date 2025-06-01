@@ -96,7 +96,6 @@ const VariantEditForm = ({
   attributeValuesLoading,
   onChange,
   onUpdateVariant,
-  onUpdateAttributes,
   onCancel 
 }) => {
   return (
@@ -191,19 +190,6 @@ const VariantEditForm = ({
         </div>
       )}
 
-      <div style={{ marginTop: "12px", marginBottom: "20px" }}>
-        <button
-          className="btn btn-primary"
-          onClick={(e) => {
-            e.preventDefault();
-            onUpdateVariant();
-          }}
-          style={{ marginRight: "6px" }}
-        >
-          Lưu thông tin sản phẩm
-        </button>
-      </div>
-
       <div style={{ marginTop: "20px", borderTop: "1px solid #ddd", paddingTop: "20px" }}>
         <label style={{ fontWeight: "bold", fontSize: "16px", marginBottom: "12px", display: "block" }}>Thuộc tính:</label>
         {editingVariant.attributes.map((attr, index) => {
@@ -212,26 +198,35 @@ const VariantEditForm = ({
                                           attributeName === 'storage' ? 2 : 
                                           attributeName === 'ram' ? 3 : null] || [];
           
+          const currentValue = (variantFormData.attributes && variantFormData.attributes[index]) 
+            ? variantFormData.attributes[index].value_id 
+            : attr.value_id;
+
           return (
             <div
-              key={attr.value_id}
+              key={attr.variant_attribute_value_id || attr.value_id}
               style={{ marginBottom: "6px", display: "flex", alignItems: "center", gap: "8px" }}
             >
               <span style={{ minWidth: "100px" }}>{attr.name}:</span>
               <select
-                value={variantFormData.attributes?.[index]?.value_id || attr.value_id}
+                value={currentValue}
                 onChange={(e) => {
                   const selectedId = parseInt(e.target.value);
                   const selectedValue = attrValues.find(av => av.value_id === selectedId);
                   
                   if (selectedValue) {
-                    const newAttrs = [...(variantFormData.attributes || [])];
+                    const newAttrs = variantFormData.attributes 
+                      ? [...variantFormData.attributes] 
+                      : [...editingVariant.attributes];
+
                     newAttrs[index] = {
+                      ...attr,
                       value_id: selectedValue.value_id,
-                      name: attr.name,
                       value: selectedValue.value,
-                      attribute_id: selectedValue.attribute_id // Thêm attribute_id vào
+                      attribute_id: selectedValue.attribute_id,
+                      variant_attribute_value_id: attr.variant_attribute_value_id
                     };
+
                     onChange({
                       target: {
                         name: 'attributes',
@@ -254,17 +249,16 @@ const VariantEditForm = ({
           );
         })}
 
-        <div style={{ marginTop: "12px" }}>
+        <div style={{ marginTop: "16px" }}>
           <button
             className="btn btn-success"
             onClick={(e) => {
               e.preventDefault();
-              const updatedAttributes = variantFormData.attributes || editingVariant.attributes;
-              onUpdateAttributes(editingVariant.variant_id, updatedAttributes);
+              onUpdateVariant();
             }}
             style={{ marginRight: "6px" }}
           >
-            Lưu thuộc tính
+            Lưu thay đổi
           </button>
           <button
             className="btn btn-secondary"
@@ -346,15 +340,14 @@ const AdminProductEdit = () => {
     if (!categories || categories.length === 0) {
       dispatch(fetchCategories());
     }
-    dispatch(fetchVariantAttributeValues());
-    dispatch(fetchAdminProductVariants());
+    // Chỉ fetch variant attribute values
+    dispatch(fetchVariantAttributeValues()).unwrap()
+      .then(response => {
+        console.log("Response từ API variants:", response);
+      });
   }, [dispatch, adminproducts, categories]);
   
   // Fetch attribute values khi component mount
-  useEffect(() => {
-    dispatch(fetchAttributeValues());
-  }, [dispatch]);
-
   useEffect(() => {
     dispatch(fetchAttributeValues());
   }, [dispatch]);
@@ -483,6 +476,12 @@ const AdminProductEdit = () => {
     const { name, value, type, checked } = e.target;
     if (type === "checkbox") {
       setVariantFormData((prev) => ({ ...prev, [name]: checked ? 1 : 0 }));
+    } else if (name === 'attributes') {
+      // Khi cập nhật thuộc tính, cập nhật trực tiếp vào variantFormData
+      setVariantFormData(prev => ({
+        ...prev,
+        attributes: value
+      }));
     } else {
       setVariantFormData((prev) => ({ ...prev, [name]: value }));
     }
@@ -490,25 +489,58 @@ const AdminProductEdit = () => {
 
   const handleUpdateAttributes = async (variantId, attributes) => {
     try {
-      console.log('Updating attributes:', attributes);
-      
+      // Validate attributes
+      if (!attributes || attributes.length === 0) {
+        toast.error("Thuộc tính không được để trống");
+        return;
+      }
+
+      // Validate that all attributes have values
+      const invalidAttributes = attributes.filter(attr => !attr.value_id);
+      if (invalidAttributes.length > 0) {
+        toast.error("Vui lòng chọn giá trị cho tất cả thuộc tính");
+        return;
+      }
+
+      // Check for duplicate values
+      const attributesByType = {};
+      for (const attr of attributes) {
+        if (attributesByType[attr.name]) {
+          toast.error(`Đã có giá trị cho thuộc tính ${attr.name}`);
+          return;
+        }
+        attributesByType[attr.name] = true;
+      }
+
+      // Format attributes
+      const formattedAttributes = attributes.map(attr => ({
+        variant_attribute_value_id: attr.variant_attribute_value_id,
+        value_id: parseInt(attr.value_id),
+        attribute_id: attr.attribute_id,
+        name: attr.name,
+        value: attr.value
+      }));
+
+      // Gửi request cập nhật
       await dispatch(
         updateVariantAttributeValue({
           id: variantId,
           updatedData: {
-            attributes: attributes.map(attr => ({
-              value_id: parseInt(attr.value_id),
-              name: attr.name,
-              value: attr.value
-            }))
+            variant_id: variantId,
+            attributes: formattedAttributes
           }
         })
       ).unwrap();
+
+      // Cập nhật dữ liệu mới
+      await dispatch(fetchVariantAttributeValues());
       
       toast.success("Cập nhật thuộc tính thành công!");
-      setEditingVariant(null);
-      dispatch(fetchVariantAttributeValues());
+
+      // Đóng form và reset state
+      setEditingVariant(null); // Reset trạng thái chỉnh sửa trước
     } catch (err) {
+      console.error("Error updating attributes:", err);
       toast.error("Cập nhật thuộc tính thất bại: " + err);
     }
   };
@@ -517,7 +549,7 @@ const AdminProductEdit = () => {
     if (!editingVariant) return;
 
     try {
-      // Validate dữ liệu
+      // Validate dữ liệu cơ bản
       if (!variantFormData.sku) {
         toast.error("Vui lòng nhập SKU");
         return;
@@ -527,17 +559,27 @@ const AdminProductEdit = () => {
         return;
       }
 
-      // Convert các trường sang kiểu dữ liệu phù hợp 
+      // Validate thuộc tính
+      if (!variantFormData.attributes || variantFormData.attributes.length === 0) {
+        toast.error("Thuộc tính không được để trống");
+        return;
+      }
+
+      // Validate that all attributes have values
+      const invalidAttributes = variantFormData.attributes.filter(attr => !attr.value_id);
+      if (invalidAttributes.length > 0) {
+        toast.error("Vui lòng chọn giá trị cho tất cả thuộc tính");
+        return;
+      }
+
       const productId = parseInt(id);
       if (isNaN(productId)) {
         toast.error("product_id không hợp lệ");
         return;
       }
 
-      // Tạo FormData để gửi cả file và dữ liệu
       const formData = new FormData();
       
-      // Đảm bảo các trường bắt buộc được gửi đi
       if (!productId || !variantFormData.sku || !variantFormData.price) {
         toast.error("Vui lòng điền đầy đủ thông tin bắt buộc");
         return;
@@ -563,7 +605,25 @@ const AdminProductEdit = () => {
         formData.append('image_url', variantFormData.image_url);
       }
 
-      // Gửi request cập nhật
+      // Format attributes cho API
+      const formattedAttributes = variantFormData.attributes.map(attr => ({
+        variant_attribute_value_id: attr.variant_attribute_value_id,
+        value_id: parseInt(attr.value_id),
+        attribute_id: attr.attribute_id,
+        name: attr.name,
+        value: attr.value
+      }));
+
+      // Add attributes vào formData
+      formattedAttributes.forEach((attr, index) => {
+        formData.append(`attributes[${index}][variant_attribute_value_id]`, attr.variant_attribute_value_id || '');
+        formData.append(`attributes[${index}][value_id]`, attr.value_id);
+        formData.append(`attributes[${index}][attribute_id]`, attr.attribute_id);
+        formData.append(`attributes[${index}][name]`, attr.name);
+        formData.append(`attributes[${index}][value]`, attr.value);
+      });
+
+      // Gửi request cập nhật variant (bao gồm cả attributes)
       await dispatch(
         updateAdminProductVariant({
           id: editingVariant.variant_id,
@@ -571,17 +631,38 @@ const AdminProductEdit = () => {
         })
       ).unwrap();
 
-      toast.success("Cập nhật variant thành công!");
+      toast.success("Cập nhật variant và thuộc tính thành công!");
+      
+      // Reset form và trạng thái editing
       setEditingVariant(null);
+      setVariantFormData({
+        variant_id: "",
+        product_id: id,
+        sku: "",
+        price: "",
+        price_original: "",
+        stock: 0,
+        image_url: "",
+        is_active: 1,
+        attributes: []
+      });
       
-      // Refresh data from both endpoints to ensure synchronization
-      await Promise.all([
-        dispatch(fetchAdminProductVariants()),
-        dispatch(fetchVariantAttributeValues())
-      ]);
+      // Fetch lại dữ liệu variants mới
+      await dispatch(fetchVariantAttributeValues());
       
-      // Force reload the current page to refresh all data
-      window.location.reload();
+      // Reset form và trạng thái editing
+      setEditingVariant(null);
+      setVariantFormData({
+        variant_id: "",
+        product_id: id,
+        sku: "",
+        price: "",
+        price_original: "",
+        stock: 0,
+        image_url: "",
+        is_active: 1,
+        attributes: []
+      });
     } catch (err) {
       toast.error("Cập nhật thất bại: " + err);
     }
@@ -779,42 +860,51 @@ const AdminProductEdit = () => {
               style={{ marginTop: "30px", maxWidth: "700px" }}
             >
 
+              {console.log("Danh sách biến thể:", variantAttributeValues)}
               {variantAttributeValues
                 .filter((variant) => String(variant.product_id) === id)
-                .map((variant) => (
-                  <div
-                    key={variant.variant_id}
-                    className="variant-card"
-                    style={{
-                      border: "1px solid #ccc",
-                      padding: "10px",
-                      marginBottom: "10px",
-                      borderRadius: "4px",
-                      backgroundColor: "#f9f9f9",
-                    }}
-                  >
-                    {editingVariant &&
-                    editingVariant.variant_id === variant.variant_id ? (
-                      // FORM EDITING VARIANT
-                      <VariantEditForm
-                        variantFormData={variantFormData}
-                        editingVariant={editingVariant}
-                        attributeValues={attributeValues}
-                        attributeValuesLoading={attributeValuesLoading}
-                        onChange={handleVariantChange}
-                        onUpdateVariant={handleUpdateVariant}
-                        onUpdateAttributes={handleUpdateAttributes}
-                        onCancel={() => setEditingVariant(null)}
-                      />
-                    ) : (
-                      <VariantDisplay
-                        variant={variant}
-                        onEdit={startEditVariant}
-                        onDelete={handleDeleteVariant}
-                      />
-                    )}
-                  </div>
-                ))}
+                .map((variant) => {
+                  console.log("Biến thể sau khi filter:", variant);
+                  // Chỉ hiển thị form edit nếu đang edit variant này và chưa có variant nào khác đang được edit
+                  const isEditing = editingVariant && editingVariant.variant_id === variant.variant_id;
+                  
+                  return (
+                    <div
+                      key={variant.variant_id}
+                      data-variant-id={variant.variant_id}
+                      className="variant-card"
+                      style={{
+                        border: "1px solid #ccc",
+                        padding: "10px",
+                        marginBottom: "10px",
+                        borderRadius: "4px",
+                        backgroundColor: "#f9f9f9",
+                      }}
+                    >
+                      {isEditing ? (
+                        <VariantEditForm
+                          variantFormData={variantFormData}
+                          editingVariant={editingVariant}
+                          attributeValues={attributeValues}
+                          attributeValuesLoading={attributeValuesLoading}
+                          onChange={handleVariantChange}
+                          onUpdateVariant={handleUpdateVariant}
+                          onCancel={() => setEditingVariant(null)}
+                        />
+                      ) : (
+                        <VariantDisplay
+                          variant={variant}
+                          onEdit={() => {
+                            if (!editingVariant) { // Chỉ cho phép edit nếu không có variant nào đang được edit
+                              startEditVariant(variant);
+                            }
+                          }}
+                          onDelete={handleDeleteVariant}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
             </div>
           </>
         )}
