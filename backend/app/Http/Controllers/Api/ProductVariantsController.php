@@ -25,8 +25,8 @@ class ProductVariantsController extends Controller
         $variants = $variants->map(function ($variant) {
             $attributes = [];
             
-            // Nhóm các giá trị theo attribute_id và loại bỏ trùng lặp
-            $variant->attributeValues->each(function ($value) use (&$attributes) {
+            // Nhóm các giá trị theo attribute_id - mỗi variant chỉ có một giá trị cho mỗi thuộc tính
+            $variant->attributeValues->each(function ($value) use (&$attributes, $variant) {
                 $attributeId = $value->attribute_id;
                 if (!isset($attributes[$attributeId])) {
                     $attributes[$attributeId] = [
@@ -36,14 +36,12 @@ class ProductVariantsController extends Controller
                     ];
                 }
                 
-                // Kiểm tra giá trị đã tồn tại chưa để tránh trùng lặp
-                $valueExists = collect($attributes[$attributeId]['values'])->contains('value_id', $value->value_id);
-                if (!$valueExists) {
-                    $attributes[$attributeId]['values'][] = [
-                        'value_id' => $value->value_id,
-                        'value' => $value->value
-                    ];
-                }
+                // Gán trực tiếp giá trị - không kiểm tra trùng lặp vì mỗi variant chỉ có một giá trị cho mỗi thuộc tính
+                $attributes[$attributeId]['values'] = [[
+                    'value_id' => $value->value_id,
+                    'value' => $value->value,
+                    'image_url' => $variant->image_url
+                ]];
             });
 
             // Thêm variant info vào cuối mảng attributes
@@ -165,41 +163,32 @@ class ProductVariantsController extends Controller
 
         // Biến đổi dữ liệu để nhóm theo attribute cho từng variant
         $formattedVariants = $variants->map(function ($variant) {
-            $attributes = [];
+            // Tạo một mảng để lưu trữ các thuộc tính đã xử lý
+            $processedAttributes = [];
             
-            // Nhóm các giá trị theo attribute_id và loại bỏ trùng lặp
-            $variant->attributeValues->each(function ($value) use (&$attributes) {
-                $attributeId = $value->attribute_id;
-                if (!isset($attributes[$attributeId])) {
-                    $attributes[$attributeId] = [
+            // Duyệt qua từng thuộc tính của variant hiện tại
+            foreach ($variant->attributeValues as $attributeValue) {
+                $attributeId = $attributeValue->attribute->attribute_id;
+                
+                // Tạo hoặc cập nhật thuộc tính
+                if (!isset($processedAttributes[$attributeId])) {
+                    $processedAttributes[$attributeId] = [
                         'attribute_id' => $attributeId,
-                        'name' => $value->attribute->name,
+                        'name' => $attributeValue->attribute->name,
                         'values' => []
                     ];
                 }
                 
-                // Kiểm tra giá trị đã tồn tại chưa để tránh trùng lặp
-                $valueExists = collect($attributes[$attributeId]['values'])->contains('value_id', $value->value_id);
-                if (!$valueExists) {
-                    $attributes[$attributeId]['values'][] = [
-                        'value_id' => $value->value_id,
-                        'value' => $value->value
-                    ];
-                }
-            });
+                // Thêm giá trị vào thuộc tính - mỗi variant chỉ có một giá trị cho mỗi thuộc tính
+                $processedAttributes[$attributeId]['values'] = [[
+                    'value_id' => $attributeValue->value_id,
+                    'value' => $attributeValue->value,
+                    'image_url' => $variant->image_url
+                ]];
+            }
 
-            // Thêm variant info vào cuối mảng attributes
-            $attributes['variant_info'] = [
-                'variant_id' => $variant->variant_id,
-                'image_url' => $variant->image_url,
-                'sku' => $variant->sku,
-                'price' => number_format((float)$variant->price, 0, '', ''),
-                'price_original' => number_format((float)$variant->price_original, 0, '', ''),
-                'stock' => $variant->stock
-            ];
-
-            // Chuyển attributes từ array thành collection và sắp xếp theo thứ tự
-            $variant->attributes = array_values($attributes);
+            // Chuyển attributes từ array thành collection
+            $variant->attributes = array_values($processedAttributes);
             
             // Chỉ giữ lại các thông tin cần thiết của variant
             $variant->makeHidden(['attributeValues', 'created_at', 'updated_at', 'deleted_at', 'is_active']);
