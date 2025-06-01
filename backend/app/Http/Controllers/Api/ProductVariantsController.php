@@ -25,8 +25,8 @@ class ProductVariantsController extends Controller
         $variants = $variants->map(function ($variant) {
             $attributes = [];
             
-            // Nhóm các giá trị theo attribute_id và loại bỏ trùng lặp
-            $variant->attributeValues->each(function ($value) use (&$attributes) {
+            // Nhóm các giá trị theo attribute_id - mỗi variant chỉ có một giá trị cho mỗi thuộc tính
+            $variant->attributeValues->each(function ($value) use (&$attributes, $variant) {
                 $attributeId = $value->attribute_id;
                 if (!isset($attributes[$attributeId])) {
                     $attributes[$attributeId] = [
@@ -36,14 +36,12 @@ class ProductVariantsController extends Controller
                     ];
                 }
                 
-                // Kiểm tra giá trị đã tồn tại chưa để tránh trùng lặp
-                $valueExists = collect($attributes[$attributeId]['values'])->contains('value_id', $value->value_id);
-                if (!$valueExists) {
-                    $attributes[$attributeId]['values'][] = [
-                        'value_id' => $value->value_id,
-                        'value' => $value->value
-                    ];
-                }
+                // Gán trực tiếp giá trị - không kiểm tra trùng lặp vì mỗi variant chỉ có một giá trị cho mỗi thuộc tính
+                $attributes[$attributeId]['values'] = [[
+                    'value_id' => $value->value_id,
+                    'value' => $value->value,
+                    'image_url' => $variant->image_url
+                ]];
             });
 
             // Thêm variant info vào cuối mảng attributes
@@ -168,11 +166,11 @@ class ProductVariantsController extends Controller
             // Tạo một mảng để lưu trữ các thuộc tính đã xử lý
             $processedAttributes = [];
             
-            // Duyệt qua từng thuộc tính của variant
+            // Duyệt qua từng thuộc tính của variant hiện tại
             foreach ($variant->attributeValues as $attributeValue) {
                 $attributeId = $attributeValue->attribute->attribute_id;
                 
-                // Nếu thuộc tính chưa được xử lý, tạo mới
+                // Tạo hoặc cập nhật thuộc tính
                 if (!isset($processedAttributes[$attributeId])) {
                     $processedAttributes[$attributeId] = [
                         'attribute_id' => $attributeId,
@@ -181,22 +179,12 @@ class ProductVariantsController extends Controller
                     ];
                 }
                 
-                // Thêm giá trị vào thuộc tính nếu chưa tồn tại
-                $valueExists = false;
-                foreach ($processedAttributes[$attributeId]['values'] as $existingValue) {
-                    if ($existingValue['value_id'] === $attributeValue->value_id) {
-                        $valueExists = true;
-                        break;
-                    }
-                }
-                
-                if (!$valueExists) {
-                    $processedAttributes[$attributeId]['values'][] = [
-                        'value_id' => $attributeValue->value_id,
-                        'value' => $attributeValue->value,
-                        'image_url' => $variant->image_url // Thêm URL hình ảnh của biến thể
-                    ];
-                }
+                // Thêm giá trị vào thuộc tính - mỗi variant chỉ có một giá trị cho mỗi thuộc tính
+                $processedAttributes[$attributeId]['values'] = [[
+                    'value_id' => $attributeValue->value_id,
+                    'value' => $attributeValue->value,
+                    'image_url' => $variant->image_url
+                ]];
             }
 
             // Chuyển attributes từ array thành collection
