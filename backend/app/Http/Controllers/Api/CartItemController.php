@@ -103,60 +103,16 @@ class CartItemController extends Controller
         }
 
         $cartItems = CartItem::where('cart_id', $cart->cart_id)
-            ->with([
-                'variant' => function($query) {
-                    $query->select('variant_id', 'product_id', 'image_url', 'price');
-                },
-                'variant.product' => function ($query) {
-                    $query->select('product_id', 'name');
-                },
-                'variant.variantAttributeValues.value.attribute'
-            ])
+            ->with('variant.product') 
             ->get();
-        // Tính tổng tiền của giỏ hàng
-        $totalAmount = $cartItems->sum(function ($item) {
+        $totalPrice = $cartItems->sum(function ($item) {
             return $item->price_snapshot * $item->quantity;
         });
-
-        // Format lại dữ liệu cart items
-        $formattedCartItems = $cartItems->map(function ($item) {
-            // Nhóm các thuộc tính theo tên
-            $attributes = [];
-            foreach ($item->variant->variantAttributeValues as $attrValue) {
-                $attributeName = strtolower($attrValue->value->attribute->name);
-                $attributeValue = $attrValue->value->value;
-                
-                if (!isset($attributes[$attributeName])) {
-                    $attributes[$attributeName] = [];
-                }
-                $attributes[$attributeName][] = $attributeValue;
-            }
-
-            return [
-                'cart_item_id' => $item->cart_item_id,
-                'product' => [
-                    'name' => $item->variant->product->name,
-                    'variant_id' => $item->variant->variant_id,
-                    'product_id' => $item->variant->product->product_id,
-                    'image' => $item->variant->image_url,
-                    'attributes' => $attributes
-                ],
-                'quantity' => $item->quantity,
-                'price' => $item->price_snapshot,
-                'subtotal' => $item->price_snapshot * $item->quantity
-            ];
-        });
-
         return response()->json([
-            'status' => true,
-            'message' => $cartItems->count() > 0 ? 'Lấy giỏ hàng thành công' : 'Giỏ hàng không có sản phẩm',
-            'data' => [
-                'user_id' => $user->user_id,
-                'cart_id' => $cart->cart_id,
-                'total_items' => $cartItems->count(),
-                'total_amount' => $totalAmount,
-                'items' => $formattedCartItems
-            ]
+            'message' => 'Lấy giỏ hàng thành công',
+            'cart' => $cart,
+            'cart_items' => $cartItems,
+            'total_price' => $totalPrice
         ], 200);
     }
 
