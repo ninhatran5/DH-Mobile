@@ -2,6 +2,152 @@
 
 /* Container */
 .adminbanner-container {
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.adminbanner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.adminbanner-title {
+  font-size: 24px;
+  color: #333;
+  margin: 0;
+}
+
+.adminbanner-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  min-width: 500px;
+}
+
+.adminbanner-search-input {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  flex: 1;
+  max-width: 300px;
+  transition: all 0.3s ease;
+}
+
+.adminbanner-search-input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+.adminbanner-add-btn {
+  padding: 8px 24px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.adminbanner-add-btn:hover {
+  background-color: #0056b3;
+  text-decoration: none;
+  color: white;
+}
+
+.adminbanner-table-container {
+  margin-top: 20px;
+  overflow-x: auto;
+}
+
+.adminbanner-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+}
+
+.adminbanner-table th,
+.adminbanner-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.adminbanner-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+}
+
+.adminbanner-img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.adminbanner-banner-title {
+  font-weight: 500;
+  color: #333;
+}
+
+.adminbanner-status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.adminbanner-status.active {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.adminbanner-status.inactive {
+  background-color: #f5f5f5;
+  color: #616161;
+}
+
+.adminbanner-action-btn {
+  padding: 6px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.adminbanner-action-btn.edit {
+  background-color: #007bff;
+}
+
+.adminbanner-action-btn.delete {
+  background-color: #dc3545;
+}
+
+.adminbanner-action-btn:hover {
+  opacity: 0.9;
+  color: white;
+  text-decoration: none;
+}
+
+/* Original styles preserved */
+.adminbanner-container {
   padding: 1.5rem;
   background-color: #f8f9fa;
   min-height: 100vh;

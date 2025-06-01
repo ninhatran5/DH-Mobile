@@ -229,19 +229,19 @@ const Homeadmin =()=>{
 
           <div className="admin_dh-sidebar-nav">
             <div className="admin_dh-nav-section">
-              <div className="admin_dh-nav-section-title">Overview</div>
+              <div className="admin_dh-nav-section-title">Trang chủ</div>
               <div className="admin_dh-components">
                 <div className={location.pathname === '/admin' ? 'active' : ''}>
                   <Link to="/admin" className="admin_dh-nav-link" data-title="Dashboard">
                     <i className="bi bi-speedometer2" style={{ color: '#0071e3' }} />
-                    <span>Dashboard</span>
+                    <span>Thống Kê</span>
                   </Link>
                 </div>
               </div>
             </div>
 
             <div className="admin_dh-nav-section">
-              <div className="admin_dh-nav-section-title">Product Management</div>
+              <div className="admin_dh-nav-section-title">Quản lí sản phẩm</div>
               <div className="admin_dh-components">
                 <div className={location.pathname.includes('/admin/categories') ? 'active' : ''}>
                   <a
@@ -255,15 +255,15 @@ const Homeadmin =()=>{
                     style={isSidebarCollapsed ? {position: 'relative'} : {}}
                   >
                     <i className="bi bi-ui-checks-grid" style={{ color: '#28cd41' }} /> 
-                    <span>Categories</span>
+                    <span>Danh mục</span>
                     <i className={`bi bi-caret-${isDropdownActive('categories') ? 'down' : 'right'}-fill`} style={{ marginLeft: '8px' }}></i>
                   </a>
                   <div 
                     className={`admin_dh-submenu ${isDropdownActive('categories') ? 'show' : ''}`}
                     style={isSidebarCollapsed && isDropdownActive('categories') ? sidebarCollapsedStyles.submenu : {}}
                   >
-                    <div><Link to="/admin/categories">Category List</Link></div>
-                    <div><Link to="/admin/Addcategories">Add Category</Link></div>
+                    <div><Link to="/admin/categories">Danh sách danh mục</Link></div>
+                    <div><Link to="/admin/Addcategories">Thêm danh mục </Link></div>
                   </div>
                 </div>
 
@@ -278,20 +278,20 @@ const Homeadmin =()=>{
                     data-title="Products"
                   >
                     <i className="bi bi-box-seam" style={{ color: '#5ac8fa' }} /> 
-                    <span>Products</span>
+                    <span>Sản phẩm</span>
                     <i className={`bi bi-caret-${isDropdownActive('products') ? 'down' : 'right'}-fill`} style={{ marginLeft: '8px' }}></i>
                   </a>
                   <div className={`admin_dh-submenu ${isDropdownActive('products') ? 'show' : ''}`}>
-                    <div><Link to="/admin/product">Product List</Link></div>
-                    <div><Link to="/admin/addproduct">Add Product</Link></div>
-                    <div><Link to="/admin/attribute">Attribute</Link></div>
+                    <div><Link to="/admin/product">Danh sách sản phẩm</Link></div>
+                    <div><Link to="/admin/addproduct">Thêm sản phẩm</Link></div>
+                    <div><Link to="/admin/attribute">Thuộc tính</Link></div>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="admin_dh-nav-section">
-              <div className="admin_dh-nav-section-title">Account Management</div>
+              <div className="admin_dh-nav-section-title">Quản lí tài khoản</div>
               <div className="admin_dh-components">
                 <div className={location.pathname.includes('/admin/accounts') ? 'active' : ''}>
                   <a
@@ -320,7 +320,7 @@ const Homeadmin =()=>{
             </div>
 
             <div className="admin_dh-nav-section">
-              <div className="admin_dh-nav-section-title">Sales Management</div>
+              <div className="admin_dh-nav-section-title">Quản lí bán hàng</div>
               <div className="admin_dh-components">
                
                 
@@ -350,33 +350,36 @@ const Homeadmin =()=>{
                 </div>
 
                 <div className={location.pathname.includes('/admin/vouchers') ? 'active' : ''}>
-                  <a
-                    href="#"
-                    className={`admin_dh-dropdown-toggle ${isDropdownActive('vouchers') ? 'show' : ''}`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      toggleDropdown('vouchers');
-                    }}
-                    data-title="Voucher"
-                    style={isSidebarCollapsed ? {position: 'relative'} : {}}
-                  >
-                    <i className="bi bi-ticket-perforated" style={{ color: '#ff9f0a' }} />
-                    <span>Voucher</span>
-                    <i className={`bi bi-caret-${isDropdownActive('vouchers') ? 'down' : 'right'}-fill`} style={{ marginLeft: '8px' }}></i>
-                  </a>
-                  <div 
-                    className={`admin_dh-submenu ${isDropdownActive('vouchers') ? 'show' : ''}`}
-                    style={isSidebarCollapsed && isDropdownActive('vouchers') ? sidebarCollapsedStyles.submenu : {}}
-                  >
-                    <div><Link to="/admin/vouchers">Danh sách voucher</Link></div>
-                    <div><Link to="/admin/addvoucher">Thêm voucher</Link></div>
-                  </div>
-                </div>
+  <a
+    href="#"
+    className={`admin_dh-dropdown-toggle d-flex align-items-center justify-content-between ${isDropdownActive('vouchers') ? 'show' : ''}`}
+    onClick={(e) => {
+      e.preventDefault();
+      toggleDropdown('vouchers');
+    }}
+    data-title="Voucher"
+    style={isSidebarCollapsed ? { position: 'relative' } : {}}
+  >
+    <div className="d-flex align-items-center">
+      <i className="bi bi-ticket-perforated" style={{ color: '#ff9f0a' }} />
+      <span className="ms-2">Mã giảm giá</span>
+    </div>
+    <i className={`bi bi-caret-${isDropdownActive('vouchers') ? 'down' : 'right'}-fill`} />
+  </a>
+  <div
+    className={`admin_dh-submenu ${isDropdownActive('vouchers') ? 'show' : ''}`}
+    style={isSidebarCollapsed && isDropdownActive('vouchers') ? sidebarCollapsedStyles.submenu : {}}
+  >
+    <div><Link to="/admin/vouchers">Danh sách mã giảm giá</Link></div>
+    <div><Link to="/admin/addvoucher">Thêm mã giảm giá</Link></div>
+  </div>
+</div>
+
               </div>
             </div>
 
             <div className="admin_dh-nav-section">
-              <div className="admin_dh-nav-section-title">Marketing</div>
+              <div className="admin_dh-nav-section-title">Tiếp thị</div>
               <div className="admin_dh-components">
                 <div className={location.pathname.includes('/admin/banners') ? 'active' : ''}>
                   <a
@@ -398,23 +401,25 @@ const Homeadmin =()=>{
                 </div>
 
                 <div className={location.pathname.includes('/admin/chatbot') ? 'active' : ''}>
-                  <a
-                    href="#"
-                    className={`admin_dh-dropdown-toggle ${isDropdownActive('chatbot') ? 'show' : ''}`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      toggleDropdown('chatbot');
-                    }}
-                    data-title="Chatbot"
-                  >
-                    <i className="bi bi-robot" style={{ color: '#0071e3' }} />
-                    <span>Chatbot</span>
-                    <i className={`bi bi-caret-${isDropdownActive('chatbot') ? 'down' : 'right'}-fill`} style={{ marginLeft: '8px' }}></i>
-                  </a>
-                  <div className={`admin_dh-submenu ${isDropdownActive('chatbot') ? 'show' : ''}`}>
-                    <div><Link to="/admin/chatbot">Tin nhắn</Link></div>
-                  </div>
-                </div>
+  <a
+    href="#"
+    className={`admin_dh-dropdown-toggle d-flex align-items-center justify-content-between ${isDropdownActive('chatbot') ? 'show' : ''}`}
+    onClick={(e) => {
+      e.preventDefault();
+      toggleDropdown('chatbot');
+    }}
+    data-title="Chatbot"
+  >
+    <div className="d-flex align-items-center">
+      <i className="bi bi-robot" style={{ color: '#0071e3' }} />
+      <span className="ms-2">Hỗ trợ </span>
+    </div>
+    <i className={`bi bi-caret-${isDropdownActive('chatbot') ? 'down' : 'right'}-fill`} />
+  </a>
+  <div className={`admin_dh-submenu ${isDropdownActive('chatbot') ? 'show' : ''}`}>
+    <div><Link to="/admin/chatbot">Tin nhắn</Link></div>
+  </div>
+</div>
 
                 <div className={location.pathname.includes('/admin/comments') ? 'active' : ''}>
                   <a

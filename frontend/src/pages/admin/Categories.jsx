@@ -82,8 +82,22 @@ const CategoryList = () => {
                 <td>
                   <span className="admin_dh-status">Hoạt động</span>
                 </td>
-                <td>{cat.created_at || "22/5/2025 10:00:00"}</td>
-                <td>{cat.updated_at || "22/5/2025 10:00:00"}</td>
+                <td>{new Date(cat.created_at).toLocaleString("vi-VN", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit"
+                }) || "22/05/2025 10:00:00"}</td>
+                <td>{new Date(cat.updated_at).toLocaleString("vi-VN", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit"
+                }) || "22/05/2025 10:00:00"}</td>
                <td>
   <div style={{ display: "flex", gap: "8px" }}>
     <Link to={`/admin/EditCategories/${cat.category_id}`} className="admin_dh-action-btn edit" title="Chỉnh sửa">

@@ -6,11 +6,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import "../../assets/admin/Attributes.css";
 
 function AddValuePage() {
-  const { attribute_id } = useParams();
+  const { attribute_id, name } = useParams();
   const [value, setValue] = useState("");
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  console.log("Received attribute:", { attribute_id, name });
 
   const { loading } = useSelector((state) => state.attributeValue);
 
@@ -24,6 +26,7 @@ function AddValuePage() {
     try {
       await dispatch(addAttributeValue({
         attribute_id,
+        name,
         value,
       })).unwrap();
       alert("Thêm Value thành công!");
@@ -35,8 +38,8 @@ function AddValuePage() {
 
   return (
     <div className="adminattributes">
-      <h1>Thêm Value mới cho Attribute ID: {attribute_id}</h1>
-      {error && <p className="error">{error}</p>}
+      <h1>Thêm giá trị mới cho thuộc tính: <span style={{color: '#007bff', fontWeight: 'bold'}}>{name}</span></h1>
+      {error && <p className="error" style={{color: 'red'}}>{error}</p>}
 
       <form onSubmit={handleSubmit}>
         <div className="attribute-row">
