@@ -17,8 +17,7 @@ class ProductVariantsController extends Controller
      *     tags={"ProductVariants"},
      *     @OA\Response(response=200, description="Thành công")
      * )
-     */
-    public function index()
+     */    public function index()
     {
         $variants = ProductVariant::with(['product', 'attributeValues.attribute'])->get();
         
@@ -26,7 +25,7 @@ class ProductVariantsController extends Controller
         $variants = $variants->map(function ($variant) {
             $attributes = [];
             
-            // Nhóm các giá trị theo attribute_id
+            // Nhóm các giá trị theo attribute_id và loại bỏ trùng lặp
             $variant->attributeValues->each(function ($value) use (&$attributes) {
                 $attributeId = $value->attribute_id;
                 if (!isset($attributes[$attributeId])) {
@@ -36,16 +35,37 @@ class ProductVariantsController extends Controller
                         'values' => []
                     ];
                 }
-                $attributes[$attributeId]['values'][] = [
-                    'value_id' => $value->value_id,
-                    'value' => $value->value
-                ];
+                
+                // Kiểm tra giá trị đã tồn tại chưa để tránh trùng lặp
+                $valueExists = collect($attributes[$attributeId]['values'])->contains('value_id', $value->value_id);
+                if (!$valueExists) {
+                    $attributes[$attributeId]['values'][] = [
+                        'value_id' => $value->value_id,
+                        'value' => $value->value
+                    ];
+                }
             });
-            
-            // Chuyển attributes từ array thành collection
+
+            // Thêm variant info vào cuối mảng attributes
+            $attributes['variant_info'] = [
+                'variant_id' => $variant->variant_id,
+                'image_url' => $variant->image_url,
+                'sku' => $variant->sku,
+                'price' => number_format((float)$variant->price, 0, '', ''),
+                'price_original' => number_format((float)$variant->price_original, 0, '', ''),
+                'stock' => $variant->stock
+            ];
+
+            // Chuyển attributes từ array thành collection và sắp xếp theo thứ tự
             $variant->attributes = array_values($attributes);
-            unset($variant->attributeValues);
             
+            // Chỉ giữ lại các thông tin cần thiết của variant
+            $variant->makeHidden(['attributeValues', 'created_at', 'updated_at', 'deleted_at', 'is_active']);
+            
+            // Format lại giá cho variant
+            $variant->price = number_format((float)$variant->price, 0, '', '');
+            $variant->price_original = number_format((float)$variant->price_original, 0, '', '');
+
             return $variant;
         });
 
@@ -135,7 +155,7 @@ class ProductVariantsController extends Controller
         $variants = ProductVariant::with(['product', 'attributeValues.attribute'])
             ->where('product_id', $id)
             ->get();
-        
+
         if ($variants->isEmpty()) {
             return response()->json([
                 'message' => 'Không tìm thấy biến thể nào của sản phẩm này',
@@ -146,7 +166,7 @@ class ProductVariantsController extends Controller
         // Biến đổi dữ liệu để nhóm theo attribute cho từng variant
         $formattedVariants = $variants->map(function ($variant) {
             $attributes = [];
-            
+
             // Nhóm các giá trị theo attribute_id
             foreach ($variant->attributeValues as $value) {
                 $attributeId = $value->attribute_id;
@@ -162,11 +182,11 @@ class ProductVariantsController extends Controller
                     'value' => $value->value
                 ];
             }
-            
+
             // Chuyển attributes từ array thành collection
             $variant->attributes = array_values($attributes);
             unset($variant->attributeValues);
-            
+
             return $variant;
         });
 
