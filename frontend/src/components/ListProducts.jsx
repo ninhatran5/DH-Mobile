@@ -76,9 +76,13 @@ const filterVariants = (variants, memory, ram, color) =>
         match &&
         variant.attributes.some(
           (attr) =>
+            attr.name &&
+            attr.values &&
             attr.name.toLowerCase() === "storage" &&
             attr.values.some(
-              (val) => String(val.value).replace("GB", "") === String(memory)
+              (val) =>
+                val.value &&
+                String(val.value).replace("GB", "") === String(memory)
             )
         );
     if (ram)
@@ -86,9 +90,12 @@ const filterVariants = (variants, memory, ram, color) =>
         match &&
         variant.attributes.some(
           (attr) =>
+            attr.name &&
+            attr.values &&
             attr.name.toLowerCase() === "ram" &&
             attr.values.some(
-              (val) => String(val.value).replace("GB", "") === String(ram)
+              (val) =>
+                val.value && String(val.value).replace("GB", "") === String(ram)
             )
         );
     if (color)
@@ -96,9 +103,12 @@ const filterVariants = (variants, memory, ram, color) =>
         match &&
         variant.attributes.some(
           (attr) =>
+            attr.name &&
+            attr.values &&
             attr.name.toLowerCase() === "color" &&
             attr.values.some(
-              (val) => val.value.toLowerCase() === color.toLowerCase()
+              (val) =>
+                val.value && val.value.toLowerCase() === color.toLowerCase()
             )
         );
     return match;
@@ -174,9 +184,14 @@ export default function ListProducts({
         new Set(
           (productsVariant || []).flatMap((variant) =>
             (variant.attributes || [])
-              .filter((attr) => attr.name.toLowerCase() === "ram")
+              .filter(
+                (attr) =>
+                  attr.name && attr.values && attr.name.toLowerCase() === "ram"
+              )
               .flatMap((attr) =>
-                attr.values.map((val) => val.value.replace("GB", ""))
+                attr.values
+                  .filter((val) => val.value)
+                  .map((val) => val.value.replace("GB", ""))
               )
           )
         )
@@ -189,9 +204,16 @@ export default function ListProducts({
         new Set(
           (productsVariant || []).flatMap((variant) =>
             (variant.attributes || [])
-              .filter((attr) => attr.name.toLowerCase() === "storage")
+              .filter(
+                (attr) =>
+                  attr.name &&
+                  attr.values &&
+                  attr.name.toLowerCase() === "storage"
+              )
               .flatMap((attr) =>
-                attr.values.map((val) => val.value.replace("GB", ""))
+                attr.values
+                  .filter((val) => val.value)
+                  .map((val) => val.value.replace("GB", ""))
               )
           )
         )
@@ -204,8 +226,15 @@ export default function ListProducts({
         new Set(
           (productsVariant || []).flatMap((variant) =>
             (variant.attributes || [])
-              .filter((attr) => attr.name.toLowerCase() === "color")
-              .flatMap((attr) => attr.values.map((val) => val.value))
+              .filter(
+                (attr) =>
+                  attr.name &&
+                  attr.values &&
+                  attr.name.toLowerCase() === "color"
+              )
+              .flatMap((attr) =>
+                attr.values.filter((val) => val.value).map((val) => val.value)
+              )
           )
         )
       ),

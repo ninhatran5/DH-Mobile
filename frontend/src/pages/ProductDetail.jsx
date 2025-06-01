@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { Modal } from "react-bootstrap";
 import { MdOutlineZoomInMap } from "react-icons/md";
 import Carousel from "react-bootstrap/Carousel";
@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useSwipeable } from "react-swipeable";
 import checkLogin from "../../utils/checkLogin";
 import { useDispatch, useSelector } from "react-redux";
+import { fetchProducts } from "../slices/productSlice"; // Thêm dòng này
 import Loading from "../components/Loading";
 import { fetchProductDetail } from "../slices/productDetailSlice";
 import { fetchProductVariationDetail } from "../slices/productVariationDetails";
@@ -21,29 +22,35 @@ import {
 } from "../slices/favoriteProductsSlice";
 import { fetchAddToCart } from "../slices/cartSlice";
 import { fetchSpecification } from "../slices/specificationsSlice";
+import ListProductCard from "../components/ListProductCard";
 
 // Hàm tổng hợp tất cả thuộc tính từ variants
 function getAllAttributes(variants) {
   const attrMap = {};
   variants.forEach((variant) => {
-    variant.attributes.forEach((attr) => {
-      if (!attrMap[attr.attribute_id]) {
-        attrMap[attr.attribute_id] = {
-          attribute_id: attr.attribute_id,
-          name: attr.name,
-          values: [],
-        };
-      }
-      attr.values.forEach((val) => {
-        if (
-          !attrMap[attr.attribute_id].values.some(
-            (v) => v.value_id === val.value_id
-          )
-        ) {
-          attrMap[attr.attribute_id].values.push(val);
+    // Lọc ra những object là attribute thực sự
+    variant.attributes
+      .filter(
+        (attr) => attr.attribute_id && attr.name && Array.isArray(attr.values)
+      )
+      .forEach((attr) => {
+        if (!attrMap[attr.attribute_id]) {
+          attrMap[attr.attribute_id] = {
+            attribute_id: attr.attribute_id,
+            name: attr.name,
+            values: [],
+          };
         }
+        attr.values.forEach((val) => {
+          if (
+            !attrMap[attr.attribute_id].values.some(
+              (v) => v.value_id === val.value_id
+            )
+          ) {
+            attrMap[attr.attribute_id].values.push(val);
+          }
+        });
       });
-    });
   });
   return Object.values(attrMap);
 }
@@ -52,9 +59,17 @@ function getAllAttributes(variants) {
 function findVariantId(variants, selectedOptions) {
   return (
     variants.find((variant) =>
-      variant.attributes.every(
-        (attr) => selectedOptions[attr.attribute_id] === attr.values[0].value_id
-      )
+      variant.attributes
+        .filter(
+          (attr) =>
+            attr.attribute_id &&
+            Array.isArray(attr.values) &&
+            attr.values.length > 0
+        )
+        .every(
+          (attr) =>
+            selectedOptions[attr.attribute_id] === attr.values[0].value_id
+        )
     )?.variant_id || null
   );
 }
@@ -72,11 +87,34 @@ const ProductDetail = () => {
   );
   const { specifications } = useSelector((state) => state.specification);
   const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
+  const { products = [] } = useSelector((state) => state.product); // Lấy danh sách sản phẩm từ Redux
 
   const { t } = useTranslation();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const productImages = Array.isArray(productDetails.image_url)
+  const variants = productVariationDetails?.data?.variants || [];
+  const allAttributes = getAllAttributes(variants);
+  const variantId = findVariantId(variants, selectedOptions);
+  const selectedVariant = variants.find((v) => v.variant_id === variantId);
+
+  // Lấy image_url từ value vừa chọn (ưu tiên Color, rồi Storage, rồi RAM)
+  function getSelectedValueImage() {
+    for (let attr of allAttributes) {
+      const selectedValueId = selectedOptions[attr.attribute_id];
+      if (selectedValueId) {
+        const value = attr.values.find((v) => v.value_id === selectedValueId);
+        if (value && value.image_url) return value.image_url;
+      }
+    }
+    return null;
+  }
+
+  const selectedValueImage = getSelectedValueImage();
+
+  const productImages = selectedValueImage
+    ? [{ id: 1, image: selectedValueImage }]
+    : selectedVariant && selectedVariant.image_url
+    ? [{ id: 1, image: selectedVariant.image_url }]
+    : Array.isArray(productDetails.image_url)
     ? productDetails.image_url.map((url, idx) => ({ id: idx + 1, image: url }))
     : productDetails.image_url
     ? [{ id: 1, image: productDetails.image_url }]
@@ -145,11 +183,6 @@ const ProductDetail = () => {
     }
   };
 
-  // Lấy danh sách variants từ API
-  const variants = productVariationDetails?.data?.variants || [];
-  const allAttributes = getAllAttributes(variants);
-  const variantId = findVariantId(variants, selectedOptions);
-
   const addToShoppingCart = () => {
     // Validate số lượng
     if (!quantity || quantity < 1) {
@@ -179,6 +212,8 @@ const ProductDetail = () => {
         variant_id: variantId,
       };
       dispatch(fetchAddToCart(payload));
+      console.log("🚀 ~ ProductDetail ~ addToShoppingCart ~ payload:", payload);
+
       toast.success(t("products.addedToCart"));
     }
   };
@@ -222,6 +257,22 @@ const ProductDetail = () => {
       setCurrentImage(productImages[0].image);
     }
   }, [productImages]);
+
+  // Lấy sản phẩm liên quan: cùng category, khác id hiện tại
+  useEffect(() => {
+    if (!products || products.length === 0) {
+      dispatch(fetchProducts());
+    }
+  }, [dispatch, products]);
+
+  const relatedProducts = useMemo(() => {
+    if (!productDetails || !productDetails.category_id) return [];
+    return products.filter(
+      (p) =>
+        p.category_id === productDetails.category_id &&
+        p.product_id !== productDetails.product_id
+    );
+  }, [products, productDetails]);
 
   return (
     <>
@@ -321,7 +372,7 @@ const ProductDetail = () => {
               <p className="text-muted">
                 {t("productDetail.quantity")}:{" "}
                 <span className="fw-bold me-1">
-                  {productVariationDetails?.data?.stock}
+                  {selectedVariant?.stock ?? ""}
                 </span>
                 {t("productDetail.product")}
               </p>
@@ -475,6 +526,12 @@ const ProductDetail = () => {
             )}
             {activeTab === "reviews" && <Comment />}
           </div>
+        </div>
+        <div style={{ marginTop: 30 }}>
+          <ListProductCard
+            title={t("home.relatedProducts")}
+            products={relatedProducts}
+          />
         </div>
       </div>
     </>
