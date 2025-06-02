@@ -174,6 +174,11 @@ class VoucherController extends Controller
                 'status' => 404,
             ])->setStatusCode(404, 'Not Found');
         }
+        $voucher->delete();
+        return response()->json([
+            'message' => 'Đã bỏ vào thùng rác thành công',
+            'status' => 200,
+        ])->setStatusCode(200, 'OK');
     }
 
     /**
