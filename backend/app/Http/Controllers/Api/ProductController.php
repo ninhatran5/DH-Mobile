@@ -25,8 +25,8 @@ class ProductController extends Controller
         $products = Product::with('category')->get();
         
         $formattedProducts = $products->map(function ($product) {
-            $product->price = number_format($product->price, 0, ',', '.');
-            $product->price_original = number_format($product->price_original, 0, ',', '.');
+            $product->price = number_format($product->price, 0, '', '');
+            $product->price_original = number_format($product->price_original, 0, '', '');
             return $product;
         });
         
@@ -109,8 +109,8 @@ class ProductController extends Controller
         //
         $product = Product::with('category')->find($id);
         if ($product) {
-            $product->price = number_format($product->price, 0, ',', '.');
-            $product->price_original = number_format($product->price_original, 0, ',', '.');
+            $product->price = number_format($product->price, 0, '', '');
+            $product->price_original = number_format($product->price_original, 0, '', '');
             
             return response()->json([
                 'message' => 'Lấy sản phẩm thành công',
