@@ -103,7 +103,7 @@ class CartItemController extends Controller
         }
 
         $cartItems = CartItem::where('cart_id', $cart->cart_id)
-            ->with('variant.product') 
+            ->with(['variant.product','variant.attributeValues']) 
             ->get();
         $totalPrice = $cartItems->sum(function ($item) {
             return $item->price_snapshot * $item->quantity;
