@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
@@ -6,15 +6,11 @@ import "swiper/css/navigation";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ProductCard from "./ProductsCard";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchProducts } from "../slices/productSlice";
-import { fetchProductVariants } from "../slices/productVariantsSlice";
 
-export default function ListProductCard({ title }) {
+export default function ListProductCard({ title, products }) {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const { products } = useSelector((state) => state.product);
   const [favorites, setFavorites] = useState([]);
+
   const convertPriceToNumber = (priceString) => {
     if (!priceString) return NaN;
     return Number(priceString.replace(/[^0-9.-]+/g, ""));
@@ -32,10 +28,7 @@ export default function ListProductCard({ title }) {
       return null;
     return Math.floor(((original - sale) / original) * 100);
   };
-  useEffect(() => {
-    dispatch(fetchProducts());
-    dispatch(fetchProductVariants());
-  }, [dispatch]);
+
   return (
     <section className="overflow-hidden">
       <div className="container-fluid">
@@ -81,7 +74,7 @@ export default function ListProductCard({ title }) {
                 1200: { slidesPerView: 5 },
               }}
             >
-              {products.slice(0, 8).map((product) => {
+              {products?.slice(0, 8).map((product) => {
                 const discountPercent = getDiscountPercent(product);
                 return (
                   <SwiperSlide key={product.product_id}>

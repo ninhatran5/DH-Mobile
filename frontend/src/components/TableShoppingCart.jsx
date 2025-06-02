@@ -25,11 +25,11 @@ const TableShoppingCart = ({
       </td>
       <td onClick={handleNextPageDetail} className="product__cart__item">
         <div className="product__cart__item__pic">
-          <img src={item?.variant?.image_url} alt="product" />
+          <img src={item?.variant?.product?.image_url} alt="product" />
         </div>
         <div className="product__cart__item__text">
-          <h6>{item.name}</h6>
-          <h5>{numberFomat(item?.price_snapshot)}</h5>
+          <h5>{item?.variant?.product?.name}</h5>
+          <h6>{numberFomat(item?.price_snapshot)}</h6>
         </div>
       </td>
       <td className="quantity__item">

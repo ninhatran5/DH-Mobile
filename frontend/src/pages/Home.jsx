@@ -406,7 +406,10 @@ const Home = () => {
         showPagination={false}
       />
 
-      <ListProductCard title={t("home.bestSellingProducts")} />
+      <ListProductCard
+        title={t("home.bestSellingProducts")}
+        products={products}
+      />
 
       <section className="py-2 mt-4">
         <div className="container-fluid">
