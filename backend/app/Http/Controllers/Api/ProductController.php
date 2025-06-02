@@ -23,9 +23,16 @@ class ProductController extends Controller
     {
         //
         $products = Product::with('category')->get();
+        
+        $formattedProducts = $products->map(function ($product) {
+            $product->price = number_format($product->price, 0, ',', '.');
+            $product->price_original = number_format($product->price_original, 0, ',', '.');
+            return $product;
+        });
+        
         return response()->json([
             'message' => 'Lấy danh sách sản phẩm thành công',
-            'data' => $products,
+            'data' => $formattedProducts,
             'status' => 200,
         ])->setStatusCode(200, 'OK');
     }
@@ -102,7 +109,14 @@ class ProductController extends Controller
         //
         $product = Product::with('category')->find($id);
         if ($product) {
-            return response()->json($product, 200);
+            $product->price = number_format($product->price, 0, ',', '.');
+            $product->price_original = number_format($product->price_original, 0, ',', '.');
+            
+            return response()->json([
+                'message' => 'Lấy sản phẩm thành công',
+                'data' => $product,
+                'status' => 200
+            ], 200);
         } else {
             return response()->json([
                 'message' => 'Sản phẩm không tồn tại',
