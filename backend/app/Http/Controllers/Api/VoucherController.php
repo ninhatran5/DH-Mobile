@@ -91,7 +91,7 @@ class VorcherController extends Controller
     {
         $vorcher = Vorcher::find($id);
         return response()->json([
-            'message' => 'Lấy vorcher thành công',
+            'message' => 'Lấy voucher thành công',
             'data' => $vorcher
         ])->setStatusCode(200, 'OK',);
     }
@@ -139,7 +139,7 @@ class VorcherController extends Controller
         ]);
         $vorcher->update($validated);
         return response()->json([
-            'message' => 'Cập nhật vorcher thành công',
+            'message' => 'Cập nhật voucher thành công',
             'data' => $vorcher
         ])->setStatusCode(200, 'OK',);
     }
@@ -168,7 +168,7 @@ class VorcherController extends Controller
         if (!$vorcher) {
             # code...
             return response()->json([
-                'message' => 'Vorcher không tồn tại',
+                'message' => 'Voucher không tồn tại',
                 'status' => 404,
             ])->setStatusCode(404, 'Not Found');
         }
@@ -186,7 +186,7 @@ class VorcherController extends Controller
     {
         $vorcher = Vorcher::onlyTrashed()->get();
         return response()->json([
-            'message' => 'Lấy danh sách vorcher đã xóa thành công',
+            'message' => 'Lấy danh sách voucher đã xóa thành công',
             'data' => $vorcher
         ])->setStatusCode(200, 'OK',);
     }
@@ -217,7 +217,7 @@ class VorcherController extends Controller
         }
         $vorcher->restore();
         return response()->json([
-            'massage' => 'Khôi phục vorcher thành công',
+            'massage' => 'Khôi phục voucher thành công',
             'data' => $vorcher
         ])->setStatusCode(200, 'OK',);
     }
@@ -241,12 +241,12 @@ class VorcherController extends Controller
         $vorcher = Vorcher::withTrashed()->find($id);
         if (!$vorcher) {
             return response()->json([
-                'message' => 'vorcher không tồn tại',
+                'message' => 'voucher không tồn tại',
             ]);
         }
         $vorcher->forceDelete();
         return response()->json([
-            'massage' => 'Xóa vorcher vĩnh viễn thành công',
+            'massage' => 'Xóa voucher vĩnh viễn thành công',
             'data' => $vorcher
         ])->setStatusCode(200, 'OK',);
     }
