@@ -14,7 +14,7 @@ class AttributeValueSeeder extends Seeder
     {
         // Color values
         $colorValues = ['Black', 'White', 'Gold', 'Silver', 'Blue'];
-        $colorAttributeId = DB::table('attributes')->where('name', 'Color')->first()->attribute_id;
+        $colorAttributeId = DB::table('attributes')->where('name', 'Màu sắc')->first()->attribute_id;
         foreach ($colorValues as $value) {
             DB::table('attribute_values')->insert([
                 'attribute_id' => $colorAttributeId,
@@ -26,22 +26,10 @@ class AttributeValueSeeder extends Seeder
 
         // Storage values
         $storageValues = ['128GB', '256GB', '512GB', '1TB'];
-        $storageAttributeId = DB::table('attributes')->where('name', 'Storage')->first()->attribute_id;
+        $storageAttributeId = DB::table('attributes')->where('name', 'Bộ nhớ')->first()->attribute_id;
         foreach ($storageValues as $value) {
             DB::table('attribute_values')->insert([
                 'attribute_id' => $storageAttributeId,
-                'value' => $value,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
-
-        // RAM values
-        $ramValues = ['4GB', '6GB', '8GB', '12GB'];
-        $ramAttributeId = DB::table('attributes')->where('name', 'RAM')->first()->attribute_id;
-        foreach ($ramValues as $value) {
-            DB::table('attribute_values')->insert([
-                'attribute_id' => $ramAttributeId,
                 'value' => $value,
                 'created_at' => now(),
                 'updated_at' => now(),
