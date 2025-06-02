@@ -21,7 +21,7 @@ class VoucherController extends Controller
      */
     public function index()
     {
-        $voucher = voucher::all();
+        $voucher = Voucher::all();
         return response()->json([
             'message' => 'lấy danh sách voucher thành công',
             'data' => $voucher
@@ -55,7 +55,7 @@ class VoucherController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'code' => 'required|string|max:50|unique:voucher,code',
+            'code' => 'required|string|max:150|min:10|unique:vouchers,code',
             'title' => 'required|string|min:5|max:255',
             'discount_amount' => 'required|numeric',
             'min_order_value' => 'required|integer',
@@ -63,7 +63,7 @@ class VoucherController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date',
             'is_active' => 'boolean',
         ]);
-        $voucher = voucher::create($validated);
+        $voucher = Voucher::create($validated);
         return response()->json([
             'message' => 'Tạo voucher thành công',
             'data' => $voucher
@@ -90,7 +90,7 @@ class VoucherController extends Controller
      */
     public function show(string $id)
     {
-        $voucher = voucher::find($id);
+        $voucher = Voucher::find($id);
         return response()->json([
             'message' => 'Lấy voucher thành công',
             'data' => $voucher
@@ -129,9 +129,9 @@ class VoucherController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $voucher = voucher::findOrFail($id);
+        $voucher = Voucher::findOrFail($id);
         $validated = $request->validate([
-            'code' => 'string|max:50|unique:voucher,code,' . $id . ',voucher_id',
+            'code' => 'string|max:150|min:10|unique:vouchers,code,' . $id . ',voucher_id',
             'title' => 'string|min:5|max:255',
             'discount_amount' => 'numeric',
             'min_order_value' => 'integer',
@@ -166,7 +166,7 @@ class VoucherController extends Controller
      */
     public function destroy(string $id)
     {
-        $voucher = voucher::find($id);
+        $voucher = Voucher::find($id);
         if (!$voucher) {
             # code...
             return response()->json([
@@ -174,6 +174,11 @@ class VoucherController extends Controller
                 'status' => 404,
             ])->setStatusCode(404, 'Not Found');
         }
+        $voucher->delete();
+        return response()->json([
+            'message' => 'Đã bỏ vào thùng rác thành công',
+            'status' => 200,
+        ])->setStatusCode(200, 'OK');
     }
 
     /**
@@ -186,7 +191,7 @@ class VoucherController extends Controller
      */
     public function trashed()
     {
-        $voucher = voucher::onlyTrashed()->get();
+        $voucher = Voucher::onlyTrashed()->get();
         return response()->json([
             'message' => 'Lấy danh sách voucher đã xóa thành công',
             'data' => $voucher
@@ -210,7 +215,7 @@ class VoucherController extends Controller
      */
     public function restore($id)
     {
-        $voucher = voucher::withTrashed()->find($id);
+        $voucher = Voucher::withTrashed()->find($id);
         if (!$voucher) {
             return response()->json([
                 'message' => 'voucher$voucher không tồn tại',
@@ -240,7 +245,7 @@ class VoucherController extends Controller
      */
     public function forceDelete($id)
     {
-        $voucher = voucher::withTrashed()->find($id);
+        $voucher = Voucher::withTrashed()->find($id);
         if (!$voucher) {
             return response()->json([
                 'message' => 'voucher không tồn tại',
