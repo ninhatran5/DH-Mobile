@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Vorcher;
+use App\Models\Voucher;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -15,7 +15,7 @@ class VoucherSeeder extends Seeder
     public function run(): void
     {
         //
-        $vorchers = collect(range(1, 10))->map(function () {
+        $vouchers = collect(range(1, 10))->map(function () {
             return [
                 'code' => strtoupper(Str::random(18)),
                 'title' => 'Voucher ' . Str::random(12),
@@ -26,8 +26,8 @@ class VoucherSeeder extends Seeder
                 'is_active' => (bool)rand(0, 1),
             ];
         })->toArray();
-        foreach ($vorchers as $vorcher) {
-            Vorcher::create([
+        foreach ($vouchers as $vorcher) {
+            Voucher::create([
                 'code' => $vorcher['code'],
                 'title' => $vorcher['title'],
                 'discount_amount' => $vorcher['discount_amount'],
