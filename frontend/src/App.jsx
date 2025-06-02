@@ -59,6 +59,7 @@ import EditAttributevalues from "./pages/admin/EditAttributevalues";
 import MyDiscountCode from "./pages/MyDiscountCode";
 import EditProduct from "./pages/admin/EditProducts";
 import EditAccount from "./pages/admin/EditAcccount";
+import AddVariant from "./pages/admin/AddVariant";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -284,6 +285,10 @@ const routerConfig = [
       {
         path: "editaccount/:id",
         element: <EditAccount />,
+      },
+      {
+        path: "addvariant/:product_id",
+        element: <AddVariant/>
       }
     ],
   },
