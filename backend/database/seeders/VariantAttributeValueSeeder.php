@@ -16,14 +16,12 @@ class VariantAttributeValueSeeder extends Seeder
         $variants = DB::table('product_variants')->get();
         
         // Get attribute IDs
-        $colorAttributeId = DB::table('attributes')->where('name', 'Color')->first()->attribute_id;
-        $storageAttributeId = DB::table('attributes')->where('name', 'Storage')->first()->attribute_id;
-        $ramAttributeId = DB::table('attributes')->where('name', 'RAM')->first()->attribute_id;
+        $colorAttributeId = DB::table('attributes')->where('name', 'Màu sắc')->first()->attribute_id;
+        $storageAttributeId = DB::table('attributes')->where('name', 'Bộ nhớ')->first()->attribute_id;
 
         // Get attribute values
         $colors = DB::table('attribute_values')->where('attribute_id', $colorAttributeId)->get();
         $storages = DB::table('attribute_values')->where('attribute_id', $storageAttributeId)->get();
-        $rams = DB::table('attribute_values')->where('attribute_id', $ramAttributeId)->get();
 
         foreach ($variants as $variant) {
             // Get product info to determine which values to assign
@@ -79,32 +77,6 @@ class VariantAttributeValueSeeder extends Seeder
                 DB::table('variant_attribute_values')->insert([
                     'variant_id' => $variant->variant_id,
                     'value_id' => $colorValue->value_id,
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
-            }
-
-            // Assign RAM based on storage size more appropriately
-            $ramSize = '';
-            if (str_contains($storageStr, 'TB')) {
-                $ramSize = '12GB';
-            } else {
-                $storageNum = (int)$storageStr;
-                if ($storageNum >= 512) {
-                    $ramSize = '8GB';
-                } else if ($storageNum >= 256) {
-                    $ramSize = '6GB';
-                } else {
-                    $ramSize = '4GB';
-                }
-            }
-            
-            $ramValue = $rams->firstWhere('value', $ramSize);
-
-            if ($ramValue) {
-                DB::table('variant_attribute_values')->insert([
-                    'variant_id' => $variant->variant_id,
-                    'value_id' => $ramValue->value_id,
                     'created_at' => now(),
                     'updated_at' => now()
                 ]);

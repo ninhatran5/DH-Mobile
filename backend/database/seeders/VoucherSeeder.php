@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Vorcher;
+use App\Models\Voucher;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -27,7 +27,7 @@ class VoucherSeeder extends Seeder
             ];
         })->toArray();
         foreach ($vorchers as $vorcher) {
-            Vorcher::create([
+            Voucher::create([
                 'code' => $vorcher['code'],
                 'title' => $vorcher['title'],
                 'discount_amount' => $vorcher['discount_amount'],

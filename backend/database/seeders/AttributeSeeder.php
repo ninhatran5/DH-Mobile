@@ -13,9 +13,8 @@ class AttributeSeeder extends Seeder
     public function run(): void
     {
         $attributes = [
-            ['name' => 'Color'],
-            ['name' => 'Storage'],
-            ['name' => 'RAM'],
+            ['name' => 'Màu sắc'],
+            ['name' => 'Bộ nhớ']
         ];
 
         foreach ($attributes as $attribute) {

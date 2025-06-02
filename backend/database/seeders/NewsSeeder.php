@@ -17,42 +17,45 @@ class NewsSeeder extends Seeder
         DB::table('news')->truncate(); // Xóa dữ liệu cũ trước khi seed
 
         $news = [
-            [
-                'title' => 'iPhone 15 ra mắt với nhiều cải tiến',
-                'user_id' => 1,
-                'content' => 'Apple vừa chính thức giới thiệu iPhone 15 với nhiều tính năng mới và thiết kế hiện đại.',
-                'image_url' => 'https://images2.thanhnien.vn/528068263637045248/2024/12/18/jack--17345360331611347307406.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-                'deleted_at' => null,
-            ],
-            [
-                'title' => 'Samsung Galaxy S24 trình làng',
-                'user_id' => 1,
-                'content' => 'Samsung Galaxy S24 được trang bị camera AI và pin dung lượng lớn.',
-                'image_url' => 'https://game8.vn/media/202207/images/3751224195569329541.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-                'deleted_at' => null,
-            ],
-            [
-                'title' => 'Xiaomi ra mắt dòng Redmi Note mới',
-                'user_id' => 1,
-                'content' => 'Redmi Note mới của Xiaomi có giá thành hợp lý và cấu hình mạnh mẽ.',
-                'image_url' => 'https://i.pinimg.com/736x/fa/fc/4b/fafc4b1052deae2438681e45ff7335a5.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-                'deleted_at' => null,
-            ],
-            [
-                'title' => 'OPPO Find X7 Pro chính thức lên kệ',
-                'user_id' => 1,
-                'content' => 'OPPO Find X7 Pro sở hữu camera ẩn dưới màn hình và sạc siêu nhanh.',
-                'image_url' => 'https://game8.vn/media/202207/images/joker-viet.jpg',
-                'created_at' => now(),
-                'updated_at' => now(),
-                'deleted_at' => null,
-            ],
+           [
+    [
+        'title' => 'Jack J97 đồng hành cùng vivo quảng bá sản phẩm mới',
+        'user_id' => 1,
+        'content' => 'Ca sĩ Jack J97 trở thành gương mặt đại diện trong chiến dịch quảng bá sản phẩm mới của vivo, thu hút sự quan tâm của giới trẻ.',
+        'image_url' => 'https://cdn2.fptshop.com.vn/unsafe/Uploads/images/tin-tuc/126143/Originals/jack1.png',
+        'created_at' => now(),
+        'updated_at' => now(),
+        'deleted_at' => null,
+    ],
+    [
+        'title' => 'Jack J97 xuất hiện trong sự kiện ra mắt vivo S24',
+        'user_id' => 1,
+        'content' => 'Jack J97 gây ấn tượng khi góp mặt tại sự kiện ra mắt vivo S24, sản phẩm nổi bật với thiết kế sang trọng và camera đột phá.',
+        'image_url' => 'https://channel.mediacdn.vn/2020/9/24/photo-2-16009218842091981777481.jpg',
+        'created_at' => now(),
+        'updated_at' => now(),
+        'deleted_at' => null,
+    ],
+    [
+        'title' => 'Jack J97 kết hợp vivo ra mắt dòng sản phẩm trẻ trung',
+        'user_id' => 1,
+        'content' => 'Dòng sản phẩm mới của vivo với thiết kế năng động được Jack J97 đồng hành quảng bá, hướng tới đối tượng người dùng trẻ tuổi.',
+        'image_url' => 'https://nghenhinvietnam.vn//uploads/20221024/anh_chup_man_hinh_2020_10_06_luc_11_05_50_sa_qykp.png',
+        'created_at' => now(),
+        'updated_at' => now(),
+        'deleted_at' => null,
+    ],
+    [
+        'title' => 'Jack J97 và vivo ra mắt Find X7 Pro ấn tượng',
+        'user_id' => 1,
+        'content' => 'Jack J97 tiếp tục đồng hành cùng vivo trong buổi ra mắt Find X7 Pro – sản phẩm sở hữu công nghệ sạc siêu nhanh và camera ẩn dưới màn hình.',
+        'image_url' => 'https://cdn.tgdd.vn/Files/2020/09/23/1292939/jack-vivo-v20-5_800x450.png',
+        'created_at' => now(),
+        'updated_at' => now(),
+        'deleted_at' => null,
+    ],
+]
+
            
         ];
 
