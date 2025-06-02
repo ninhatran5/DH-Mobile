@@ -1,67 +1,243 @@
 .adminvoucher-container {
-  background: #fff;
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  font-family: 'Segoe UI', sans-serif;
+  max-width: 1100px;
   margin: 20px auto;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  background: #ffffff;
+  transition: all 0.3s ease;
 }
 
 .adminvoucher-title {
-  font-size: 20px;
-  font-weight: bold;
+  text-align: center;
+  font-size: 22px;
   margin-bottom: 20px;
+  color: #1f2937;
+}
+
+.adminvoucher-search {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 8px 12px;
+  background: #f1f5f9;
+  border-radius: 12px;
+  max-width: 300px;
+  margin-left: auto;
+}
+
+.adminvoucher-search input {
+  border: none;
+  outline: none;
+  background: transparent;
+  flex: 1;
+  padding: 6px;
+  font-size: 14px;
+}
+
+.search-icon {
+  color: #6b7280;
+  margin-right: 8px;
 }
 
 .adminvoucher-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
-}
-
-.adminvoucher-table thead {
-  background-color: #f9fafb;
+  font-size: 13.5px;
 }
 
 .adminvoucher-table th,
 .adminvoucher-table td {
-  padding: 12px 16px;
-  text-align: left;
-  border-bottom: 1px solid #f0f0f0;
+  padding: 10px 14px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.adminvoucher-table thead {
+  background-color: #f9fafb;
+  font-weight: 600;
 }
 
 .adminvoucher-table tbody tr:hover {
-  background-color: #f4f6f8;
+  background-color: #f3f4f6;
+  transition: background-color 0.2s ease;
 }
 
 .adminvoucher-status {
-  background-color: #dcfce7;
-  color: #16a34a;
+  background-color: #d1fae5;
+  color: #059669;
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius: 9999px;
+  font-size: 12.5px;
   font-weight: 500;
-  font-size: 13px;
-  display: inline-block;
 }
 
-.icon-edit {
-  color: #3b82f6;
-  margin-right: 12px;
+.icon-edit, .icon-delete {
   cursor: pointer;
+  font-size: 15px;
+  transition: transform 0.2s;
+}
+
+.icon-edit:hover {
+  color: #3b82f6;
+  transform: scale(1.2);
+}
+
+.icon-delete:hover {
+  color: #ef4444;
+  transform: scale(1.2);
+}
+
+@media (max-width: 768px) {
+  .adminvoucher-table, .adminvoucher-search {
+    font-size: 12px;
+  }
+
+  .adminvoucher-search {
+    width: 100%;
+  }
+}
+
+.admineditvoucher-container {
+  padding: 32px;
+  max-width: 1000px;
+  margin: 0 auto;
+  background-color: #f9f9f9;
+  border-radius: 16px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.admineditvoucher-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #1f1f1f;
+  text-align: center;
+}
+
+.admineditvoucher-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.admineditvoucher-group {
+  display: flex;
+  flex-direction: column;
+  width: calc(50% - 10px); /* 2 columns layout */
+}
+
+.admineditvoucher-label {
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+}
+
+.admineditvoucher-input {
+  padding: 10px 14px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #fff;
+  transition: border-color 0.2s;
+}
+
+.admineditvoucher-input:focus {
+  border-color: #007aff;
+  outline: none;
+}
+
+.admineditvoucher-active-group {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.admineditvoucher-checkbox {
+  transform: scale(1.2);
+}
+
+.admineditvoucher-submit {
+  width: 100%;
+  padding: 12px;
   font-size: 16px;
+  margin-top: 20px;
+  background-color: #007aff;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.admineditvoucher-submit:hover {
+  background-color: #005ecb;
+}
+
+@media (max-width: 768px) {
+  .admineditvoucher-group {
+    width: 100%;
+  }
+
+  .admineditvoucher-active-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+/* Màu cho các ô */
+.td-id {
+  color: #555;
+  font-weight: bold;
+}
+
+.td-code {
+  color: #007bff; /* Xanh dương */
+  font-weight: 500;
+}
+
+.td-title {
+  color: #333;
+  font-style: italic;
+}
+
+.td-discount {
+  color: #e53935; /* Đỏ */
+  font-weight: bold;
+}
+
+.td-minorder {
+  color: #6a1b9a; /* Tím */
+}
+
+.td-start {
+  color: #388e3c; /* Xanh lá */
+}
+
+.td-end {
+  color: #f57c00; /* Cam */
+}
+.icon-edit {
+  color: #007bff;       /* Xanh dương */
+  margin-right: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: color 0.3s ease;
+}
+
+.icon-edit:hover {
+  color: #0056b3;        /* Xanh đậm khi hover */
 }
 
 .icon-delete {
-  color: red;
+  color: #dc3545;        /* Đỏ */
   cursor: pointer;
-  font-size: 16px;
+  font-size: 18px;
+  transition: color 0.3s ease;
 }
 
-.adminvoucher-empty,
-.adminvoucher-loading,
-.adminvoucher-error {
-  text-align: center;
-  padding: 20px;
-  color: #666;
-  font-style: italic;
+.icon-delete:hover {
+  color: #a71d2a;        /* Đỏ đậm khi hover */
 }
+
