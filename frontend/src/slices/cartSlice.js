@@ -7,7 +7,6 @@ const initialState = {
   error: null,
 };
 
-///CALL API REGISTER
 export const fetchAddToCart = createAsyncThunk(
   "cart/fetchAddToCart",
   async (data, thunkAPI) => {
@@ -30,6 +29,37 @@ export const fetchCart = createAsyncThunk(
     try {
       const response = await axiosConfig.get(`/getCart`);
       return response.data.cart_items;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Đã có lỗi xảy ra"
+      );
+    }
+  }
+);
+
+export const fetchUpdateCartQuantity = createAsyncThunk(
+  "cart/fetchUpdateCartQuantity",
+  async ({ variant_id, quantity }, thunkAPI) => {
+    try {
+      const response = await axiosConfig.post(
+        `/cart/updateProductQuantity/${variant_id}`,
+        { quantity }
+      );
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Đã có lỗi xảy ra"
+      );
+    }
+  }
+);
+
+export const deleteProductCart = createAsyncThunk(
+  "cart/deleteProductCart",
+  async (id, thunkAPI) => {
+    try {
+      const response = await axiosConfig.delete(`/cart/remove/${id}`);
+      return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Đã có lỗi xảy ra"
@@ -75,6 +105,38 @@ export const cartSlice = createSlice({
       })
       // call lỗi
       .addCase(fetchCart.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Đã có lỗi xảy ra";
+      })
+
+      // pending(đang call)
+      .addCase(fetchUpdateCartQuantity.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      // call thành công
+      .addCase(fetchUpdateCartQuantity.fulfilled, (state, action) => {
+        state.loading = false;
+        state.carts = action.payload;
+      })
+      // call lỗi
+      .addCase(fetchUpdateCartQuantity.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Đã có lỗi xảy ra";
+      })
+
+      // pending(đang call)
+      .addCase(deleteProductCart.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      // call thành công
+      .addCase(deleteProductCart.fulfilled, (state, action) => {
+        state.loading = false;
+        state.carts = action.payload;
+      })
+      // call lỗi
+      .addCase(deleteProductCart.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
       });
