@@ -1,0 +1,67 @@
+.adminvoucher-container {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  font-family: 'Segoe UI', sans-serif;
+  margin: 20px auto;
+}
+
+.adminvoucher-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.adminvoucher-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.adminvoucher-table thead {
+  background-color: #f9fafb;
+}
+
+.adminvoucher-table th,
+.adminvoucher-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.adminvoucher-table tbody tr:hover {
+  background-color: #f4f6f8;
+}
+
+.adminvoucher-status {
+  background-color: #dcfce7;
+  color: #16a34a;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 13px;
+  display: inline-block;
+}
+
+.icon-edit {
+  color: #3b82f6;
+  margin-right: 12px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.icon-delete {
+  color: red;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.adminvoucher-empty,
+.adminvoucher-loading,
+.adminvoucher-error {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+}

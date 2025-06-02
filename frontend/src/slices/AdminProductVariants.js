@@ -19,6 +19,29 @@ export const fetchAdminProductVariants = createAsyncThunk(
   }
 );
 
+export const addAdminProductVariant = createAsyncThunk(
+  "adminProductVariants/addAdminProductVariant",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      if (!token) {
+        return rejectWithValue("Token không tồn tại hoặc hết hạn");
+      }
+
+      const res = await axiosConfig.post("/productvariants", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": formData instanceof FormData ? "multipart/form-data" : "application/json",
+        },
+      });
+
+      return res.data.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Lỗi khi thêm biến thể");
+    }
+  }
+);
+
 // Cập nhật productVariant
 export const updateAdminProductVariant = createAsyncThunk(
   "adminProductVariants/updateAdminProductVariant",
@@ -90,6 +113,18 @@ const adminProductVariantsSlice = createSlice({
       })
       .addCase(fetchAdminProductVariants.rejected, (state, action) => {
         state.loading = false; 
+        state.error = action.payload;
+      })
+      .addCase(addAdminProductVariant.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addAdminProductVariant.fulfilled, (state, action) => {
+        state.loading = false;
+        state.productVariants.push(action.payload);
+      })
+      .addCase(addAdminProductVariant.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
       })
       .addCase(updateAdminProductVariant.pending, (state) => {
