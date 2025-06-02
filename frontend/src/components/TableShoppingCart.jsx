@@ -20,7 +20,9 @@ const TableShoppingCart = ({
         <input
           type="checkbox"
           checked={item.selected}
-          onChange={() => handleSelectItem(item.cart_item_id)}
+          onChange={(e) =>
+            handleChangeQuantity(item.variant_id, e.target.value)
+          }
         />
       </td>
       <td onClick={handleNextPageDetail} className="product__cart__item">
