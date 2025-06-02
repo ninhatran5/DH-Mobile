@@ -49,8 +49,8 @@ class ProductVariantsController extends Controller
                 'variant_id' => $variant->variant_id,
                 'image_url' => $variant->image_url,
                 'sku' => $variant->sku,
-                'price' => number_format((float)$variant->price, 0, ',', '.'),
-                'price_original' => number_format((float)$variant->price_original, 0, ',', '.'),
+                'price' => number_format((float)$variant->price, 0, '', ''),
+                'price_original' => number_format((float)$variant->price_original, 0, '', ''),
                 'stock' => $variant->stock
             ];
             
@@ -195,8 +195,8 @@ class ProductVariantsController extends Controller
             $variant->makeHidden(['attributeValues', 'created_at', 'updated_at', 'deleted_at', 'is_active']);
             
             // Format lại giá cho variant
-            $variant->price = number_format((float)$variant->price, 0, ',', '.');
-            $variant->price_original = number_format((float)$variant->price_original, 0, ',', '.');
+            $variant->price = number_format((float)$variant->price, 0, '', '');
+            $variant->price_original = number_format((float)$variant->price_original, 0, '', '');
 
             return $variant;
         });
