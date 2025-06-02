@@ -627,6 +627,46 @@
                 }
             }
         },
+        "/api/refresh": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Làm mới token",
+                "operationId": "5550a4ff37defec1875cf00de4437ae7",
+                "responses": {
+                    "200": {
+                        "description": "Token đã được làm mới thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "access_token": {
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "type": "string"
+                                        },
+                                        "user": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token không hợp lệ hoặc đã hết hạn"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/getbanners": {
             "get": {
                 "tags": [
@@ -1951,16 +1991,16 @@
                 }
             }
         },
-        "/api/variant-attribute-values/{id}": {
+        "/api/variant-attribute-values/{variant_id}": {
             "get": {
                 "tags": [
                     "VariantAttributeValues"
                 ],
-                "summary": "Lấy chi tiết liên kết biến thể - giá trị thuộc tính",
-                "operationId": "48ac7a8b6db1d7344d9022746e0e81f5",
+                "summary": "Lấy tất cả thuộc tính của một biến thể",
+                "operationId": "1f1d391042e54cb67abb657e014f276a",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "variant_id",
                         "in": "path",
                         "required": true,
                         "schema": {
@@ -1981,11 +2021,11 @@
                 "tags": [
                     "VariantAttributeValues"
                 ],
-                "summary": "Cập nhật liên kết biến thể - giá trị thuộc tính",
-                "operationId": "acfcc3ca74daf2f7cf9a5b8464bedfa6",
+                "summary": "Cập nhật thuộc tính của biến thể",
+                "operationId": "a0b610281c346864786abbfc7dd4eb97",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "variant_id",
                         "in": "path",
                         "required": true,
                         "schema": {
@@ -1999,11 +2039,16 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "variant_id": {
-                                        "type": "integer"
-                                    },
-                                    "value_id": {
-                                        "type": "integer"
+                                    "attributes": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "value_id": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
                                     }
                                 },
                                 "type": "object"
@@ -2016,10 +2061,15 @@
                         "description": "Cập nhật thành công"
                     },
                     "404": {
-                        "description": "Không tìm thấy"
+                        "description": "Không tìm thấy biến thể"
+                    },
+                    "422": {
+                        "description": "Dữ liệu không hợp lệ"
                     }
                 }
-            },
+            }
+        },
+        "/api/variant-attribute-values/{id}": {
             "delete": {
                 "tags": [
                     "VariantAttributeValues"
@@ -2114,27 +2164,27 @@
                 }
             }
         },
-        "/api/vorchers/trashed": {
+        "/api/voucher$voucher/trashed": {
             "get": {
                 "tags": [
-                    "Vorcher"
+                    "voucher$voucher"
                 ],
-                "summary": "Lấy danh sách các vorcher đã bị xóa mềm",
-                "operationId": "e22728bc5acc00959fb34d1c393cf1a0",
+                "summary": "Lấy danh sách các voucher$voucher đã bị xóa mềm",
+                "operationId": "bd36046bf5105f3d56b11f98424f9827",
                 "responses": {
                     "200": {
-                        "description": "Lấy danh sách vorcher đã xóa thành công"
+                        "description": "Lấy danh sách voucher$voucher đã xóa thành công"
                     }
                 }
             }
         },
-        "/api/vorchers/restore/{id}": {
+        "/api/voucher$voucher/restore/{id}": {
             "put": {
                 "tags": [
-                    "Vorcher"
+                    "voucher$voucher"
                 ],
-                "summary": "Khôi phục một vorcher đã bị xóa mềm",
-                "operationId": "5fc52f158050ce90f4072ffedb253d35",
+                "summary": "Khôi phục một voucher$voucher đã bị xóa mềm",
+                "operationId": "5cc9440359808a990178b17211feb06f",
                 "parameters": [
                     {
                         "name": "id",
@@ -2147,7 +2197,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Khôi phục vorcher thành công"
+                        "description": "Khôi phục voucher$voucher thành công"
                     },
                     "404": {
                         "description": "Không tìm thấy"
@@ -2155,13 +2205,13 @@
                 }
             }
         },
-        "/api/vorchers/force-delete/{id}": {
+        "/api/voucher$voucher/force-delete/{id}": {
             "delete": {
                 "tags": [
-                    "Vorcher"
+                    "voucher$voucher"
                 ],
-                "summary": "Xóa vĩnh viễn vorcher đã xóa mềm",
-                "operationId": "35cef9c013ea5b096d32c494268f19d4",
+                "summary": "Xóa vĩnh viễn voucher$voucher đã xóa mềm",
+                "operationId": "53f691dff366148cf7c1f3e19194d3d8",
                 "parameters": [
                     {
                         "name": "id",
@@ -2240,8 +2290,8 @@
             "description": "VariantAttributeValues"
         },
         {
-            "name": "Vorcher",
-            "description": "Vorcher"
+            "name": "voucher$voucher",
+            "description": "voucher$voucher"
         }
     ]
 }

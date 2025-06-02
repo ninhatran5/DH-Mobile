@@ -56,6 +56,7 @@ class VoucherController extends Controller
     {
         $validated = $request->validate([
             'code' => 'required|string|max:50|unique:voucher,code',
+            'title' => 'required|string|min:5|max:255',
             'discount_amount' => 'required|numeric',
             'min_order_value' => 'required|integer',
             'start_date' => 'required|date',
@@ -131,6 +132,7 @@ class VoucherController extends Controller
         $voucher = voucher::findOrFail($id);
         $validated = $request->validate([
             'code' => 'string|max:50|unique:voucher,code,' . $id . ',voucher_id',
+            'title' => 'string|min:5|max:255',
             'discount_amount' => 'numeric',
             'min_order_value' => 'integer',
             'start_date' => 'date',
