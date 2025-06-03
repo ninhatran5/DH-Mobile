@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { Modal } from "react-bootstrap";
 import { MdOutlineZoomInMap } from "react-icons/md";
 import Carousel from "react-bootstrap/Carousel";
@@ -20,7 +20,7 @@ import {
   fetchFavoriteProduct,
   fetchListFavorite,
 } from "../slices/favoriteProductsSlice";
-import { fetchAddToCart } from "../slices/cartSlice";
+import { fetchAddToCart, fetchCart } from "../slices/cartSlice";
 import { fetchSpecification } from "../slices/specificationsSlice";
 import ListProductCard from "../components/ListProductCard";
 
@@ -82,7 +82,7 @@ const ProductDetail = () => {
   const { productDetails, loading } = useSelector(
     (state) => state.productDetail
   );
-  console.log("🚀 ~ ProductDetail ~ productDetails:", productDetails)
+  console.log("🚀 ~ ProductDetail ~ productDetails:", productDetails);
   const { productVariationDetails } = useSelector(
     (state) => state.productVariationDetail
   );
@@ -128,6 +128,7 @@ const ProductDetail = () => {
   const [showModal, setShowModal] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [activeIndex, setActiveIndex] = useState(0);
+  const productImgRef = useRef(null);
 
   const handleThumbnailClick = (image) => {
     setCurrentImage(image);
@@ -179,7 +180,7 @@ const ProductDetail = () => {
       return;
     }
     try {
-      await dispatch(fetchFavoriteProduct(productDetails.product_id));
+      await dispatch(fetchFavoriteProduct(productDetails?.data?.product_id));
       toast.success(t("products.addedToFavorites"));
       dispatch(fetchListFavorite()); // Thêm dòng này để cập nhật danh sách yêu thích
     } catch (error) {
@@ -187,7 +188,7 @@ const ProductDetail = () => {
     }
   };
 
-  const addToShoppingCart = () => {
+  const addToShoppingCart = async () => {
     // Validate số lượng
     if (!quantity || quantity < 1) {
       toast.warn(t("products.errorMin"));
@@ -210,13 +211,14 @@ const ProductDetail = () => {
     }
 
     if (checkLogin()) {
+      animateToCart();
       const payload = {
         product_id: productDetails.product_id,
         quantity,
         variant_id: variantId,
       };
-      dispatch(fetchAddToCart(payload));
-
+      await dispatch(fetchAddToCart(payload));
+      await dispatch(fetchCart()); // Thêm dòng này để cập nhật lại giỏ hàng từ backend
       toast.success(t("products.addedToCart"));
     }
   };
@@ -277,6 +279,38 @@ const ProductDetail = () => {
     );
   }, [products, productDetails]);
 
+  const animateToCart = () => {
+    const img = productImgRef.current;
+    // Lấy icon giỏ hàng trên header bằng class hoặc thuộc tính đặc biệt
+    const cart = document.querySelector(".header-cart-icon"); // Thêm class này vào icon giỏ hàng ở Header.jsx
+    if (!img || !cart) return;
+
+    const imgRect = img.getBoundingClientRect();
+    const cartRect = cart.getBoundingClientRect();
+
+    const clone = img.cloneNode(true);
+    clone.style.position = "fixed";
+    clone.style.left = imgRect.left + "px";
+    clone.style.top = imgRect.top + "px";
+    clone.style.width = imgRect.width + "px";
+    clone.style.height = imgRect.height + "px";
+    clone.style.transition = "all 1.5s cubic-bezier(.4,2,.6,1)";
+    clone.style.zIndex = 1000;
+    document.body.appendChild(clone);
+
+    setTimeout(() => {
+      clone.style.left = cartRect.left + "px";
+      clone.style.top = cartRect.top + "px";
+      clone.style.width = "40px";
+      clone.style.height = "40px";
+      clone.style.opacity = 0.5;
+    }, 10);
+
+    setTimeout(() => {
+      document.body.removeChild(clone);
+    }, 1600);
+  };
+
   return (
     <>
       {loading && <Loading />}
@@ -294,6 +328,7 @@ const ProductDetail = () => {
           <div className="col-md-6 mb-5 position-relative">
             <div className="border rounded mb-3 p-3 text-center position-relative">
               <img
+                ref={productImgRef}
                 src={currentImage}
                 alt="iPhone"
                 className="img-fluid"

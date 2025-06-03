@@ -61,7 +61,10 @@ export default function Header() {
     {
       id: 1,
       icon: (
-        <span style={{ position: "relative", display: "inline-block" }}>
+        <span
+          style={{ position: "relative", display: "inline-block" }}
+          className="header-cart-icon"
+        >
           <FiShoppingCart />
           {cartCount > 0 && (
             <span

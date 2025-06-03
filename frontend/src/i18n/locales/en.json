@@ -432,5 +432,13 @@
     "saveSuccess": "Voucher saved successfully",
     "iconSave": "Save",
     "iconCopy": "Copy"
+  },
+  "toast": {
+    "updateQuantityError": "Cannot update quantity!",
+    "minQuantity": "Minimum is 1 product",
+    "invalidQuantity": "Invalid quantity",
+    "selectProductToDelete": "Please select products to delete!",
+    "deleteSuccess": "Product deleted successfully!",
+    "deleteError": "Error deleting product"
   }
 }
