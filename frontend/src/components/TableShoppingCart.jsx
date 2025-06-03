@@ -20,14 +20,12 @@ const TableShoppingCart = ({
         <input
           type="checkbox"
           checked={item.selected}
-          onChange={(e) =>
-            handleChangeQuantity(item.variant_id, e.target.value)
-          }
+          onChange={() => handleSelectItem(item.variant_id)}
         />
       </td>
       <td onClick={handleNextPageDetail} className="product__cart__item">
         <div className="product__cart__item__pic">
-          <img src={item?.variant?.product?.image_url} alt="product" />
+          <img src={item?.variant?.image_url} alt="product" />
         </div>
         <div className="product__cart__item__text">
           <h5>{item?.variant?.product?.name}</h5>
@@ -56,8 +54,12 @@ const TableShoppingCart = ({
           </div>
         </div>
       </td>
-      <td className="cart__price ">{item.color}</td>
-      <td className="cart__price text-end">{item.version}</td>
+      <td className="cart__price text-center ">
+        {item?.variant?.attribute_values?.[0]?.value}
+      </td>
+      <td className="cart__price text-center">
+        {item?.variant?.attribute_values?.[1]?.value}
+      </td>
       <td className="cart__price text-end">
         {numberFomat(item?.quantity * item?.price_snapshot)}
       </td>

@@ -82,6 +82,7 @@ const ProductDetail = () => {
   const { productDetails, loading } = useSelector(
     (state) => state.productDetail
   );
+  console.log("🚀 ~ ProductDetail ~ productDetails:", productDetails)
   const { productVariationDetails } = useSelector(
     (state) => state.productVariationDetail
   );
@@ -114,10 +115,13 @@ const ProductDetail = () => {
     ? [{ id: 1, image: selectedValueImage }]
     : selectedVariant && selectedVariant.image_url
     ? [{ id: 1, image: selectedVariant.image_url }]
-    : Array.isArray(productDetails.image_url)
-    ? productDetails.image_url.map((url, idx) => ({ id: idx + 1, image: url }))
-    : productDetails.image_url
-    ? [{ id: 1, image: productDetails.image_url }]
+    : Array.isArray(productDetails.data?.image_url)
+    ? productDetails.data.image_url.map((url, idx) => ({
+        id: idx + 1,
+        image: url,
+      }))
+    : productDetails.data?.image_url
+    ? [{ id: 1, image: productDetails.data.image_url }]
     : [];
 
   const [currentImage, setCurrentImage] = useState(null);
@@ -212,7 +216,6 @@ const ProductDetail = () => {
         variant_id: variantId,
       };
       dispatch(fetchAddToCart(payload));
-      console.log("🚀 ~ ProductDetail ~ addToShoppingCart ~ payload:", payload);
 
       toast.success(t("products.addedToCart"));
     }
@@ -266,11 +269,11 @@ const ProductDetail = () => {
   }, [dispatch, products]);
 
   const relatedProducts = useMemo(() => {
-    if (!productDetails || !productDetails.category_id) return [];
+    if (!productDetails.data || !productDetails.data.category_id) return [];
     return products.filter(
       (p) =>
-        p.category_id === productDetails.category_id &&
-        p.product_id !== productDetails.product_id
+        p.category_id === productDetails.data.category_id &&
+        p.product_id !== productDetails.data.product_id
     );
   }, [products, productDetails]);
 
@@ -281,7 +284,7 @@ const ProductDetail = () => {
         title={t("breadcrumbProductDetail.breadcrumbHeader")}
         mainItem={t("breadcrumbProductDetail.breadcrumbTitleHome")}
         mainItem2={t("breadcrumbProductDetail.breadcrumbTitleProduct")}
-        secondaryItem={productDetails.name}
+        secondaryItem={productDetails.data?.name}
         linkMainItem={"/"}
         linkMainItem2={"/products"}
       />
@@ -359,14 +362,14 @@ const ProductDetail = () => {
           </Modal>
 
           <div className="col-md-6">
-            <div key={productDetails.product_id}>
-              <h2 className="mb-3">{productDetails.name}</h2>
+            <div key={productDetails.data?.product_id}>
+              <h2 className="mb-3">{productDetails.data?.name}</h2>
               <div className="price">
                 <h4 className="text-price_sale">
-                  {numberFomat(productDetails.price)}
+                  {numberFomat(productDetails.data?.price)}
                 </h4>
                 <p className="text-price_original">
-                  {numberFomat(productDetails?.price_original)}
+                  {numberFomat(productDetails.data?.price_original)}
                 </p>
               </div>
               <p className="text-muted">
@@ -376,7 +379,7 @@ const ProductDetail = () => {
                 </span>
                 {t("productDetail.product")}
               </p>
-              <p className="text-muted">{productDetails.description}</p>
+              <p className="text-muted">{productDetails.data?.description}</p>
             </div>
 
             <div className="mb-3">
@@ -508,7 +511,7 @@ const ProductDetail = () => {
             {activeTab === "description" && (
               <div className="tab-pane fade show active">
                 <p className="desc_productdetai">
-                  {productDetails.description}
+                  {productDetails.data?.description}
                 </p>
               </div>
             )}
