@@ -7,15 +7,16 @@ const initialState = {
   error: null,
 };
 
+// Fetch vouchers
 export const fetchAdminVouchers = createAsyncThunk(
   "AdminVoucher/fetchAdminVouchers",
   async (_, { rejectWithValue }) => {
     try {
       const adminToken = localStorage.getItem("adminToken");
-      const res = await axiosConfig.get("/vorchers", {
+      const res = await axiosConfig.get("/voucher", {
         headers: {
-          Authorization: `Bearer ${adminToken}`
-        }
+          Authorization: `Bearer ${adminToken}`,
+        },
       });
       return res.data.data;
     } catch (err) {
@@ -24,14 +25,13 @@ export const fetchAdminVouchers = createAsyncThunk(
   }
 );
 
-
 // Delete voucher
 export const deleteAdminVoucher = createAsyncThunk(
   "AdminVoucher/deleteAdminVoucher",
   async (voucherId, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      await axiosConfig.delete(`/vorchers/${voucherId}`, {
+      await axiosConfig.delete(`/voucher/${voucherId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -53,7 +53,7 @@ export const addAdminVoucher = createAsyncThunk(
         return rejectWithValue("Token không tồn tại hoặc hết hạn");
       }
 
-      const res = await axiosConfig.post("/vorchers", newVoucher, {
+      const res = await axiosConfig.post("/voucher", newVoucher, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -76,7 +76,7 @@ export const updateAdminVoucher = createAsyncThunk(
         return rejectWithValue("Token không tồn tại hoặc hết hạn");
       }
 
-      const response = await axiosConfig.post(`/vorchers/${id}?_method=PUT`, updatedData, {
+      const response = await axiosConfig.post(`/voucher/${id}?_method=PUT`, updatedData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -118,7 +118,7 @@ const adminVoucherSlice = createSlice({
       .addCase(deleteAdminVoucher.fulfilled, (state, action) => {
         state.loading = false;
         state.vouchers = state.vouchers.filter(
-          (voucher) => voucher.vorcher_id !== action.payload
+          (voucher) => voucher.voucher_id !== action.payload
         );
       })
       .addCase(deleteAdminVoucher.rejected, (state, action) => {
@@ -135,7 +135,7 @@ const adminVoucherSlice = createSlice({
       .addCase(updateAdminVoucher.fulfilled, (state, action) => {
         const updatedVoucher = action.payload;
         const index = state.vouchers.findIndex(
-          (voucher) => voucher.vorcher_id === updatedVoucher.vorcher_id
+          (voucher) => voucher.voucher_id === updatedVoucher.voucher_id
         );
         if (index !== -1) {
           state.vouchers[index] = updatedVoucher;

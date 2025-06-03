@@ -60,6 +60,7 @@ import MyDiscountCode from "./pages/MyDiscountCode";
 import EditProduct from "./pages/admin/EditProducts";
 import EditAccount from "./pages/admin/EditAcccount";
 import AddVariant from "./pages/admin/AddVariant";
+import EditVoucher from "./pages/admin/EditVoucher";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -289,6 +290,10 @@ const routerConfig = [
       {
         path: "addvariant/:product_id",
         element: <AddVariant/>
+      },
+      {
+        path: "EditVoucher/:id",
+        element: <EditVoucher/>
       }
     ],
   },
