@@ -16,22 +16,37 @@ class CategorySeeder extends Seeder
             [
                 'name' => 'iPhone',
                 'description' => 'Apple iPhone smartphones',
-                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1748277630/categories/nuwxngeq4pyuisrevqry.jpg'
+                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1748945978/categories/nxt5q0zphk1ho1tgrnoi.png'
             ],
             [
                 'name' => 'Samsung',
                 'description' => 'Samsung smartphones including Galaxy series',
-                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1748277645/categories/euobkkqrq6u5zrd9ks2w.jpg'
+                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1748945991/categories/gq6tqdsk85tlpna69xat.png'
             ],
             [
                 'name' => 'Xiaomi',
                 'description' => 'Xiaomi smartphones',
-                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1748277656/categories/orv3sx1aieltovlngrln.png'
+                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1748946004/categories/v92i3rwqiqwrqqa1ps3e.png'
             ],
             [
                 'name' => 'OPPO',
                 'description' => 'OPPO smartphones',
-                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1748277675/categories/loxih5ffrfcpmvscd63t.png'
+                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1748946021/categories/rmqhwksoeacjpewsmthw.png'
+            ],
+             [
+                'name' => 'Vivo',
+                'description' => 'Vivo smartphones',
+                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1748946056/categories/bwuqvht7vtnh0l9xkt4i.png'
+             ],
+             [
+                'name' => 'Tecno',
+                'description' => 'Tecno smartphones',
+                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1748946367/categories/w1anpsleqdosw2bro79c.png'
+             ],
+            [
+                'name' => 'Realme',
+                'description' => 'Realme smartphones',
+                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1748946953/categories/ljpb3x6yda9ce5bsz7vt.png'
             ]
         ];
 
