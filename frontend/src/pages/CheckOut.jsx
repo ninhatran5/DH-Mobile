@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import iphone from "../assets/images/iphone-16-pro-max.webp";
 import { TbExchange } from "react-icons/tb";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
@@ -7,30 +6,25 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { fetchProfile } from "../slices/profileSlice";
 import Loading from "../components/Loading";
+import { fetchCart } from "../slices/cartSlice";
+import numberFormat from "../../utils/numberFormat";
 
 const CheckOut = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { profile, loading } = useSelector((state) => state.profile);
-  const purchaseInformation = [
-    {
-      id: 1,
-      name: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
-      image: iphone,
-      quantity: 1,
-      total: "27.890.000đ",
-    },
-    {
-      id: 2,
-      name: "iPhone 15 Pro Max 64GB | Chính hãng US/A",
-      image: iphone,
-      quantity: 2,
-      total: "14.890.000đ",
-    },
-  ];
+
+  const { carts } = useSelector((state) => state.cart);
+  console.log("🚀 ~ ShoppingCart ~ carts:", carts);
+
   useEffect(() => {
     dispatch(fetchProfile());
+    dispatch(fetchCart());
   }, [dispatch]);
+  const totalPrice = carts.reduce(
+    (sum, item) => sum + item.quantity * item.price_snapshot,
+    0
+  );
   return (
     <>
       {loading && <Loading />}
@@ -178,30 +172,146 @@ const CheckOut = () => {
                         </p>
                       </div>
                     </div>
-                    {purchaseInformation.map((item) => (
-                      <ul key={item.id} className="checkout__total__products">
+                    {carts.map((item) => (
+                      <ul
+                        key={item.cart_item_id}
+                        className="checkout__total__products"
+                        style={{ padding: 0, marginBottom: 12 }}
+                      >
                         <li>
-                          <div className="checkout_card">
-                            <div className="checkout_card_image">
-                              <img src={item.image} alt={item.name} />
+                          <div
+                            className="checkout_card"
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 16,
+                              border: "1px solid #eee",
+                              borderRadius: 12,
+                              padding: 12,
+                              background: "#fafbfc",
+                            }}
+                          >
+                            <div
+                              className="checkout_card_image"
+                              style={{
+                                width: 64,
+                                height: 64,
+                                borderRadius: 8,
+                                overflow: "hidden",
+                                background: "#fff",
+                                border: "1px solid #eee",
+                                flexShrink: 0,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <img
+                                src={item?.variant?.image_url}
+                                alt={item?.variant?.product?.name}
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  objectFit: "cover",
+                                }}
+                              />
                             </div>
-                            <p className="checkout_card_name">{item.name}</p>
-                            <p className="checkout_card_quantity">
-                              {item.quantity}
-                            </p>
-                            <span className="checkout_card_total">
-                              {item.total}
-                            </span>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <p
+                                className="checkout_card_name"
+                                style={{
+                                  fontWeight: 700,
+                                  fontSize: 17,
+                                  margin: 0,
+                                  color: "#222",
+                                  marginBottom: 6,
+                                  lineHeight: 1.3,
+                                  wordBreak: "break-word",
+                                }}
+                              >
+                                {item?.variant?.product?.name}
+                              </p>
+                              <div
+                                style={{
+                                  marginBottom: 8,
+                                  display: "flex",
+                                  flexWrap: "wrap",
+                                  gap: 8,
+                                }}
+                              >
+                                {item?.variant?.attribute_values?.map(
+                                  (attr) => (
+                                    <span
+                                      key={attr.value_id}
+                                      style={{
+                                        display: "inline-block",
+                                        background: "#f3f6fd",
+                                        color: "#1976d2",
+                                        borderRadius: 8,
+                                        padding: "3px 12px",
+                                        fontSize: 13,
+                                        fontWeight: 500,
+                                        border: "1.5px solid #90caf9",
+                                        marginBottom: 2,
+                                        boxShadow:
+                                          "0 1px 2px rgba(25, 118, 210, 0.07)",
+                                      }}
+                                    >
+                                      {attr.value}
+                                    </span>
+                                  )
+                                )}
+                              </div>
+                              <p
+                                className="checkout_card_price"
+                                style={{
+                                  color: "#e74c3c",
+                                  fontWeight: 700,
+                                  fontSize: 15,
+                                  margin: 0,
+                                  letterSpacing: 0.5,
+                                }}
+                              >
+                                {numberFormat(item?.variant?.product?.price)}
+                              </p>
+                            </div>
+                            <div style={{ textAlign: "center", minWidth: 60 }}>
+                              <div
+                                className="checkout_card_quantity"
+                                style={{
+                                  fontWeight: 500,
+                                  fontSize: 15,
+                                  marginBottom: 4,
+                                  color: "#444",
+                                }}
+                              >
+                                x{item?.quantity}
+                              </div>
+                              <span
+                                className="checkout_card_total"
+                                style={{
+                                  color: "#27ae60",
+                                  fontWeight: 700,
+                                  fontSize: 15,
+                                  display: "block",
+                                }}
+                              >
+                                {numberFormat(
+                                  item?.quantity * item?.price_snapshot
+                                )}
+                              </span>
+                            </div>
                           </div>
                         </li>
                       </ul>
                     ))}
                     <ul className="checkout__total__all">
                       <li>
-                        {t("checkout.discount")}: <span>- 750đ</span>
+                        {t("checkout.discount")}: <span>- 0đ</span>
                       </li>
                       <li>
-                        {t("checkout.totalMoney")}: <span>1000000đ</span>
+                        {t("checkout.totalMoney")}:{" "}
+                        <span>{numberFormat(totalPrice)}</span>
                       </li>
                     </ul>
                     <Link to={"/thank-you"}>
