@@ -82,7 +82,6 @@ const ProductDetail = () => {
   const { productDetails, loading } = useSelector(
     (state) => state.productDetail
   );
-  console.log("🚀 ~ ProductDetail ~ productDetails:", productDetails);
   const { productVariationDetails } = useSelector(
     (state) => state.productVariationDetail
   );
@@ -161,7 +160,7 @@ const ProductDetail = () => {
     } else if (Number(value) >= 1 && !isNaN(value)) {
       setQuantity(Number(value));
     } else if (Number(value) === 0) {
-      toast.warn(t("products.errorMin"));
+      toast.warn(t("toast.errorMin"));
       setQuantity(1);
     } else {
       setQuantity(1);
@@ -171,7 +170,7 @@ const ProductDetail = () => {
   const handleKeyDown = (e) => {
     if (e.key === "-" || e.key === "e") {
       e.preventDefault();
-      toast.warn(t("products.errorSpecialCharacters"));
+      toast.warn(t("toast.errorSpecialCharacters"));
     }
   };
 
@@ -181,17 +180,17 @@ const ProductDetail = () => {
     }
     try {
       await dispatch(fetchFavoriteProduct(productDetails?.data?.product_id));
-      toast.success(t("products.addedToFavorites"));
-      dispatch(fetchListFavorite()); // Thêm dòng này để cập nhật danh sách yêu thích
+      toast.success(t("toast.addedToFavorites"));
+      dispatch(fetchListFavorite());
     } catch (error) {
-      toast.error(error || t("products.errorAddingFavorite"));
+      toast.error(error || t("toast.errorAddingFavorite"));
     }
   };
 
   const addToShoppingCart = async () => {
     // Validate số lượng
     if (!quantity || quantity < 1) {
-      toast.warn(t("products.errorMin"));
+      toast.warn(t("toast.errorMin"));
       return;
     }
 
@@ -200,13 +199,13 @@ const ProductDetail = () => {
       allAttributes.length > 0 &&
       Object.keys(selectedOptions).length < allAttributes.length
     ) {
-      toast.warn(t("Vui lòng chọn đầy đủ phiên bản sản phẩm!"));
+      toast.warn(t("toast.selectAllVariant"));
       return;
     }
 
     // Validate variant_id
     if (!variantId) {
-      toast.warn(t("Không tìm thấy biến thể phù hợp!"));
+      toast.warn(t("toast.outOfStock"));
       return;
     }
 
@@ -218,8 +217,8 @@ const ProductDetail = () => {
         variant_id: variantId,
       };
       await dispatch(fetchAddToCart(payload));
-      await dispatch(fetchCart()); // Thêm dòng này để cập nhật lại giỏ hàng từ backend
-      toast.success(t("products.addedToCart"));
+      await dispatch(fetchCart());
+      toast.success(t("toast.addedToCart"));
     }
   };
 

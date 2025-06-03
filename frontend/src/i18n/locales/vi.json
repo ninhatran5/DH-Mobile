@@ -430,11 +430,13 @@
     "iconCopy": "Sao chép"
   },
   "toast": {
-    "updateQuantityError": "Không thể cập nhật số lượng!",
-    "minQuantity": "Tối thiểu là 1 sản phẩm",
-    "invalidQuantity": "Số lượng không hợp lệ",
-    "selectProductToDelete": "Vui lòng chọn sản phẩm để xóa!",
-    "deleteSuccess": "Xóa sản phẩm thành công!",
-    "deleteError": "Lỗi khi xóa sản phẩm"
+    "errorMin": "Số lượng tối thiểu là 1",
+    "errorSpecialCharacters": "Không được nhập ký tự đặc biệt",
+    "addedToFavorites": "Đã thêm vào yêu thích!",
+    "errorAddingFavorite": "Lỗi khi thêm vào yêu thích",
+    "selectAllVariant": "Vui lòng chọn đầy đủ phiên bản sản phẩm!",
+    "variantNotFound": "Không tìm thấy biến thể phù hợp!",
+    "addedToCart": "Thêm vào giỏ hàng thành công!",
+    "outOfStock": "Sản phẩm này không còn hàng"
   }
 }
