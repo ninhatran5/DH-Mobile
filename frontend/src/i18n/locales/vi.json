@@ -428,5 +428,13 @@
     "saveSuccess": "Đã lưu mã giảm giá",
     "iconSave": "Lưu",
     "iconCopy": "Sao chép"
+  },
+  "toast": {
+    "updateQuantityError": "Không thể cập nhật số lượng!",
+    "minQuantity": "Tối thiểu là 1 sản phẩm",
+    "invalidQuantity": "Số lượng không hợp lệ",
+    "selectProductToDelete": "Vui lòng chọn sản phẩm để xóa!",
+    "deleteSuccess": "Xóa sản phẩm thành công!",
+    "deleteError": "Lỗi khi xóa sản phẩm"
   }
 }

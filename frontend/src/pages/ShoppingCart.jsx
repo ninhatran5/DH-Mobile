@@ -18,6 +18,7 @@ const ShoppingCart = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { carts, loading } = useSelector((state) => state.cart);
+  console.log("🚀 ~ ShoppingCart ~ carts:", carts);
 
   const [selectAll, setSelectAll] = useState(false);
   const [cartItems, setCartItems] = useState([]);
@@ -67,7 +68,7 @@ const ShoppingCart = () => {
           dispatch(fetchCart());
         })
         .catch(() => {
-          toast.error("Không thể cập nhật số lượng!");
+          toast.error(t("toast.updateQuantityError"));
         });
     }
   };
@@ -84,10 +85,10 @@ const ShoppingCart = () => {
           dispatch(fetchCart());
         })
         .catch(() => {
-          toast.error("Không thể cập nhật số lượng!");
+          toast.error(t("toast.updateQuantityError"));
         });
     } else {
-      toast.warn("Tối thiểu là 1 sản phẩm");
+      toast.warn(t("toast.minQuantity"));
     }
   };
 
@@ -107,11 +108,11 @@ const ShoppingCart = () => {
             dispatch(fetchCart());
           })
           .catch(() => {
-            toast.error("Không thể cập nhật số lượng!");
+            toast.error(t("toast.updateQuantityError"));
           });
       }
     } else {
-      toast.warn("Số lượng không hợp lệ");
+      toast.warn(t("toast.invalidQuantity"));
     }
   };
 
@@ -121,7 +122,7 @@ const ShoppingCart = () => {
       .map((item) => item.variant_id);
 
     if (selectedIds.length === 0) {
-      toast.warn("Vui lòng chọn sản phẩm để xóa!");
+      toast.warn(t("toast.selectProductToDelete"));
       return;
     }
 
@@ -130,10 +131,11 @@ const ShoppingCart = () => {
         await dispatch(deleteProductCart(id)).unwrap();
       }
 
-      await dispatch(fetchCart()).unwrap(); // 👈 thêm await unwrap
-      toast.success("Xóa sản phẩm thành công!");
+      await dispatch(fetchCart()).unwrap();
+      toast.success(t("toast.deleteSuccess"));
+      // eslint-disable-next-line no-unused-vars
     } catch (error) {
-      toast.error("Lỗi khi xóa sản phẩm");
+      toast.error(t("toast.deleteError"));
     }
   };
 
