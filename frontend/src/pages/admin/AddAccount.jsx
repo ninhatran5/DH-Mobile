@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { addUser } from '../../slices/adminuserSlice';
+import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 
 const AddAccount = () => {
@@ -27,6 +28,89 @@ const AddAccount = () => {
 
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedWard, setSelectedWard] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Fetch provinces on component mount
+  useEffect(() => {
+    const fetchProvinces = async () => {
+      try {
+        const response = await axios.get('https://provinces.open-api.vn/api/p/');
+        setProvinces(response.data);
+      } catch (error) {
+        console.error('Error fetching provinces:', error);
+        toast.error('Không thể tải danh sách tỉnh/thành phố');
+      }
+    };
+    fetchProvinces();
+  }, []);
+
+  // Fetch districts when province changes
+  useEffect(() => {
+    const fetchDistricts = async () => {
+      if (selectedProvince) {
+        try {
+          const response = await axios.get(`https://provinces.open-api.vn/api/p/${selectedProvince}?depth=2`);
+          setDistricts(response.data.districts);
+          setSelectedDistrict("");
+          setWards([]);
+          setSelectedWard("");
+          // Update formData with selected province name
+          const provinceName = provinces.find(p => p.code === Number(selectedProvince))?.name || '';
+          setFormData(prev => ({ ...prev, city: provinceName }));
+        } catch (error) {
+          console.error('Error fetching districts:', error);
+          toast.error('Không thể tải danh sách quận/huyện');
+        }
+      } else {
+        setDistricts([]);
+        setSelectedDistrict("");
+        setWards([]);
+        setSelectedWard("");
+        setFormData(prev => ({ ...prev, city: '' }));
+      }
+    };
+    fetchDistricts();
+  }, [selectedProvince, provinces]);
+
+  // Fetch wards when district changes
+  useEffect(() => {
+    const fetchWards = async () => {
+      if (selectedDistrict) {
+        try {
+          const response = await axios.get(`https://provinces.open-api.vn/api/d/${selectedDistrict}?depth=2`);
+          setWards(response.data.wards);
+          setSelectedWard("");
+          // Update formData with selected district name
+          const districtName = districts.find(d => d.code === Number(selectedDistrict))?.name || '';
+          setFormData(prev => ({ ...prev, district: districtName }));
+        } catch (error) {
+          console.error('Error fetching wards:', error);
+          toast.error('Không thể tải danh sách phường/xã');
+        }
+      } else {
+        setWards([]);
+        setSelectedWard("");
+        setFormData(prev => ({ ...prev, district: '' }));
+      }
+    };
+    fetchWards();
+  }, [selectedDistrict, districts]);
+
+  // Update ward in formData when ward is selected
+  useEffect(() => {
+    if (selectedWard) {
+      const wardName = wards.find(w => w.code === Number(selectedWard))?.name || '';
+      setFormData(prev => ({ ...prev, ward: wardName }));
+    } else {
+      setFormData(prev => ({ ...prev, ward: '' }));
+    }
+  }, [selectedWard, wards]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -100,7 +184,7 @@ const AddAccount = () => {
                         name="username"
                         value={formData.username}
                         onChange={handleInputChange}
-                        required
+                        
                         placeholder="Nhập tên đăng nhập"
                       />
                     </Form.Group>
@@ -113,7 +197,7 @@ const AddAccount = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        required
+                        
                         placeholder="Nhập email"
                       />
                     </Form.Group>
@@ -124,15 +208,25 @@ const AddAccount = () => {
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>Mật khẩu <span className="text-danger">*</span></Form.Label>
-                      <Form.Control
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="Nhập mật khẩu"
-                      />
+                      <Form.Label>Mật khẩu</Form.Label>
+                      <div className="input-group">
+                        <Form.Control
+                          type={showPassword ? "text" : "password"}
+                          name="password"
+                          value={formData.password}
+                          onChange={handleInputChange}
+                          placeholder="Nhập mật khẩu"
+                          className="form-control-lg"
+                        />
+                        <Button 
+                          variant="outline-secondary"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="btn-lg"
+                          style={{ borderLeft: 'none' }}
+                        >
+                          <i className={`bi bi-eye${showPassword ? '-slash' : ''}`}></i>
+                        </Button>
+                      </div>
                     </Form.Group>
                   </Col>
                 </Row>
@@ -172,46 +266,60 @@ const AddAccount = () => {
                         name="address"
                         value={formData.address}
                         onChange={handleInputChange}
-                        placeholder="Nhập địa chỉ"
+                        placeholder="Nhập số nhà, tên đường"
                       />
                     </Form.Group>
                   </Col>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>Phường / Xã</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="ward"
-                        value={formData.ward}
-                        onChange={handleInputChange}
-                        placeholder="Nhập phường / xã"
-                      />
+                      <Form.Label>Tỉnh/Thành phố</Form.Label>
+                      <Form.Select
+                        value={selectedProvince}
+                        onChange={(e) => setSelectedProvince(e.target.value)}
+                      >
+                        <option value="">Chọn Tỉnh/Thành phố</option>
+                        {provinces.map(province => (
+                          <option key={province.code} value={province.code}>
+                            {province.name}
+                          </option>
+                        ))}
+                      </Form.Select>
                     </Form.Group>
                   </Col>
                 </Row>
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>Quận / Huyện</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="district"
-                        value={formData.district}
-                        onChange={handleInputChange}
-                        placeholder="Nhập quận / huyện"
-                      />
+                      <Form.Label>Quận/Huyện</Form.Label>
+                      <Form.Select
+                        value={selectedDistrict}
+                        onChange={(e) => setSelectedDistrict(e.target.value)}
+                        disabled={!selectedProvince}
+                      >
+                        <option value="">Chọn Quận/Huyện</option>
+                        {districts.map(district => (
+                          <option key={district.code} value={district.code}>
+                            {district.name}
+                          </option>
+                        ))}
+                      </Form.Select>
                     </Form.Group>
                   </Col>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>Thành phố</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="city"
-                        value={formData.city}
-                        onChange={handleInputChange}
-                        placeholder="Nhập thành phố"
-                      />
+                      <Form.Label>Phường/Xã</Form.Label>
+                      <Form.Select
+                        value={selectedWard}
+                        onChange={(e) => setSelectedWard(e.target.value)}
+                        disabled={!selectedDistrict}
+                      >
+                        <option value="">Chọn Phường/Xã</option>
+                        {wards.map(ward => (
+                          <option key={ward.code} value={ward.code}>
+                            {ward.name}
+                          </option>
+                        ))}
+                      </Form.Select>
                     </Form.Group>
                   </Col>
                 </Row>
@@ -223,10 +331,14 @@ const AddAccount = () => {
                         name="role"
                         value={formData.role}
                         onChange={handleInputChange}
+                        className="form-select-lg"
                       >
-                        <option value="user">Người dùng</option>
+                        <option value="">Chọn vai trò</option>
+                        <option value="customer">Khách hàng</option>
                         <option value="admin">Quản trị viên</option>
-                        <option value="editor">Biên tập viên</option>
+                        <option value="sale">Nhân viên bán hàng</option>
+                        <option value="shipper">Nhân viên giao hàng</option>
+                        <option value="checker">Nhân viên kiểm hàng</option>
                       </Form.Select>
                     </Form.Group>
                   </Col>
