@@ -11,6 +11,8 @@ import {
 import {
   fetchAdminProductSpecifications,
   updateAdminProductSpecification,
+  addAdminProductSpecification,
+  deleteAdminProductSpecification
 } from "../../slices/adminProductSpecificationsSlice";
 import { fetchCategories } from "../../slices/adminCategories";
 
@@ -246,6 +248,11 @@ const AdminProductEdit = () => {
   });
   const [imagePreview, setImagePreview] = useState("");
   const [specificationsData, setSpecificationsData] = useState([]);
+  const [showAddSpecForm, setShowAddSpecForm] = useState(false);
+  const [newSpec, setNewSpec] = useState({
+    spec_name: "",
+    spec_value: ""
+  });
 
   useEffect(() => {
     if (!adminproducts || adminproducts.length === 0) {
@@ -328,6 +335,44 @@ const AdminProductEdit = () => {
       toast.success("Cập nhật thông số kỹ thuật thành công!");
     } catch (err) {
       toast.error("Cập nhật thông số kỹ thuật thất bại: " + err);
+    }
+  };
+
+  const handleAddSpecification = async (e) => {
+    e.preventDefault();
+    if (!newSpec.spec_name.trim() || !newSpec.spec_value.trim()) {
+      toast.warning("Vui lòng điền đầy đủ thông tin thông số kỹ thuật");
+      return;
+    }
+
+    try {
+      const newSpecData = {
+        product_id: parseInt(id, 10),
+        spec_name: newSpec.spec_name,
+        spec_value: newSpec.spec_value
+      };
+
+      await dispatch(addAdminProductSpecification(newSpecData)).unwrap();
+      toast.success("Thêm thông số kỹ thuật thành công!");
+      
+      // Reset form và load lại danh sách
+      setNewSpec({ spec_name: "", spec_value: "" });
+      setShowAddSpecForm(false);
+      dispatch(fetchAdminProductSpecifications());
+    } catch (err) {
+      toast.error("Thêm thông số thất bại: " + err);
+    }
+  };
+
+  const handleDeleteSpecification = async (specId) => {
+    if (window.confirm('Bạn có chắc chắn muốn xóa thông số này không?')) {
+      try {
+        await dispatch(deleteAdminProductSpecification(specId)).unwrap();
+        toast.success('Xóa thông số thành công!');
+        dispatch(fetchAdminProductSpecifications());
+      } catch (err) {
+        toast.error('Xóa thông số thất bại: ' + err);
+      }
     }
   };
 
@@ -537,47 +582,122 @@ const AdminProductEdit = () => {
 
           {/* Thông số kỹ thuật section */}
           <div className="col-md-6">
-            <div className="card shadow-sm">
+            <div className="card shadow-sm h-100">
               <div className="card-body">
-                <h4 className="card-title mb-4">Thông số kỹ thuật</h4>
-                <div className="specification"
-                  style={{ marginTop: "30px", maxWidth: "600px" }}
-                >
-                  {specificationsData.map((spec, index) => (
-                    <div
-                      className="specification-row"
-                      key={spec.spec_id || index}
-                      style={{ display: "flex", gap: "10px", marginBottom: "10px" }}
-                    >
-                      <input
-                        type="text"
-                        className="spec-input"
-                        placeholder="Tên thông số"
-                        value={spec.spec_name || ""}
-                        onChange={(e) =>
-                          handleSpecificationChange(index, "spec_name", e.target.value)
-                        }
-                        style={{ flex: 1, padding: "6px" }}
-                      />
-                      <input
-                        type="text"
-                        className="spec-input"
-                        placeholder="Giá trị"
-                        value={spec.spec_value || ""}
-                        onChange={(e) =>
-                          handleSpecificationChange(index, "spec_value", e.target.value)
-                        }
-                        style={{ flex: 1, padding: "6px" }}
-                      />
-                    </div>
-                  ))}
+                <div className="d-flex justify-content-between align-items-center mb-4">
+                  <h4 className="card-title mb-0">Thông số kỹ thuật</h4>
                   <button
                     type="button"
-                    onClick={handleUpdateSpecifications}
                     className="btn btn-primary"
+                    onClick={() => setShowAddSpecForm(!showAddSpecForm)}
                   >
-                    Cập nhật thông số kỹ thuật
+                    <i className="bi bi-plus"></i> Thêm thông số
                   </button>
+                </div>
+
+                {/* Form thêm thông số mới */}
+                {showAddSpecForm && (
+                  <div className="add-spec-form mb-4 p-4 border rounded bg-light">
+                    <h5 className="mb-3">Thêm thông số mới</h5>
+                    <form onSubmit={handleAddSpecification}>
+                      <div className="mb-3">
+                        <label className="form-label">Tên thông số</label>
+                        <input
+                          type="text"
+                          className="form-control form-control-lg mb-3"
+                          placeholder="Ví dụ: RAM, CPU, Màn hình..."
+                          value={newSpec.spec_name}
+                          onChange={(e) => setNewSpec(prev => ({ ...prev, spec_name: e.target.value }))}
+                        />
+                        <label className="form-label">Giá trị</label>
+                        <input
+                          type="text"
+                          className="form-control form-control-lg"
+                          placeholder="Nhập giá trị thông số"
+                          value={newSpec.spec_value}
+                          onChange={(e) => setNewSpec(prev => ({ ...prev, spec_value: e.target.value }))}
+                        />
+                      </div>
+                      <div className="d-flex gap-2">
+                        <button type="submit" className="btn btn-success btn-lg">
+                          <i className="bi bi-check-lg"></i> Lưu thông số
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-lg"
+                          onClick={() => {
+                            setShowAddSpecForm(false);
+                            setNewSpec({ spec_name: "", spec_value: "" });
+                          }}
+                        >
+                          <i className="bi bi-x-lg"></i> Hủy
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
+
+                <div className="specifications-container">
+                  {specificationsData.map((spec, index) => (
+                    <div
+                      className="specification-row mb-3"
+                      key={spec.spec_id || index}
+                    >
+                      <div className="row g-2">
+                        <div className="col-md-5">
+                          <input
+                            type="text"
+                            className="form-control form-control-lg"
+                            placeholder="Tên thông số"
+                            value={spec.spec_name || ""}
+                            onChange={(e) =>
+                              handleSpecificationChange(index, "spec_name", e.target.value)
+                            }
+                          />
+                        </div>
+                        <div className="col-md-5">
+                          <input
+                            type="text"
+                            className="form-control form-control-lg"
+                            placeholder="Giá trị"
+                            value={spec.spec_value || ""}
+                            onChange={(e) =>
+                              handleSpecificationChange(index, "spec_value", e.target.value)
+                            }
+                          />
+                        </div>
+                        <div className="col-md-2">
+                          <button
+                            type="button"
+                            className="btn btn-danger btn-lg w-100"
+                            onClick={() => handleDeleteSpecification(spec.spec_id)}
+                            disabled={!spec.spec_id}
+                          >
+                            <i className="bi bi-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {specificationsData.length > 0 && (
+                    <div className="mt-4">
+                      <button
+                        type="button"
+                        onClick={handleUpdateSpecifications}
+                        className="btn btn-primary btn-lg w-100"
+                      >
+                        <i className="bi bi-save"></i> Cập nhật tất cả thông số kỹ thuật
+                      </button>
+                    </div>
+                  )}
+
+                  {specificationsData.length === 0 && (
+                    <div className="text-center py-5 text-muted">
+                      <i className="bi bi-clipboard-data" style={{ fontSize: "2rem" }}></i>
+                      <p className="mt-2">Chưa có thông số kỹ thuật nào. Hãy thêm thông số mới!</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

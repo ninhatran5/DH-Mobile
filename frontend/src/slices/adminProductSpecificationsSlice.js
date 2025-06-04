@@ -72,6 +72,28 @@ export const updateAdminProductSpecification = createAsyncThunk(
   }
 );
 
+// Thêm hàm xóa specification
+export const deleteAdminProductSpecification = createAsyncThunk(
+  "adminProductSpecifications/deleteAdminProductSpecification",
+  async (id, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      if (!token) {
+        return rejectWithValue("Token không tồn tại hoặc hết hạn");
+      }
+
+      const res = await axiosConfig.delete(`/productspecifications/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return { id, data: res.data.data };
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Lỗi khi xóa");
+    }
+  }
+);
+
 const adminProductSpecificationsSlice = createSlice({
   name: "adminProductSpecifications",
   initialState,
@@ -112,6 +134,20 @@ const adminProductSpecificationsSlice = createSlice({
         }
       })
       .addCase(updateAdminProductSpecification.rejected, (state, action) => {
+        state.error = action.payload;
+      })
+      .addCase(deleteAdminProductSpecification.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteAdminProductSpecification.fulfilled, (state, action) => {
+        state.loading = false;
+        state.productSpecifications = state.productSpecifications.filter(
+          (spec) => spec.spec_id !== action.payload.id
+        );
+      })
+      .addCase(deleteAdminProductSpecification.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
       });
   },
