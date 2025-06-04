@@ -3,7 +3,6 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import axios from 'axios';
 
 import {
   fetchAdminProducts,
@@ -254,12 +253,6 @@ const AdminProductEdit = () => {
     spec_name: "",
     spec_value: ""
   });
-  const [provinces, setProvinces] = useState([]);
-  const [districts, setDistricts] = useState([]);
-  const [wards, setWards] = useState([]);
-  const [selectedProvince, setSelectedProvince] = useState("");
-  const [selectedDistrict, setSelectedDistrict] = useState("");
-  const [selectedWard, setSelectedWard] = useState("");
 
   useEffect(() => {
     if (!adminproducts || adminproducts.length === 0) {
@@ -301,79 +294,6 @@ const AdminProductEdit = () => {
     );
     setSpecificationsData(specs);
   }, [adminproducts, productSpecifications, id]);
-
-  // Fetch provinces
-  useEffect(() => {
-    const fetchProvinces = async () => {
-      try {
-        const response = await axios.get('https://provinces.open-api.vn/api/p/');
-        setProvinces(response.data);
-      } catch (error) {
-        console.error('Error fetching provinces:', error);
-        toast.error('Không thể tải danh sách tỉnh/thành phố');
-      }
-    };
-    fetchProvinces();
-  }, []);
-
-  // Fetch districts when province changes
-  useEffect(() => {
-    const fetchDistricts = async () => {
-      if (selectedProvince) {
-        try {
-          const response = await axios.get(`https://provinces.open-api.vn/api/p/${selectedProvince}?depth=2`);
-          setDistricts(response.data.districts);
-          setSelectedDistrict("");
-          setWards([]);
-          setSelectedWard("");
-        } catch (error) {
-          console.error('Error fetching districts:', error);
-          toast.error('Không thể tải danh sách quận/huyện');
-        }
-      } else {
-        setDistricts([]);
-        setSelectedDistrict("");
-        setWards([]);
-        setSelectedWard("");
-      }
-    };
-    fetchDistricts();
-  }, [selectedProvince]);
-
-  // Fetch wards when district changes
-  useEffect(() => {
-    const fetchWards = async () => {
-      if (selectedDistrict) {
-        try {
-          const response = await axios.get(`https://provinces.open-api.vn/api/d/${selectedDistrict}?depth=2`);
-          setWards(response.data.wards);
-          setSelectedWard("");
-        } catch (error) {
-          console.error('Error fetching wards:', error);
-          toast.error('Không thể tải danh sách phường/xã');
-        }
-      } else {
-        setWards([]);
-        setSelectedWard("");
-      }
-    };
-    fetchWards();
-  }, [selectedDistrict]);
-
-  // Handle province change
-  const handleProvinceChange = (e) => {
-    setSelectedProvince(e.target.value);
-  };
-
-  // Handle district change
-  const handleDistrictChange = (e) => {
-    setSelectedDistrict(e.target.value);
-  };
-
-  // Handle ward change
-  const handleWardChange = (e) => {
-    setSelectedWard(e.target.value);
-  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -783,72 +703,6 @@ const AdminProductEdit = () => {
             </div>
           </div>
 
-          {/* Address Selection */}
-          <div className="col-md-12">
-            <div className="card shadow-sm">
-              <div className="card-body">
-                <h4 className="card-title mb-4">Địa chỉ</h4>
-                <div className="row g-3">
-                  <div className="col-md-4">
-                    <div className="form-group">
-                      <label className="form-label">Tỉnh/Thành phố</label>
-                      <select 
-                        className="form-select form-select-lg"
-                        value={selectedProvince}
-                        onChange={handleProvinceChange}
-                      >
-                        <option value="">Chọn Tỉnh/Thành phố</option>
-                        {provinces.map(province => (
-                          <option key={province.code} value={province.code}>
-                            {province.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="col-md-4">
-                    <div className="form-group">
-                      <label className="form-label">Quận/Huyện</label>
-                      <select 
-                        className="form-select form-select-lg"
-                        value={selectedDistrict}
-                        onChange={handleDistrictChange}
-                        disabled={!selectedProvince}
-                      >
-                        <option value="">Chọn Quận/Huyện</option>
-                        {districts.map(district => (
-                          <option key={district.code} value={district.code}>
-                            {district.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="col-md-4">
-                    <div className="form-group">
-                      <label className="form-label">Phường/Xã</label>
-                      <select 
-                        className="form-select form-select-lg"
-                        value={selectedWard}
-                        onChange={handleWardChange}
-                        disabled={!selectedDistrict}
-                      >
-                        <option value="">Chọn Phường/Xã</option>
-                        {wards.map(ward => (
-                          <option key={ward.code} value={ward.code}>
-                            {ward.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Variants section */}
           <div className="col-12">
             <div className="card shadow-sm">
@@ -856,18 +710,18 @@ const AdminProductEdit = () => {
                 <div className="d-flex justify-content-between align-items-center mb-4">
                   <h4 className="card-title mb-0">Biến thể sản phẩm</h4>
                   <Link
-  to={`/admin/addvariant/${id}`}
-  className="btn btn-primary"
-  style={{
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    padding: "8px 16px"
-  }}
->
-  <i className="bi bi-plus"></i>
-  Thêm biến thể mới
-</Link>
+                    to={`/admin/addvariant/${id}`}
+                    className="btn btn-primary"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      padding: "8px 16px"
+                    }}
+                  >
+                    <i className="bi bi-plus"></i>
+                    Thêm biến thể mới
+                  </Link>
                 </div>
                 <div className="variants-list" style={{ 
                   border: "1px solid #e1e1e1",
