@@ -4,18 +4,23 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from 'react-toastify';
 import { fetchAttributeValues } from "../../slices/attributeValueSlice";
 import { addAdminProductVariant } from "../../slices/AdminProductVariants";
+import { fetchAttributes } from "../../slices/Attribute";
+import { addVariantAttributeValue } from "../../slices/variantAttributeValueSlice";
 
 const AddVariant = () => {
-  const { id } = useParams();
+  const { product_id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { attributeValues, loading: attributeValuesLoading } = useSelector(
     (state) => state.attributeValue || {}
   );
+  const { attributes, loading: attributesLoading } = useSelector(
+    (state) => state.attribute
+  );
 
   const [formData, setFormData] = useState({
-    product_id: id,
+    product_id: parseInt(product_id, 10),
     sku: "",
     price: "",
     price_original: "",
@@ -25,10 +30,15 @@ const AddVariant = () => {
     attributes: []
   });
 
-  // Fetch attribute values when component mounts
   useEffect(() => {
+    if (!product_id || isNaN(parseInt(product_id, 10))) {
+      toast.error("ID sản phẩm không hợp lệ");
+      navigate("/admin/product");
+      return;
+    }
     dispatch(fetchAttributeValues());
-  }, [dispatch]);
+    dispatch(fetchAttributes());
+  }, [dispatch, product_id, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -40,35 +50,44 @@ const AddVariant = () => {
   };
 
   const handleAttributeChange = (attributeId, value_id) => {
-    const selectedValue = attributeValues[attributeId]?.find(av => av.value_id === parseInt(value_id));
-    if (!selectedValue) return;
+    if (!attributeId || !value_id) return;
 
-    // Map attribute names based on attribute ID
-    const attributeNames = {
-      1: "Color",
-      2: "Storage",
-      3: "RAM"
-    };
+    try {
+      const selectedValue = attributeValues[attributeId]?.find(
+        av => String(av.value_id) === String(value_id)
+      );
+      if (!selectedValue) return;
 
-    setFormData(prev => {
-      const newAttributes = [...(prev.attributes || [])];
-      const existingIndex = newAttributes.findIndex(attr => attr.attribute_id === attributeId);
+      const attribute = attributes.find(
+        attr => String(attr.attribute_id) === String(attributeId)
+      );
+      if (!attribute) return;
 
-      const newAttribute = {
-        attribute_id: attributeId,
-        name: attributeNames[attributeId],
-        value_id: selectedValue.value_id,
-        value: selectedValue.value
-      };
+      setFormData(prev => {
+        const newAttributes = [...(prev.attributes || [])];
+        const existingIndex = newAttributes.findIndex(
+          attr => String(attr.attribute_id) === String(attributeId)
+        );
 
-      if (existingIndex !== -1) {
-        newAttributes[existingIndex] = newAttribute;
-      } else {
-        newAttributes.push(newAttribute);
-      }
+        const newAttribute = {
+          attribute_id: parseInt(attributeId, 10),
+          value_id: parseInt(value_id, 10),
+          name: attribute.name,
+          value: selectedValue.value
+        };
 
-      return { ...prev, attributes: newAttributes };
-    });
+        if (existingIndex !== -1) {
+          newAttributes[existingIndex] = newAttribute;
+        } else {
+          newAttributes.push(newAttribute);
+        }
+
+        return { ...prev, attributes: newAttributes };
+      });
+    } catch (error) {
+      console.error('Error handling attribute change:', error);
+      toast.error('Có lỗi khi cập nhật thuộc tính');
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -90,45 +109,62 @@ const AddVariant = () => {
       return;
     }
 
-    const formDataToSend = new FormData();
-    formDataToSend.append("product_id", id);
-    formDataToSend.append("sku", formData.sku);
-    formDataToSend.append("price", formData.price);
-    if (formData.price_original) {
-      formDataToSend.append("price_original", formData.price_original);
-    }
-    formDataToSend.append("stock", formData.stock);
-    formDataToSend.append("is_active", formData.is_active);
-
-    if (formData.image_url instanceof File) {
-      formDataToSend.append("image_url", formData.image_url);
-    }
-
     try {
-      const token = localStorage.getItem("adminToken");
-      if (!token) {
-        throw new Error("Bạn chưa đăng nhập");
+      const variantData = {
+        product_id: parseInt(product_id, 10),
+        sku: formData.sku,
+        price: parseFloat(formData.price),
+        price_original: formData.price_original ? parseFloat(formData.price_original) : null,
+        stock: parseInt(formData.stock, 10),
+        is_active: formData.is_active
+      };
+
+      let variantResponse;
+
+      if (formData.image_url instanceof File) {
+        const imageFormData = new FormData();
+        imageFormData.append('image_url', formData.image_url);
+        Object.entries(variantData).forEach(([key, value]) => {
+          imageFormData.append(key, value);
+        });
+        
+        console.log('Creating new variant with image:', Object.fromEntries(imageFormData));
+        variantResponse = await dispatch(addAdminProductVariant(imageFormData)).unwrap();
+        console.log('Variant created:', variantResponse);
+      } else {
+        console.log('Creating new variant without image:', variantData);
+        variantResponse = await dispatch(addAdminProductVariant(variantData)).unwrap();
+        console.log('Variant created:', variantResponse);
       }
 
-      // Tạo biến thể mới sử dụng Redux action
-      const variantData = await dispatch(addAdminProductVariant(formDataToSend)).unwrap();
-      const variantId = variantData.variant_id;
+      if (!variantResponse || !variantResponse.variant_id) {
+        throw new Error('Không nhận được ID biến thể từ server');
+      }
 
-      // Thêm các thuộc tính cho biến thể
-      await axiosConfig.post(`/variant-attribute-values/${variantId}`, {
+      const attributeData = {
+        variant_id: variantResponse.variant_id,
         attributes: formData.attributes.map(attr => ({
-          value_id: attr.value_id
+          attribute_id: parseInt(attr.attribute_id, 10),
+          value_id: parseInt(attr.value_id, 10)
         }))
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      };
+
+      console.log('Adding attributes for variant:', attributeData);
+      
+      for (const attr of formData.attributes) {
+        const singleAttributeData = {
+          variant_id: variantResponse.variant_id,
+          attribute_id: parseInt(attr.attribute_id, 10),
+          value_id: parseInt(attr.value_id, 10)
+        };
+        await dispatch(addVariantAttributeValue(singleAttributeData)).unwrap();
+      }
 
       toast.success("Thêm biến thể thành công!");
-      navigate(`/admin/product/edit/${id}`);
+      navigate(`/admin/editproduct/${product_id}`);
     } catch (err) {
-      toast.error("Lỗi: " + (err.message || "Đã có lỗi xảy ra"));
+      console.error('Error creating variant:', err);
+      toast.error("Lỗi: " + (err.response?.data?.message || err.message || "Đã có lỗi xảy ra"));
     }
   };
 
@@ -136,7 +172,17 @@ const AddVariant = () => {
     <div className="container my-5">
       <div className="card shadow">
         <div className="card-body">
-          <h2 className="card-title mb-4">Thêm biến thể mới</h2>
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <h2 className="card-title mb-0">Thêm biến thể mới</h2>
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              onClick={() => navigate(`/admin/editproduct/${product_id}`)}
+            >
+              <i className="bi bi-arrow-left"></i> Quay lại
+            </button>
+          </div>
+
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
               <label htmlFor="sku" className="form-label">SKU:</label>
@@ -204,56 +250,37 @@ const AddVariant = () => {
 
             <div className="mb-4">
               <label className="form-label fw-bold">Thuộc tính:</label>
-              {/* Color Attribute */}
-              <div className="mb-3">
-                <label className="form-label">Màu sắc:</label>
-                <select
-                  className="form-select"
-                  onChange={(e) => handleAttributeChange(1, e.target.value)}
-                  value={formData.attributes.find(attr => attr.attribute_id === 1)?.value_id || ""}
-                >
-                  <option value="">-- Chọn màu sắc --</option>
-                  {attributeValues[1]?.map((value) => (
-                    <option key={value.value_id} value={value.value_id}>
-                      {value.value}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Storage Attribute */}
-              <div className="mb-3">
-                <label className="form-label">Bộ nhớ:</label>
-                <select
-                  className="form-select"
-                  onChange={(e) => handleAttributeChange(2, e.target.value)}
-                  value={formData.attributes.find(attr => attr.attribute_id === 2)?.value_id || ""}
-                >
-                  <option value="">-- Chọn bộ nhớ --</option>
-                  {attributeValues[2]?.map((value) => (
-                    <option key={value.value_id} value={value.value_id}>
-                      {value.value}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* RAM Attribute */}
-              <div className="mb-3">
-                <label className="form-label">RAM:</label>
-                <select
-                  className="form-select"
-                  onChange={(e) => handleAttributeChange(3, e.target.value)}
-                  value={formData.attributes.find(attr => attr.attribute_id === 3)?.value_id || ""}
-                >
-                  <option value="">-- Chọn RAM --</option>
-                  {attributeValues[3]?.map((value) => (
-                    <option key={value.value_id} value={value.value_id}>
-                      {value.value}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {attributesLoading ? (
+                <div className="text-center py-3">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Đang tải thuộc tính...</span>
+                  </div>
+                </div>
+              ) : attributes && attributes.length > 0 ? (
+                attributes.map(attribute => (
+                  <div className="mb-3" key={attribute.attribute_id}>
+                    <label className="form-label">{attribute.name}:</label>
+                    <select
+                      className="form-select"
+                      onChange={(e) => handleAttributeChange(attribute.attribute_id, e.target.value)}
+                      value={formData.attributes.find(
+                        attr => String(attr.attribute_id) === String(attribute.attribute_id)
+                      )?.value_id || ""}
+                    >
+                      <option value="">-- Chọn {attribute.name} --</option>
+                      {attributeValues[attribute.attribute_id]?.map((value) => (
+                        <option key={value.value_id} value={value.value_id}>
+                          {value.value}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ))
+              ) : (
+                <div className="alert alert-info">
+                  Không có thuộc tính nào được định nghĩa
+                </div>
+              )}
             </div>
 
             <div className="mb-4">
@@ -275,13 +302,6 @@ const AddVariant = () => {
             <div className="d-flex gap-2">
               <button type="submit" className="btn btn-primary">
                 Thêm biến thể
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => navigate(`/admin/product/edit/${id}`)}
-              >
-                Hủy
               </button>
             </div>
           </form>

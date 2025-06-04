@@ -589,19 +589,19 @@ const AdminProductEdit = () => {
               <div className="card-body">
                 <div className="d-flex justify-content-between align-items-center mb-4">
                   <h4 className="card-title mb-0">Biến thể sản phẩm</h4>
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => navigate(`/admin/addvariant/${id}`)}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      padding: "8px 16px"
-                    }}
-                  >
-                    <i className="bi bi-plus"></i>
-                    Thêm biến thể mới
-                  </button>
+                  <Link
+  to={`/admin/addvariant/${id}`}
+  className="btn btn-primary"
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    padding: "8px 16px"
+  }}
+>
+  <i className="bi bi-plus"></i>
+  Thêm biến thể mới
+</Link>
                 </div>
                 <div className="variants-list" style={{ 
                   border: "1px solid #e1e1e1",
