@@ -61,7 +61,7 @@ const TableShoppingCart = ({
         {item?.variant?.attribute_values?.[1]?.value}
       </td>
       <td className="cart__price text-end">
-        {numberFomat(item?.quantity * item?.price_snapshot)}
+        {numberFomat(item?.quantity * item?.variant?.product?.price)}
       </td>
       <td className="cart__close" style={{ cursor: "pointer" }}>
         <i style={{ marginLeft: 27 }}></i>
