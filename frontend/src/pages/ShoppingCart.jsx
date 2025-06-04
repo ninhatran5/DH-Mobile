@@ -18,7 +18,6 @@ const ShoppingCart = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { carts, loading } = useSelector((state) => state.cart);
-  console.log("🚀 ~ ShoppingCart ~ carts:", carts);
 
   const [selectAll, setSelectAll] = useState(false);
   const [cartItems, setCartItems] = useState([]);
@@ -140,7 +139,7 @@ const ShoppingCart = () => {
   };
 
   const totalPrice = cartItems.reduce(
-    (sum, item) => sum + item.quantity * item.price_snapshot,
+    (sum, item) => sum + item?.quantity * item?.variant?.product?.price,
     0
   );
 
@@ -182,7 +181,7 @@ const ShoppingCart = () => {
                         <th className="text-center">
                           {t("tableHeaders.color")}
                         </th>
-                        <th className="text-end">
+                        <th className="text-center">
                           {t("tableHeaders.version")}
                         </th>
                         <th className="text-end">

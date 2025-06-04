@@ -15,14 +15,13 @@ const CheckOut = () => {
   const { profile, loading } = useSelector((state) => state.profile);
 
   const { carts } = useSelector((state) => state.cart);
-  console.log("🚀 ~ ShoppingCart ~ carts:", carts);
 
   useEffect(() => {
     dispatch(fetchProfile());
     dispatch(fetchCart());
   }, [dispatch]);
   const totalPrice = carts.reduce(
-    (sum, item) => sum + item.quantity * item.price_snapshot,
+    (sum, item) => sum + item.quantity * item?.variant?.product?.price,
     0
   );
   return (
@@ -179,33 +178,8 @@ const CheckOut = () => {
                         style={{ padding: 0, marginBottom: 12 }}
                       >
                         <li>
-                          <div
-                            className="checkout_card"
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 16,
-                              border: "1px solid #eee",
-                              borderRadius: 12,
-                              padding: 12,
-                              background: "#fafbfc",
-                            }}
-                          >
-                            <div
-                              className="checkout_card_image"
-                              style={{
-                                width: 64,
-                                height: 64,
-                                borderRadius: 8,
-                                overflow: "hidden",
-                                background: "#fff",
-                                border: "1px solid #eee",
-                                flexShrink: 0,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                              }}
-                            >
+                          <div className="checkout_card">
+                            <div className="checkout_card_image">
                               <img
                                 src={item?.variant?.image_url}
                                 alt={item?.variant?.product?.name}
@@ -216,88 +190,33 @@ const CheckOut = () => {
                                 }}
                               />
                             </div>
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <p
-                                className="checkout_card_name"
-                                style={{
-                                  fontWeight: 700,
-                                  fontSize: 17,
-                                  margin: 0,
-                                  color: "#222",
-                                  marginBottom: 6,
-                                  lineHeight: 1.3,
-                                  wordBreak: "break-word",
-                                }}
-                              >
+                            <div className="checkout_card_info">
+                              <p className="checkout_card_name">
                                 {item?.variant?.product?.name}
                               </p>
-                              <div
-                                style={{
-                                  marginBottom: 8,
-                                  display: "flex",
-                                  flexWrap: "wrap",
-                                  gap: 8,
-                                }}
-                              >
+                              <div className="checkout_card_attrs">
                                 {item?.variant?.attribute_values?.map(
                                   (attr) => (
                                     <span
+                                      className="checkout_card_attr"
                                       key={attr.value_id}
-                                      style={{
-                                        display: "inline-block",
-                                        background: "#f3f6fd",
-                                        color: "#1976d2",
-                                        borderRadius: 8,
-                                        padding: "3px 12px",
-                                        fontSize: 13,
-                                        fontWeight: 500,
-                                        border: "1.5px solid #90caf9",
-                                        marginBottom: 2,
-                                        boxShadow:
-                                          "0 1px 2px rgba(25, 118, 210, 0.07)",
-                                      }}
                                     >
                                       {attr.value}
                                     </span>
                                   )
                                 )}
                               </div>
-                              <p
-                                className="checkout_card_price"
-                                style={{
-                                  color: "#e74c3c",
-                                  fontWeight: 700,
-                                  fontSize: 15,
-                                  margin: 0,
-                                  letterSpacing: 0.5,
-                                }}
-                              >
+                              <p className="checkout_card_price">
                                 {numberFormat(item?.variant?.product?.price)}
                               </p>
                             </div>
-                            <div style={{ textAlign: "center", minWidth: 60 }}>
-                              <div
-                                className="checkout_card_quantity"
-                                style={{
-                                  fontWeight: 500,
-                                  fontSize: 15,
-                                  marginBottom: 4,
-                                  color: "#444",
-                                }}
-                              >
+                            <div className="checkout_card_right">
+                              <div className="checkout_card_quantity">
                                 x{item?.quantity}
                               </div>
-                              <span
-                                className="checkout_card_total"
-                                style={{
-                                  color: "#27ae60",
-                                  fontWeight: 700,
-                                  fontSize: 15,
-                                  display: "block",
-                                }}
-                              >
+                              <span className="checkout_card_total">
                                 {numberFormat(
-                                  item?.quantity * item?.price_snapshot
+                                  item?.quantity * item?.variant?.product?.price
                                 )}
                               </span>
                             </div>

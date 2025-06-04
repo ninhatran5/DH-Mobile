@@ -24,7 +24,7 @@ const TableShoppingCart = ({
         />
       </td>
       <td onClick={handleNextPageDetail} className="product__cart__item">
-        <div className="product__cart__item__pic">
+        <div className="product__cart__item__pic" style={{ cursor: "pointer" }}>
           <img src={item?.variant?.image_url} alt="product" />
         </div>
         <div className="product__cart__item__text">
@@ -61,7 +61,7 @@ const TableShoppingCart = ({
         {item?.variant?.attribute_values?.[1]?.value}
       </td>
       <td className="cart__price text-end">
-        {numberFomat(item?.quantity * item?.price_snapshot)}
+        {numberFomat(item?.quantity * item?.variant?.product?.price)}
       </td>
       <td className="cart__close" style={{ cursor: "pointer" }}>
         <i style={{ marginLeft: 27 }}></i>
