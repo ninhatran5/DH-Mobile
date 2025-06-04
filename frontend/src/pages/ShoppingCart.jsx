@@ -179,10 +179,10 @@ const ShoppingCart = () => {
                           {t("tableHeaders.quantity")}
                         </th>
                         <th className="text-center">
-                          {t("tableHeaders.version")}
+                          {t("tableHeaders.color")}
                         </th>
                         <th className="text-center">
-                          {t("tableHeaders.color")}
+                          {t("tableHeaders.version")}
                         </th>
                         <th className="text-end">
                           {t("tableHeaders.totalPrice")}

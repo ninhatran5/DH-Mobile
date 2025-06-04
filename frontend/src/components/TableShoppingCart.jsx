@@ -24,7 +24,7 @@ const TableShoppingCart = ({
         />
       </td>
       <td onClick={handleNextPageDetail} className="product__cart__item">
-        <div className="product__cart__item__pic">
+        <div className="product__cart__item__pic" style={{ cursor: "pointer" }}>
           <img src={item?.variant?.image_url} alt="product" />
         </div>
         <div className="product__cart__item__text">
