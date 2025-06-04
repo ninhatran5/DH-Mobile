@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import iphone from "../assets/images/iphone-16-pro-max.webp";
 import { TbExchange } from "react-icons/tb";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
@@ -7,30 +6,24 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { fetchProfile } from "../slices/profileSlice";
 import Loading from "../components/Loading";
+import { fetchCart } from "../slices/cartSlice";
+import numberFormat from "../../utils/numberFormat";
 
 const CheckOut = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { profile, loading } = useSelector((state) => state.profile);
-  const purchaseInformation = [
-    {
-      id: 1,
-      name: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
-      image: iphone,
-      quantity: 1,
-      total: "27.890.000đ",
-    },
-    {
-      id: 2,
-      name: "iPhone 15 Pro Max 64GB | Chính hãng US/A",
-      image: iphone,
-      quantity: 2,
-      total: "14.890.000đ",
-    },
-  ];
+
+  const { carts } = useSelector((state) => state.cart);
+
   useEffect(() => {
     dispatch(fetchProfile());
+    dispatch(fetchCart());
   }, [dispatch]);
+  const totalPrice = carts.reduce(
+    (sum, item) => sum + item.quantity * item?.variant?.product?.price,
+    0
+  );
   return (
     <>
       {loading && <Loading />}
@@ -178,30 +171,66 @@ const CheckOut = () => {
                         </p>
                       </div>
                     </div>
-                    {purchaseInformation.map((item) => (
-                      <ul key={item.id} className="checkout__total__products">
+                    {carts.map((item) => (
+                      <ul
+                        key={item.cart_item_id}
+                        className="checkout__total__products"
+                        style={{ padding: 0, marginBottom: 12 }}
+                      >
                         <li>
                           <div className="checkout_card">
                             <div className="checkout_card_image">
-                              <img src={item.image} alt={item.name} />
+                              <img
+                                src={item?.variant?.image_url}
+                                alt={item?.variant?.product?.name}
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  objectFit: "cover",
+                                }}
+                              />
                             </div>
-                            <p className="checkout_card_name">{item.name}</p>
-                            <p className="checkout_card_quantity">
-                              {item.quantity}
-                            </p>
-                            <span className="checkout_card_total">
-                              {item.total}
-                            </span>
+                            <div className="checkout_card_info">
+                              <p className="checkout_card_name">
+                                {item?.variant?.product?.name}
+                              </p>
+                              <div className="checkout_card_attrs">
+                                {item?.variant?.attribute_values?.map(
+                                  (attr) => (
+                                    <span
+                                      className="checkout_card_attr"
+                                      key={attr.value_id}
+                                    >
+                                      {attr.value}
+                                    </span>
+                                  )
+                                )}
+                              </div>
+                              <p className="checkout_card_price">
+                                {numberFormat(item?.variant?.product?.price)}
+                              </p>
+                            </div>
+                            <div className="checkout_card_right">
+                              <div className="checkout_card_quantity">
+                                x{item?.quantity}
+                              </div>
+                              <span className="checkout_card_total">
+                                {numberFormat(
+                                  item?.quantity * item?.variant?.product?.price
+                                )}
+                              </span>
+                            </div>
                           </div>
                         </li>
                       </ul>
                     ))}
                     <ul className="checkout__total__all">
                       <li>
-                        {t("checkout.discount")}: <span>- 750đ</span>
+                        {t("checkout.discount")}: <span>- 0đ</span>
                       </li>
                       <li>
-                        {t("checkout.totalMoney")}: <span>1000000đ</span>
+                        {t("checkout.totalMoney")}:{" "}
+                        <span>{numberFormat(totalPrice)}</span>
                       </li>
                     </ul>
                     <Link to={"/thank-you"}>

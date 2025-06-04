@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import iphone from "../assets/images/iphone-16-pro-max.webp";
 import { IoReturnDownBack } from "react-icons/io5";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
@@ -8,11 +7,19 @@ import { useEffect, useState } from "react";
 import { fetchAddress } from "../slices/addressSlice";
 import { useForm } from "react-hook-form";
 import "../../src/assets/css/checkout.css";
+import { fetchCart } from "../slices/cartSlice";
+import numberFormat from "../../utils/numberFormat";
 
 const ChangeCheckout = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { data } = useSelector((state) => state.address);
+  const { carts } = useSelector((state) => state.cart);
+
+  const totalPrice = carts.reduce(
+    (sum, item) => sum + item.quantity * item?.variant?.product?.price,
+    0
+  );
   const [selectedCityCode, setSelectedCityCode] = useState(null);
   const [selectedDistrictCode, setSelectedDistrictCode] = useState(null);
   const [selectedWardCode, setSelectedWardCode] = useState(null);
@@ -35,6 +42,7 @@ const ChangeCheckout = () => {
   });
 
   useEffect(() => {
+    dispatch(fetchCart());
     dispatch(fetchAddress());
   }, [dispatch]);
 
@@ -50,23 +58,6 @@ const ChangeCheckout = () => {
     setValue("district", selectedDistrictCode || "");
     setValue("ward", selectedWardCode || "");
   }, [selectedCityCode, selectedDistrictCode, selectedWardCode, setValue]);
-
-  const purchaseInformation = [
-    {
-      id: 1,
-      name: "iPhone 16 Pro Max 256GB | Chính hãng VN/A",
-      image: iphone,
-      quantity: 1,
-      total: "27.890.000đ",
-    },
-    {
-      id: 2,
-      name: "iPhone 15 Pro Max 64GB | Chính hãng US/A",
-      image: iphone,
-      quantity: 2,
-      total: "14.890.000đ",
-    },
-  ];
 
   // Handle form submission: chuyển code thành name trước khi gửi
   const onSubmit = (formData) => {
@@ -366,30 +357,66 @@ const ChangeCheckout = () => {
                         </p>
                       </div>
                     </div>
-                    {purchaseInformation.map((item) => (
-                      <ul key={item.id} className="checkout__total__products">
+                    {carts.map((item) => (
+                      <ul
+                        key={item.cart_item_id}
+                        className="checkout__total__products"
+                        style={{ padding: 0, marginBottom: 12 }}
+                      >
                         <li>
                           <div className="checkout_card">
                             <div className="checkout_card_image">
-                              <img src={item.image} alt={item.name} />
+                              <img
+                                src={item?.variant?.image_url}
+                                alt={item?.variant?.product?.name}
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  objectFit: "cover",
+                                }}
+                              />
                             </div>
-                            <p className="checkout_card_name">{item.name}</p>
-                            <p className="checkout_card_quantity">
-                              {item.quantity}
-                            </p>
-                            <span className="checkout_card_total">
-                              {item.total}
-                            </span>
+                            <div className="checkout_card_info">
+                              <p className="checkout_card_name">
+                                {item?.variant?.product?.name}
+                              </p>
+                              <div className="checkout_card_attrs">
+                                {item?.variant?.attribute_values?.map(
+                                  (attr) => (
+                                    <span
+                                      className="checkout_card_attr"
+                                      key={attr.value_id}
+                                    >
+                                      {attr.value}
+                                    </span>
+                                  )
+                                )}
+                              </div>
+                              <p className="checkout_card_price">
+                                {numberFormat(item?.variant?.product?.price)}
+                              </p>
+                            </div>
+                            <div className="checkout_card_right">
+                              <div className="checkout_card_quantity">
+                                x{item?.quantity}
+                              </div>
+                              <span className="checkout_card_total">
+                                {numberFormat(
+                                  item?.quantity * item?.variant?.product?.price
+                                )}
+                              </span>
+                            </div>
                           </div>
                         </li>
                       </ul>
                     ))}
                     <ul className="checkout__total__all">
                       <li>
-                        {t("checkout.discount")} <span>- 750đ</span>
+                        {t("checkout.discount")} <span>- 0đ</span>
                       </li>
                       <li>
-                        {t("checkout.totalMoney")} <span>1.000.000đ</span>
+                        {t("checkout.totalMoney")}{" "}
+                        <span>{numberFormat(totalPrice)}</span>
                       </li>
                     </ul>
                     <button type="submit" className="site-btn">

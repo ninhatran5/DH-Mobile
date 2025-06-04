@@ -20,18 +20,16 @@ const TableShoppingCart = ({
         <input
           type="checkbox"
           checked={item.selected}
-          onChange={(e) =>
-            handleChangeQuantity(item.variant_id, e.target.value)
-          }
+          onChange={() => handleSelectItem(item.variant_id)}
         />
       </td>
       <td onClick={handleNextPageDetail} className="product__cart__item">
-        <div className="product__cart__item__pic">
-          <img src={item?.variant?.product?.image_url} alt="product" />
+        <div className="product__cart__item__pic" style={{ cursor: "pointer" }}>
+          <img src={item?.variant?.image_url} alt="product" />
         </div>
         <div className="product__cart__item__text">
           <h5>{item?.variant?.product?.name}</h5>
-          <h6>{numberFomat(item?.price_snapshot)}</h6>
+          <h6>{numberFomat(item?.variant?.product?.price)}</h6>
         </div>
       </td>
       <td className="quantity__item">
@@ -56,10 +54,14 @@ const TableShoppingCart = ({
           </div>
         </div>
       </td>
-      <td className="cart__price ">{item.color}</td>
-      <td className="cart__price text-end">{item.version}</td>
+      <td className="cart__price text-center ">
+        {item?.variant?.attribute_values?.[0]?.value}
+      </td>
+      <td className="cart__price text-center">
+        {item?.variant?.attribute_values?.[1]?.value}
+      </td>
       <td className="cart__price text-end">
-        {numberFomat(item?.quantity * item?.price_snapshot)}
+        {numberFomat(item?.quantity * item?.variant?.product?.price)}
       </td>
       <td className="cart__close" style={{ cursor: "pointer" }}>
         <i style={{ marginLeft: 27 }}></i>

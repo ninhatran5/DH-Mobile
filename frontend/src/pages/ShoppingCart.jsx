@@ -18,13 +18,12 @@ const ShoppingCart = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { carts, loading } = useSelector((state) => state.cart);
-  console.log("🚀 ~ ShoppingCart ~ carts:", carts);
 
   const [selectAll, setSelectAll] = useState(false);
   const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
-    if (carts && carts.length > 0) {
+    if (Array.isArray(carts)) {
       setCartItems(
         carts.map((item) => ({
           ...item,
@@ -32,6 +31,8 @@ const ShoppingCart = () => {
         }))
       );
       setSelectAll(false);
+    } else {
+      setCartItems([]);
     }
   }, [carts]);
 
@@ -56,7 +57,6 @@ const ShoppingCart = () => {
 
   const handleIncrease = (id) => {
     const item = cartItems.find((item) => item.variant_id === id);
-    console.log("🚀 ~ handleIncrease ~ cartItems:", cartItems);
     if (item) {
       const newQuantity = item.quantity + 1;
       dispatch(
@@ -67,7 +67,7 @@ const ShoppingCart = () => {
           dispatch(fetchCart());
         })
         .catch(() => {
-          toast.error("Không thể cập nhật số lượng!");
+          toast.error(t("toast.updateQuantityError"));
         });
     }
   };
@@ -84,31 +84,34 @@ const ShoppingCart = () => {
           dispatch(fetchCart());
         })
         .catch(() => {
-          toast.error("Không thể cập nhật số lượng!");
+          toast.error(t("toast.updateQuantityError"));
         });
     } else {
-      toast.warn("Tối thiểu là 1 sản phẩm");
+      toast.warn(t("toast.minQuantity"));
     }
   };
 
   const handleChangeQuantity = (id, value) => {
     const newQuantity = Number(value);
     if (!isNaN(newQuantity) && newQuantity >= 1) {
-      const item = cartItems.find((item) => item.variant_id === id);
+      const item = cartItems.find((item) => item.cart_item_id === id);
       if (item) {
         dispatch(
-          fetchUpdateCartQuantity({ variant_id: id, quantity: newQuantity })
+          fetchUpdateCartQuantity({
+            variant_id: item.variant_id,
+            quantity: newQuantity,
+          })
         )
           .unwrap()
           .then(() => {
             dispatch(fetchCart());
           })
           .catch(() => {
-            toast.error("Không thể cập nhật số lượng!");
+            toast.error(t("toast.updateQuantityError"));
           });
       }
     } else {
-      toast.warn("Số lượng không hợp lệ");
+      toast.warn(t("toast.invalidQuantity"));
     }
   };
 
@@ -116,18 +119,27 @@ const ShoppingCart = () => {
     const selectedIds = cartItems
       .filter((item) => item.selected)
       .map((item) => item.variant_id);
+
     if (selectedIds.length === 0) {
-      toast.warn("Vui lòng chọn sản phẩm để xóa!");
+      toast.warn(t("toast.selectProductToDelete"));
       return;
     }
-    for (const id of selectedIds) {
-      await dispatch(deleteProductCart(id));
+
+    try {
+      for (const id of selectedIds) {
+        await dispatch(deleteProductCart(id)).unwrap();
+      }
+
+      await dispatch(fetchCart()).unwrap();
+      toast.success(t("toast.deleteSuccess"));
+      // eslint-disable-next-line no-unused-vars
+    } catch (error) {
+      toast.error(t("toast.deleteError"));
     }
-    dispatch(fetchCart());
   };
 
   const totalPrice = cartItems.reduce(
-    (sum, item) => sum + item.quantity * item.price_snapshot,
+    (sum, item) => sum + item?.quantity * item?.variant?.product?.price,
     0
   );
 
@@ -169,7 +181,7 @@ const ShoppingCart = () => {
                         <th className="text-center">
                           {t("tableHeaders.color")}
                         </th>
-                        <th className="text-end">
+                        <th className="text-center">
                           {t("tableHeaders.version")}
                         </th>
                         <th className="text-end">

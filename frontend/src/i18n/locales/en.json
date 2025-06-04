@@ -432,5 +432,15 @@
     "saveSuccess": "Voucher saved successfully",
     "iconSave": "Save",
     "iconCopy": "Copy"
+  },
+  "toast": {
+    "errorMin": "Minimum quantity is 1",
+    "errorSpecialCharacters": "Special characters are not allowed",
+    "addedToFavorites": "Added to favorites successfully!",
+    "errorAddingFavorite": "Error adding to favorites",
+    "selectAllVariant": "Please select all product options!",
+    "variantNotFound": "Product variant not found!",
+    "addedToCart": "Added to cart successfully!",
+    "outOfStock": "This product is out of stock"
   }
 }

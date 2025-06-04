@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { Modal } from "react-bootstrap";
 import { MdOutlineZoomInMap } from "react-icons/md";
 import Carousel from "react-bootstrap/Carousel";
@@ -20,7 +20,7 @@ import {
   fetchFavoriteProduct,
   fetchListFavorite,
 } from "../slices/favoriteProductsSlice";
-import { fetchAddToCart } from "../slices/cartSlice";
+import { fetchAddToCart, fetchCart } from "../slices/cartSlice";
 import { fetchSpecification } from "../slices/specificationsSlice";
 import ListProductCard from "../components/ListProductCard";
 
@@ -114,16 +114,20 @@ const ProductDetail = () => {
     ? [{ id: 1, image: selectedValueImage }]
     : selectedVariant && selectedVariant.image_url
     ? [{ id: 1, image: selectedVariant.image_url }]
-    : Array.isArray(productDetails.image_url)
-    ? productDetails.image_url.map((url, idx) => ({ id: idx + 1, image: url }))
-    : productDetails.image_url
-    ? [{ id: 1, image: productDetails.image_url }]
+    : Array.isArray(productDetails.data?.image_url)
+    ? productDetails.data.image_url.map((url, idx) => ({
+        id: idx + 1,
+        image: url,
+      }))
+    : productDetails.data?.image_url
+    ? [{ id: 1, image: productDetails.data.image_url }]
     : [];
 
   const [currentImage, setCurrentImage] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [activeIndex, setActiveIndex] = useState(0);
+  const productImgRef = useRef(null);
 
   const handleThumbnailClick = (image) => {
     setCurrentImage(image);
@@ -156,7 +160,7 @@ const ProductDetail = () => {
     } else if (Number(value) >= 1 && !isNaN(value)) {
       setQuantity(Number(value));
     } else if (Number(value) === 0) {
-      toast.warn(t("products.errorMin"));
+      toast.warn(t("toast.errorMin"));
       setQuantity(1);
     } else {
       setQuantity(1);
@@ -166,7 +170,7 @@ const ProductDetail = () => {
   const handleKeyDown = (e) => {
     if (e.key === "-" || e.key === "e") {
       e.preventDefault();
-      toast.warn(t("products.errorSpecialCharacters"));
+      toast.warn(t("toast.errorSpecialCharacters"));
     }
   };
 
@@ -175,18 +179,18 @@ const ProductDetail = () => {
       return;
     }
     try {
-      await dispatch(fetchFavoriteProduct(productDetails.product_id));
-      toast.success(t("products.addedToFavorites"));
-      dispatch(fetchListFavorite()); // Thêm dòng này để cập nhật danh sách yêu thích
+      await dispatch(fetchFavoriteProduct(productDetails?.data?.product_id));
+      toast.success(t("toast.addedToFavorites"));
+      dispatch(fetchListFavorite());
     } catch (error) {
-      toast.error(error || t("products.errorAddingFavorite"));
+      toast.error(error || t("toast.errorAddingFavorite"));
     }
   };
 
-  const addToShoppingCart = () => {
+  const addToShoppingCart = async () => {
     // Validate số lượng
     if (!quantity || quantity < 1) {
-      toast.warn(t("products.errorMin"));
+      toast.warn(t("toast.errorMin"));
       return;
     }
 
@@ -195,26 +199,26 @@ const ProductDetail = () => {
       allAttributes.length > 0 &&
       Object.keys(selectedOptions).length < allAttributes.length
     ) {
-      toast.warn(t("Vui lòng chọn đầy đủ phiên bản sản phẩm!"));
+      toast.warn(t("toast.selectAllVariant"));
       return;
     }
 
     // Validate variant_id
     if (!variantId) {
-      toast.warn(t("Không tìm thấy biến thể phù hợp!"));
+      toast.warn(t("toast.outOfStock"));
       return;
     }
 
     if (checkLogin()) {
+      animateToCart();
       const payload = {
         product_id: productDetails.product_id,
         quantity,
         variant_id: variantId,
       };
-      dispatch(fetchAddToCart(payload));
-      console.log("🚀 ~ ProductDetail ~ addToShoppingCart ~ payload:", payload);
-
-      toast.success(t("products.addedToCart"));
+      await dispatch(fetchAddToCart(payload));
+      await dispatch(fetchCart());
+      toast.success(t("toast.addedToCart"));
     }
   };
 
@@ -266,13 +270,45 @@ const ProductDetail = () => {
   }, [dispatch, products]);
 
   const relatedProducts = useMemo(() => {
-    if (!productDetails || !productDetails.category_id) return [];
+    if (!productDetails.data || !productDetails.data.category_id) return [];
     return products.filter(
       (p) =>
-        p.category_id === productDetails.category_id &&
-        p.product_id !== productDetails.product_id
+        p.category_id === productDetails.data.category_id &&
+        p.product_id !== productDetails.data.product_id
     );
   }, [products, productDetails]);
+
+  const animateToCart = () => {
+    const img = productImgRef.current;
+    // Lấy icon giỏ hàng trên header bằng class hoặc thuộc tính đặc biệt
+    const cart = document.querySelector(".header-cart-icon"); // Thêm class này vào icon giỏ hàng ở Header.jsx
+    if (!img || !cart) return;
+
+    const imgRect = img.getBoundingClientRect();
+    const cartRect = cart.getBoundingClientRect();
+
+    const clone = img.cloneNode(true);
+    clone.style.position = "fixed";
+    clone.style.left = imgRect.left + "px";
+    clone.style.top = imgRect.top + "px";
+    clone.style.width = imgRect.width + "px";
+    clone.style.height = imgRect.height + "px";
+    clone.style.transition = "all 1.5s cubic-bezier(.4,2,.6,1)";
+    clone.style.zIndex = 1000;
+    document.body.appendChild(clone);
+
+    setTimeout(() => {
+      clone.style.left = cartRect.left + "px";
+      clone.style.top = cartRect.top + "px";
+      clone.style.width = "40px";
+      clone.style.height = "40px";
+      clone.style.opacity = 0.5;
+    }, 10);
+
+    setTimeout(() => {
+      document.body.removeChild(clone);
+    }, 1600);
+  };
 
   return (
     <>
@@ -281,7 +317,7 @@ const ProductDetail = () => {
         title={t("breadcrumbProductDetail.breadcrumbHeader")}
         mainItem={t("breadcrumbProductDetail.breadcrumbTitleHome")}
         mainItem2={t("breadcrumbProductDetail.breadcrumbTitleProduct")}
-        secondaryItem={productDetails.name}
+        secondaryItem={productDetails.data?.name}
         linkMainItem={"/"}
         linkMainItem2={"/products"}
       />
@@ -291,6 +327,7 @@ const ProductDetail = () => {
           <div className="col-md-6 mb-5 position-relative">
             <div className="border rounded mb-3 p-3 text-center position-relative">
               <img
+                ref={productImgRef}
                 src={currentImage}
                 alt="iPhone"
                 className="img-fluid"
@@ -359,14 +396,14 @@ const ProductDetail = () => {
           </Modal>
 
           <div className="col-md-6">
-            <div key={productDetails.product_id}>
-              <h2 className="mb-3">{productDetails.name}</h2>
+            <div key={productDetails.data?.product_id}>
+              <h2 className="mb-3">{productDetails.data?.name}</h2>
               <div className="price">
                 <h4 className="text-price_sale">
-                  {numberFomat(productDetails.price)}
+                  {numberFomat(productDetails.data?.price)}
                 </h4>
                 <p className="text-price_original">
-                  {numberFomat(productDetails?.price_original)}
+                  {numberFomat(productDetails.data?.price_original)}
                 </p>
               </div>
               <p className="text-muted">
@@ -376,7 +413,7 @@ const ProductDetail = () => {
                 </span>
                 {t("productDetail.product")}
               </p>
-              <p className="text-muted">{productDetails.description}</p>
+              <p className="text-muted">{productDetails.data?.description}</p>
             </div>
 
             <div className="mb-3">
@@ -508,7 +545,7 @@ const ProductDetail = () => {
             {activeTab === "description" && (
               <div className="tab-pane fade show active">
                 <p className="desc_productdetai">
-                  {productDetails.description}
+                  {productDetails.data?.description}
                 </p>
               </div>
             )}
