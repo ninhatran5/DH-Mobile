@@ -45,9 +45,8 @@ const ListBanner = () => {
             <tr>
               <th>ID</th>
               <th>Hình ảnh</th>
-              <th>Tiêu đề</th>
+              <th>Tiêu banner </th>
               <th>Liên kết</th>
-              <th>Trạng thái</th>
               <th>Ngày tạo</th>
               <th>Ngày cập nhật</th>
               <th>Thao tác</th>
@@ -68,11 +67,7 @@ const ListBanner = () => {
                   <div className="adminbanner-banner-title">{banner.title}</div>
                 </td>
                 <td>{banner.link_url || "Không có"}</td>
-                <td>
-                  <span className={`adminbanner-status ${banner.is_active ? 'active' : 'inactive'}`}>
-                    {banner.is_active ? "Hoạt động" : "Không hoạt động"}
-                  </span>
-                </td>
+                
                 <td>{new Date(banner.created_at).toLocaleString("vi-VN")}</td>
                 <td>{new Date(banner.updated_at).toLocaleString("vi-VN")}</td>
                 <td>

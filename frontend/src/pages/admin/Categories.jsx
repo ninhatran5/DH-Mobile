@@ -56,9 +56,9 @@ const CategoryList = () => {
             <tr>
               <th>ID</th>
               <th>Hình ảnh</th>
-              <th>Tiêu đề</th>
+              <th>Tiêu danh mục </th>
               <th>Liên kết</th>
-              <th>Trạng thái</th>
+             
               <th>Ngày tạo</th>
               <th>Ngày cập nhật</th>
               <th>Thao tác</th>
@@ -79,9 +79,7 @@ const CategoryList = () => {
                   <div className="admin_dh-category-title">{cat.name}</div>
                 </td>
                 <td>{cat.description || "Không có"}</td>
-                <td>
-                  <span className="admin_dh-status">Hoạt động</span>
-                </td>
+                
                 <td>{new Date(cat.created_at).toLocaleString("vi-VN", {
                   day: "2-digit",
                   month: "2-digit",
