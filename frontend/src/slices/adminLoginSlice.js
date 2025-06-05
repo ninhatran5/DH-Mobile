@@ -7,7 +7,21 @@ const initialState = {
   error: null,
 };
 
-///CALL API ADMIN LOGIN
+const logout = () => {
+  localStorage.removeItem('adminToken');
+  window.location.href = '/Adminlogin';
+};
+
+axiosConfig.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      logout();
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const fetchAdminLogin = createAsyncThunk(
   "adminLogin/fetchAdminLogin",
   async (data, thunkAPI) => {
@@ -25,7 +39,14 @@ export const fetchAdminLogin = createAsyncThunk(
 export const adminLoginSlice = createSlice({
   name: "adminLogin",
   initialState,
-  reducers: {},
+  reducers: {
+    logout: (state) => {
+      state.adminLoginInitial = null;
+      state.loading = false;
+      state.error = null;
+      logout();
+    }
+  },
   extraReducers: (builder) => {
     builder
       // pending(đang call)
@@ -46,4 +67,5 @@ export const adminLoginSlice = createSlice({
   },
 });
 
+export const { logout: logoutAction } = adminLoginSlice.actions;
 export default adminLoginSlice.reducer; 
