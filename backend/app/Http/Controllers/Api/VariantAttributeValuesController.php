@@ -23,18 +23,23 @@ class VariantAttributeValuesController extends Controller
     {
         $items = VariantAttributeValue::with(['variant', 'value.attribute'])->get();
 
-        // Group variants by variant_id
-        $groupedItems = $items->groupBy('variant_id')->map(function ($variantGroup) {
+        // Group variants by variant_id and filter out items with null variants
+        $groupedItems = $items->filter(function ($item) {
+            return !is_null($item->variant);
+        })->groupBy('variant_id')->map(function ($variantGroup) {
             $variant = $variantGroup->first()->variant;
 
             // Format attributes with both value_id and attribute value
             $attributes = $variantGroup->map(function ($item) {
+                if (!$item->value || !$item->value->attribute) {
+                    return null;
+                }
                 return [
                     'value_id' => $item->value_id,
                     'name' => strtolower($item->value->attribute->name),
                     'value' => $item->value->value
                 ];
-            })->values();
+            })->filter()->values();
 
             $variantData = [
                 'variant_id' => $variant->variant_id,
@@ -127,19 +132,39 @@ class VariantAttributeValuesController extends Controller
      */
     public function show(string $variant_id)
     {
-        $items = VariantAttributeValue::with(['variant', 'value.attribute'])
-            ->whereHas('variant', function ($query) use ($variant_id) {
-                $query->where('variant_id', $variant_id);
-            })->get();
-
-        if ($items->isEmpty()) {
+        // Check if variant exists first
+        $variant = ProductVariant::find($variant_id);
+        if (!$variant) {
             return response()->json([
-                'message' => 'Không tìm thấy thuộc tính của biến thể',
+                'message' => 'Không tìm thấy biến thể',
                 'status' => 404,
             ], 404);
         }
 
-        $variant = $items->first()->variant;
+        // Get variant attributes if any exist
+        $items = VariantAttributeValue::with(['value.attribute'])
+            ->where('variant_id', $variant_id)
+            ->get();
+
+        if ($items->isEmpty()) {
+            // Return variant data even if it has no attributes
+            return response()->json([
+                'message' => 'Biến thể không có thuộc tính nào',
+                'data' => [
+                    'variant_id' => $variant->variant_id,
+                    'product_id' => $variant->product_id,
+                    'sku' => $variant->sku,
+                    'price' => $variant->price,
+                    'price_original' => $variant->price_original,
+                    'image_url' => $variant->image_url,
+                    'stock' => $variant->stock,
+                    'is_active' => $variant->is_active,
+                    'attributes' => []
+                ],
+                'status' => 200,
+            ], 200);
+        }
+
         $attributes = $items->map(function ($item) {
             return [
                 'value_id' => $item->value_id,
