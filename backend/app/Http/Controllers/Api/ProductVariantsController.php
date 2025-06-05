@@ -19,30 +19,32 @@ class ProductVariantsController extends Controller
      * )
      */    public function index()
     {
-        $variants = ProductVariant::with(['product', 'attributeValues.attribute'])->get();
+        $variants = ProductVariant::with(['product', 'variantAttributeValues.value.attribute'])->get();
         
         // Biến đổi dữ liệu để nhóm theo attribute
         $variants = $variants->map(function ($variant) {
             $attributes = [];
             
             // Nhóm các giá trị theo attribute_id - mỗi variant chỉ có một giá trị cho mỗi thuộc tính
-            $variant->attributeValues->each(function ($value) use (&$attributes, $variant) {
-                $attributeId = $value->attribute_id;
+            foreach ($variant->variantAttributeValues as $item) {
+                $value = $item->value;
+                if (!$value) continue;
+                $attribute = $value->attribute;
+                if (!$attribute) continue;
+                $attributeId = $attribute->attribute_id;
                 if (!isset($attributes[$attributeId])) {
                     $attributes[$attributeId] = [
                         'attribute_id' => $attributeId,
-                        'name' => $value->attribute->name,
+                        'name' => $attribute->name,
                         'values' => []
                     ];
                 }
-                
-                // Gán trực tiếp giá trị - không kiểm tra trùng lặp vì mỗi variant chỉ có một giá trị cho mỗi thuộc tính
                 $attributes[$attributeId]['values'] = [[
                     'value_id' => $value->value_id,
                     'value' => $value->value,
                     'image_url' => $variant->image_url
                 ]];
-            });
+            }
 
             // Thêm variant info vào cuối mảng attributes
             $attributes['variant_info'] = [
@@ -54,12 +56,11 @@ class ProductVariantsController extends Controller
                 'stock' => $variant->stock
             ];
             
-
             // Chuyển attributes từ array thành collection và sắp xếp theo thứ tự
             $variant->attributes = array_values($attributes);
             
             // Chỉ giữ lại các thông tin cần thiết của variant
-            $variant->makeHidden(['attributeValues', 'created_at', 'updated_at', 'deleted_at', 'is_active']);
+            $variant->makeHidden(['variantAttributeValues', 'created_at', 'updated_at', 'deleted_at', 'is_active']);
             
             // Format lại giá cho variant
             $variant->price = number_format((float)$variant->price, 0, '', '');
@@ -151,7 +152,7 @@ class ProductVariantsController extends Controller
      */
     public function show(string $id)
     {
-        $variants = ProductVariant::with(['product', 'attributeValues.attribute'])
+        $variants = ProductVariant::with(['product', 'variantAttributeValues.value.attribute'])
             ->where('product_id', $id)
             ->get();
 
@@ -164,44 +165,33 @@ class ProductVariantsController extends Controller
 
         // Biến đổi dữ liệu để nhóm theo attribute cho từng variant
         $formattedVariants = $variants->map(function ($variant) {
-            // Tạo một mảng để lưu trữ các thuộc tính đã xử lý
             $processedAttributes = [];
-            
-            // Duyệt qua từng thuộc tính của variant hiện tại
-            foreach ($variant->attributeValues as $attributeValue) {
-                $attributeId = $attributeValue->attribute->attribute_id;
-                
-                // Tạo hoặc cập nhật thuộc tính
+            foreach ($variant->variantAttributeValues as $item) {
+                $value = $item->value;
+                if (!$value) continue;
+                $attribute = $value->attribute;
+                if (!$attribute) continue;
+                $attributeId = $attribute->attribute_id;
                 if (!isset($processedAttributes[$attributeId])) {
                     $processedAttributes[$attributeId] = [
                         'attribute_id' => $attributeId,
-                        'name' => $attributeValue->attribute->name,
+                        'name' => $attribute->name,
                         'values' => []
                     ];
                 }
-                
-                // Thêm giá trị vào thuộc tính - mỗi variant chỉ có một giá trị cho mỗi thuộc tính
                 $processedAttributes[$attributeId]['values'] = [[
-                    'value_id' => $attributeValue->value_id,
-                    'value' => $attributeValue->value,
+                    'value_id' => $value->value_id,
+                    'value' => $value->value,
                     'image_url' => $variant->image_url
                 ]];
             }
-
-            // Chuyển attributes từ array thành collection
             $variant->attributes = array_values($processedAttributes);
-            
-            // Chỉ giữ lại các thông tin cần thiết của variant
-            $variant->makeHidden(['attributeValues', 'created_at', 'updated_at', 'deleted_at', 'is_active']);
-            
-            // Format lại giá cho variant
+            $variant->makeHidden(['variantAttributeValues', 'created_at', 'updated_at', 'deleted_at', 'is_active']);
             $variant->price = number_format((float)$variant->price, 0, '', '');
             $variant->price_original = number_format((float)$variant->price_original, 0, '', '');
-
             return $variant;
         });
 
-        // Lấy thông tin sản phẩm từ variant đầu tiên
         $product = $variants->first()->product;
 
         return response()->json([
