@@ -17,7 +17,7 @@ class ProductSpecificationSeeder extends Seeder
         foreach ($products as $product) {
             if (str_contains($product->name, 'iPhone 15')) {
                 $this->createIPhone15Specs($product->product_id);
-            }
+            }          
             else if (str_contains($product->name, 'iPhone 14')) {
                 $this->createIPhone14Specs($product->product_id);
             }
