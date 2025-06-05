@@ -97,6 +97,22 @@ export const updateAdminProductVariant = createAsyncThunk(
   }
 );
 
+// Thêm action xóa variant
+export const deleteAdminProductVariant = createAsyncThunk(
+  "adminProductVariants/deleteAdminProductVariant",
+  async (id, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      await axiosConfig.delete(`/productvariants/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return id;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Lỗi khi xóa biến thể");
+    }
+  }
+);
+
 const adminProductVariantsSlice = createSlice({
   name: "adminProductVariants",
   initialState,
@@ -142,6 +158,21 @@ const adminProductVariantsSlice = createSlice({
         }
       })
       .addCase(updateAdminProductVariant.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Delete cases
+      .addCase(deleteAdminProductVariant.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteAdminProductVariant.fulfilled, (state, action) => {
+        state.loading = false;
+        state.productVariants = state.productVariants.filter(
+          (variant) => variant.variant_id !== action.payload
+        );
+      })
+      .addCase(deleteAdminProductVariant.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

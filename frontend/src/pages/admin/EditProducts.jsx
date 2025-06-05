@@ -15,6 +15,7 @@ import {
   deleteAdminProductSpecification
 } from "../../slices/adminProductSpecificationsSlice";
 import { fetchCategories } from "../../slices/adminCategories";
+import { deleteAdminProductVariant } from "../../slices/AdminProductVariants";
 
 import {
   fetchVariantAttributeValues,
@@ -27,6 +28,12 @@ import "../../assets/admin/EditProducts.css";
 
 const VariantDisplay = ({ variant, onEdit, onDelete, attributeValues }) => {
   console.log("variant:", variant);
+
+  const handleDelete = async () => {
+    if (window.confirm('Bạn có chắc chắn muốn xóa biến thể này không?')) {
+      onDelete(variant.variant_id);
+    }
+  };
 
   return (
     <div className="variant-display" style={{ width: "100%" }}>
@@ -180,7 +187,7 @@ const VariantDisplay = ({ variant, onEdit, onDelete, attributeValues }) => {
             Cập nhật
           </Link>
           <button
-            onClick={() => onDelete(variant.variant_id)}
+            onClick={handleDelete}
             style={{
               padding: "10px 20px",
               border: "1px solid #dc2626",
@@ -411,9 +418,15 @@ const AdminProductEdit = () => {
     }
   };
 
-  const handleDeleteVariant = (variantId) => {
-    if (window.confirm("Bạn có chắc chắn muốn xoá không?")) {
-      dispatch(deleteVariantAttributeValue(variantId));
+  const handleDeleteVariant = async (variantId) => {
+    try {
+      await dispatch(deleteAdminProductVariant(variantId)).unwrap();
+      // Sau khi xóa thành công, cập nhật lại danh sách variants
+      dispatch(fetchVariantAttributeValues());
+      toast.success("Xóa biến thể thành công!");
+    } catch (error) {
+      console.error("Error deleting variant:", error);
+      toast.error("Lỗi khi xóa biến thể: " + error.message);
     }
   };
 
@@ -746,7 +759,7 @@ const AdminProductEdit = () => {
                       >
                         <VariantDisplay
                           variant={variant}
-                          onEdit={(v) => navigate(`/admin/updatevariant/${v.variant_id}`)}
+                          onEdit={(v) => navigate(`/admin/variants/update/${v.variant_id}`)}
                           onDelete={handleDeleteVariant}
                           attributeValues={attributeValues}
                         />
