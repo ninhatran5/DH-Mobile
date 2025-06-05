@@ -12,8 +12,6 @@ const UpdateVariant = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  console.log('Current variant_id from URL:', variant_id);
-
   const { attributeValues, loading: attributeValuesLoading } = useSelector(
     (state) => state.attributeValue
   );
@@ -37,13 +35,10 @@ const UpdateVariant = () => {
 
   useEffect(() => {
     if (variant_id) {
-      console.log('Fetching data for variant_id:', variant_id);
       dispatch(fetchVariantAttributeValues());
       dispatch(fetchAttributeValues());
       dispatch(fetchAttributes());
     } else {
-      console.log('No variant_id found in URL');
-      toast.error('Không tìm thấy ID biến thể');
       navigate('/admin/product');
     }
   }, [dispatch, variant_id, navigate]);
@@ -52,15 +47,10 @@ const UpdateVariant = () => {
     if (!variantAttributeValues.length || !variant_id) return;
     
     const variant = variantAttributeValues.find(v => String(v.variant_id) === String(variant_id));
-    console.log('Found variant:', variant);
     
     if (variant) {
       try {
-        // Kiểm tra và lọc attributes một cách an toàn
         const variantAttributes = variant.attributes || [];
-        console.log('Original variant attributes:', variantAttributes);
-
-        // Tìm attribute_id từ danh sách attributes dựa trên tên
         const realAttributes = Array.isArray(variantAttributes) 
           ? variantAttributes.map(attr => {
               const foundAttribute = attributes.find(a => 
@@ -77,9 +67,6 @@ const UpdateVariant = () => {
             })
           : [];
 
-        console.log('Processed attributes:', realAttributes);
-
-        // Set form data với các giá trị mặc định an toàn
         setFormData({
           sku: variant.sku || "",
           price: variant.price || "",
@@ -95,11 +82,7 @@ const UpdateVariant = () => {
           setImagePreview(variant.image_url);
         }
       } catch (error) {
-        console.error('Error processing variant data:', error);
-        toast.error('Có lỗi khi xử lý dữ liệu biến thể');
       }
-    } else {
-      toast.error('Không tìm thấy thông tin biến thể');
     }
   }, [variantAttributeValues, variant_id, attributes]);
 
@@ -122,7 +105,6 @@ const UpdateVariant = () => {
       
       const attribute = attributes.find(a => String(a.attribute_id) === String(attribute_id));
       if (!attribute) {
-        console.error('Attribute not found:', attribute_id);
         return;
       }
       
@@ -149,23 +131,13 @@ const UpdateVariant = () => {
         return { ...prev, attributes: newAttributes };
       });
     } catch (error) {
-      console.error('Error handling attribute change:', error);
-      toast.error('Có lỗi khi cập nhật thuộc tính');
     }
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Kiểm tra kích thước file (ví dụ: giới hạn 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("Kích thước file không được vượt quá 5MB");
-        return;
-      }
-
-      // Kiểm tra loại file
-      if (!file.type.startsWith('image/')) {
-        toast.error("Vui lòng chọn file ảnh");
+      if (file.size > 5 * 1024 * 1024 || !file.type.startsWith('image/')) {
         return;
       }
 
@@ -178,21 +150,11 @@ const UpdateVariant = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.sku.trim()) {
-      toast.warning("SKU không được để trống");
-      return;
-    }
-    if (!formData.price || isNaN(formData.price)) {
-      toast.warning("Giá không hợp lệ");
-      return;
-    }
-    if (!formData.stock || isNaN(formData.stock)) {
-      toast.warning("Số lượng tồn kho không hợp lệ");
+    if (!formData.sku.trim() || !formData.price || isNaN(formData.price) || !formData.stock || isNaN(formData.stock)) {
       return;
     }
 
     try {
-      // 1. Cập nhật thông tin cơ bản của biến thể
       const variantFormData = new FormData();
       variantFormData.append('sku', formData.sku);
       variantFormData.append('price', formData.price);
@@ -201,22 +163,20 @@ const UpdateVariant = () => {
       variantFormData.append('is_active', formData.is_active);
       variantFormData.append('product_id', formData.product_id);
 
-      // Chỉ append image nếu có file mới được chọn
       if (formData.image_url instanceof File) {
         variantFormData.append('image_url', formData.image_url);
       }
-
-      console.log('Updating variant with data:', Object.fromEntries(variantFormData));
       
-      // Cập nhật thông tin biến thể
-      const updatedVariant = await dispatch(updateAdminProductVariant({
+      const resultAction = await dispatch(updateAdminProductVariant({
         id: variant_id,
         updatedData: variantFormData
-      })).unwrap();
+      }));
 
-      console.log('Variant updated successfully:', updatedVariant);
+      if (resultAction.error) {
+        toast.error(resultAction.payload || resultAction.error.message);
+        return;
+      }
 
-      // 2. Cập nhật thuộc tính của biến thể
       const validAttributes = formData.attributes.filter(attr => 
         attr.attribute_id && attr.value_id
       );
@@ -230,23 +190,20 @@ const UpdateVariant = () => {
         }))
       };
 
-      console.log('Updating variant attributes with data:', attributeData);
-
-      await dispatch(updateVariantAttributeValue({
+      const attributeResult = await dispatch(updateVariantAttributeValue({
         id: variant_id,
         updatedData: attributeData
-      })).unwrap();
+      }));
 
-      // Refresh variant data
+      if (attributeResult.error) {
+        toast.error(attributeResult.payload || attributeResult.error.message);
+        return;
+      }
+
       dispatch(fetchVariantAttributeValues());
-
-      toast.success("Cập nhật biến thể thành công!");
-      
-      // Chuyển hướng về trang edit product
       navigate(`/admin/editproduct/${formData.product_id}`);
-    } catch (err) {
-      console.error('Update error:', err);
-      toast.error("Lỗi: " + (err.response?.data?.message || err.message || "Đã có lỗi xảy ra"));
+    } catch (error) {
+      toast.error(error.message);
     }
   };
 

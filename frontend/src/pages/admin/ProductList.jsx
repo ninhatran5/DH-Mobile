@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAdminProducts, deleteAdminProduct } from '../../slices/adminproductsSlice';
 import { fetchCategories } from '../../slices/adminCategories';
+import { toast } from 'react-toastify';
 
 const ProductList = () => {
   const dispatch = useDispatch();
@@ -22,7 +23,10 @@ const ProductList = () => {
   useEffect(() => {
     dispatch(fetchAdminProducts());
     dispatch(fetchCategories());
-  }, [dispatch]);
+    if (error) {
+      toast.error(`Lỗi từ server: ${error}`);
+    }
+  }, [dispatch, error]);
 
   const handleSelectAll = (e) => {
     if (e.target.checked) {
@@ -40,19 +44,33 @@ const ProductList = () => {
     }
   };
 
-  const handleDeleteSelected = () => {
+  const handleDeleteSelected = async () => {
     if(window.confirm(`Bạn có chắc muốn xóa ${selectedProducts.length} sản phẩm đã chọn?`)) {
-      selectedProducts.forEach((productId) => {
-        dispatch(deleteAdminProduct(productId));
-      });
-      setSelectedProducts([]);
+      try {
+        for (const productId of selectedProducts) {
+          const resultAction = await dispatch(deleteAdminProduct(productId));
+          if (deleteAdminProduct.rejected.match(resultAction)) {
+            toast.error(`Lỗi khi xóa sản phẩm ${productId}: ${resultAction.error.message}`);
+          }
+        }
+        setSelectedProducts([]);
+      } catch (error) {
+        toast.error(`Lỗi từ server: ${error.message}`);
+      }
     }
   };
 
-  const handleDeleteSingle = (productId) => {
+  const handleDeleteSingle = async (productId) => {
     if(window.confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
-      dispatch(deleteAdminProduct(productId));
-      setSelectedProducts(selectedProducts.filter(id => id !== productId));
+      try {
+        const resultAction = await dispatch(deleteAdminProduct(productId));
+        if (deleteAdminProduct.rejected.match(resultAction)) {
+          toast.error(`Lỗi khi xóa sản phẩm: ${resultAction.error.message}`);
+        }
+        setSelectedProducts(selectedProducts.filter(id => id !== productId));
+      } catch (error) {
+        toast.error(`Lỗi từ server: ${error.message}`);
+      }
     }
   };
 
