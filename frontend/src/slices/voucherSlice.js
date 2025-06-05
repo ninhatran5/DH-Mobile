@@ -10,7 +10,7 @@ const initialState = {
 export const fetchVouhcer = createAsyncThunk(
   "vouhcer/fetchVouhcer",
   async () => {
-    const response = await axiosConfig.get("/vorchers");
+    const response = await axiosConfig.get("/voucher");
     return response.data;
   }
 );
