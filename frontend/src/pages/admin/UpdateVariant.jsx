@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { fetchAdminProductVariants, updateAdminProductVariant } from "../../slices/AdminProductVariants";
+import { updateAdminProductVariant } from "../../slices/AdminProductVariants";
 import { fetchAttributeValues } from "../../slices/attributeValueSlice";
 import { fetchAttributes } from "../../slices/Attribute";
 import { fetchVariantAttributeValues, updateVariantAttributeValue } from "../../slices/variantAttributeValueSlice";
@@ -14,9 +14,6 @@ const UpdateVariant = () => {
 
   console.log('Current variant_id from URL:', variant_id);
 
-  const { productVariants, loading: productVariantsLoading } = useSelector(
-    (state) => state.adminProductVariants
-  );
   const { attributeValues, loading: attributeValuesLoading } = useSelector(
     (state) => state.attributeValue
   );
@@ -41,10 +38,9 @@ const UpdateVariant = () => {
   useEffect(() => {
     if (variant_id) {
       console.log('Fetching data for variant_id:', variant_id);
-      dispatch(fetchAdminProductVariants());
+      dispatch(fetchVariantAttributeValues());
       dispatch(fetchAttributeValues());
       dispatch(fetchAttributes());
-      dispatch(fetchVariantAttributeValues());
     } else {
       console.log('No variant_id found in URL');
       toast.error('Không tìm thấy ID biến thể');
@@ -53,10 +49,9 @@ const UpdateVariant = () => {
   }, [dispatch, variant_id, navigate]);
 
   useEffect(() => {
-    if (!productVariants.length || !variant_id) return;
+    if (!variantAttributeValues.length || !variant_id) return;
     
-    console.log('Available variants:', productVariants.map(v => v.variant_id));
-    const variant = productVariants.find(v => String(v.variant_id) === String(variant_id));
+    const variant = variantAttributeValues.find(v => String(v.variant_id) === String(variant_id));
     console.log('Found variant:', variant);
     
     if (variant) {
@@ -65,17 +60,24 @@ const UpdateVariant = () => {
         const variantAttributes = variant.attributes || [];
         console.log('Original variant attributes:', variantAttributes);
 
+        // Tìm attribute_id từ danh sách attributes dựa trên tên
         const realAttributes = Array.isArray(variantAttributes) 
-          ? variantAttributes.filter(attr => 
-              attr && 
-              attr.attribute_id && 
-              attr.name && 
-              Array.isArray(attr.values) && 
-              attr.values.length > 0
-            )
+          ? variantAttributes.map(attr => {
+              const foundAttribute = attributes.find(a => 
+                a.name.toLowerCase() === attr.name.toLowerCase()
+              );
+              
+              return {
+                attribute_id: foundAttribute ? foundAttribute.attribute_id : '',
+                name: attr.name || '',
+                value_id: attr.value_id || '',
+                value: attr.value || '',
+                variant_attribute_value_id: attr.variant_attribute_value_id || null
+              };
+            })
           : [];
 
-        console.log('Filtered attributes:', realAttributes);
+        console.log('Processed attributes:', realAttributes);
 
         // Set form data với các giá trị mặc định an toàn
         setFormData({
@@ -86,13 +88,7 @@ const UpdateVariant = () => {
           image_url: variant.image_url || "",
           is_active: variant.is_active === 1 ? 1 : 0,
           product_id: variant.product_id || "",
-          attributes: realAttributes.map(attr => ({
-            attribute_id: attr.attribute_id,
-            name: attr.name,
-            value_id: attr.values[0]?.value_id || "",
-            value: attr.values[0]?.value || "",
-            variant_attribute_value_id: attr.variant_attribute_value_id || null
-          }))
+          attributes: realAttributes
         });
 
         if (variant.image_url) {
@@ -105,7 +101,7 @@ const UpdateVariant = () => {
     } else {
       toast.error('Không tìm thấy thông tin biến thể');
     }
-  }, [productVariants, variant_id]);
+  }, [variantAttributeValues, variant_id, attributes]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -124,6 +120,12 @@ const UpdateVariant = () => {
         av && String(av.value_id) === String(value_id)
       );
       
+      const attribute = attributes.find(a => String(a.attribute_id) === String(attribute_id));
+      if (!attribute) {
+        console.error('Attribute not found:', attribute_id);
+        return;
+      }
+      
       setFormData(prev => {
         const newAttributes = Array.isArray(prev.attributes) ? [...prev.attributes] : [];
         const existingIndex = newAttributes.findIndex(attr => 
@@ -131,10 +133,10 @@ const UpdateVariant = () => {
         );
         
         const newAttribute = {
-          attribute_id,
-          name: attributes.find(a => a && String(a.attribute_id) === String(attribute_id))?.name || '',
-          value_id: selectedValue?.value_id || '',
-          value: selectedValue?.value || '',
+          attribute_id: parseInt(attribute_id),
+          name: attribute.name,
+          value_id: selectedValue ? parseInt(selectedValue.value_id) : '',
+          value: selectedValue ? selectedValue.value : '',
           variant_attribute_value_id: existingIndex !== -1 ? newAttributes[existingIndex].variant_attribute_value_id : null
         };
 
@@ -215,13 +217,16 @@ const UpdateVariant = () => {
       console.log('Variant updated successfully:', updatedVariant);
 
       // 2. Cập nhật thuộc tính của biến thể
+      const validAttributes = formData.attributes.filter(attr => 
+        attr.attribute_id && attr.value_id
+      );
+
       const attributeData = {
         variant_id: variant_id,
         update_mode: 'update',
-        attributes: formData.attributes.map(attr => ({
-          attribute_id: attr.attribute_id,
-          value_id: attr.value_id,
-          variant_attribute_value_id: attr.variant_attribute_value_id
+        attributes: validAttributes.map(attr => ({
+          attribute_id: parseInt(attr.attribute_id),
+          value_id: parseInt(attr.value_id)
         }))
       };
 
@@ -231,6 +236,9 @@ const UpdateVariant = () => {
         id: variant_id,
         updatedData: attributeData
       })).unwrap();
+
+      // Refresh variant data
+      dispatch(fetchVariantAttributeValues());
 
       toast.success("Cập nhật biến thể thành công!");
       
@@ -242,7 +250,7 @@ const UpdateVariant = () => {
     }
   };
 
-  if (productVariantsLoading) {
+  if (variantLoading || attributeValuesLoading || attributesLoading) {
     return (
       <div className="container my-5">
         <div className="text-center">
@@ -253,8 +261,6 @@ const UpdateVariant = () => {
       </div>
     );
   }
-
-  const currentVariant = variantAttributeValues.find(v => String(v.variant_id) === String(variant_id));
 
   return (
     <div className="container my-5">

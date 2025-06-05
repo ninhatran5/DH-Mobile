@@ -56,14 +56,13 @@ export const updateVariantAttributeValue = createAsyncThunk(
       
       // Add attributes with relationship IDs
       if (Array.isArray(updatedData.attributes)) {
-        updatedData.attributes.forEach((attr, index) => {
-          formData.append(`value_id[${index}]`, attr.value_id);
-          formData.append(`variant_attribute_value_id[${index}]`, attr.variant_attribute_value_id || '');
-          formData.append(`attribute_id[${index}]`, attr.attribute_id);
+        updatedData.attributes.forEach((attr) => {
+          formData.append('value_id[]', attr.value_id);
+          formData.append('attribute_id[]', attr.attribute_id);
         });
       }
 
-      console.log('Sending update request with FormData:', formData);
+      console.log('Sending update request with FormData:', Object.fromEntries(formData));
 
       const res = await axiosConfig.post( 
         `/variantattributevalues/${id}`,
