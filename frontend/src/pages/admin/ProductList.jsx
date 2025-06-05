@@ -4,16 +4,24 @@ import '../../assets/admin/product.css';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAdminProducts, deleteAdminProduct } from '../../slices/adminproductsSlice';
+import { fetchCategories } from '../../slices/adminCategories';
 
 const ProductList = () => {
   const dispatch = useDispatch();
   const { adminproducts, loading, error } = useSelector((state) => state.adminproduct);
+  const { categories } = useSelector((state) => state.category);
 
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    priceRange: 'all',
+    category: 'all'
+  });
 
   useEffect(() => {
     dispatch(fetchAdminProducts());
+    dispatch(fetchCategories());
   }, [dispatch]);
 
   const handleSelectAll = (e) => {
@@ -48,12 +56,48 @@ const ProductList = () => {
     }
   };
 
-  // Bảo vệ adminproducts, tránh lỗi khi dữ liệu chưa về hoặc không đúng kiểu
-  const filteredProducts = Array.isArray(adminproducts)
-    ? adminproducts.filter(product =>
-        product?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : [];
+  // Lọc sản phẩm dựa trên các điều kiện
+  const getFilteredProducts = () => {
+    return Array.isArray(adminproducts) 
+      ? adminproducts.filter(product => {
+          // Lọc theo tên
+          const nameMatch = product?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+          
+          // Lọc theo khoảng giá
+          let priceMatch = true;
+          const price = parseFloat(product.price);
+          switch(filters.priceRange) {
+            case 'under500':
+              priceMatch = price < 500;
+              break;
+            case '500to1000':
+              priceMatch = price >= 500 && price <= 1000;
+              break;
+            case 'over1000':
+              priceMatch = price > 1000;
+              break;
+            default:
+              priceMatch = true;
+          }
+
+          // Lọc theo danh mục
+          const categoryMatch = filters.category === 'all' 
+            ? true 
+            : product.category_id === parseInt(filters.category);
+
+          return nameMatch && priceMatch && categoryMatch;
+        })
+      : [];
+  };
+
+  const handleFilterChange = (filterType, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
+
+  const filteredProducts = getFilteredProducts();
 
   return (
     <div className="admin_dh-product-container">
@@ -82,25 +126,144 @@ const ProductList = () => {
         </div>
       </div>
 
-      <div className="admin_dh-top-row">
-        <div className="admin_dh-search-box">
-          <i className="bi bi-search admin_dh-search-icon" style={{ color: '#0071e3' }}></i>
-          <input
-            type="text"
-            className="admin_dh-search-input"
-            placeholder="Tìm kiếm sản phẩm..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <div className="admin_dh-filters">
-          <button className="admin_dh-btn admin_dh-btn-outline">
-            <i className="bi bi-funnel" style={{ color: '#5ac8fa' }}></i> Bộ lọc
+      <div className="admin_dh-top-row" style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px',
+        marginBottom: '24px',
+        padding: '16px',
+        backgroundColor: '#fff',
+        borderRadius: '12px',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+      }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '100%'
+        }}>
+          <div className="admin_dh-search-box" style={{
+            position: 'relative',
+            width: '400px'
+          }}>
+            <i className="bi bi-search" style={{
+              position: 'absolute',
+              left: '16px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: '#0071e3',
+              fontSize: '1.1rem'
+            }}></i>
+            <input
+              type="text"
+              className="admin_dh-search-input"
+              placeholder="Tìm kiếm sản phẩm..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '12px 16px 12px 48px',
+                fontSize: '1rem',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+                outline: 'none',
+                transition: 'all 0.2s ease',
+                backgroundColor: '#f9fafb'
+              }}
+            />
+          </div>
+          <button 
+            className="admin_dh-btn admin_dh-btn-outline" 
+            onClick={() => setShowFilters(!showFilters)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '10px 16px',
+              border: '1px solid #e5e7eb',
+              borderRadius: '8px',
+              backgroundColor: showFilters ? '#f3f4f6' : '#fff',
+              color: '#374151',
+              fontSize: '0.95rem',
+              fontWeight: '500',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <i className="bi bi-funnel" style={{ color: '#5ac8fa' }}></i>
+            Bộ lọc
           </button>
-          <button className="admin_dh-btn admin_dh-btn-outline">
-            <i className="bi bi-sort-down" style={{ color: '#5ac8fa' }}></i> Sắp xếp
-          </button>
         </div>
+
+        {/* Phần bộ lọc mở rộng */}
+        {showFilters && (
+          <div className="admin_dh-filters-panel" style={{
+            display: 'flex',
+            gap: '20px',
+            padding: '16px',
+            borderTop: '1px solid #e5e7eb'
+          }}>
+            {/* Lọc theo khoảng giá */}
+            <div className="filter-group" style={{ flex: 1 }}>
+              <label className="filter-label" style={{ 
+                display: 'block', 
+                marginBottom: '8px',
+                fontSize: '0.9rem',
+                color: '#374151',
+                fontWeight: '500'
+              }}>
+                Khoảng giá
+              </label>
+              <select
+                value={filters.priceRange}
+                onChange={(e) => handleFilterChange('priceRange', e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '6px',
+                  fontSize: '0.95rem'
+                }}
+              >
+                <option value="all">Tất cả</option>
+                <option value="under500">Dưới 500</option>
+                <option value="500to1000">500 - 1000</option>
+                <option value="over1000">Trên 1000</option>
+              </select>
+            </div>
+
+            {/* Lọc theo danh mục */}
+            <div className="filter-group" style={{ flex: 1 }}>
+              <label className="filter-label" style={{ 
+                display: 'block', 
+                marginBottom: '8px',
+                fontSize: '0.9rem',
+                color: '#374151',
+                fontWeight: '500'
+              }}>
+                Danh mục
+              </label>
+              <select
+                value={filters.category}
+                onChange={(e) => handleFilterChange('category', e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '6px',
+                  fontSize: '0.95rem'
+                }}
+              >
+                <option value="all">Tất cả danh mục</option>
+                {Array.isArray(categories) && categories.map(category => (
+                  <option key={category.category_id} value={category.category_id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
       </div>
 
       {selectedProducts.length > 0 && (
