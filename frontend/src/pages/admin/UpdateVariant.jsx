@@ -11,6 +11,7 @@ const UpdateVariant = () => {
   const { variant_id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { attributeValues, loading: attributeValuesLoading } = useSelector(
     (state) => state.attributeValue
@@ -164,13 +165,22 @@ const UpdateVariant = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Prevent multiple submissions
+    if (isSubmitting) {
+      return;
+    }
+
     if (!formData.sku.trim() || !formData.price || isNaN(formData.price) || !formData.stock || isNaN(formData.stock)) {
+      toast.error('Vui lòng điền đầy đủ thông tin bắt buộc');
       return;
     }
 
     try {
+      setIsSubmitting(true);
+
       const variantFormData = new FormData();
-      variantFormData.append('sku', formData.sku);
+      variantFormData.append('sku', formData.sku.trim());
       variantFormData.append('price', formData.price);
       variantFormData.append('price_original', formData.price_original || '');
       variantFormData.append('stock', formData.stock);
@@ -187,22 +197,28 @@ const UpdateVariant = () => {
       }));
 
       if (resultAction.error) {
-        toast.error(resultAction.payload || resultAction.error.message);
-        return;
+        throw new Error(resultAction.payload || resultAction.error.message);
       }
 
-      // Lọc và chuẩn hóa attributes trước khi gửi
-      const processedAttributes = formData.attributes
-        .filter(attr => attr.attribute_id && attr.value_id) // Chỉ lấy các thuộc tính có đầy đủ thông tin
-        .map(attr => ({
-          attribute_id: parseInt(attr.attribute_id),
-          value_id: parseInt(attr.value_id)
-        }));
+      // Xử lý và loại bỏ các thuộc tính trùng lặp trước khi gửi
+      const uniqueAttributes = Array.from(
+        new Map(
+          formData.attributes
+            .filter(attr => attr && attr.attribute_id && attr.value_id)
+            .map(attr => [
+              `${attr.attribute_id}`,
+              {
+                attribute_id: parseInt(attr.attribute_id),
+                value_id: parseInt(attr.value_id)
+              }
+            ])
+        ).values()
+      );
 
       const attributeData = {
         variant_id: variant_id,
         update_mode: 'update',
-        attributes: processedAttributes
+        attributes: uniqueAttributes
       };
 
       const attributeResult = await dispatch(updateVariantAttributeValue({
@@ -211,11 +227,10 @@ const UpdateVariant = () => {
       }));
 
       if (attributeResult.error) {
-        toast.error(attributeResult.payload || attributeResult.error.message);
-        return;
+        throw new Error(attributeResult.payload || attributeResult.error.message);
       }
 
-      // Fetch lại dữ liệu sau khi cập nhật thành công
+      // Đợi tất cả các API call hoàn thành trước khi chuyển trang
       await Promise.all([
         dispatch(fetchVariantAttributeValues()),
         dispatch(fetchAttributeValues()),
@@ -225,7 +240,9 @@ const UpdateVariant = () => {
       toast.success('Cập nhật biến thể thành công');
       navigate(`/admin/editproduct/${formData.product_id}`);
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.message || 'Có lỗi xảy ra khi cập nhật biến thể');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -357,8 +374,19 @@ const UpdateVariant = () => {
               </div>
             </div>
             <div className="d-flex gap-2">
-              <button type="submit" className="btn btn-primary">
-                Cập nhật biến thể
+              <button 
+                type="submit" 
+                className="btn btn-primary"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Đang cập nhật...
+                  </>
+                ) : (
+                  'Cập nhật biến thể'
+                )}
               </button>
               <Link
                 to={`/admin/editproduct/${formData.product_id}`}

@@ -291,7 +291,7 @@ h6 {
 .container-sm,
 .container-xl,
 .container-xxl {
-  --bs-gutter-x: 3rem;
+  --bs-gutter-x: 2rem;
 }
 /*----------------------------------------------*/
 /* 6. SITE STRUCTURE */
