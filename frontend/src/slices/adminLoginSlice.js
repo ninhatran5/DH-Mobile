@@ -7,26 +7,14 @@ const initialState = {
   error: null,
 };
 
-const logout = () => {
-  localStorage.removeItem('adminToken');
-  window.location.href = '/Adminlogin';
-};
-
-axiosConfig.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      logout();
-    }
-    return Promise.reject(error);
-  }
-);
-
 export const fetchAdminLogin = createAsyncThunk(
   "adminLogin/fetchAdminLogin",
   async (data, thunkAPI) => {
     try {
       const response = await axiosConfig.post("/login", data);
+      if (response.data?.token) {
+        localStorage.setItem('adminToken', response.data.token);
+      }
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -44,22 +32,20 @@ export const adminLoginSlice = createSlice({
       state.adminLoginInitial = null;
       state.loading = false;
       state.error = null;
-      logout();
+      localStorage.removeItem('adminToken');
+      window.location.href = '/Adminlogin';
     }
   },
   extraReducers: (builder) => {
     builder
-      // pending(đang call)
       .addCase(fetchAdminLogin.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      // call thành công
       .addCase(fetchAdminLogin.fulfilled, (state, action) => {
         state.loading = false;
         state.adminLoginInitial = action.payload;
       })
-      // call lỗi
       .addCase(fetchAdminLogin.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
