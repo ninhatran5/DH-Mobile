@@ -400,10 +400,10 @@ const ProductDetail = () => {
               <h2 className="mb-3">{productDetails.data?.name}</h2>
               <div className="price">
                 <h4 className="text-price_sale">
-                  {numberFomat(productDetails.data?.price)}
+                  {numberFomat(selectedVariant?.price)}
                 </h4>
                 <p className="text-price_original">
-                  {numberFomat(productDetails.data?.price_original)}
+                  {numberFomat(selectedVariant?.price_original)}
                 </p>
               </div>
               <p className="text-muted">

@@ -71,6 +71,7 @@ const sortProducts = (products, sortOrder, parsePrice) => {
 const filterVariants = (variants, memory, ram, color) =>
   variants.filter((variant) => {
     let match = true;
+
     if (memory)
       match =
         match &&
@@ -78,13 +79,14 @@ const filterVariants = (variants, memory, ram, color) =>
           (attr) =>
             attr.name &&
             attr.values &&
-            attr.name.toLowerCase() === "storage" &&
+            ["storage", "bộ nhớ"].includes(attr.name.toLowerCase()) &&
             attr.values.some(
               (val) =>
                 val.value &&
                 String(val.value).replace("GB", "") === String(memory)
             )
         );
+
     if (ram)
       match =
         match &&
@@ -92,12 +94,13 @@ const filterVariants = (variants, memory, ram, color) =>
           (attr) =>
             attr.name &&
             attr.values &&
-            attr.name.toLowerCase() === "ram" &&
+            ["ram"].includes(attr.name.toLowerCase()) &&
             attr.values.some(
               (val) =>
                 val.value && String(val.value).replace("GB", "") === String(ram)
             )
         );
+
     if (color)
       match =
         match &&
@@ -105,12 +108,13 @@ const filterVariants = (variants, memory, ram, color) =>
           (attr) =>
             attr.name &&
             attr.values &&
-            attr.name.toLowerCase() === "color" &&
+            ["color", "màu sắc"].includes(attr.name.toLowerCase()) &&
             attr.values.some(
               (val) =>
                 val.value && val.value.toLowerCase() === color.toLowerCase()
             )
         );
+
     return match;
   });
 
@@ -126,6 +130,7 @@ export default function ListProducts({
   showPagination = true,
   productsPerPage = 5,
 }) {
+  console.log("🚀 ~ productsVariant:", productsVariant);
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -186,7 +191,9 @@ export default function ListProducts({
             (variant.attributes || [])
               .filter(
                 (attr) =>
-                  attr.name && attr.values && attr.name.toLowerCase() === "ram"
+                  attr.name &&
+                  attr.values &&
+                  ["ram"].includes(attr.name.toLowerCase())
               )
               .flatMap((attr) =>
                 attr.values
@@ -198,6 +205,7 @@ export default function ListProducts({
       ),
     [productsVariant]
   );
+
   const memoryOptions = useMemo(
     () =>
       Array.from(
@@ -208,7 +216,7 @@ export default function ListProducts({
                 (attr) =>
                   attr.name &&
                   attr.values &&
-                  attr.name.toLowerCase() === "storage"
+                  ["storage", "bộ nhớ"].includes(attr.name.toLowerCase())
               )
               .flatMap((attr) =>
                 attr.values
@@ -220,6 +228,7 @@ export default function ListProducts({
       ),
     [productsVariant]
   );
+
   const colorOptions = useMemo(
     () =>
       Array.from(
@@ -230,7 +239,7 @@ export default function ListProducts({
                 (attr) =>
                   attr.name &&
                   attr.values &&
-                  attr.name.toLowerCase() === "color"
+                  ["color", "màu sắc"].includes(attr.name.toLowerCase())
               )
               .flatMap((attr) =>
                 attr.values.filter((val) => val.value).map((val) => val.value)

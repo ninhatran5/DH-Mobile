@@ -182,7 +182,7 @@ const routerConfig = [
     path: "/admin",
     element: (
       <ProtectedRoute>
-        <HomeAdmin />,
+        <HomeAdmin />
       </ProtectedRoute>
     ),
 
@@ -290,16 +290,16 @@ const routerConfig = [
       },
       {
         path: "addvariant/:product_id",
-        element: <AddVariant/>
+        element: <AddVariant />,
       },
       {
         path: "EditVoucher/:id",
-        element: <EditVoucher/>
+        element: <EditVoucher />,
       },
       {
         path: "variants/update/:variant_id",
-        element: <EditVariant/>
-      }
+        element: <EditVariant />,
+      },
     ],
   },
   {
