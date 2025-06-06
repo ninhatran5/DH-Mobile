@@ -4,18 +4,6 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import background from "../assets/images/background-pattern.jpg";
-import appleLogo from "../assets/images/Apple_logo_black.png";
-import xiaomiLogo from "../assets/images/Xiaomi_logo__2021-_.svg.png";
-import samsungLogo from "../assets/images/samsung-logo-png-transparent.png";
-import tecnoLogo from "../assets/images/Tecno_Mobile_logo.svg.png";
-import oppoLogo from "../assets/images/Oppo-Logo.wine.png";
-import vivoLogo from "../assets/images/Vivo_logo_2019.svg.png";
-import honorLogo from "../assets/images/LOGO_Honor.svg.png";
-import redmagicLogo from "../assets/images/529b1a96673f17dc600ae49633e76e47.jpg";
-import nokiaLogo from "../assets/images/nokia-new-logo-2023-png-vector.svg";
-import asusLogo from "../assets/images/AsusTek-black-logo.png";
-import sonyLogo from "../assets/images/sony.png";
-import masstelLogo from "../assets/images/Masstel-logo.png";
 import phone from "../assets/images/phone3x.png";
 import backgroundPhone from "../assets/images/bg-pattern-2.png";
 import Products from "../components/ListProducts";
@@ -30,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchBanners } from "../slices/homeSlice";
 import { fetchListFavorite } from "../slices/favoriteProductsSlice";
 import { fetchProducts } from "../slices/productSlice";
+import { fetchCategory } from "../slices/categorySlice";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -39,6 +28,7 @@ const Home = () => {
   const dispatch = useDispatch();
   const { banners } = useSelector((state) => state.home);
   const { products, loading } = useSelector((state) => state.product);
+  const { categorys } = useSelector((state) => state.categorys);
 
   const sliderBanner = banners.filter((banner) =>
     banner.title.includes("Slider")
@@ -52,22 +42,8 @@ const Home = () => {
     dispatch(fetchListFavorite());
     dispatch(fetchBanners());
     dispatch(fetchProducts());
+    dispatch(fetchCategory());
   }, [dispatch]);
-
-  const logoBrand = [
-    { id: 1, name: "Apple", logo: appleLogo },
-    { id: 2, name: "Xiaomi", logo: xiaomiLogo },
-    { id: 3, name: "Samsung", logo: samsungLogo },
-    { id: 4, name: "Tecno", logo: tecnoLogo },
-    { id: 5, name: "Oppo", logo: oppoLogo },
-    { id: 6, name: "Vivo", logo: vivoLogo },
-    { id: 7, name: "Honor", logo: honorLogo },
-    { id: 8, name: "Redmagic", logo: redmagicLogo },
-    { id: 9, name: "Nokia", logo: nokiaLogo },
-    { id: 10, name: "Asus", logo: asusLogo },
-    { id: 11, name: "Sony", logo: sonyLogo },
-    { id: 12, name: "Masstel", logo: masstelLogo },
-  ];
 
   const convertPriceToNumber = (priceString) => {
     if (!priceString || typeof priceString !== "string") return 0;
@@ -250,9 +226,9 @@ const Home = () => {
             }}
             className="category-carousel"
           >
-            {logoBrand.map((item) => (
+            {categorys.map((item) => (
               <SwiperSlide
-                key={item.id}
+                key={item.category_id}
                 style={{
                   display: "flex",
                   justifyContent: "center",
@@ -278,8 +254,8 @@ const Home = () => {
                   }}
                 >
                   <img
-                    src={item.logo}
-                    alt={item.name}
+                    src={item?.image_url}
+                    alt={item?.name}
                     style={{
                       maxHeight: "80px",
                       objectFit: "contain",

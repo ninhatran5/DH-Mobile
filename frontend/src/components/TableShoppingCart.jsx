@@ -10,6 +10,7 @@ const TableShoppingCart = ({
   handleDecrease,
   handleChangeQuantity,
 }) => {
+  console.log("🚀 ~ item:", item);
   const navigate = useNavigate();
   const handleNextPageDetail = () => {
     navigate(`/product-detail/${item?.variant?.product_id}`);
