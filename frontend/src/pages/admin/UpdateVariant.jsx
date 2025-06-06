@@ -51,23 +51,34 @@ const UpdateVariant = () => {
     if (variant) {
       try {
         const variantAttributes = variant.attributes || [];
-        const realAttributes = Array.isArray(variantAttributes) 
-          ? variantAttributes.map(attr => {
-              const foundAttribute = attributes.find(a => 
-                a.name.toLowerCase() === attr.name.toLowerCase()
-              );
-              
-              return {
-                attribute_id: foundAttribute ? foundAttribute.attribute_id : '',
-                name: attr.name || '',
-                value_id: attr.value_id || '',
-                value: attr.value || '',
-                variant_attribute_value_id: attr.variant_attribute_value_id || null
-              };
-            })
-          : [];
+        // Đảm bảo không có thuộc tính trùng lặp bằng cách sử dụng Map
+        const attributesMap = new Map();
+        
+        if (Array.isArray(variantAttributes)) {
+          variantAttributes.forEach(attr => {
+            const foundAttribute = attributes.find(a => 
+              a.name.toLowerCase() === attr.name.toLowerCase()
+            );
+            
+            if (foundAttribute) {
+              const key = String(foundAttribute.attribute_id);
+              if (!attributesMap.has(key)) {
+                attributesMap.set(key, {
+                  attribute_id: foundAttribute.attribute_id,
+                  name: attr.name,
+                  value_id: attr.value_id,
+                  value: attr.value,
+                  variant_attribute_value_id: attr.variant_attribute_value_id
+                });
+              }
+            }
+          });
+        }
 
-        setFormData({
+        const realAttributes = Array.from(attributesMap.values());
+
+        setFormData(prev => ({
+          ...prev,
           sku: variant.sku || "",
           price: variant.price || "",
           price_original: variant.price_original || "",
@@ -76,12 +87,13 @@ const UpdateVariant = () => {
           is_active: variant.is_active === 1 ? 1 : 0,
           product_id: variant.product_id || "",
           attributes: realAttributes
-        });
+        }));
 
         if (variant.image_url) {
           setImagePreview(variant.image_url);
         }
       } catch (error) {
+        console.error('Error processing variant data:', error);
       }
     }
   }, [variantAttributeValues, variant_id, attributes]);
@@ -104,33 +116,35 @@ const UpdateVariant = () => {
       );
       
       const attribute = attributes.find(a => String(a.attribute_id) === String(attribute_id));
-      if (!attribute) {
-        return;
-      }
-      
-      setFormData(prev => {
-        const newAttributes = Array.isArray(prev.attributes) ? [...prev.attributes] : [];
-        const existingIndex = newAttributes.findIndex(attr => 
-          attr && String(attr.attribute_id) === String(attribute_id)
-        );
-        
-        const newAttribute = {
-          attribute_id: parseInt(attribute_id),
-          name: attribute.name,
-          value_id: selectedValue ? parseInt(selectedValue.value_id) : '',
-          value: selectedValue ? selectedValue.value : '',
-          variant_attribute_value_id: existingIndex !== -1 ? newAttributes[existingIndex].variant_attribute_value_id : null
-        };
+      if (!attribute) return;
 
-        if (existingIndex !== -1) {
-          newAttributes[existingIndex] = newAttribute;
+      setFormData(prev => {
+        // Tạo Map từ attributes hiện tại để dễ dàng cập nhật và tránh trùng lặp
+        const attributesMap = new Map(
+          prev.attributes.map(attr => [String(attr.attribute_id), attr])
+        );
+
+        if (value_id) {
+          // Cập nhật hoặc thêm mới thuộc tính
+          attributesMap.set(String(attribute_id), {
+            attribute_id: parseInt(attribute_id),
+            name: attribute.name,
+            value_id: selectedValue ? parseInt(selectedValue.value_id) : '',
+            value: selectedValue ? selectedValue.value : '',
+            variant_attribute_value_id: attributesMap.get(String(attribute_id))?.variant_attribute_value_id || null
+          });
         } else {
-          newAttributes.push(newAttribute);
+          // Nếu không có value_id, xóa thuộc tính
+          attributesMap.delete(String(attribute_id));
         }
 
-        return { ...prev, attributes: newAttributes };
+        return {
+          ...prev,
+          attributes: Array.from(attributesMap.values())
+        };
       });
     } catch (error) {
+      console.error('Error in handleAttributeChange:', error);
     }
   };
 
@@ -177,17 +191,18 @@ const UpdateVariant = () => {
         return;
       }
 
-      const validAttributes = formData.attributes.filter(attr => 
-        attr.attribute_id && attr.value_id
-      );
+      // Lọc và chuẩn hóa attributes trước khi gửi
+      const processedAttributes = formData.attributes
+        .filter(attr => attr.attribute_id && attr.value_id) // Chỉ lấy các thuộc tính có đầy đủ thông tin
+        .map(attr => ({
+          attribute_id: parseInt(attr.attribute_id),
+          value_id: parseInt(attr.value_id)
+        }));
 
       const attributeData = {
         variant_id: variant_id,
         update_mode: 'update',
-        attributes: validAttributes.map(attr => ({
-          attribute_id: parseInt(attr.attribute_id),
-          value_id: parseInt(attr.value_id)
-        }))
+        attributes: processedAttributes
       };
 
       const attributeResult = await dispatch(updateVariantAttributeValue({
@@ -200,7 +215,14 @@ const UpdateVariant = () => {
         return;
       }
 
-      dispatch(fetchVariantAttributeValues());
+      // Fetch lại dữ liệu sau khi cập nhật thành công
+      await Promise.all([
+        dispatch(fetchVariantAttributeValues()),
+        dispatch(fetchAttributeValues()),
+        dispatch(fetchAttributes())
+      ]);
+
+      toast.success('Cập nhật biến thể thành công');
       navigate(`/admin/editproduct/${formData.product_id}`);
     } catch (error) {
       toast.error(error.message);
@@ -301,7 +323,7 @@ const UpdateVariant = () => {
                 );
                 
                 return (
-                  <div className="mb-3" key={attr.attribute_id}>
+                  <div className="mb-3" key={`attr-${attr.attribute_id}`}>
                     <label className="form-label">{attr.name}:</label>
                     <select
                       className="form-select"
@@ -310,7 +332,7 @@ const UpdateVariant = () => {
                     >
                       <option value="">-- Chọn {attr.name} --</option>
                       {attributeValues[attr.attribute_id]?.map(value => (
-                        <option key={value.value_id} value={value.value_id}>
+                        <option key={`value-${value.value_id}`} value={value.value_id}>
                           {value.value}
                         </option>
                       ))}

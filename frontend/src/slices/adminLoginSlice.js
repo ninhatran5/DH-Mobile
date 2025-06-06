@@ -12,6 +12,11 @@ export const fetchAdminLogin = createAsyncThunk(
   async (data, thunkAPI) => {
     try {
       const response = await axiosConfig.post("/login", data);
+      
+      if (response.data?.user?.role !== 'admin') {
+        return thunkAPI.rejectWithValue("Bạn không có quyền truy cập vào trang quản trị");
+      }
+
       if (response.data?.token) {
         localStorage.setItem('adminToken', response.data.token);
       }
