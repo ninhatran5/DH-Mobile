@@ -42,7 +42,10 @@ class ProductVariantsController extends Controller
                 $attributes[$attributeId]['values'] = [[
                     'value_id' => $value->value_id,
                     'value' => $value->value,
-                    'image_url' => $variant->image_url
+                    'image_url' => $variant->image_url,
+                    'price' => $variant->price,
+                    'price_original' => $variant->price_original,
+                     'stock' => $variant->stock
                 ]];
             }
 
@@ -152,7 +155,7 @@ class ProductVariantsController extends Controller
      */
     public function show(string $id)
     {
-        $variants = ProductVariant::with(['product', 'variantAttributeValues.value.attribute'])
+        $variants = ProductVariant::with([ 'variantAttributeValues.value.attribute'])
             ->where('product_id', $id)
             ->get();
 
@@ -182,7 +185,10 @@ class ProductVariantsController extends Controller
                 $processedAttributes[$attributeId]['values'] = [[
                     'value_id' => $value->value_id,
                     'value' => $value->value,
-                    'image_url' => $variant->image_url
+                    'image_url' => $variant->image_url,
+                    'price' => $variant->price,
+                    'price_original' => $variant->price_original,
+                    'stock' => $variant->stock,
                 ]];
             }
             $variant->attributes = array_values($processedAttributes);
