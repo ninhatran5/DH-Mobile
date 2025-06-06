@@ -33,9 +33,6 @@ const ListBanner = () => {
             onChange={handleSearchChange}
             className="adminbanner-search-input"
           />
-          <Link to="/admin/addbanner" className="adminbanner-add-btn">
-            + Thêm banner
-          </Link>
         </div>
       </div>
 
@@ -67,31 +64,16 @@ const ListBanner = () => {
                   <div className="adminbanner-banner-title">{banner.title}</div>
                 </td>
                 <td>{banner.link_url || "Không có"}</td>
-                
                 <td>{new Date(banner.created_at).toLocaleString("vi-VN")}</td>
                 <td>{new Date(banner.updated_at).toLocaleString("vi-VN")}</td>
                 <td>
-                  <div style={{ display: "flex", gap: "8px" }}>
-                    <Link 
-                      to={`/admin/editbanner/${banner.banner_id}`} 
-                      className="adminbanner-action-btn edit" 
-                      title="Chỉnh sửa"
-                    >
-                      <i className="bi bi-pencil-fill"></i>
-                    </Link>
-                    <button
-                      className="adminbanner-action-btn delete"
-                      onClick={() => {
-                        if (window.confirm("Bạn có chắc muốn xóa banner này không?")) {
-                          // Add delete functionality here
-                          console.log("Delete banner:", banner.banner_id);
-                        }
-                      }}
-                      title="Xóa"
-                    >
-                      <i className="bi bi-trash-fill"></i>
-                    </button>
-                  </div>
+                  <Link 
+                    to={`/admin/editbanner/${banner.banner_id}`} 
+                    className="adminbanner-action-btn edit" 
+                    title="Chỉnh sửa"
+                  >
+                    <i className="bi bi-pencil-fill"></i>
+                  </Link>
                 </td>
               </tr>
             ))}
