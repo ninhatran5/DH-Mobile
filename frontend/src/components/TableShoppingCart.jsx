@@ -30,7 +30,7 @@ const TableShoppingCart = ({
         </div>
         <div className="product__cart__item__text">
           <h5>{item?.variant?.product?.name}</h5>
-          <h6>{numberFomat(item?.variant?.product?.price)}</h6>
+          <h6>{numberFomat(item?.variant?.price)}</h6>
         </div>
       </td>
       <td className="quantity__item">
