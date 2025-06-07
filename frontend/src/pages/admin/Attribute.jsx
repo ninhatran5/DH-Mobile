@@ -59,14 +59,14 @@ function AttributePage() {
 
   return (
     <div className="adminattributes">
-      <h1>Danh sách thuộc tính</h1>
+      <h1>Danh sách thuộc tính </h1>
 
       {error && <p className="error">{error}</p>}
       {loading && <p className="loading">Đang tải...</p>}
 
       <div className="header-actions">
         <Link to="/admin/Addattribute">
-          <button className="btn-add">+ Thêm mới thuộc tính</button>
+          <button className="btn-add">+ Thêm mới tên thuộc tính</button>
         </Link>
       </div>
 

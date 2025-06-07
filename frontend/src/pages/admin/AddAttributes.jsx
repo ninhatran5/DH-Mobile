@@ -27,18 +27,17 @@ function AddAttributePage() {
 
   return (
     <div className="adminattributes">
-      <h1>Thêm mới Attribute</h1>
+      <h1>Thêm mới thuộc tính </h1>
 
       <form onSubmit={handleSubmit} style={{ marginTop: "1rem" }}>
         <div style={{ marginBottom: "1rem" }}>
           <label style={{ fontWeight: "500", display: "block", marginBottom: "0.4rem" }}>
-            Tên Attribute:
+            Tên thuộc tính:
           </label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Nhập tên attribute"
             style={{
               width: "100%",
               padding: "0.6rem",

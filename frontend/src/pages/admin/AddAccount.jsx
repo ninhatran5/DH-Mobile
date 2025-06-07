@@ -36,7 +36,6 @@ const AddAccount = () => {
   const [selectedWard, setSelectedWard] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  // Fetch provinces on component mount
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
@@ -50,7 +49,6 @@ const AddAccount = () => {
     fetchProvinces();
   }, []);
 
-  // Fetch districts when province changes
   useEffect(() => {
     const fetchDistricts = async () => {
       if (selectedProvince) {
@@ -60,7 +58,6 @@ const AddAccount = () => {
           setSelectedDistrict("");
           setWards([]);
           setSelectedWard("");
-          // Update formData with selected province name
           const provinceName = provinces.find(p => p.code === Number(selectedProvince))?.name || '';
           setFormData(prev => ({ ...prev, city: provinceName }));
         } catch (error) {
@@ -78,7 +75,6 @@ const AddAccount = () => {
     fetchDistricts();
   }, [selectedProvince, provinces]);
 
-  // Fetch wards when district changes
   useEffect(() => {
     const fetchWards = async () => {
       if (selectedDistrict) {
@@ -86,7 +82,6 @@ const AddAccount = () => {
           const response = await axios.get(`https://provinces.open-api.vn/api/d/${selectedDistrict}?depth=2`);
           setWards(response.data.wards);
           setSelectedWard("");
-          // Update formData with selected district name
           const districtName = districts.find(d => d.code === Number(selectedDistrict))?.name || '';
           setFormData(prev => ({ ...prev, district: districtName }));
         } catch (error) {
@@ -185,7 +180,7 @@ const AddAccount = () => {
                         value={formData.username}
                         onChange={handleInputChange}
                         
-                        placeholder="Nhập tên đăng nhập"
+                        
                       />
                     </Form.Group>
                   </Col>
@@ -198,7 +193,7 @@ const AddAccount = () => {
                         value={formData.email}
                         onChange={handleInputChange}
                         
-                        placeholder="Nhập email"
+                       
                       />
                     </Form.Group>
                   </Col>
@@ -215,7 +210,7 @@ const AddAccount = () => {
                           name="password"
                           value={formData.password}
                           onChange={handleInputChange}
-                          placeholder="Nhập mật khẩu"
+                       
                           className="form-control-lg"
                         />
                         <Button 
@@ -240,7 +235,7 @@ const AddAccount = () => {
                         name="full_name"
                         value={formData.full_name}
                         onChange={handleInputChange}
-                        placeholder="Nhập họ tên"
+                       
                       />
                     </Form.Group>
                   </Col>
@@ -252,7 +247,7 @@ const AddAccount = () => {
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        placeholder="Nhập số điện thoại"
+                        
                       />
                     </Form.Group>
                   </Col>
@@ -266,7 +261,7 @@ const AddAccount = () => {
                         name="address"
                         value={formData.address}
                         onChange={handleInputChange}
-                        placeholder="Nhập số nhà, tên đường"
+                        
                       />
                     </Form.Group>
                   </Col>
