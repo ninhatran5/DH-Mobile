@@ -10,8 +10,7 @@ import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { useSwipeable } from "react-swipeable";
 import checkLogin from "../../utils/checkLogin";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchProducts } from "../slices/productSlice"; // Thêm dòng này
+import { fetchProducts } from "../slices/productSlice";
 import Loading from "../components/Loading";
 import { fetchProductDetail } from "../slices/productDetailSlice";
 import { fetchProductVariationDetail } from "../slices/productVariationDetails";
@@ -23,12 +22,12 @@ import {
 import { fetchAddToCart, fetchCart } from "../slices/cartSlice";
 import { fetchSpecification } from "../slices/specificationsSlice";
 import ListProductCard from "../components/ListProductCard";
+import { useDispatch, useSelector } from "react-redux";
 
 // Hàm tổng hợp tất cả thuộc tính từ variants
 function getAllAttributes(variants) {
   const attrMap = {};
   variants.forEach((variant) => {
-    // Lọc ra những object là attribute thực sự
     variant.attributes
       .filter(
         (attr) => attr.attribute_id && attr.name && Array.isArray(attr.values)
@@ -74,6 +73,30 @@ function findVariantId(variants, selectedOptions) {
   );
 }
 
+// Hàm kiểm tra tổ hợp thuộc tính hợp lệ
+function isValidCombination(variants, selectedOptions, currentAttrId, valueId) {
+  // Nếu chưa chọn đủ thuộc tính, tất cả giá trị đều hợp lệ
+  const selectedCount = Object.keys(selectedOptions).length;
+  if (selectedCount === 0) return true;
+
+  // Lọc các biến thể khớp với các thuộc tính đã chọn (ngoại trừ thuộc tính hiện tại)
+  return variants.some((variant) => {
+    return variant.attributes.every((attr) => {
+      // Bỏ qua kiểm tra cho thuộc tính đang được đánh giá
+      if (attr.attribute_id === currentAttrId) {
+        return attr.values.some((val) => val.value_id === valueId);
+      }
+      // Kiểm tra xem thuộc tính đã chọn có khớp với biến thể không
+      return (
+        selectedOptions[attr.attribute_id] === undefined ||
+        attr.values.some(
+          (val) => val.value_id === selectedOptions[attr.attribute_id]
+        )
+      );
+    });
+  });
+}
+
 const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
   const [selectedOptions, setSelectedOptions] = useState({});
@@ -87,8 +110,7 @@ const ProductDetail = () => {
   );
   const { specifications } = useSelector((state) => state.specification);
   const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
-  const { products = [] } = useSelector((state) => state.product); // Lấy danh sách sản phẩm từ Redux
-
+  const { products = [] } = useSelector((state) => state.product);
   const { t } = useTranslation();
 
   const variants = productVariationDetails?.data?.variants || [];
@@ -110,20 +132,26 @@ const ProductDetail = () => {
 
   const selectedValueImage = getSelectedValueImage();
 
-  const productImages = selectedValueImage
-    ? [{ id: 1, image: selectedValueImage }]
-    : selectedVariant && selectedVariant.image_url
-    ? [{ id: 1, image: selectedVariant.image_url }]
-    : Array.isArray(productDetails.data?.image_url)
-    ? productDetails.data.image_url.map((url, idx) => ({
+  const productImages = useMemo(() => {
+    if (selectedValueImage) {
+      return [{ id: 1, image: selectedValueImage }];
+    }
+    if (selectedVariant?.image_url) {
+      return [{ id: 1, image: selectedVariant.image_url }];
+    }
+    if (Array.isArray(productDetails.data?.image_url)) {
+      return productDetails.data.image_url.map((url, idx) => ({
         id: idx + 1,
         image: url,
-      }))
-    : productDetails.data?.image_url
-    ? [{ id: 1, image: productDetails.data.image_url }]
-    : [];
+      }));
+    }
+    if (productDetails.data?.image_url) {
+      return [{ id: 1, image: productDetails.data.image_url }];
+    }
+    return [];
+  }, [selectedValueImage, selectedVariant, productDetails]);
 
-  const [currentImage, setCurrentImage] = useState(null);
+ const [currentImage, setCurrentImage] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -188,13 +216,11 @@ const ProductDetail = () => {
   };
 
   const addToShoppingCart = async () => {
-    // Validate số lượng
     if (!quantity || quantity < 1) {
       toast.warn(t("toast.errorMin"));
       return;
     }
 
-    // Validate chọn đủ thuộc tính
     if (
       allAttributes.length > 0 &&
       Object.keys(selectedOptions).length < allAttributes.length
@@ -203,7 +229,6 @@ const ProductDetail = () => {
       return;
     }
 
-    // Validate variant_id
     if (!variantId) {
       toast.warn(t("toast.outOfStock"));
       return;
@@ -212,7 +237,7 @@ const ProductDetail = () => {
     if (checkLogin()) {
       animateToCart();
       const payload = {
-        product_id: productDetails.product_id,
+        product_id: productDetails.data?.product_id,
         quantity,
         variant_id: variantId,
       };
@@ -262,7 +287,6 @@ const ProductDetail = () => {
     }
   }, [productImages]);
 
-  // Lấy sản phẩm liên quan: cùng category, khác id hiện tại
   useEffect(() => {
     if (!products || products.length === 0) {
       dispatch(fetchProducts());
@@ -280,8 +304,7 @@ const ProductDetail = () => {
 
   const animateToCart = () => {
     const img = productImgRef.current;
-    // Lấy icon giỏ hàng trên header bằng class hoặc thuộc tính đặc biệt
-    const cart = document.querySelector(".header-cart-icon"); // Thêm class này vào icon giỏ hàng ở Header.jsx
+    const cart = document.querySelector(".header-cart-icon");
     if (!img || !cart) return;
 
     const imgRect = img.getBoundingClientRect();
@@ -436,34 +459,41 @@ const ProductDetail = () => {
                       {attr.name}:
                     </label>
                     <div style={{ display: "flex", gap: 8 }}>
-                      {attr.values.map((val) => (
-                        <button
-                          key={val.value_id}
-                          className={`btn btn-outline-secondary mx-1 ${
-                            selectedOptions?.[attr.attribute_id] ===
-                            val.value_id
-                              ? "active"
-                              : ""
-                          }`}
-                          onClick={() =>
-                            setSelectedOptions((prev) => {
-                              // Nếu đang chọn rồi thì bỏ chọn
-                              if (prev[attr.attribute_id] === val.value_id) {
-                                const newOptions = { ...prev };
-                                delete newOptions[attr.attribute_id];
-                                return newOptions;
-                              }
-                              // Nếu chưa chọn thì chọn
-                              return {
-                                ...prev,
-                                [attr.attribute_id]: val.value_id,
-                              };
-                            })
-                          }
-                        >
-                          {val.value}
-                        </button>
-                      ))}
+                      {attr.values.map((val) => {
+                        const isValid = isValidCombination(
+                          variants,
+                          selectedOptions,
+                          attr.attribute_id,
+                          val.value_id
+                        );
+                        return (
+                          <button
+                            key={val.value_id}
+                            className={`btn btn-outline-secondary mx-1 ${
+                              selectedOptions?.[attr.attribute_id] ===
+                              val.value_id
+                                ? "active"
+                                : ""
+                            } ${!isValid ? "disabled" : ""}`}
+                            disabled={!isValid}
+                            onClick={() =>
+                              setSelectedOptions((prev) => {
+                                if (prev[attr.attribute_id] === val.value_id) {
+                                  const newOptions = { ...prev };
+                                  delete newOptions[attr.attribute_id];
+                                  return newOptions;
+                                }
+                                return {
+                                  ...prev,
+                                  [attr.attribute_id]: val.value_id,
+                                };
+                              })
+                            }
+                          >
+                            {val.value}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 ))}
@@ -497,7 +527,11 @@ const ProductDetail = () => {
               >
                 {t("productDetail.addToFavorites")}
               </button>
-              <button onClick={addToShoppingCart} className="btn-custom px-4">
+              <button
+                onClick={addToShoppingCart}
+                className="btn-custom px-4"
+                disabled={!variantId}
+              >
                 {t("products.addToCart")}
               </button>
             </div>
@@ -541,7 +575,7 @@ const ProductDetail = () => {
             </li>
           </ul>
 
-          <div className=" p-4">
+          <div className="p-4">
             {activeTab === "description" && (
               <div className="tab-pane fade show active">
                 <p className="desc_productdetai">
