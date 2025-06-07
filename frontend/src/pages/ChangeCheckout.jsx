@@ -157,6 +157,29 @@ const ChangeCheckout = () => {
                     </div>
                   </div>
 
+                  <div className="checkout__input">
+                    <p>
+                      {t("checkout.email")}
+                      <span>*</span>
+                    </p>
+                    <input
+                      type="email"
+                      {...register("email", {
+                        required: t("checkout.emailRequired"),
+                        pattern: {
+                          value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                          message: t("checkout.emailInvalid"),
+                        },
+                      })}
+                    />
+
+                    {errors.email && (
+                      <p className="error_message_checkout">
+                        {errors.email.message}
+                      </p>
+                    )}
+                  </div>
+
                   {/* Select Thành phố */}
                   <div className="checkout__input">
                     <p>
@@ -342,6 +365,16 @@ const ChangeCheckout = () => {
 
                 {/* Order Information */}
                 <div className="col-lg-4 col-md-6">
+                  <div className="cart__discount" style={{ marginBottom: 30 }}>
+                    <h6>{t("shoppingCart.discountCode")}</h6>
+                    <form action="#">
+                      <input
+                        type="text"
+                        placeholder={t("shoppingCart.discountPlaceholder")}
+                      />
+                      <button type="submit">{t("shoppingCart.apply")}</button>
+                    </form>
+                  </div>
                   <div className="checkout__order">
                     <h4 className="order__title">{t("checkout.cartTotal")}</h4>
                     <div className="checkout__order__products">
