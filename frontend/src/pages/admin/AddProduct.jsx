@@ -138,7 +138,7 @@ const AdminAddProduct = () => {
                   value={formData.category_id}
                   onChange={handleChange}
                   className="form-select"
-                  required
+                  
                 >
                   <option value="">-- Chọn danh mục --</option>
                   {categories.map((cat) => (
@@ -157,7 +157,7 @@ const AdminAddProduct = () => {
                 value={formData.name}
                 onChange={handleChange}
                 className="form-control"
-                required
+                
               />
             </div>
 
@@ -183,7 +183,7 @@ const AdminAddProduct = () => {
                   value={formData.price}
                   onChange={handleChange}
                   className="form-control"
-                  required
+                  
                 />
               </div>
               <div className="col-6 mb-3">
@@ -211,7 +211,7 @@ const AdminAddProduct = () => {
                       value={spec.spec_name}
                       onChange={(e) => handleSpecChange(index, e)}
                       className="form-control"
-                      required
+                      
                     />
                   </div>
                   <div className="col-5">
@@ -222,7 +222,7 @@ const AdminAddProduct = () => {
                       value={spec.spec_value}
                       onChange={(e) => handleSpecChange(index, e)}
                       className="form-control"
-                      required
+                      
                     />
                   </div>
                   <div className="col-2">
