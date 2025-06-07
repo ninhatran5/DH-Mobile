@@ -151,7 +151,7 @@ const ProductDetail = () => {
     return [];
   }, [selectedValueImage, selectedVariant, productDetails]);
 
- const [currentImage, setCurrentImage] = useState(null);
+  const [currentImage, setCurrentImage] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -234,6 +234,10 @@ const ProductDetail = () => {
       return;
     }
 
+    if (quantity > selectedVariant?.stock) {
+      toast.warn(t("toast.overLimit"));
+      return;
+    }
     if (checkLogin()) {
       animateToCart();
       const payload = {

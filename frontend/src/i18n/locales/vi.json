@@ -437,6 +437,7 @@
     "selectAllVariant": "Vui lòng chọn đầy đủ phiên bản sản phẩm!",
     "variantNotFound": "Không tìm thấy biến thể phù hợp!",
     "addedToCart": "Thêm vào giỏ hàng thành công!",
-    "outOfStock": "Sản phẩm này không còn hàng"
+    "outOfStock": "Sản phẩm này không còn hàng",
+    "overLimit": "Số lượng vượt quá giới hạn của sản phẩm"
   }
 }

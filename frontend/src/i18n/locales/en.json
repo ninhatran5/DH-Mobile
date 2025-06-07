@@ -441,6 +441,7 @@
     "selectAllVariant": "Please select all product options!",
     "variantNotFound": "Product variant not found!",
     "addedToCart": "Added to cart successfully!",
-    "outOfStock": "This product is out of stock"
+    "outOfStock": "This product is out of stock",
+    "overLimit": "The quantity exceeds the product limit"
   }
 }
