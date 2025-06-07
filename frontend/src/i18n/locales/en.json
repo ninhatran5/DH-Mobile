@@ -270,7 +270,10 @@
     "paymentMethodRequired": "Payment method is required",
     "phoneMustStartWithZero": "Phone number must start with 0.",
     "phoneLengthInvalid": "Phone number must be 10 or 11 digits long.",
-    "phoneMustBeNumber": "Phone number must contain only digits."
+    "phoneMustBeNumber": "Phone number must contain only digits.",
+    "email": "Email",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Invalid email address"
   },
   "breadcrumb": {
     "home": "Home",
@@ -441,6 +444,7 @@
     "selectAllVariant": "Please select all product options!",
     "variantNotFound": "Product variant not found!",
     "addedToCart": "Added to cart successfully!",
-    "outOfStock": "This product is out of stock"
+    "outOfStock": "This product is out of stock",
+    "overLimit": "The quantity exceeds the product limit"
   }
 }

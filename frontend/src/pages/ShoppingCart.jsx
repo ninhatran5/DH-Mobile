@@ -226,22 +226,9 @@ const ShoppingCart = () => {
               </div>
             </div>
             <div className="col-lg-3">
-              <div className="cart__discount">
-                <h6>{t("shoppingCart.discountCode")}</h6>
-                <form action="#">
-                  <input
-                    type="text"
-                    placeholder={t("shoppingCart.discountPlaceholder")}
-                  />
-                  <button type="submit">{t("shoppingCart.apply")}</button>
-                </form>
-              </div>
               <div className="cart__total">
                 <h6>{t("shoppingCart.cartTotal")}</h6>
                 <ul style={{ marginLeft: -30 }}>
-                  <li>
-                    {t("shoppingCart.discount")} <span>- 0đ</span>
-                  </li>
                   <li>
                     {t("shoppingCart.totalPrice")}:{" "}
                     <span>{numberFormat(totalPrice)}</span>

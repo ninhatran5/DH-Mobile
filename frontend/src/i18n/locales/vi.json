@@ -269,7 +269,10 @@
     "paymentMethodRequired": "Phương thức thanh toán là bắt buộc",
     "phoneMustStartWithZero": "Số điện thoại phải bắt đầu bằng số 0.",
     "phoneLengthInvalid": "Số điện thoại phải có độ dài 10 hoặc 11 chữ số.",
-    "phoneMustBeNumber": "Số điện thoại chỉ được chứa các chữ số."
+    "phoneMustBeNumber": "Số điện thoại chỉ được chứa các chữ số.",
+    "email": "Email",
+    "emailRequired": "Email là bắt buộc",
+    "emailInvalid": "Địa chỉ email không hợp lệ"
   },
   "breadcrumb": {
     "home": "Trang chủ",
@@ -437,6 +440,7 @@
     "selectAllVariant": "Vui lòng chọn đầy đủ phiên bản sản phẩm!",
     "variantNotFound": "Không tìm thấy biến thể phù hợp!",
     "addedToCart": "Thêm vào giỏ hàng thành công!",
-    "outOfStock": "Sản phẩm này không còn hàng"
+    "outOfStock": "Sản phẩm này không còn hàng",
+    "overLimit": "Số lượng vượt quá giới hạn của sản phẩm"
   }
 }
