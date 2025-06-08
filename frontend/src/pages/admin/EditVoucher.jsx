@@ -102,10 +102,10 @@ const EditVoucher = () => {
   return (
     <div className="admineditvoucher-container">
       <ToastContainer />
-      <h2 className="admineditvoucher-title">Chỉnh sửa Voucher</h2>
+      <h2 className="admineditvoucher-title">Chỉnh sửa mã giảm giá</h2>
       <form className="admineditvoucher-form" onSubmit={handleSubmit}>
         <div className="admineditvoucher-group">
-          <label className="admineditvoucher-label">Mã Voucher:</label>
+          <label className="admineditvoucher-label">Mã giảm giá:</label>
           <input
             type="text"
             name="code"

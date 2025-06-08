@@ -97,7 +97,7 @@ const UpdateUser = () => {
       .unwrap()
       .then(() => {
         toast.success("Cập nhật user thành công!");
-        navigate("/admin/users");
+        navigate("/admin/accounts");
       })
       .catch((err) => {
         toast.error("Cập nhật thất bại: " + err);

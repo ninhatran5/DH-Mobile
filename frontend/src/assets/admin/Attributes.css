@@ -1,11 +1,14 @@
 .adminattributes {
   padding: 24px;
-  font-family: Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: #f9f9fb;
+  color: #1c1c1e;
 }
 
 h1 {
   margin-bottom: 24px;
-  color: #222;
+  font-weight: 700;
+  color: #1c1c1e;
 }
 
 .header-actions {
@@ -13,18 +16,21 @@ h1 {
 }
 
 .btn-add {
-  background-color: #0d6efd;
+  background: linear-gradient(145deg, #007aff, #0051c6);
   color: white;
   padding: 10px 18px;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+  transition: all 0.3s ease;
 }
 
 .btn-add:hover {
-  background-color: #0a58ca;
+  background: #004bb8;
+  box-shadow: 0 8px 24px rgba(0, 91, 255, 0.6);
+  transform: translateY(-2px);
 }
 
 .attribute-list {
@@ -34,11 +40,21 @@ h1 {
 }
 
 .attribute-item {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 16px 24px;
-  margin-bottom: 18px;
-  background: #fafafa;
+  border: 1px solid #e0e0e5;
+  border-radius: 14px;
+  padding: 18px 24px;
+  margin-bottom: 20px;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  opacity: 0;
+  transform: translateY(8px);
+  animation: fadeSlideUp 0.4s ease forwards;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.attribute-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.12);
 }
 
 .attribute-row {
@@ -49,121 +65,176 @@ h1 {
 .attribute-label {
   width: 130px;
   font-weight: 700;
-  color: #333;
+  color: #444;
 }
 
 .attribute-data {
   flex: 1;
-  color: #555;
+  color: #333;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-/* Value item */
+/* Value item - macOS style pill */
 .value-item {
   position: relative;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  background-color: #e3f2fd;
-  border-radius: 20px;
-  padding: 12px 20px 12px 12px;
-  font-size: 16px;
-  color: #0d6efd;
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(8px);
+  border-radius: 999px;
+  padding: 10px 16px 10px 14px;
+  font-size: 15px;
+  color: #007aff;
   margin-right: 12px;
   margin-bottom: 8px;
   user-select: none;
   gap: 8px;
-  min-width: 110px;
+  white-space: nowrap;
+  box-shadow: inset 0 0 0 1px rgba(200, 220, 255, 0.4),
+              0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
 }
 
-/* Nút xoá value (dấu ×) góc phải trên, nền đen, chữ trắng, cao hơn */
-.btn-delete-value {
-  position: absolute;
-  top: 2px;        /* nâng cao lên chút */
-  right: 4px;
-  border: none;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  font-size: 16px;
-  font-weight: bold;
-  line-height: 1;
-  cursor: pointer;
-  color: white;
-  background-color: rgb(246, 4, 4);  
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  user-select: none;
+.value-item:hover {
+  transform: scale(1.08);
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: inset 0 0 0 1.5px rgba(150, 180, 255, 0.7),
+              0 6px 14px rgba(0, 120, 255, 0.15);
 }
 
-.btn-delete-value:hover {
-  background-color: #333; 
-}
-
-
-.btn-edit-value {
-  border: none;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  font-size: 16px;
-  font-weight: bold;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  color: white;
-  background-color: #198754;
-  margin-left: 4px;
-  flex-shrink: 0;
-  user-select: none;
-}
-
-.btn-edit-value:hover {
-  background-color: #145c32;
-}
-
+/* Value text inside the pill */
 .value-text {
   user-select: text;
   padding-right: 4px;
+  font-weight: 500;
+}
+
+/* Delete button (macOS red close) */
+.btn-delete-value {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  border: none;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+  color: white;
+  background-color: #ff3b30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  user-select: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.2s;
+}
+
+.btn-delete-value:hover {
+  background-color: #c12b22;
+}
+
+/* Edit button (macOS green style) */
+.btn-edit-value {
+  border: none;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: white;
+  background-color: #303431;
+  margin-left: 4px;
+  flex-shrink: 0;
+  user-select: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.2s;
+}
+
+.btn-edit-value:hover {
+  background-color: #248f3c;
 }
 
 .action-buttons {
   margin-top: 12px;
+  display: flex;
+  gap: 8px;
 }
 
 .btn-edit {
-  background-color: #0d6efd;
+  background: #007aff;
   color: white;
   border: none;
   padding: 8px 16px;
-  border-radius: 6px;
-  margin-right: 12px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0, 122, 255, 0.2);
+  transition: all 0.2s ease;
 }
 
 .btn-edit:hover {
-  background-color: #0a58ca;
+  background-color: #0c08d7;
+  box-shadow: 0 8px 24px rgba(8, 12, 248, 0.5);
+  transform: translateY(-2px);
 }
 
 .btn-delete {
-  background-color: #dc3545;
+  background-color: #ff3b30;
   color: white;
   border: none;
   padding: 8px 16px;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(255, 59, 48, 0.2);
+  transition: all 0.2s ease;
 }
 
 .btn-delete:hover {
-  background-color: #9a1c1c;
+  background-color: #a62118;
+  box-shadow: 0 8px 24px rgba(182, 24, 24, 0.5);
+  transform: translateY(-2px);
+}
+
+.input-add-value {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  flex: 1;
+  max-width: 250px;
+  transition: border-color 0.3s;
+}
+
+.input-add-value:focus {
+  border-color: #007aff;
+  outline: none;
+}
+
+.btn-add-value {
+  background-color: #007aff;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.btn-add-value:hover {
+  background-color: #0051c6;
 }
 
 .error {
@@ -175,31 +246,22 @@ h1 {
   color: #555;
   margin-bottom: 16px;
 }
-.input-add-value {
-  padding: 6px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  flex: 1;
-  max-width: 250px;
+
+/* Fade-in animation */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.btn-add-value {
-  background-color: #0d6efd;
-  color: white;
-  border: none;
-  padding: 6px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background-color 0.2s;
-}
-
-.btn-add-value:hover {
-  background-color: #0a58ca;
-}
-.action-buttons {
-  margin-top: 12px;
-  display: flex;
-  gap: 8px; 
+/* Button press-down effect */
+button:active {
+  transform: scale(0.94);
+  box-shadow: none !important;
+  transition: transform 0.1s ease;
 }

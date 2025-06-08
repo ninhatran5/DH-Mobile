@@ -146,7 +146,7 @@ const AddAccount = () => {
 
       if (addUser.fulfilled.match(resultAction)) {
         toast.success('Tạo tài khoản thành công!');
-        navigate('/admin/accounts');
+        navigate('/admin/addaccount');
       } else {
         console.error('Lỗi từ server:', resultAction.payload);
         toast.error(resultAction.payload || 'Không thể tạo tài khoản');
