@@ -14,7 +14,6 @@ const ShowProduct = () => {
   const dispatch = useDispatch();
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
-  // Get data from Redux store
   const { productVariants, loading: variantsLoading, error: variantsError } = useSelector(
     (state) => state.adminProductVariants
   );
@@ -25,7 +24,6 @@ const ShowProduct = () => {
     (state) => state.adminProductSpecifications
   );
 
-  // Filter data for current product
   const currentProduct = adminproducts.find(p => p.product_id === parseInt(id));
   const currentProductVariants = productVariants.filter(
     (variant) => variant.product_id === parseInt(id)
@@ -40,18 +38,6 @@ const ShowProduct = () => {
     dispatch(fetchAdminProductSpecifications());
   }, [dispatch]);
 
-  // Loading state
-  if (productsLoading || variantsLoading || specsLoading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center my-5">
-        <Spinner animation="border" role="status" variant="primary">
-          <span className="visually-hidden">Đang tải...</span>
-        </Spinner>
-      </div>
-    );
-  }
-
-  // Error state
   if (productsError || variantsError || specsError) {
     return (
       <Alert variant="danger" className="my-4">
@@ -64,7 +50,6 @@ const ShowProduct = () => {
     );
   }
 
-  // Not found state
   if (!currentProduct) {
     return (
       <Alert variant="warning" className="my-4">
@@ -77,7 +62,6 @@ const ShowProduct = () => {
     );
   }
 
-  // Format helpers
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
   };
@@ -162,9 +146,7 @@ const ShowProduct = () => {
                     <p className="mb-1" style={{ fontSize: '0.95rem' }}>
                       <span style={{ fontWeight: '600', color: 'var(--admin_dh-text-secondary)' }}>Danh mục:</span> {currentProduct.category?.name}
                     </p>
-                    <p className="mb-1" style={{ fontSize: '0.95rem' }}>
-                      <span style={{ fontWeight: '600', color: 'var(--admin_dh-text-secondary)' }}>ID Sản phẩm:</span> {currentProduct.product_id}
-                    </p>
+                   
                     <p className="mb-1" style={{ fontSize: '0.95rem' }}>
                       <span style={{ fontWeight: '600', color: 'var(--admin_dh-text-secondary)' }}>Ngày tạo:</span> {formatDate(currentProduct.created_at)}
                     </p>

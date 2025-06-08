@@ -60,7 +60,7 @@ function AddValuePage() {
           <button
             type="button"
             className="btn-delete"
-            onClick={() => navigate("/admin/attributes")}
+            onClick={() => navigate("/admin/attribute")}
           >
             Hủy
           </button>

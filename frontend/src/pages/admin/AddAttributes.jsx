@@ -58,7 +58,7 @@ function AddAttributePage() {
           </button>
           <button
             type="button"
-            onClick={() => navigate("/attributes")}
+            onClick={() => navigate("/admin/attribute")}
             style={{
               backgroundColor: "#888",
               color: "#fff",

@@ -147,10 +147,7 @@ const VariantDisplay = ({ variant, onEdit, onDelete, attributeValues }) => {
                       }}
                     >
                       {attr.name}: {attr.value}
-                      {/* Nếu muốn hiển thị tất cả value có thể chọn, bỏ comment dưới đây */}
-                      {/* <span style={{ color: '#888', marginLeft: 8 }}>
-                        ({values.map(v => v.value).join(', ')})
-                      </span> */}
+                      
                     </span>
                   );
                 })
