@@ -13,7 +13,21 @@ class AttributeValueSeeder extends Seeder
     public function run(): void
     {
         // Color values
-        $colorValues = ['Black', 'White', 'Gold', 'Silver', 'Blue'];
+        $colorValues = [
+            // iPhone colors
+            'Natural Titanium', 'Blue Titanium', 'Black Titanium',
+            'Space Black', 'Deep Purple', 'Gold', 'Starlight',
+            'Sierra Blue',
+
+            // Samsung colors
+            'Titanium Gray', 'Titanium Black', 'Phantom Black',
+            'Cream', 'Mint', 'Lavender',
+
+            // Other brands colors
+            'Black', 'Alpine Blue', 'Purple',
+            'Iconic Black', 'Dark Illusion', 'Sunrise Beige'
+        ];
+
         $colorAttributeId = DB::table('attributes')->where('name', 'Màu sắc')->first()->attribute_id;
         foreach ($colorValues as $value) {
             DB::table('attribute_values')->insert([
