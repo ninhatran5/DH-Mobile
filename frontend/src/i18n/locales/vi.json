@@ -226,7 +226,9 @@
     "cartTotal": "Tổng giỏ hàng",
     "discount": "Mã giảm giá",
     "totalPrice": "Tổng tiền",
-    "checkout": "Tiến hành thanh toán"
+    "checkout": "Tiến hành thanh toán",
+    "selectProductToCheckout": "Vui lòng chọn sản phẩm để tiến hành thanh toán"
+
   },
   "tableHeaders": {
     "product": "Sản Phẩm",
@@ -441,6 +443,8 @@
     "variantNotFound": "Không tìm thấy biến thể phù hợp!",
     "addedToCart": "Thêm vào giỏ hàng thành công!",
     "outOfStock": "Sản phẩm này không còn hàng",
-    "overLimit": "Số lượng vượt quá giới hạn của sản phẩm"
+    "overLimit": "Số lượng vượt quá giới hạn của sản phẩm",
+    "invalidQuantity": "Số lượng không hợp lệ, vui lòng nhập lại",
+    "minQuantity": "Số lượng tối thiểu là 1"
   }
 }

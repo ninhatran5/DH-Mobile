@@ -234,3 +234,30 @@ a {
   color: red !important;
   margin-top: -5px;
 }
+.discount__input-btn {
+  display: flex;
+  width: 100%;
+}
+
+.input__discount {
+  flex: 1 1 auto;
+  height: 50px;
+  font-size: 14px;
+  padding-left: 20px;
+  border: 1px solid #e1e1e1;
+  box-sizing: border-box;
+}
+
+.btn__discountCode {
+  flex: 0 0 auto; /* không co nhỏ hơn nội dung */
+  min-width: 100px;
+  height: 50px;
+  background: #111111;
+  color: #fff;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 0 16px;
+}

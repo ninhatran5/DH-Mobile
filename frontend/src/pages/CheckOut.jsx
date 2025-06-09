@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { TbExchange } from "react-icons/tb";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
@@ -6,24 +6,24 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { fetchProfile } from "../slices/profileSlice";
 import Loading from "../components/Loading";
-import { fetchCart } from "../slices/cartSlice";
+// import { fetchCart } from "../slices/cartSlice";
 import numberFormat from "../../utils/numberFormat";
 
 const CheckOut = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { profile, loading } = useSelector((state) => state.profile);
+  const location = useLocation();
+  const selectedItems = location.state?.selectedItems || [];
 
-  const { carts } = useSelector((state) => state.cart);
-
-  useEffect(() => {
-    dispatch(fetchProfile());
-    dispatch(fetchCart());
-  }, [dispatch]);
-  const totalPrice = carts.reduce(
+  const totalPrice = selectedItems.reduce(
     (sum, item) => sum + item.quantity * item?.variant?.product?.price,
     0
   );
+  useEffect(() => {
+    dispatch(fetchProfile());
+  }, [dispatch]);
+
   return (
     <>
       {loading && <Loading />}
@@ -73,7 +73,7 @@ const CheckOut = () => {
                       </div>
                     </div>
                   </div>
-                   <div className="checkout__input">
+                  <div className="checkout__input">
                     <p>
                       {t("checkout.email")}
                       <span>*</span>
@@ -130,7 +130,8 @@ const CheckOut = () => {
                   </div>
                   <div className="checkout_change_address">
                     <Link
-                      to={"/change-checkout"}
+                      to="/change-checkout"
+                      state={{ selectedItems }}
                       className="checkout_change_address_link"
                     >
                       <h6 className="checkout_change_address_name">
@@ -170,13 +171,16 @@ const CheckOut = () => {
                 <div className="col-lg-4 col-md-6">
                   <div className="cart__discount" style={{ marginBottom: 30 }}>
                     <h6>{t("shoppingCart.discountCode")}</h6>
-                    <form action="#">
+                    <div className="discount__input-btn">
                       <input
                         type="text"
+                        className="input__discount"
                         placeholder={t("shoppingCart.discountPlaceholder")}
                       />
-                      <button type="submit">{t("shoppingCart.apply")}</button>
-                    </form>
+                      <button className="btn__discountCode" type="submit">
+                        {t("shoppingCart.apply")}
+                      </button>
+                    </div>
                   </div>
                   <div className="checkout__order">
                     <h4 className="order__title">{t("checkout.cartTotal")}</h4>
@@ -193,7 +197,7 @@ const CheckOut = () => {
                         </p>
                       </div>
                     </div>
-                    {carts.map((item) => (
+                    {selectedItems.map((item) => (
                       <ul
                         key={item.cart_item_id}
                         className="checkout__total__products"
@@ -207,7 +211,6 @@ const CheckOut = () => {
                                 alt={item?.variant?.product?.name}
                                 style={{
                                   width: "100%",
-                                  height: "100%",
                                   objectFit: "cover",
                                 }}
                               />
@@ -238,7 +241,7 @@ const CheckOut = () => {
                               </div>
                               <span className="checkout_card_total">
                                 {numberFormat(
-                                  item?.quantity * item?.variant?.product?.price
+                                  item.quantity * item?.variant?.product?.price
                                 )}
                               </span>
                             </div>
@@ -246,6 +249,7 @@ const CheckOut = () => {
                         </li>
                       </ul>
                     ))}
+
                     <ul className="checkout__total__all">
                       <li>
                         {t("checkout.discount")}: <span>- 0đ</span>
