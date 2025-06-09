@@ -441,6 +441,8 @@
     "variantNotFound": "Không tìm thấy biến thể phù hợp!",
     "addedToCart": "Thêm vào giỏ hàng thành công!",
     "outOfStock": "Sản phẩm này không còn hàng",
-    "overLimit": "Số lượng vượt quá giới hạn của sản phẩm"
+    "overLimit": "Số lượng vượt quá giới hạn của sản phẩm",
+    "invalidQuantity": "Số lượng không hợp lệ, vui lòng nhập lại",
+    "minQuantity": "Số lượng tối thiểu là 1"
   }
 }

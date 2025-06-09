@@ -2754,12 +2754,10 @@ ol {
   height: 84px;
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid #eee;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
 }
 .checkout_card_info {
   flex: 1;

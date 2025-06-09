@@ -445,6 +445,8 @@
     "variantNotFound": "Product variant not found!",
     "addedToCart": "Added to cart successfully!",
     "outOfStock": "This product is out of stock",
-    "overLimit": "The quantity exceeds the product limit"
+    "overLimit": "The quantity exceeds the product limit",
+    "invalidQuantity": "Invalid quantity, please enter again",
+    "minQuantity": "Minimum quantity is 1"
   }
 }
