@@ -73,6 +73,7 @@ class CartItemController extends Controller
             'cart_id' => $cart->cart_id,
             'variant_id' => $productVariant->variant_id,
             'quantity' => $validated['quantity'] = $validated['quantity'] ?? 1,
+            'price_snapshot' => $productVariant->price,
         ]);
 
         return response()->json([
@@ -102,18 +103,18 @@ class CartItemController extends Controller
         }
 
         $cartItems = CartItem::where('cart_id', $cart->cart_id)
-            ->with(['variant.product','variant.attributeValues']) 
+            ->with(['variant.product','variant.attributeValues'])
             ->get();
 
-        // Transform cart items to hide price_snapshot and use variant price instead
-        $cartItems->each(function ($item) {
-            $item->makeHidden('price_snapshot');
-        });
+        // // Transform cart items to hide price_snapshot and use variant price instead
+        // $cartItems->each(function ($item) {
+        //     $item->makeHidden('price_snapshot');
+        // });
 
         $totalPrice = $cartItems->sum(function ($item) {
             return $item->variant->price * $item->quantity;
         });
-        
+
         return response()->json([
             'message' => 'Lấy giỏ hàng thành công',
             'cart' => $cart,
