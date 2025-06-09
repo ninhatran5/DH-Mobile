@@ -15,16 +15,16 @@ class AttributeValueSeeder extends Seeder
         // Color values
         $colorValues = [
             // iPhone colors
-            'Natural Titanium', 'Blue Titanium', 'Black Titanium',
-            'Space Black', 'Deep Purple', 'Gold', 'Starlight',
-            'Sierra Blue',
+            'Natural Titanium', 'Blue Titanium', 'Black Titanium', 'White Titanium',
+            'Desert Titanium', 'Space Black', 'Deep Purple', 'Gold', 'Starlight',
+            'Sierra Blue', 'Ultramarine', 'Teal', 'Pink', 'Black', 'Red', 'Purple',
 
             // Samsung colors
             'Titanium Gray', 'Titanium Black', 'Phantom Black',
-            'Cream', 'Mint', 'Lavender',
+            'Cream', 'Mint', 'Lavender', 'Blue',
 
             // Other brands colors
-            'Black', 'Alpine Blue', 'Purple',
+            'Alpine Blue', 'Purple',
             'Iconic Black', 'Dark Illusion', 'Sunrise Beige'
         ];
 
