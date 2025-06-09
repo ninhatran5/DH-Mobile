@@ -376,7 +376,7 @@ const Home = () => {
         showHeader={true}
         padding={"py-3"}
         filter={false}
-        limit={5}
+        limit={10}
         products={products}
         loading={loading}
         showPagination={false}

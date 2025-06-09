@@ -128,9 +128,8 @@ export default function ListProducts({
   loading,
   productsVariant,
   showPagination = true,
-  productsPerPage = 5,
+  productsPerPage = 15,
 }) {
-  console.log("🚀 ~ productsVariant:", productsVariant);
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
