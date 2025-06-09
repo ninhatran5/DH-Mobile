@@ -15,20 +15,15 @@ class ProductVariantSeeder extends Seeder
         foreach ($products as $product) {
             if (str_contains($product->name, 'iPhone')) {
                 $this->createIPhoneVariants($product->product_id, $product->name);
-            }
-            else if (str_contains($product->name, 'Samsung')) {
+            } else if (str_contains($product->name, 'Samsung')) {
                 $this->createSamsungVariants($product->product_id, $product->name);
-            }
-            else if (str_contains($product->name, 'Xiaomi')) {
+            } else if (str_contains($product->name, 'Xiaomi')) {
                 $this->createXiaomiVariants($product->product_id, $product->name);
-            }
-            else if (str_contains($product->name, 'Vivo')) {
+            } else if (str_contains($product->name, 'Vivo')) {
                 $this->createVivoVariants($product->product_id, $product->name);
-            }
-            else if (str_contains($product->name, 'Tecno')) {
+            } else if (str_contains($product->name, 'Tecno')) {
                 $this->createTecnoVariants($product->product_id, $product->name);
-            }
-            else if (str_contains($product->name, 'Realme')) {
+            } else if (str_contains($product->name, 'Realme')) {
                 $this->createRealmeVariants($product->product_id, $product->name);
             }
         }
@@ -36,7 +31,103 @@ class ProductVariantSeeder extends Seeder
 
     private function createIPhoneVariants($productId, $productName)
     {
-        if (str_contains($productName, 'iPhone 15 Pro Max')) {
+        if (str_contains($productName, 'iPhone 16 Pro Max')) {
+            $variants = [
+                [
+                    'storage' => '256',
+                    'price' => 33990000,
+                    'price_original' => 35990000,
+                    'stock' => 100,
+                    'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/329149/iphone-16-pro-max-sa-mac-thumb-1-600x600.jpg'
+                ],
+                [
+                    'storage' => '512',
+                    'price' => 37990000,
+                    'price_original' => 39990000,
+                    'stock' => 75,
+                    'image_url' => 'https://img.tgdd.vn/imgt/old/f_webp,fit_outside,quality_75/https://cdn.tgdd.vn/Products/Images/42/329151/iphone-16-pro-max-black-thumb-600x600.jpg'
+                ],
+                [
+                    'storage' => '1TB',
+                    'price' => 42990000,
+                    'price_original' => 44990000,
+                    'stock' => 50,
+                    'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/329151/iphone-16-pro-max-titan-trang-thumbtgdd-600x600.png'
+                ]
+            ];
+        } else if (str_contains($productName, 'iPhone 16 Pro')) {
+            $variants = [
+                [
+                    'storage' => '256',
+                    'price' => 28990000,
+                    'price_original' => 30990000,
+                    'stock' => 100,
+                    'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/329143/iphone-16-pro-titan-trang.png'
+                ],
+                [
+                    'storage' => '512',
+                    'price' => 32990000,
+                    'price_original' => 34990000,
+                    'stock' => 75,
+                    'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/329143/iphone-16-pro-titan-den.png'
+                ],
+                [
+                    'storage' => '1TB',
+                    'price' => 37990000,
+                    'price_original' => 39990000,
+                    'stock' => 50,
+                    'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/329149/iphone-16-pro-max-sa-mac-thumb-1-600x600.jpg'
+                ]
+            ];
+        } else if (str_contains($productName, 'iPhone 16 Plus')) {
+            $variants = [
+                [
+                    'storage' => '128',
+                    'price' => 25990000,
+                    'price_original' => 27990000,
+                    'stock' => 100,
+                    'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/329140/iphone-16-plus-xanh.png'
+                ],
+                [
+                    'storage' => '256',
+                    'price' => 28990000,
+                    'price_original' => 30990000,
+                    'stock' => 75,
+                    'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/329140/iphone-16-plus-hong.png'
+                ],
+                [
+                    'storage' => '512',
+                    'price' => 33990000,
+                    'price_original' => 35990000,
+                    'stock' => 50,
+                    'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/329140/iphone-16-plus-den.png'
+                ]
+            ];
+        } else if (str_contains($productName, 'iPhone 16')) {
+            $variants = [
+                [
+                    'storage' => '128',
+                    'price' => 22990000,
+                    'price_original' => 24990000,
+                    'stock' => 100,
+                    'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/329135/iphone-16-xanh-mong-ket-thumbnew-600x600.png'
+                ],
+                [
+                    'storage' => '256',
+                    'price' => 25990000,
+                    'price_original' => 27990000,
+                    'stock' => 75,
+                    'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/329135/iphone-16-black-600x600.png'
+                ],
+                [
+                    'storage' => '512',
+                    'price' => 30990000,
+                    'price_original' => 32990000,
+                    'stock' => 50,
+                    'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/329135/iphone-16-pink-600x600.png'
+                ]
+            ];
+        } else if (str_contains($productName, 'iPhone 15 Pro Max')) {
             $variants = [
                 [
                     'storage' => '256',
@@ -91,14 +182,21 @@ class ProductVariantSeeder extends Seeder
                     'price' => 24990000,
                     'price_original' => 26990000,
                     'stock' => 100,
-                    'image_url' => 'https://m.media-amazon.com/images/I/51CJE8vrvIL._AC_UF894,1000_QL80_.jpg'
+                    'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/247508/iphone-14-pro-den-thumb-600x600.jpg'
                 ],
                 [
                     'storage' => '256',
                     'price' => 27990000,
                     'price_original' => 29990000,
                     'stock' => 75,
-                    'image_url' => 'https://m.media-amazon.com/images/I/61nzPMNY8hL._AC_UF1000,1000_QL80_.jpg'
+                    'image_url' => 'https://m.media-amazon.com/images/I/51CJE8vrvIL._AC_UF894,1000_QL80_.jpg'
+                ],
+                [
+                    'storage' => '512',
+                    'price' => 30990000,
+                    'price_original' => 32990000,
+                    'stock' => 50,
+                    'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/247508/iphone-14-pro-vang-thumb-600x600.jpg'
                 ]
             ];
         } else if (str_contains($productName, 'iPhone 14 Plus')) {
@@ -132,7 +230,7 @@ class ProductVariantSeeder extends Seeder
                     'price' => 22990000,
                     'price_original' => 24990000,
                     'stock' => 75,
-                    'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/240259/iphone-14-trang-thumb-600x600.jpg'
+                    'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/240259/iPhone-14-thumb-trang-600x600.jpg'
                 ]
             ];
         } else if (str_contains($productName, 'iPhone 13 Pro Max')) {
@@ -150,6 +248,13 @@ class ProductVariantSeeder extends Seeder
                     'price_original' => 26990000,
                     'stock' => 75,
                     'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/230529/iphone-13-pro-max-gold-1-600x600.jpg'
+                ],
+                [
+                    'storage' => '512',
+                    'price' => 28990000,
+                    'price_original' => 30990000,
+                    'stock' => 50,
+                    'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/230529/iphone-13-pro-max-silver-600x600.jpg'
                 ]
             ];
         }
@@ -178,14 +283,15 @@ class ProductVariantSeeder extends Seeder
                     'price' => 29490000,
                     'price_original' => 31490000,
                     'stock' => 100,
-                    'image_url' => 'https://cdn.xtmobile.vn/vnt_upload/product/05_2024/thumbs/600_d_1.png'
+                    'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/307174/samsung-galaxy-s24-ultra-5g-600x600.jpg'
                 ],
                 [
                     'storage' => '512',
                     'price' => 32490000,
                     'price_original' => 34490000,
                     'stock' => 75,
-                    'image_url' => 'https://cdn.xtmobile.vn/vnt_upload/product/05_2024/thumbs/600_s24u_d.png'
+                    'image_url' => 'https://cdn.xtmobile.vn/vnt_upload/product/05_2024/thumbs/600_d_1.png'
+
                 ]
             ];
         } else if (str_contains($productName, 'Z Fold 5')) {
@@ -202,7 +308,7 @@ class ProductVariantSeeder extends Seeder
                     'price' => 43990000,
                     'price_original' => 45990000,
                     'stock' => 75,
-                    'image_url' => 'https://m.media-amazon.com/images/I/41RWyFeX6kL._AC_UF894,1000_QL80_.jpg'
+                    'image_url' => 'https://m.media-amazon.com/images/I/419+v5-SumL._QL92_SH45_SX240_SY220_CR,0,0,240,220_.jpg'
                 ]
             ];
         } else if (str_contains($productName, 'S24+')) {
@@ -229,14 +335,14 @@ class ProductVariantSeeder extends Seeder
                     'price' => 21990000,
                     'price_original' => 23990000,
                     'stock' => 100,
-                    'image_url' => 'https://m.media-amazon.com/images/I/61IqkfGCw5L._AC_UF894,1000_QL80_.jpg'
+                    'image_url' => 'https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6548/6548830_sd.jpg'
                 ],
                 [
                     'storage' => '512',
                     'price' => 24990000,
                     'price_original' => 26990000,
                     'stock' => 75,
-                    'image_url' => 'https://m.media-amazon.com/images/I/61vJtKbAssL._AC_UF894,1000_QL80_.jpg'
+                    'image_url' => 'https://m.media-amazon.com/images/I/61IqkfGCw5L._AC_UF894,1000_QL80_.jpg'
                 ]
             ];
         }

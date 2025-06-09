@@ -15,7 +15,10 @@ class ProductSpecificationSeeder extends Seeder
         $products = DB::table('products')->get();
 
         foreach ($products as $product) {
-            if (str_contains($product->name, 'iPhone 15')) {
+            if (str_contains($product->name, 'iPhone 16')) {
+                $this->createIPhone16Specs($product->product_id);
+            }
+            else if (str_contains($product->name, 'iPhone 15')) {
                 $this->createIPhone15Specs($product->product_id);
             }
             else if (str_contains($product->name, 'iPhone 14')) {
@@ -31,6 +34,21 @@ class ProductSpecificationSeeder extends Seeder
                 $this->createBasicSpecs($product->product_id);
             }
         }
+    }
+
+    private function createIPhone16Specs($productId)
+    {
+        $specs = [
+            ['spec_name' => 'Display', 'spec_value' => '6.7" Super Retina XDR OLED with ProMotion'],
+            ['spec_name' => 'Processor', 'spec_value' => 'A18 Pro chip'],
+            ['spec_name' => 'Camera', 'spec_value' => '48MP Main + 48MP Ultra Wide + 12MP Telephoto'],
+            ['spec_name' => 'Battery', 'spec_value' => '4685 mAh'],
+            ['spec_name' => 'Operating System', 'spec_value' => 'iOS 18'],
+            ['spec_name' => 'Water Resistance', 'spec_value' => 'IP68'],
+            ['spec_name' => 'Material', 'spec_value' => 'Titanium frame']
+        ];
+
+        $this->insertSpecs($productId, $specs);
     }
 
     private function createIPhone15Specs($productId)

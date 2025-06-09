@@ -46,7 +46,21 @@ class VariantAttributeValueSeeder extends Seeder
             // Assign color based on product type and image URL
             $colorValue = null;
             if (str_contains($product->name, 'iPhone')) {
-                if (str_contains($variant->image_url, '6525424')) {
+                if (str_contains($variant->image_url, 'sa-mac')) {
+                    $colorValue = $colors->firstWhere('value', 'Desert Titanium');
+                } else if (str_contains($variant->image_url, 'titan-den') || str_contains(strtolower($variant->image_url), 'den-thumb') || str_contains(strtolower($variant->image_url), 'black-thumb')) {
+                    $colorValue = $colors->firstWhere('value', 'Black Titanium');
+                } else if (str_contains($variant->image_url, 'titan-trang') || str_contains(strtolower($variant->image_url), 'trang-thumbtgdd')) {
+                    $colorValue = $colors->firstWhere('value', 'White Titanium');
+                } else if (str_contains(strtolower($variant->image_url), 'xanh-mong')) {
+                    $colorValue = $colors->firstWhere('value', 'Ultramarine');
+                } else if (str_contains(strtolower($variant->image_url), 'iphone-16-plus-xanh')) {
+                    $colorValue = $colors->firstWhere('value', 'Teal');
+                } else if (str_contains(strtolower($variant->image_url), 'hong') || str_contains(strtolower($variant->image_url), 'pink')) {
+                    $colorValue = $colors->firstWhere('value', 'Pink');
+                } else if (str_contains(strtolower($variant->image_url), 'black-600x600')) {
+                    $colorValue = $colors->firstWhere('value', 'Black');
+                } else if (str_contains($variant->image_url, '6525424')) {
                     $colorValue = $colors->firstWhere('value', 'Blue Titanium');
                 } else if (str_contains($variant->image_url, '6525425')) {
                     $colorValue = $colors->firstWhere('value', 'Black Titanium');
@@ -62,6 +76,24 @@ class VariantAttributeValueSeeder extends Seeder
                     $colorValue = $colors->firstWhere('value', 'Starlight');
                 } else if (str_contains(strtolower($variant->image_url), 'xanh-la')) {
                     $colorValue = $colors->firstWhere('value', 'Sierra Blue');
+                } else if (str_contains($variant->image_url, '51CJE8vrvIL')) {
+                    $colorValue = $colors->firstWhere('value', 'Space Black');
+                } else if (str_contains($variant->image_url, '61nzPMNY8hL')) {
+                    $colorValue = $colors->firstWhere('value', 'Deep Purple');
+                } else if (str_contains($variant->image_url, '247508/iphone-14-pro-vang')) {
+                    $colorValue = $colors->firstWhere('value', 'Gold');
+                } else if (str_contains($variant->image_url, '247508/iphone-14-pro-den')) {
+                    $colorValue = $colors->firstWhere('value', 'Space Black');
+                } else if (str_contains($variant->image_url, '230529/iphone-13-pro-max-silver')) {
+                    $colorValue = $colors->firstWhere('value', 'Starlight');
+                } else if (str_contains($variant->image_url, '245545/iPhone-14-plus-thumb-do')) {
+                    $colorValue = $colors->firstWhere('value', 'Red');
+                } else if (str_contains($variant->image_url, '240259/iPhone-14-thumb-tim')) {
+                    $colorValue = $colors->firstWhere('value', 'Purple');
+                } else if (str_contains($variant->image_url, '307174/samsung-galaxy-s24-ultra-xanh')) {
+                    $colorValue = $colors->firstWhere('value', 'Titanium Gray');
+                } else if (str_contains($variant->image_url, 'f946bzuixxv')) {
+                    $colorValue = $colors->firstWhere('value', 'Blue');
                 }
             } else if (str_contains($product->name, 'Samsung')) {
                 if (str_contains($variant->image_url, 'd_1.png')) {

@@ -84,7 +84,7 @@ class ProductSeeder extends Seeder
                 'description' => 'High-end smartphone with premium features and AI capabilities',
                 'price' => 25990000,
                 'price_original' => 27990000,
-                'image_url' => 'https://images.openai.com/thumbnails/54b526810c7d73bd2d2e22d3add2fc84.jpeg'
+                'image_url' => 'https://m.media-amazon.com/images/I/51wQxCsDMSL.jpg'
             ],
             [
                 'category_name' => 'Samsung',
@@ -149,6 +149,38 @@ class ProductSeeder extends Seeder
                 'price' => 4290000,
                 'price_original' => 4990000,
                 'image_url' => 'https://rukminim2.flixcart.com/image/850/1000/xif0q/mobile/q/k/f/-original-imagw3rhccszrram.jpeg?q=20&crop=false'
+            ],
+            [
+                'category_name' => 'iPhone',
+                'name' => 'iPhone 16 Pro Max',
+                'description' => 'The latest iPhone with A18 Pro chip, enhanced camera system, and titanium design',
+                'price' => 33990000,
+                'price_original' => 35990000,
+                'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/329149/iphone-16-pro-max-sa-mac-thumb-1-600x600.jpg'
+            ],
+            [
+                'category_name' => 'iPhone',
+                'name' => 'iPhone 16 Pro',
+                'description' => 'Features A18 Pro chip, advanced camera system, and improved battery life',
+                'price' => 28990000,
+                'price_original' => 30990000,
+                'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/329143/iphone-16-pro-titan-trang.png'
+            ],
+            [
+                'category_name' => 'iPhone',
+                'name' => 'iPhone 16 Plus',
+                'description' => 'Features A18 chip, larger 6.7-inch display, and enhanced camera capabilities',
+                'price' => 25990000,
+                'price_original' => 27990000,
+                'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/329140/iphone-16-plus-xanh.png'
+            ],
+            [
+                'category_name' => 'iPhone',
+                'name' => 'iPhone 16',
+                'description' => 'Features A18 chip, improved camera system, and all-day battery life',
+                'price' => 22990000,
+                'price_original' => 24990000,
+                'image_url' => 'https://cdn.tgdd.vn/Products/Images/42/329135/iphone-16-xanh-mong-ket-thumbnew-600x600.png'
             ]
         ];
 
