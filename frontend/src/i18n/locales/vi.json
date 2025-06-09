@@ -226,7 +226,9 @@
     "cartTotal": "Tổng giỏ hàng",
     "discount": "Mã giảm giá",
     "totalPrice": "Tổng tiền",
-    "checkout": "Tiến hành thanh toán"
+    "checkout": "Tiến hành thanh toán",
+    "selectProductToCheckout": "Vui lòng chọn sản phẩm để tiến hành thanh toán"
+
   },
   "tableHeaders": {
     "product": "Sản Phẩm",
