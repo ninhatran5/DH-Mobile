@@ -136,9 +136,9 @@
 
 .addVoucher-generate-btn {
   padding: 10px 16px;
-  background-color: #ff9d00; /* xanh lá */
+  background-color: #ff9d00; 
   color: white;
-  border-radius: 0.375rem; /* rounded-md */
+  border-radius: 0.375rem; 
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -146,6 +146,6 @@
 }
 
 .addVoucher-generate-btn:hover {
-  background-color: #15803d; /* xanh lá đậm */
+  background-color: #15803d; 
 }
 

@@ -74,10 +74,10 @@ function EditAttributeValue() {
 
   return (
     <div className="adminattributes">
-      <h2>Chỉnh sửa Value</h2>
+      <h2>Chỉnh sửa giá trị thuộc tính</h2>
       <form onSubmit={handleSubmit} className="edit-value-form">
         <div className="form-group">
-          <label>Value:</label>
+          <label>Thuộc tính:</label>
           <input
             type="text"
             value={valueData.value || ""}

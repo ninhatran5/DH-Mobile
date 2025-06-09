@@ -109,7 +109,7 @@ function AttributePage() {
                     </button>
                 </Link>
                 <button
-                  className="btn-delete"
+                  className="btn-delete-attibute"
                   onClick={() => handleDelete(attr.attribute_id)}
                   style={{
               padding: "5px 10px",

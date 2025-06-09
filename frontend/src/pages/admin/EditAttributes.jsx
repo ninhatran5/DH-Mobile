@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetchAttributes, updateAttribute } from "../../slices/Attribute";
-
+import "../../assets/admin/EditAttribute.css";
+import { toast } from "react-toastify";
 function EditAttribute() {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -18,7 +19,7 @@ function EditAttribute() {
   }, [attributes.length, dispatch]);
 
   useEffect(() => {
-    const attribute = attributes.find((a) => a.attribute_id === id);
+    const attribute = attributes.find((a) => String(a.attribute_id) === String(id));
     if (attribute) {
       setAttrName(attribute.name);
     }
@@ -27,24 +28,24 @@ function EditAttribute() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!attrName.trim()) {
-      alert("Tên attribute không được để trống");
+      toast.error("Tên thuộc tính không được để trống");
       return;
     }
 
     dispatch(updateAttribute({ id, updatedData: { name: attrName } }))
       .unwrap()
       .then(() => {
-        alert("Cập nhật attribute thành công");
+        toast.success("Cập nhật tên thuộc tính thành công");
         navigate("/admin/attribute");
       })
       .catch((err) => {
-        alert("Lỗi cập nhật: " + err);
+        toast.error("Lỗi cập nhật: " + err);
       });
   };
 
   return (
-    <div className="adminattributes">
-      <h1>Cập nhật thuộc tính </h1>
+    <div className="adminEditAttribute">
+      <h1>Cập nhật tên thuộc tính</h1>
       {error && <p className="error">{error}</p>}
       {loading && <p className="loading">Đang tải...</p>}
 
@@ -58,9 +59,16 @@ function EditAttribute() {
           placeholder="Nhập tên attribute"
         />
         <div style={{ marginTop: "1rem" }}>
-          <button type="submit" className="btn-edit">
-           Cập nhật 
+          <button type="submit" className="btn-edit-attribute">
+            Cập nhật
           </button>
+           <button
+    type="button"
+    className="btn-cancel-attribute"
+    onClick={() => navigate("/admin/attribute")}
+  >
+    Hủy
+  </button>
         </div>
       </form>
     </div>
