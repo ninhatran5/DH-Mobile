@@ -15,10 +15,29 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\AttributeController;
 use App\Http\Controllers\Api\ProductLikeController;
 use App\Http\Controllers\Api\AttributevalueController;
+use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
 use App\Http\Controllers\Api\ProductsViewsController;
 use App\Http\Controllers\Api\VariantAttributeValuesController;
+use App\Http\Controllers\Api\VnpayController;
+
+
+
+
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/vnpay/checkout', [VnpayController::class, 'createPayment']);
+});
+
+Route::get('/vnpay/return', [VnpayController::class, 'handleReturn']);
+// thanh toán cod
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/cod/checkout', [OrderController::class, 'payCODOrder'] );
+});
+
+
 
 // API Auth
 // http://127.0.0.1:8000/api
@@ -34,7 +53,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // API User
 
-// Admin 
+// Admin
 Route::middleware('auth:sanctum')->group(function () {
     Route::middleware(CheckAdmin::class)->group(function () {
         Route::get('/getuser', [UserController::class, 'getuser']);
@@ -138,7 +157,7 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::delete('/forceDelete/{id}', 'forceDelete');
         Route::get('/trashed', 'trashed');
     });
-    // Vorcher
+    // Vouucher
     Route::prefix('voucher')->controller(VoucherController::class)->group(function () {
         Route::post('/', 'store');
         Route::put('/{id}', 'update');
@@ -147,13 +166,13 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::delete('/forceDelete/{id}', 'forceDelete');
         Route::get('/trashed', 'trashed');
     });
-    // product views 
+    // product views
     Route::prefix('productsviews')->controller(ProductsViewsController::class)->group(function () {
 
         Route::delete('/{view_id}', 'deleteView'); // xóa sản phẩm đã xem theo view_id
         Route::delete('/deleteall', 'deleteAllViews'); // xóa tất cả sản phẩm đã xem
 
-        // Route::get('/getall', 'getAllViews'); // lấy tất cả sản phẩm đã xem 
+        // Route::get('/getall', 'getAllViews'); // lấy tất cả sản phẩm đã xem
     });
 });
 
@@ -174,8 +193,8 @@ Route::get('variantattributevalues', [VariantAttributeValuesController::class, '
 Route::get('variantattributevalues/{id}', [VariantAttributeValuesController::class, 'show']); // lấy liên kết theo id
 Route::get('news', [NewsController::class, 'index']); // lấy danh sách tin tức
 Route::get('news/{id}', [NewsController::class, 'show']); // lấy tin tức theo id
-Route::get('voucher', [VoucherController::class, 'index']); // lấy danh sách vorcher
-Route::get('voucher/{id}', [VoucherController::class, 'show']); // lấy vorcher theo id
+Route::get('voucher', [VoucherController::class, 'index']); // lấy danh sách voucher
+Route::get('voucher/{id}', [VoucherController::class, 'show']); // lấy voucher theo id
 
 // Product Views
 Route::prefix('productsviews')->controller(ProductsViewsController::class)->group(function () {

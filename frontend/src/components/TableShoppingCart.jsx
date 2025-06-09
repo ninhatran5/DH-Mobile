@@ -10,7 +10,6 @@ const TableShoppingCart = ({
   handleDecrease,
   handleChangeQuantity,
 }) => {
-  console.log("🚀 ~ item:", item);
   const navigate = useNavigate();
   const handleNextPageDetail = () => {
     navigate(`/product-detail/${item?.variant?.product_id}`);
@@ -29,7 +28,7 @@ const TableShoppingCart = ({
           <img src={item?.variant?.image_url} alt="product" />
         </div>
         <div className="product__cart__item__text">
-          <h5>{item?.variant?.product?.name}</h5>
+          <h5 style={{ cursor: "pointer" }}>{item?.variant?.product?.name}</h5>
           <h6>{numberFomat(item?.variant?.price)}</h6>
         </div>
       </td>

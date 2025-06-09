@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
             BannerSeeder::class,
             NewsSeeder::class,
             VoucherSeeder::class,
+            PaymentMethodSeeder::class,
         ]);
     }
 }

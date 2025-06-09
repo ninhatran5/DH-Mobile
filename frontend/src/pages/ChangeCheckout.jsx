@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { IoReturnDownBack } from "react-icons/io5";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
@@ -14,12 +14,14 @@ const ChangeCheckout = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { data } = useSelector((state) => state.address);
-  const { carts } = useSelector((state) => state.cart);
+  const location = useLocation();
+  const selectedItems = location.state?.selectedItems || [];
 
-  const totalPrice = carts.reduce(
+  const totalPrice = selectedItems.reduce(
     (sum, item) => sum + item.quantity * item?.variant?.product?.price,
     0
   );
+
   const [selectedCityCode, setSelectedCityCode] = useState(null);
   const [selectedDistrictCode, setSelectedDistrictCode] = useState(null);
   const [selectedWardCode, setSelectedWardCode] = useState(null);
@@ -305,6 +307,7 @@ const ChangeCheckout = () => {
                   <div className="checkout_change_address">
                     <Link
                       to={"/checkout"}
+                      state={{ selectedItems }}
                       className="checkout_change_address_link"
                     >
                       <h6 className="checkout_change_address_name">
@@ -367,13 +370,16 @@ const ChangeCheckout = () => {
                 <div className="col-lg-4 col-md-6">
                   <div className="cart__discount" style={{ marginBottom: 30 }}>
                     <h6>{t("shoppingCart.discountCode")}</h6>
-                    <form action="#">
+                    <div className="discount__input-btn">
                       <input
                         type="text"
+                        className="input__discount"
                         placeholder={t("shoppingCart.discountPlaceholder")}
                       />
-                      <button type="submit">{t("shoppingCart.apply")}</button>
-                    </form>
+                      <button className="btn__discountCode" type="submit">
+                        {t("shoppingCart.apply")}
+                      </button>
+                    </div>
                   </div>
                   <div className="checkout__order">
                     <h4 className="order__title">{t("checkout.cartTotal")}</h4>
@@ -390,7 +396,7 @@ const ChangeCheckout = () => {
                         </p>
                       </div>
                     </div>
-                    {carts.map((item) => (
+                    {selectedItems.map((item) => (
                       <ul
                         key={item.cart_item_id}
                         className="checkout__total__products"
@@ -404,7 +410,6 @@ const ChangeCheckout = () => {
                                 alt={item?.variant?.product?.name}
                                 style={{
                                   width: "100%",
-                                  height: "100%",
                                   objectFit: "cover",
                                 }}
                               />

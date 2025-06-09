@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
 import TableShoppingCart from "../components/TableShoppingCart";
 import Breadcrumb from "../components/Breadcrumb";
@@ -21,6 +21,7 @@ const ShoppingCart = () => {
 
   const [selectAll, setSelectAll] = useState(false);
   const [cartItems, setCartItems] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (Array.isArray(carts)) {
@@ -138,10 +139,21 @@ const ShoppingCart = () => {
     }
   };
 
-  const totalPrice = cartItems.reduce(
-    (sum, item) => sum + item?.quantity * item?.variant?.product?.price,
-    0
-  );
+  const totalPrice = cartItems
+    .filter((item) => item.selected)
+    .reduce(
+      (sum, item) => sum + item.quantity * item.variant?.product?.price,
+      0
+    );
+
+  const handleCheckout = () => {
+    const selectedItems = cartItems.filter((item) => item.selected);
+    if (selectedItems.length === 0) {
+      toast.warn(t("shoppingCart.selectProductToCheckout"));
+      return;
+    }
+    navigate("/checkout", { state: { selectedItems } });
+  };
 
   useEffect(() => {
     dispatch(fetchCart());
@@ -234,13 +246,14 @@ const ShoppingCart = () => {
                     <span>{numberFormat(totalPrice)}</span>
                   </li>
                 </ul>
-                <Link
-                  to={"/checkout"}
-                  style={{ textDecoration: "none" }}
+                <button
+                  type="button"
+                  onClick={handleCheckout}
                   className="primary-btn"
+                  style={{ textDecoration: "none", padding: "8px 51px" }}
                 >
                   {t("shoppingCart.checkout")}
-                </Link>
+                </button>
               </div>
             </div>
           </div>

@@ -227,7 +227,8 @@
     "cartTotal": "Cart Total",
     "discount": "Discount",
     "totalPrice": "Total Price",
-    "checkout": "Proceed to Checkout"
+    "checkout": "Proceed to Checkout",
+    "selectProductToCheckout": "Please select products to proceed to checkout"
   },
   "tableHeaders": {
     "product": "Product",
@@ -445,6 +446,8 @@
     "variantNotFound": "Product variant not found!",
     "addedToCart": "Added to cart successfully!",
     "outOfStock": "This product is out of stock",
-    "overLimit": "The quantity exceeds the product limit"
+    "overLimit": "The quantity exceeds the product limit",
+    "invalidQuantity": "Invalid quantity, please enter again",
+    "minQuantity": "Minimum quantity is 1"
   }
 }

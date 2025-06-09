@@ -15,7 +15,7 @@ return new class extends Migration
             $table->unsignedBigInteger('variant_id')->nullable();
             $table->integer('quantity')->nullable();
             $table->decimal('price', 10, 2)->nullable();
-
+            $table->timestamps();
             $table->foreign('order_id')->references('order_id')->on('orders');
             $table->foreign('product_id')->references('product_id')->on('products');
             $table->foreign('variant_id')->references('variant_id')->on('product_variants');
