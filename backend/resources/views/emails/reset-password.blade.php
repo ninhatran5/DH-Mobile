@@ -1,7 +1,7 @@
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; background: #f9f9f9; border-radius: 8px; border: 1px solid #e0e0e0;">
     <!-- Logo -->
     <div style="text-align: center; margin-bottom: 20px;">
-        <img src="frontend/src/assets/images/logo2.png" alt="Logo" style="max-width: 150px;">
+        <img src="https://res.cloudinary.com/dvxpjf2zb/image/upload/v1749461956/logo2_h0chgt.png" alt="Logo" style="max-width: 150px;">
     </div>
 
     <!-- Greeting -->
@@ -14,7 +14,6 @@
 
     <!-- Button -->
     <div style="text-align: center; margin: 30px 0;">
-        {{-- <a href="{{ url('/change-password?token=' . $token) }}" --}}
         <a href="http://localhost:5173/change-password?token={{ $token }}&email={{ urlencode($user->email) }}"
 
            style="display: inline-block; background-color: #3490dc; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">
