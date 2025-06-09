@@ -44,12 +44,12 @@ function EditAttribute() {
 
   return (
     <div className="adminattributes">
-      <h1>Sửa Attribute</h1>
+      <h1>Cập nhật thuộc tính </h1>
       {error && <p className="error">{error}</p>}
       {loading && <p className="loading">Đang tải...</p>}
 
       <form onSubmit={handleSubmit} className="form-edit-attribute">
-        <label htmlFor="name">Tên Attribute:</label>
+        <label htmlFor="name">Tên thuộc tính:</label>
         <input
           id="name"
           type="text"
@@ -59,7 +59,7 @@ function EditAttribute() {
         />
         <div style={{ marginTop: "1rem" }}>
           <button type="submit" className="btn-edit">
-            Lưu thay đổi
+           Cập nhật 
           </button>
         </div>
       </form>
