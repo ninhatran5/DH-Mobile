@@ -53,7 +53,7 @@ class OrderController extends Controller
                 'payment_method' => 'COD',
                 'status' => 'pending',
             ]);
-            
+
             // 4. Tạo chi tiết đơn hàng + Trừ tồn kho
             foreach ($items as $item) {
                 $product = Product::findOrFail($item['product_id']);
@@ -71,6 +71,10 @@ class OrderController extends Controller
 
             DB::commit();
 
+                    return response()->json([
+            'message' => 'Đặt hàng thành công',
+            'order_id' => $order->id,
+        ], 201);
 
         } catch (\Throwable $th) {
             DB::rollBack();
