@@ -7,16 +7,15 @@ import { useEffect, useState } from "react";
 import { fetchVouhcer } from "../slices/voucherSlice";
 import Loading from "../components/Loading";
 import Pagination from "../components/Pagination";
+import { perPage } from "../../utils/consts";
 
 const Voucher = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { vouchers, loading } = useSelector((state) => state.voucher);
 
-  // Phân trang
   const [currentPage, setCurrentPage] = useState(1);
-  const vouchersPerPage = 6;
-  const totalPages = Math.ceil((vouchers?.length || 0) / vouchersPerPage);
+  const totalPages = Math.ceil((vouchers?.length || 0) / perPage);
 
   useEffect(() => {
     dispatch(fetchVouhcer());
@@ -31,10 +30,7 @@ const Voucher = () => {
   }, [currentPage]);
 
   const paginatedVouchers = vouchers
-    ? vouchers.slice(
-        (currentPage - 1) * vouchersPerPage,
-        currentPage * vouchersPerPage
-      )
+    ? vouchers.slice((currentPage - 1) * perPage, currentPage * perPage)
     : [];
 
   return (
