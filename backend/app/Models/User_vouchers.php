@@ -27,6 +27,6 @@ class User_vouchers extends Model
     // Một user_voucher thuộc về một voucher
     public function voucher()
     {
-        return $this->belongsTo(Vorcher::class, 'voucher_id', 'voucher_id');
+        return $this->belongsTo(Voucher::class, 'voucher_id', 'voucher_id');
     }
 }
