@@ -50,6 +50,17 @@ class OrderController extends Controller
                 'payment_method' => 'COD',
                 'status' => 'pending',
             ]);
+            // 4. Tạo chi tiết đơn hàng 
+            foreach ($items as $item) {
+                $product = Product::findOrFail($item['product_id']);
+
+                OrderItems::create([
+                    'order_id' => $order->id,
+                    'product_id' => $product->id,
+                    'quantity' => $item['quantity'],
+                    'price' => $product->price,
+                ]);
+            }
         } catch (\Throwable $th) {
             DB::rollBack();
 
