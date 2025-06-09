@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use Carbon\Carbon;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Mail\PaymentSuccessMail;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
 
 class VnpayController extends Controller
 {
@@ -45,7 +47,12 @@ class VnpayController extends Controller
             $total += $item->price_snapshot * $item->quantity;
         }
 
-        // Cập nhật lại tổng tiền
+        // Check if total exceeds the database limit (decimal 10,2)
+        if ($total > 99999999.99) {
+            return response()->json(['message' => 'Tổng giá trị đơn hàng vượt quá giới hạn cho phép'], 400);
+        }
+
+        // Cập nhật lại tổng tiền - đảm bảo giá trị nằm trong phạm vi cho phép
         DB::table('orders')->where('order_id', $orderId)->update([
             'total_amount' => $total
         ]);
@@ -53,7 +60,7 @@ class VnpayController extends Controller
         // Tạo URL thanh toán VNPAY
         $vnp_TxnRef = Str::uuid();
         $vnp_OrderInfo = 'Thanh toán đơn hàng #' . $orderId;
-        $vnp_Amount = $total * 100;
+        $vnp_Amount = (int)($total * 100); // VNPAY requires amount in smallest currency unit (cents)
 
         $vnp_Url = config('vnpay.vnp_Url');
         $vnp_Returnurl = config('vnpay.vnp_ReturnUrl');
@@ -98,12 +105,21 @@ class VnpayController extends Controller
         $responseCode = $request->input('vnp_ResponseCode');
 
         if ($responseCode == '00') {
+            // Cập nhật trạng thái đơn hàng trước
             DB::table('orders')->where('order_id', $orderId)->update([
                 'status' => 'paid',
                 'payment_status' => 'paid',
                 'updated_at' => now(),
             ]);
-            return redirect()->away("http://localhost:5173/thank-you/payment-success?order_id={$orderId}&status=success");
+
+            // Sau đó mới lấy thông tin đơn hàng đã được cập nhật
+            $order = DB::table('orders')->where('order_id', $orderId)->first();
+
+            // Lấy thông tin người dùng
+            $user = DB::table('users')->where('user_id', $order->user_id)->first();
+
+            Mail::to($user->email)->send(new PaymentSuccessMail($order, $user));
+            return redirect()->away("http://localhost:5173/thank-you?order_id={$orderId}&status=success");
         }
 
         return response()->json(['message' => 'Thanh toán thất bại'], 400);
