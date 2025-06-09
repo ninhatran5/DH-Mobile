@@ -4,7 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { addAdminVoucher } from "../../slices/AdminVoucher";
 import { toast, ToastContainer } from "react-toastify";
-import "../../assets/admin/AddVoucher.css"; 
+import "../../assets/admin/AddVoucher.css";
+
 const AddVoucherPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -14,8 +15,12 @@ const AddVoucherPage = () => {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm();
+
+  // Lấy giá trị ngày bắt đầu để dùng validate ngày kết thúc
+  const startDateValue = watch("start_date");
 
   const onSubmit = async (data) => {
     try {
@@ -53,18 +58,18 @@ const AddVoucherPage = () => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="addVoucher-form space-y-5">
         {[
-          { name: "code", label: "Mã Voucher", type: "text" },
-          { name: "title", label: "Tiêu đề", type: "text" },
-          { name: "discount_amount", label: "Số tiền giảm", type: "number", step: "1000" },
-          { name: "min_order_value", label: "Giá trị đơn tối thiểu", type: "number" },
-          { name: "start_date", label: "Ngày bắt đầu", type: "datetime-local" },
-          { name: "end_date", label: "Ngày kết thúc", type: "datetime-local" },
-        ].map(({ name, label, type, step }) => (
+          { name: "code", label: "Mã Voucher", type: "text", placeholder: "Nhập mã voucher" },
+          { name: "title", label: "Tiêu đề", type: "text", placeholder: "Nhập tiêu đề voucher" },
+          { name: "discount_amount", label: "Số tiền giảm", type: "number", step: "1000", placeholder: "Nhập số tiền giảm" },
+          { name: "min_order_value", label: "Giá trị đơn tối thiểu", type: "number", placeholder: "Nhập giá trị đơn tối thiểu" },
+          { name: "start_date", label: "Ngày bắt đầu", type: "datetime-local", placeholder: "" },
+        ].map(({ name, label, type, step, placeholder }) => (
           <div key={name} className="addVoucher-field flex flex-col">
             <label className="addVoucher-label text-gray-700 font-medium mb-1">{label}</label>
             <input
               type={type}
               step={step}
+              placeholder={placeholder}
               {...register(name, { required: `${label} là bắt buộc` })}
               className="addVoucher-input p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
@@ -75,6 +80,27 @@ const AddVoucherPage = () => {
             )}
           </div>
         ))}
+
+        {/* Riêng input end_date cần validate phức tạp hơn */}
+        <div className="addVoucher-field flex flex-col">
+          <label className="addVoucher-label text-gray-700 font-medium mb-1">Ngày kết thúc</label>
+          <input
+            type="datetime-local"
+            {...register("end_date", {
+              required: "Ngày kết thúc là bắt buộc",
+              validate: (value) => {
+                if (!startDateValue) return true; // nếu chưa chọn start_date thì không validate
+                return new Date(value) >= new Date(startDateValue) || "Ngày kết thúc phải sau ngày bắt đầu";
+              },
+            })}
+            className="addVoucher-input p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          {errors.end_date && (
+            <span className="addVoucher-error text-red-500 text-sm mt-1">
+              {errors.end_date.message}
+            </span>
+          )}
+        </div>
 
         <div className="addVoucher-select-container flex flex-col">
           <label className="addVoucher-label text-gray-700 font-medium mb-1">
