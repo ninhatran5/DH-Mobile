@@ -29,7 +29,9 @@ class OrderController extends Controller
         DB::beginTransaction();
 
         try {
+
             $totalAmount = 0;
+
             // 2. Kiểm tra tồn kho & tính tổng tiền
             foreach ($items as $item) {
                 $product = Product::findOrFail($item['product_id']);
@@ -41,6 +43,7 @@ class OrderController extends Controller
 
                 $totalAmount += $product->price * $item['quantity'];
             }
+
             // 3. Tạo đơn hàng 
             $order = Orders::create([
                 'user_id' => $user->id,
@@ -50,6 +53,7 @@ class OrderController extends Controller
                 'payment_method' => 'COD',
                 'status' => 'pending',
             ]);
+            
             // 4. Tạo chi tiết đơn hàng + Trừ tồn kho
             foreach ($items as $item) {
                 $product = Product::findOrFail($item['product_id']);
@@ -63,6 +67,11 @@ class OrderController extends Controller
                 // logic trừ tồn kho
                 $product->decrement('stock', $item['quantity']);
             }
+
+
+            DB::commit();
+
+
         } catch (\Throwable $th) {
             DB::rollBack();
 
