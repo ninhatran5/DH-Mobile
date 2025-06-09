@@ -50,7 +50,7 @@ class OrderController extends Controller
                 'payment_method' => 'COD',
                 'status' => 'pending',
             ]);
-            // 4. Tạo chi tiết đơn hàng 
+            // 4. Tạo chi tiết đơn hàng + Trừ tồn kho
             foreach ($items as $item) {
                 $product = Product::findOrFail($item['product_id']);
 
@@ -60,6 +60,8 @@ class OrderController extends Controller
                     'quantity' => $item['quantity'],
                     'price' => $product->price,
                 ]);
+                // logic trừ tồn kho
+                $product->decrement('stock', $item['quantity']);
             }
         } catch (\Throwable $th) {
             DB::rollBack();
