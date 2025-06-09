@@ -29,7 +29,7 @@ class Orders extends Model
     // Một đơn hàng có thể có một voucher
     public function voucher()
     {
-        return $this->belongsTo(Vorcher::class, 'voucher_id', 'voucher_id');
+        return $this->belongsTo(Voucher::class, 'voucher_id', 'voucher_id');
     }
     // Một đơn hàng có thể có nhiều user_vouchers
     public function userVouchers()
