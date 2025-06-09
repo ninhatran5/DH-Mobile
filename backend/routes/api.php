@@ -19,6 +19,21 @@ use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
 use App\Http\Controllers\Api\ProductsViewsController;
 use App\Http\Controllers\Api\VariantAttributeValuesController;
+use App\Http\Controllers\Api\VnpayController;
+
+
+
+
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/vnpay/checkout', [VnpayController::class, 'createPayment']);
+});
+
+Route::get('/vnpay/return', [VnpayController::class, 'handleReturn']);
+
+
+
 
 // API Auth
 // http://127.0.0.1:8000/api
@@ -34,7 +49,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // API User
 
-// Admin 
+// Admin
 Route::middleware('auth:sanctum')->group(function () {
     Route::middleware(CheckAdmin::class)->group(function () {
         Route::get('/getuser', [UserController::class, 'getuser']);
@@ -147,13 +162,13 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::delete('/forceDelete/{id}', 'forceDelete');
         Route::get('/trashed', 'trashed');
     });
-    // product views 
+    // product views
     Route::prefix('productsviews')->controller(ProductsViewsController::class)->group(function () {
 
         Route::delete('/{view_id}', 'deleteView'); // xóa sản phẩm đã xem theo view_id
         Route::delete('/deleteall', 'deleteAllViews'); // xóa tất cả sản phẩm đã xem
 
-        // Route::get('/getall', 'getAllViews'); // lấy tất cả sản phẩm đã xem 
+        // Route::get('/getall', 'getAllViews'); // lấy tất cả sản phẩm đã xem
     });
 });
 
