@@ -43,7 +43,7 @@ function AddValuePage() {
 
       <form onSubmit={handleSubmit}>
         <div className="attribute-row">
-          <label className="attribute-label">Value:</label>
+          <label className="attribute-label">Giá trị:</label>
           <input
             type="text"
             value={value}

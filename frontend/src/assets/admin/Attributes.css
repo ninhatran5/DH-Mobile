@@ -189,7 +189,7 @@ h1 {
   transform: translateY(-2px);
 }
 
-.btn-delete {
+.btn-delete-attribute {
   background-color: #ff3b30;
   color: white;
   border: none;
