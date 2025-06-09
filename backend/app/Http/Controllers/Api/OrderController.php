@@ -36,7 +36,7 @@ class OrderController extends Controller
             foreach ($items as $item) {
                 $product = Product::findOrFail($item['product_id']);
 
-                // ⚠️ Kiểm tra tồn kho
+                //  Kiểm tra tồn kho
                 if ($product->stock < $item['quantity']) {
                     throw new \Exception("Sản phẩm '{$product->name}' không đủ hàng. Chỉ còn {$product->stock} sản phẩm.");
                 }
@@ -53,7 +53,7 @@ class OrderController extends Controller
                 'payment_method' => 'COD',
                 'status' => 'pending',
             ]);
-            
+
             // 4. Tạo chi tiết đơn hàng + Trừ tồn kho
             foreach ($items as $item) {
                 $product = Product::findOrFail($item['product_id']);
@@ -64,6 +64,7 @@ class OrderController extends Controller
                     'quantity' => $item['quantity'],
                     'price' => $product->price,
                 ]);
+
                 // logic trừ tồn kho
                 $product->decrement('stock', $item['quantity']);
             }
@@ -71,7 +72,11 @@ class OrderController extends Controller
 
             DB::commit();
 
-
+            return response()->json([
+                'message' => 'Đặt hàng thành công',
+                'order_id' => $order->id,
+            ], 201);
+            
         } catch (\Throwable $th) {
             DB::rollBack();
 
