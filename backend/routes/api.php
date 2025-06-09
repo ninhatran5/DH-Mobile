@@ -157,7 +157,7 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::delete('/forceDelete/{id}', 'forceDelete');
         Route::get('/trashed', 'trashed');
     });
-    // Vorcher
+    // Vouucher
     Route::prefix('voucher')->controller(VoucherController::class)->group(function () {
         Route::post('/', 'store');
         Route::put('/{id}', 'update');
@@ -193,8 +193,8 @@ Route::get('variantattributevalues', [VariantAttributeValuesController::class, '
 Route::get('variantattributevalues/{id}', [VariantAttributeValuesController::class, 'show']); // lấy liên kết theo id
 Route::get('news', [NewsController::class, 'index']); // lấy danh sách tin tức
 Route::get('news/{id}', [NewsController::class, 'show']); // lấy tin tức theo id
-Route::get('voucher', [VoucherController::class, 'index']); // lấy danh sách vorcher
-Route::get('voucher/{id}', [VoucherController::class, 'show']); // lấy vorcher theo id
+Route::get('voucher', [VoucherController::class, 'index']); // lấy danh sách voucher
+Route::get('voucher/{id}', [VoucherController::class, 'show']); // lấy voucher theo id
 
 // Product Views
 Route::prefix('productsviews')->controller(ProductsViewsController::class)->group(function () {
