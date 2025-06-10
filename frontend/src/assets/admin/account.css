@@ -1,162 +1,151 @@
-/* admin/account.css */
-
+/* Container */
 .adminuser-container {
+  padding: 24px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #1d1d1f;
   background-color: #f9f9f9;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
 }
 
+/* Tiêu đề */
 .adminuser-title {
-  font-size: 1.8rem;
+  font-size: 24px;
   font-weight: 600;
-  margin-bottom: 1.2rem;
-  color: #333;
+  margin-bottom: 20px;
 }
 
-.adminuser-loading,
-.adminuser-error {
-  text-align: center;
-  font-size: 1rem;
-  color: #555;
+/* Header chứa nút thêm */
+.adminuser-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
 }
 
-.adminuser-table-wrapper {
-  max-height: 500px; /* Hoặc bất kỳ chiều cao nào bạn muốn */
-  overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
+/* Nút thêm tài khoản */
+.adminuser-add-button {
+  background-color: #007aff;
+  color: white;
+  padding: 8px 18px;
+  font-size: 14px;
+  border: none;
   border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.25s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Tùy chỉnh scrollbar macOS */
-.adminuser-table-wrapper::-webkit-scrollbar {
-  width: 8px;
+.adminuser-add-button:hover {
+  background-color: #005fd6;
 }
 
-.adminuser-table-wrapper::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-}
-
-.adminuser-table-wrapper::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.3);
+/* Bảng */
+.adminuser-table-wrapper {
+  overflow-x: auto;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
 .adminuser-table {
-  width: 80%;
-  border-collapse: separate;
-  border-spacing: 0;
-  background-color: #fff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
 }
 
-.adminuser-table thead tr {
-  background-color: #e5e5ea;
-}
-
-.adminuser-table th {
-  padding: 0.8rem 1rem;
-  font-weight: 500;
-  color: #333;
-  text-align: left;
-  white-space: nowrap;
-}
-
-.adminuser-table tbody tr {
-  transition: background-color 0.3s;
-}
-
-.adminuser-table tbody tr:hover {
-  background-color: #f0f0f5;
-}
-
+.adminuser-table th,
 .adminuser-table td {
-  padding: 0.7rem 1rem;
-  vertical-align: middle;
-  color: #333;
-  border-top: 1px solid #ddd;
-  transition: color 0.3s;
-}
-
-/* Tô màu và hiệu ứng cho các cột đặc biệt */
-.adminuser-username,
-.adminuser-full_name,
-.adminuser-email,
-.adminuser-phone,
-.adminuser-Address {
-  font-weight: 500;
-  color: #007aff; /* Màu xanh macOS */
-  transition: color 0.3s, transform 0.2s;
-  cursor: default;
-}
-
-.adminuser-username:hover,
-.adminuser-full_name:hover,
-.adminuser-email:hover,
-.adminuser-phone:hover,
-.adminuser-Address:hover {
-  color: #0051a8;
-  transform: translateY(-2px);
-}
-
-/* Căn giữa */
-.adminuser-text-center {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e5ea;
+  font-size: 14px;
   text-align: center;
 }
 
-/* Ảnh avatar */
+/* Avatar */
 .adminuser-avatar {
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  border: 2px solid #ccc;
+  object-fit: cover;
 }
 
-/* Biểu tượng */
-.adminuser-icon {
+/* Icon hành động */
+.adminuser-actions .adminuser-icon {
   cursor: pointer;
-  margin: 0 0.3rem;
-  transition: transform 0.2s, color 0.2s;
-}
-
-.adminuser-icon:hover {
-  transform: scale(1.2);
+  margin: 0 4px;
+  font-size: 16px;
+  transition: transform 0.2s ease;
 }
 
 .adminuser-icon-edit {
-  color: #28a745;
+  color: #007aff;
 }
-
 .adminuser-icon-delete {
-  color: #dc3545;
+  color: #ff3b30;
 }
 
-/* Dòng không có dữ liệu */
+.adminuser-icon:hover {
+  transform: scale(1.1);
+}
+
+/* Trạng thái loading & lỗi */
+.adminuser-loading,
+.adminuser-error {
+  padding: 16px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* Không có dữ liệu */
 .adminuser-no-data {
   text-align: center;
-  font-style: italic;
-  color: #666;
-  padding: 1rem 0;
+  padding: 16px;
+  font-size: 14px;
+  color: #888;
 }
 
-/* Responsive: bảng có thể cuộn ngang */
-@media (max-width: 768px) {
-  .adminuser-title {
-    font-size: 1.5rem;
-  }
-
-  .adminuser-table th,
-  .adminuser-table td {
-    padding: 0.5rem 0.8rem;
-  }
+/* Phân trang */
+.adminuser-pagination {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
 }
+
+.pagination-btn {
+  padding: 6px 12px;
+  font-size: 13px;
+  border: 1px solid #d0d0d5;
+  border-radius: 6px;
+  background-color: white;
+  color: #007aff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover {
+  background-color: #007aff;
+  color: white;
+}
+
+.pagination-btn.active {
+  background-color: #007aff;
+  color: white;
+  font-weight: 600;
+}
+.adminuser-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.adminuser-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
 .adminuser-add-button {
-  margin-bottom: 16px;
   padding: 8px 16px;
-  background-color: #df8e0d;
+  background-color: #007bff; /* Màu xanh */
   color: white;
   border: none;
   border-radius: 4px;
@@ -164,11 +153,5 @@
 }
 
 .adminuser-add-button:hover {
-  background-color: #644d1d;
+  background-color: #0056b3;
 }
-.adminuser-header {
-  display: flex;
-  justify-content: flex-end; /* đẩy button sang phải */
-  margin-bottom: 16px;
-}
-

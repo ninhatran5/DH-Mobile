@@ -146,7 +146,7 @@ const AddAccount = () => {
 
       if (addUser.fulfilled.match(resultAction)) {
         toast.success('Tạo tài khoản thành công!');
-        navigate('/admin/addaccount');
+        navigate('/admin/accounts');
       } else {
         console.error('Lỗi từ server:', resultAction.payload);
         toast.error(resultAction.payload || 'Không thể tạo tài khoản');
@@ -160,16 +160,15 @@ const AddAccount = () => {
   };
 
   return (
-    <Container fluid className="py-4">
-      <Card className="shadow-sm">
+    <Container fluid className="AdminAcccount">
+      <Card className="shadow">
         <Card.Header className="bg-white">
-          <h4 className="mb-0">Thêm Tài Khoản Mới</h4>
+          <h4 className="AdminAcccount">Thêm Tài Khoản Mới</h4>
         </Card.Header>
         <Card.Body>
           <Form onSubmit={handleSubmit}>
             <Row>
               <Col md={8}>
-                {/* Các trường form */}
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
@@ -199,7 +198,6 @@ const AddAccount = () => {
                   </Col>
                 </Row>
 
-                {/* Thêm trường mật khẩu */}
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">

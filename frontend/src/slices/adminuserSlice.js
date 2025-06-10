@@ -62,7 +62,7 @@ export const addUser = createAsyncThunk(
       const res = await axiosConfig.post("/createuser", newUserData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+      console.log("Phản hồi từ server:", res.data);
       const newUser = res.data.data;
       console.log("User mới:", newUser);
       return newUser;
@@ -149,6 +149,7 @@ const adminuserSlice = createSlice({
       })
       .addCase(addUser.fulfilled, (state, action) => {
         state.loading = false;
+        console.log("Người dùng mới được thêm:", action.payload);
         state.users.push(action.payload);
       })
       .addCase(addUser.rejected, (state, action) => {
