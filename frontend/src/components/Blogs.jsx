@@ -6,21 +6,19 @@ import { useEffect, useState } from "react";
 import { fetchBlogs } from "../slices/blogSlice";
 import Loading from "../components/Loading";
 import Pagination from "../components/Pagination";
+import { perPage } from "../../utils/consts";
 
 export default function Blogs({
   showHeader = true,
   padding,
-  limit = 3,
   showPagination = true,
 }) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { news, loading } = useSelector((state) => state.blog);
 
-  // Phân trang
   const [currentPage, setCurrentPage] = useState(1);
-  const newsPerPage = limit;
-  const totalPages = Math.ceil((news?.length || 0) / newsPerPage);
+  const totalPages = Math.ceil((news?.length || 0) / perPage);
 
   useEffect(() => {
     dispatch(fetchBlogs());
@@ -34,7 +32,7 @@ export default function Blogs({
   }, [currentPage]);
 
   const paginatedNews = news
-    ? news.slice((currentPage - 1) * newsPerPage, currentPage * newsPerPage)
+    ? news.slice((currentPage - 1) * perPage, currentPage * perPage)
     : [];
 
   return (
