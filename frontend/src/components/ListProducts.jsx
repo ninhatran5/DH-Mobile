@@ -14,6 +14,7 @@ import Product from "./Product";
 import "../assets/css/products.css";
 import { fetchCategory } from "../slices/categorySlice";
 import Pagination from "../components/Pagination";
+import { addViewProducts } from "../slices/viewProductSlice";
 
 // Filter helpers
 const filterByCategory = (products, selectedCategoryId) =>
@@ -134,6 +135,8 @@ export default function ListProducts({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { viewProducts: _ } = useSelector((state) => state.viewProduct);
+  const userId = localStorage.getItem("userID");
 
   // Filter states
   const [priceFilter, setPriceFilter] = useState("");
@@ -531,11 +534,14 @@ export default function ListProducts({
                               key={product.product_id}
                               product={product}
                               discountPercent={discountPercent}
-                              nextProductDetail={() =>
+                              onClick={() => {
+                                dispatch(
+                                  addViewProducts(product.product_id, userId)
+                                );
                                 navigate(
                                   `/product-detail/${product.product_id}`
-                                )
-                              }
+                                );
+                              }}
                             />
                           );
                         })}
