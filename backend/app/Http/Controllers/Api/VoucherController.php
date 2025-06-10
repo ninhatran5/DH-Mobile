@@ -21,10 +21,14 @@ class VoucherController extends Controller
      */
     public function index()
     {
-        $voucher = Voucher::all();
+        $voucher = Voucher::paginate(10);
         return response()->json([
             'message' => 'lấy danh sách voucher thành công',
-            'data' => $voucher
+            'totalPage' =>  $voucher->lastPage(),
+            'currentPage' =>  $voucher->currentPage(),
+            'data' => $voucher,
+            'status' => $voucher->currentPage() <= $voucher->lastPage() ? 200 : 'Hết trang',
+
         ])->setStatusCode(200, 'OK',);
     }
 
