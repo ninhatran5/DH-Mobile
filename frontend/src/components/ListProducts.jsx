@@ -15,6 +15,7 @@ import "../assets/css/products.css";
 import { fetchCategory } from "../slices/categorySlice";
 import Pagination from "../components/Pagination";
 import { addViewProducts } from "../slices/viewProductSlice";
+import { perPage } from "../../utils/consts";
 
 // Filter helpers
 const filterByCategory = (products, selectedCategoryId) =>
@@ -130,7 +131,6 @@ export default function ListProducts({
   loading,
   productsVariant,
   showPagination = true,
-  productsPerPage = 15,
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -299,14 +299,11 @@ export default function ListProducts({
   }, [filteredProducts, limit]);
 
   // Pagination
-  const totalPages = Math.ceil(limitedProducts.length / productsPerPage);
+  const totalPages = Math.ceil(limitedProducts.length / perPage);
   const paginatedProducts = useMemo(
     () =>
-      limitedProducts.slice(
-        (currentPage - 1) * productsPerPage,
-        currentPage * productsPerPage
-      ),
-    [limitedProducts, currentPage, productsPerPage]
+      limitedProducts.slice((currentPage - 1) * perPage, currentPage * perPage),
+    [limitedProducts, currentPage, perPage]
   );
 
   return (
