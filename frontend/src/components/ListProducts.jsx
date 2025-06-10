@@ -14,7 +14,6 @@ import Product from "./Product";
 import "../assets/css/products.css";
 import { fetchCategory } from "../slices/categorySlice";
 import Pagination from "../components/Pagination";
-import { addViewProducts } from "../slices/viewProductSlice";
 import { perPage } from "../../utils/consts";
 
 // Filter helpers
