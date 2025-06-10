@@ -30,6 +30,7 @@ import specificationReducer from "../slices/specificationsSlice";
 import adminuserReducer from "../slices/adminuserSlice";
 import adminVoucherReducer from "../slices/AdminVoucher";
 import adminNewsReducer from "../slices/newsSlice";
+import viewProductReducer from "../slices/viewProductSlice";
 export const store = configureStore({
   reducer: {
     home: homeReducer,
@@ -51,6 +52,7 @@ export const store = configureStore({
     blogDetail: blogDetailReducer,
     cart: cartReducer,
     favoriteProduct: favoriteProductReducer,
+    viewProduct: viewProductReducer,
     voucher: voucherReducer,
     category: categoryReducer,
     attribute: attributeReducer,
@@ -60,8 +62,8 @@ export const store = configureStore({
     specification: specificationReducer,
     adminProductSpecifications: adminProductSpecificationsReducer,
     adminProductVariants: adminProductVariantsReducer,
-     adminuser: adminuserReducer,
-     adminVoucher: adminVoucherReducer,
-     adminNews: adminNewsReducer,
+    adminuser: adminuserReducer,
+    adminVoucher: adminVoucherReducer,
+    adminNews: adminNewsReducer,
   },
 });

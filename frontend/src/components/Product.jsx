@@ -104,7 +104,6 @@ const Product = ({ product, discountPercent, nextProductDetail }) => {
             {product.name}
           </h3>
 
-          {/* Giá */}
           <div
             className="price_products_sale"
             style={{
@@ -139,7 +138,6 @@ const Product = ({ product, discountPercent, nextProductDetail }) => {
             </span>
           </div>
 
-          {/* Thêm vào giỏ */}
           <div className="d-flex align-items-center justify-content-between">
             <a
               onClick={addToShoppingCart}

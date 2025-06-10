@@ -1,16 +1,26 @@
 import { useNavigate } from "react-router-dom";
 import numberFormat from "../../utils/numberFormat";
+import { useDispatch, useSelector } from "react-redux";
+import { addViewProducts } from "../slices/viewProductSlice";
 const ProductsCarousel = ({ item, discountPercent }) => {
   const navigate = useNavigate();
-  const nextProductDetail = (id) => {
-    navigate(`/product-detail/${id}`);
-  };
+  const dispatch = useDispatch();
+  const { viewProducts: _ } = useSelector((state) => state.viewProduct);
+
   return (
     <>
       <div
         className="card mb-3 p-3 rounded-4 shadow border-0"
         style={{ cursor: "pointer" }}
-        onClick={() => nextProductDetail(item.product.product_id)}
+        onClick={() => {
+          dispatch(
+            addViewProducts({
+              productId: item?.product?.product_id,
+              userId: item?.user_id,
+            })
+          );
+          navigate(`/product-detail/${item?.product.product_id}`);
+        }}
       >
         {discountPercent !== null && (
           <span className="badge bg-success position-absolute mt-1">
