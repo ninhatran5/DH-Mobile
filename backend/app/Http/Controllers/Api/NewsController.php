@@ -22,9 +22,11 @@ class NewsController extends Controller
     public function index()
     {
         // Lấy danh sách tin tức kèm thông tin user
-        $news = news::with('user')->get();
+        $news = news::with('user')->paginate(10);
         return response()->json([
             'message' => 'Lấy danh sách tin tức thành công',
+            'totalPage' =>  $news->lastPage(),
+            'currentPage' =>  $news->currentPage(),
             'data' => $news,
             'status' => 200,
         ])->setStatusCode(200, 'OK');

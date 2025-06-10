@@ -8,6 +8,7 @@ use App\Models\ProductLike;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use ParentIterator;
 
 class ProductController extends Controller
 {
@@ -22,18 +23,19 @@ class ProductController extends Controller
     public function index()
     {
         //
-        $products = Product::with('category')->get();
-        
+        $products = Product::with('category')->paginate(10);
         $formattedProducts = $products->map(function ($product) {
             $product->price = number_format($product->price, 0, '', '');
             $product->price_original = number_format($product->price_original, 0, '', '');
             return $product;
         });
-        
+
         return response()->json([
             'message' => 'Lấy danh sách sản phẩm thành công',
+            'totalPage' => $products->lastPage(),
+            'currentPage' => $products->currentPage(),
             'data' => $formattedProducts,
-            'status' => 200,
+            'status' => $products->currentPage() <= $products->lastPage() ? 200 : 'Hết trang',
         ])->setStatusCode(200, 'OK');
     }
 
@@ -111,7 +113,7 @@ class ProductController extends Controller
         if ($product) {
             $product->price = number_format($product->price, 0, '', '');
             $product->price_original = number_format($product->price_original, 0, '', '');
-            
+
             return response()->json([
                 'message' => 'Lấy sản phẩm thành công',
                 'data' => $product,
