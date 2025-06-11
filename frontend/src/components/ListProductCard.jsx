@@ -33,7 +33,7 @@ export default function ListProductCard({ title, products, desc, gotoShop }) {
         <div className="row">
           <div className="col-md-12">
             <div className="section-header d-flex flex-wrap justify-content-between my-5">
-              <h2 className="section-title">{title}</h2>
+              <h3 className="section-title">{title}</h3>
               <div className="d-flex align-items-center">
                 <Link to={gotoShop} className="btn-link text-decoration-none">
                   {desc}
@@ -69,10 +69,10 @@ export default function ListProductCard({ title, products, desc, gotoShop }) {
                 1200: { slidesPerView: 5 },
               }}
             >
-              {products?.slice(0, 8).map((product) => {
+              {products?.slice(0, 8).map((product, index) => {
                 const discountPercent = getDiscountPercent(product);
                 return (
-                  <SwiperSlide key={product.product_id}>
+                  <SwiperSlide key={`${product.product_id}-${index}`}>
                     <ProductCard
                       favorites={favorites}
                       setFavorites={setFavorites}
