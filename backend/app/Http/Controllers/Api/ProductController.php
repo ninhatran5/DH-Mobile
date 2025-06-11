@@ -23,7 +23,7 @@ class ProductController extends Controller
     public function index()
     {
         //
-        $products = Product::with('category')->paginate(10);
+        $products = Product::with('category')->orderBy('created_at', 'desc')->paginate(10);
         $formattedProducts = $products->map(function ($product) {
             $product->price = number_format($product->price, 0, '', '');
             $product->price_original = number_format($product->price_original, 0, '', '');
