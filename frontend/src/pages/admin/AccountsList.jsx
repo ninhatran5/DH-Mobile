@@ -87,7 +87,7 @@ const ListUser = () => {
             <table className="adminuser-table">
               <thead>
                 <tr>
-                  <th>ID</th>
+                  <th>STT</th>
                   <th>Hình ảnh</th>
                   <th>Username</th>
                   <th>Tên đầy đủ</th>
