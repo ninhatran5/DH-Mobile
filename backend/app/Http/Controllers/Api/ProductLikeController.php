@@ -57,7 +57,7 @@ class ProductLikeController extends Controller
     {
         $user = Auth::user();
         $productlikes = ProductLike::with('Product')
-            ->where('user_id', $user->user_id)
+            ->where('user_id', $user->user_id)->orderBy('desc')
             ->get();
         if ($productlikes->isEmpty()) {
             return response()->json([
