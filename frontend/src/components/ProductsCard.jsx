@@ -18,17 +18,19 @@ const ProductCard = ({ discountPercent, product }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
-  const [favorite, setFavorite] = useState(product.favorite);
+  const { favoriteProducts: _ } = useSelector(
+    (state) => state?.favoriteProduct
+  );
+  const [favorite, setFavorite] = useState(product?.favorite);
   const userId = localStorage.getItem("userID");
 
   const handleUnFavorites = async () => {
     if (!checkLogin()) return;
     try {
-      await dispatch(deleteFavoriteProduct(product.product_id)).unwrap();
+      await dispatch(deleteFavoriteProduct(product?.product_id)).unwrap();
       setFavorite(false);
       toast.success(t("products.removeFavorites"));
-      await dispatch(fetchUpdateStatus(product.product_id)).unwrap();
+      await dispatch(fetchUpdateStatus(product?.product_id)).unwrap();
       dispatch(fetchListFavorite());
     } catch (error) {
       toast.error(error?.message || t("products.errorRemovingFavorite"));
@@ -40,7 +42,7 @@ const ProductCard = ({ discountPercent, product }) => {
       return;
     }
     try {
-      await dispatch(fetchFavoriteProduct(product.product_id));
+      await dispatch(fetchFavoriteProduct(product?.product_id));
       setFavorite(true);
       toast.success(t("products.addedToFavorites"));
       dispatch(fetchListFavorite());
@@ -95,16 +97,16 @@ const ProductCard = ({ discountPercent, product }) => {
           onClick={() => {
             dispatch(
               addViewProducts({
-                productId: product.product_id,
+                productId: product?.product_id,
                 userId,
               })
             );
-            navigate(`/product-detail/${product.product_id}`);
+            navigate(`/product-detail/${product?.product_id}`);
           }}
-          src={product.image_url}
+          src={product?.image_url}
           className="tab-image"
-          alt={product.name}
-          title={product.title || product.name}
+          alt={product?.name}
+          title={product?.title || product?.name}
         />
       </figure>
 
@@ -113,14 +115,14 @@ const ProductCard = ({ discountPercent, product }) => {
         onClick={() => {
           dispatch(
             addViewProducts({
-              productId: product.product_id,
+              productId: product?.product_id,
               userId,
             })
           );
-          navigate(`/product-detail/${product.product_id}`);
+          navigate(`/product-detail/${product?.product_id}`);
         }}
       >
-        {product.title || product.name}
+        {product?.title || product?.name}
       </h3>
 
       <div

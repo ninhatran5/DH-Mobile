@@ -14,8 +14,8 @@ export default function ListProductCard({ title, products, desc, gotoShop }) {
     return Number(priceString.replace(/[^0-9.-]+/g, ""));
   };
   const getDiscountPercent = (product) => {
-    const original = convertPriceToNumber(product.price_original);
-    const sale = convertPriceToNumber(product.price);
+    const original = convertPriceToNumber(product?.price_original);
+    const sale = convertPriceToNumber(product?.price);
     if (
       isNaN(original) ||
       isNaN(sale) ||
@@ -72,7 +72,7 @@ export default function ListProductCard({ title, products, desc, gotoShop }) {
               {products?.slice(0, 8).map((product, index) => {
                 const discountPercent = getDiscountPercent(product);
                 return (
-                  <SwiperSlide key={`${product.product_id}-${index}`}>
+                  <SwiperSlide key={`${product?.product_id}-${index}`}>
                     <ProductCard
                       favorites={favorites}
                       setFavorites={setFavorites}
