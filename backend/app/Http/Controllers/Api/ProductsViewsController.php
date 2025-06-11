@@ -127,7 +127,7 @@ class ProductsViewsController extends Controller
     public function getViewsByUserId(Request $request, $user_id)
     {
         // kiểm tra xem user_id có tồn tại trong bảng users không
-        $views = ProductsViews::where('user_id', $user_id)->with(['user', 'product'])->get();
+        $views = ProductsViews::where('user_id', $user_id)->with(['user', 'product'])->orderBy()->get();
 
         if ($views->isEmpty()) {
             return response()->json([
