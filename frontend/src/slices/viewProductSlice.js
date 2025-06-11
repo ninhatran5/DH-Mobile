@@ -29,11 +29,13 @@ export const addViewProducts = createAsyncThunk(
 );
 
 // Lấy danh sách yêu thích
-export const fetchListFavorite = createAsyncThunk(
-  "viewProduct/fetchListFavorite",
-  async (_, thunkAPI) => {
+export const fetchViewProduct = createAsyncThunk(
+  "listViewProduct/fetchViewProduct",
+  async (userId, thunkAPI) => {
     try {
-      const response = await axiosConfig.get("/listproductlike");
+      const response = await axiosConfig.get(
+        `/productsviews/getbyuser/${userId}`
+      );
       return response.data.data || [];
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -82,15 +84,15 @@ export const viewProductSlice = createSlice({
       })
 
       // List favorite products
-      .addCase(fetchListFavorite.pending, (state) => {
+      .addCase(fetchViewProduct.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchListFavorite.fulfilled, (state, action) => {
+      .addCase(fetchViewProduct.fulfilled, (state, action) => {
         state.loading = false;
-        state.listFavorite = action.payload;
+        state.listViewProduct = action.payload;
       })
-      .addCase(fetchListFavorite.rejected, (state, action) => {
+      .addCase(fetchViewProduct.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
       })

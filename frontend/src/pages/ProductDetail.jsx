@@ -605,6 +605,8 @@ const ProductDetail = () => {
         <div style={{ marginTop: 30 }}>
           <ListProductCard
             title={t("home.relatedProducts")}
+            desc={t("home.goToShop")}
+            gotoShop={"/products"}
             products={relatedProducts}
           />
         </div>

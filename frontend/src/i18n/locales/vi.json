@@ -15,13 +15,15 @@
     "servicesDailyDealsDesc": "Khuyến mãi mới mỗi ngày dành riêng cho bạn",
     "featuredProducts": "Sản Phẩm Nổi Bật",
     "goToShop": "Đi đến shop →",
+    "viewAll": "Lướt để xem →",
     "bestSellingProducts": "Đề Xuất Nổi Bật",
     "partners": "ĐỐI TÁC VÀ KHÁCH HÀNG",
     "blog": "Tin Tức",
     "seeAll": "Xem tất cả →",
     "moblieTitle": "Khám Phá Thế Giới Di Động Tại DH Mobile!",
     "relatedProducts": "Sản Phẩm Liên Quan",
-    "moblieDesc": "Chào mừng bạn đến với DH Mobile – điểm đến lý tưởng cho những tín đồ yêu thích công nghệ! Chúng tôi cung cấp một bộ sưu tập đa dạng các mẫu điện thoại thông minh từ những thương hiệu nổi tiếng như Samsung, Apple, Xiaomi và nhiều hơn nữa. Với giá cả hợp lý và dịch vụ tận tâm, chúng tôi cam kết mang đến trải nghiệm mua sắm tuyệt vời nhất cho bạn. Hãy tải ngay ứng dụng của chúng tôi để khám phá các ưu đãi hấp dẫn và sản phẩm mới nhất!"
+    "moblieDesc": "Chào mừng bạn đến với DH Mobile – điểm đến lý tưởng cho những tín đồ yêu thích công nghệ! Chúng tôi cung cấp một bộ sưu tập đa dạng các mẫu điện thoại thông minh từ những thương hiệu nổi tiếng như Samsung, Apple, Xiaomi và nhiều hơn nữa. Với giá cả hợp lý và dịch vụ tận tâm, chúng tôi cam kết mang đến trải nghiệm mua sắm tuyệt vời nhất cho bạn. Hãy tải ngay ứng dụng của chúng tôi để khám phá các ưu đãi hấp dẫn và sản phẩm mới nhất!",
+    "viewProduct": "Sản Phẩm Bạn Đã Xem"
   },
   "header": {
     "home": "Trang chủ",
@@ -228,7 +230,6 @@
     "totalPrice": "Tổng tiền",
     "checkout": "Tiến hành thanh toán",
     "selectProductToCheckout": "Vui lòng chọn sản phẩm để tiến hành thanh toán"
-
   },
   "tableHeaders": {
     "product": "Sản Phẩm",

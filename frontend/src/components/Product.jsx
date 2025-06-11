@@ -13,7 +13,7 @@ import {
 } from "../slices/favoriteProductsSlice";
 import { fetchUpdateStatus } from "../slices/updateStatusSlice";
 
-const Product = ({ product, discountPercent, nextProductDetail }) => {
+const Product = ({ product, discountPercent, onClick }) => {
   const dispatch = useDispatch();
   const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
   const { t } = useTranslation();
@@ -90,6 +90,7 @@ const Product = ({ product, discountPercent, nextProductDetail }) => {
               title={product.name}
             >
               <img
+                onClick={onClick}
                 src={product.image_url}
                 alt={product.name}
                 className="tab-image"
@@ -97,10 +98,7 @@ const Product = ({ product, discountPercent, nextProductDetail }) => {
             </Link>
           </figure>
 
-          <h3
-            onClick={() => nextProductDetail(product.product_id)}
-            style={{ cursor: "pointer" }}
-          >
+          <h3 onClick={onClick} style={{ cursor: "pointer" }}>
             {product.name}
           </h3>
 
