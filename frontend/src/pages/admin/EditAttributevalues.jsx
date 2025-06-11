@@ -73,19 +73,27 @@ function EditAttributeValue() {
 };
 
   return (
-    <div className="adminattributes">
-      <h2>Chỉnh sửa giá trị thuộc tính</h2>
-      <form onSubmit={handleSubmit} className="edit-value-form">
-        <div className="form-group">
-          <label>Thuộc tính:</label>
-          <input
-            type="text"
-            value={valueData.value || ""}
-            onChange={handleInputChange}
-            className="input"
-          />
+    <div className="adminEditAttribute">
+      <h1>Chỉnh sửa giá trị thuộc tính</h1>
+      <form onSubmit={handleSubmit} className="form-edit-attribute">
+        <label htmlFor="value">Giá trị thuộc tính:</label>
+        <input
+          id="value"
+          type="text"
+          value={valueData.value || ""}
+          onChange={handleInputChange}
+          placeholder="Nhập giá trị thuộc tính"
+        />
+        <div style={{ marginTop: "1rem" }}>
+          <button type="submit" className="btn-edit-attribute">Lưu thay đổi</button>
+          <button
+            type="button"
+            className="btn-cancel-attribute"
+            onClick={() => navigate("/admin/attribute")}
+          >
+            Hủy
+          </button>
         </div>
-        <button type="submit" className="btn-edit">Lưu thay đổi</button>
       </form>
     </div>
   );

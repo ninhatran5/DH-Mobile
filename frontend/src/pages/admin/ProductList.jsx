@@ -74,14 +74,10 @@ const ProductList = () => {
     }
   };
 
-  // Lọc sản phẩm dựa trên các điều kiện
   const getFilteredProducts = () => {
     return Array.isArray(adminproducts) 
       ? adminproducts.filter(product => {
-          // Lọc theo tên
           const nameMatch = product?.name?.toLowerCase().includes(searchTerm.toLowerCase());
-          
-          // Lọc theo khoảng giá
           let priceMatch = true;
           const price = parseFloat(product.price);
           switch(filters.priceRange) {
@@ -323,7 +319,6 @@ const ProductList = () => {
                 <th>Danh mục</th>
                 <th>Giá KM</th>
                 <th>Giá gốc</th>
-                <th>Trạng thái</th>
                 <th>Cập nhật</th>
                 <th style={{ width: '120px' }}>Thao tác</th>
               </tr>
@@ -360,16 +355,12 @@ const ProductList = () => {
                   </td>
                   <td className="admin_dh-product-category">{product.category?.name || 'Không có danh mục'}</td>
                   <td className="admin_dh-product-price" style={{ fontWeight: '500', color: 'var(--admin_dh-text)' }}>
-                    {product.price ? `${product.price} USD` : 'Chưa cập nhật'}
+                    {product.price ? `${product.price} VNĐ` : 'Chưa cập nhật'}
                   </td>
                   <td className="admin_dh-product-price" style={{ fontWeight: '500', color: 'var(--admin_dh-text)' }}>
-                    {product.price_original ? `${product.price_original} USD` : 'Chưa cập nhật'}
+                    {product.price_original ? `${product.price_original} VNĐ` : 'Chưa cập nhật'}
                   </td>
-                  <td>
-                    <span className={`admin_dh-product-status ${product.status === 0 ? 'admin_dh-status-inactive' : 'admin_dh-status-active'}`}>
-                      {product.status === 0 ? 'Ẩn' : 'Hiển thị'}
-                    </span>
-                  </td>
+                  
                   <td>{product.updated_at ? new Date(product.updated_at).toLocaleDateString() : 'N/A'}</td>
                   <td>
                     <div className="admin_dh-product-actions-col">

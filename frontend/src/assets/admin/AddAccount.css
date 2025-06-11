@@ -1,0 +1,64 @@
+.admin-add-account-col {
+    padding: 0.75rem;
+  }
+  
+  .admin-add-account-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .admin-add-account-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+  
+  .admin-add-account-required {
+    font-weight: bold;
+  }
+  
+  .admin-add-account-input-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid #d1d1d6;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #fff;
+    transition: box-shadow 0.2s ease, border 0.2s ease;
+  }
+  
+  .admin-add-account-input-group:focus-within {
+    border-color: #007aff;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+  }
+  
+  .admin-add-account-input {
+    flex: 1;
+    border: none;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border-radius: 0;
+    box-shadow: none;
+    background-color: transparent;
+  }
+  
+  .admin-add-account-input:focus {
+    outline: none;
+    box-shadow: none;
+  }
+  
+  .admin-add-account-btn-eye {
+    border: none;
+    background-color: transparent;
+    color: #555;
+    padding: 0 1rem;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .admin-add-account-btn-eye:hover {
+    background-color: #f0f0f5;
+    color: #000;
+  }
+  

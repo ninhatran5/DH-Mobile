@@ -1,4 +1,4 @@
-.update-user-container {
+.admin-edit-account-container {
   max-width: 1200px;
   margin:  auto;
   background: linear-gradient(145deg, #ffffff, #f2f2f2);
@@ -9,26 +9,26 @@
   transition: all 0.3s ease-in-out;
 }
 
-.update-user-container h2 {
+.admin-edit-account-container .admin-edit-account-title {
   font-size: 26px;
   font-weight: 600;
   color: #1c1c1e;
   margin-bottom: 30px;
 }
 
-.update-user-form-horizontal {
+.admin-edit-account-form-horizontal {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.form-grid {
+.admin-edit-account-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
 }
 
-.form-grid > div {
+.admin-edit-account-grid > div {
   flex: 1;
   min-width: 300px;
   padding: 0;
@@ -37,10 +37,7 @@
   box-shadow: none;
 }
 
-
-
-
-label {
+.admin-edit-account-label {
   display: block;
   font-weight: 500;
   font-size: 13px;
@@ -49,9 +46,9 @@ label {
   opacity: 0.8;
 }
 
-input[type="text"],
-input[type="email"],
-select {
+.admin-edit-account-input[type="text"],
+.admin-edit-account-input[type="email"],
+.admin-edit-account-select {
   width: 100%;
   padding: 10px 14px;
   border-radius: 12px;
@@ -64,22 +61,22 @@ select {
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.03);
 }
 
-input:focus,
-select:focus {
+.admin-edit-account-input:focus,
+.admin-edit-account-select:focus {
   background: #fff;
   border-color: #ffca28;
   box-shadow: 0 0 0 3px rgba(208, 164, 5, 0.15);
 }
 
-select {
+.admin-edit-account-select {
   appearance: none;
 }
 
-.image-upload input[type="file"] {
+.admin-edit-account-image-upload .admin-edit-account-input-file {
   margin-top: 8px;
 }
 
-.image-preview {
+.admin-edit-account-image-preview {
   margin-top: 10px;
   width: 140px;
   height: 140px;
@@ -90,65 +87,71 @@ select {
   transition: transform 0.3s ease;
 }
 
-.image-preview:hover {
+.admin-edit-account-image-preview:hover {
   transform: scale(1.05);
 }
 
-.form-buttons {
+.admin-edit-account-form-buttons {
   display: flex;
   justify-content: flex-end;
-  margin-top: 30px;
+  gap: 12px;
+  margin-top: 20px;
 }
 
-button[type="submit"] {
-  background: #ffca28;
+.admin-edit-account-btn-cancel {
+  background-color: #6c757d;
   color: white;
-  font-size: 15px;
-  padding: 12px 26px;
   border: none;
-  border-radius: 14px;
+  padding: 8px 16px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  box-shadow: 0 6px 18px rgba(0, 122, 255, 0.2);
+  transition: background-color 0.2s;
 }
 
-button[type="submit"]:hover {
-  background: #005fcc;
-  transform: translateY(-1px);
-  box-shadow: 0 8px 22px rgba(0, 122, 255, 0.3);
+.admin-edit-account-btn-cancel:hover {
+  background-color: #5a6268;
 }
 
-button:disabled {
-  background: #ccc;
+.admin-edit-account-btn-submit {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.admin-edit-account-btn-submit:disabled {
+  background-color: #a0c3f2;
   cursor: not-allowed;
-  box-shadow: none;
-  transform: none;
 }
 
 @media (max-width: 768px) {
-  .form-grid {
+  .admin-edit-account-grid {
     flex-direction: column;
   }
 
-  .form-buttons {
+  .admin-edit-account-form-buttons {
     justify-content: center;
   }
 }
-.image-upload {
+
+.admin-edit-account-image-upload {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 12px;
 }
 
-.image-upload label {
+.admin-edit-account-image-upload .admin-edit-account-label {
   font-weight: 600;
   margin-bottom: 10px;
   font-size: 16px;
   color: #444;
 }
 
-.image-upload input[type="file"] {
+.admin-edit-account-image-upload .admin-edit-account-input-file {
   margin-bottom: 16px;
   font-size: 14px;
   cursor: pointer;
@@ -158,11 +161,11 @@ button:disabled {
   transition: background 0.3s;
 }
 
-.image-upload input[type="file"]:hover {
+.admin-edit-account-image-upload .admin-edit-account-input-file:hover {
   background-color: #fff3cd;
 }
 
-.image-preview {
+.admin-edit-account-image-preview {
   width: 160px;
   height: 160px;
   border-radius: 50%;
@@ -172,7 +175,7 @@ button:disabled {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.image-preview:hover {
+.admin-edit-account-image-preview:hover {
   transform: scale(1.08);
   box-shadow: 0 8px 20px rgba(255, 193, 7, 0.5);
 }
