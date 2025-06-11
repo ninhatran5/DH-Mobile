@@ -23,9 +23,10 @@ const AddAccount = () => {
     role: '',
     status: '',
     image_url: null,
-    password: ''  
+    password: ''
   });
 
+  const [errors, setErrors] = useState({});
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [provinces, setProvinces] = useState([]);
@@ -97,7 +98,6 @@ const AddAccount = () => {
     fetchWards();
   }, [selectedDistrict, districts]);
 
-  // Update ward in formData when ward is selected
   useEffect(() => {
     if (selectedWard) {
       const wardName = wards.find(w => w.code === Number(selectedWard))?.name || '';
@@ -122,25 +122,32 @@ const AddAccount = () => {
     }
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.username.trim()) newErrors.username = 'Tên đăng nhập là bắt buộc';
+    if (!formData.email.trim()) newErrors.email = 'Email là bắt buộc';
+    if (!formData.password) newErrors.password = 'Mật khẩu là bắt buộc';
+    if (!formData.phone.trim()) newErrors.phone = 'Số điện thoại là bắt buộc';
+    if (!formData.address.trim()) newErrors.address = 'Địa chỉ là bắt buộc';
+    if (!formData.full_name.trim()) newErrors.full_name = 'Họ tên là bắt buộc';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) {
+      toast.error("Vui lòng kiểm tra lại các trường bắt buộc.");
+      return;
+    }
+
     setLoading(true);
 
     try {
       const formDataToSend = new FormData();
-
       Object.keys(formData).forEach((key) => {
-        if (formData[key] === null || formData[key] === undefined) {
-          formDataToSend.append(key, '');
-        } else {
-          formDataToSend.append(key, formData[key]);
-        }
+        formDataToSend.append(key, formData[key] ?? '');
       });
-
-      console.log('Dữ liệu gửi lên server:');
-      for (let pair of formDataToSend.entries()) {
-        console.log(pair[0] + ':', pair[1]);
-      }
 
       const resultAction = await dispatch(addUser(formDataToSend));
 
@@ -148,11 +155,9 @@ const AddAccount = () => {
         toast.success('Tạo tài khoản thành công!');
         navigate('/admin/accounts');
       } else {
-        console.error('Lỗi từ server:', resultAction.payload);
         toast.error(resultAction.payload || 'Không thể tạo tài khoản');
       }
     } catch (error) {
-      console.error('Lỗi submit:', error);
       toast.error('Lỗi khi tạo tài khoản');
     } finally {
       setLoading(false);
@@ -178,9 +183,12 @@ const AddAccount = () => {
                         name="username"
                         value={formData.username}
                         onChange={handleInputChange}
-                        
-                        
+                        placeholder="Nhập tên đăng nhập"
+                        isInvalid={!!errors.username}
                       />
+                      <Form.Control.Feedback type="invalid">
+                        {errors.username}
+                      </Form.Control.Feedback>
                     </Form.Group>
                   </Col>
                   <Col md={6}>
@@ -191,9 +199,12 @@ const AddAccount = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        
-                       
+                        placeholder="Nhập địa chỉ email"
+                        isInvalid={!!errors.email}
                       />
+                      <Form.Control.Feedback type="invalid">
+                        {errors.email}
+                      </Form.Control.Feedback>
                     </Form.Group>
                   </Col>
                 </Row>
@@ -201,17 +212,18 @@ const AddAccount = () => {
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>Mật khẩu</Form.Label>
+                      <Form.Label>Mật khẩu <span className="text-danger">*</span></Form.Label>
                       <div className="input-group">
                         <Form.Control
                           type={showPassword ? "text" : "password"}
                           name="password"
                           value={formData.password}
                           onChange={handleInputChange}
-                       
+                          placeholder="Nhập mật khẩu"
                           className="form-control-lg"
+                          isInvalid={!!errors.password}
                         />
-                        <Button 
+                        <Button
                           variant="outline-secondary"
                           onClick={() => setShowPassword(!showPassword)}
                           className="btn-lg"
@@ -219,6 +231,9 @@ const AddAccount = () => {
                         >
                           <i className={`bi bi-eye${showPassword ? '-slash' : ''}`}></i>
                         </Button>
+                        <Form.Control.Feedback type="invalid">
+                          {errors.password}
+                        </Form.Control.Feedback>
                       </div>
                     </Form.Group>
                   </Col>
@@ -227,40 +242,54 @@ const AddAccount = () => {
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>Họ tên</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="full_name"
-                        value={formData.full_name}
-                        onChange={handleInputChange}
-                       
-                      />
-                    </Form.Group>
+  <Form.Label>Họ tên <span className="text-danger">*</span></Form.Label>
+  <Form.Control
+    type="text"
+    name="full_name"
+    value={formData.full_name}
+    onChange={handleInputChange}
+    placeholder="Nhập họ và tên"
+    isInvalid={!!errors.full_name}
+  />
+  <Form.Control.Feedback type="invalid">
+    {errors.full_name}
+  </Form.Control.Feedback>
+</Form.Group>
+
                   </Col>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>Số điện thoại</Form.Label>
+                      <Form.Label>Số điện thoại <span className="text-danger">*</span></Form.Label>
                       <Form.Control
                         type="tel"
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        
+                        placeholder="Nhập số điện thoại"
+                        isInvalid={!!errors.phone}
                       />
+                      <Form.Control.Feedback type="invalid">
+                        {errors.phone}
+                      </Form.Control.Feedback>
                     </Form.Group>
                   </Col>
                 </Row>
+
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>Địa chỉ</Form.Label>
+                      <Form.Label>Địa chỉ <span className="text-danger">*</span></Form.Label>
                       <Form.Control
                         type="text"
                         name="address"
                         value={formData.address}
                         onChange={handleInputChange}
-                        
+                        placeholder="Nhập địa chỉ chi tiết"
+                        isInvalid={!!errors.address}
                       />
+                      <Form.Control.Feedback type="invalid">
+                        {errors.address}
+                      </Form.Control.Feedback>
                     </Form.Group>
                   </Col>
                   <Col md={6}>
@@ -280,6 +309,7 @@ const AddAccount = () => {
                     </Form.Group>
                   </Col>
                 </Row>
+
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
@@ -316,6 +346,7 @@ const AddAccount = () => {
                     </Form.Group>
                   </Col>
                 </Row>
+
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
@@ -384,18 +415,10 @@ const AddAccount = () => {
             </Row>
 
             <div className="d-flex justify-content-end gap-2 mt-4">
-              <Button
-                variant="secondary"
-                type="button"
-                onClick={() => navigate('/admin/accounts')}
-              >
+              <Button variant="secondary" type="button" onClick={() => navigate('/admin/accounts')}>
                 Hủy
               </Button>
-              <Button
-                variant="primary"
-                type="submit"
-                disabled={loading}
-              >
+              <Button variant="primary" type="submit" disabled={loading}>
                 {loading ? (
                   <>
                     <i className="bi bi-arrow-repeat me-1 spinner"></i> Đang xử lý...
