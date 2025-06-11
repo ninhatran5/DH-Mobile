@@ -11,6 +11,7 @@ import { perPage } from "../../utils/consts";
 export default function Blogs({
   showHeader = true,
   padding,
+  limit,
   showPagination = true,
 }) {
   const { t } = useTranslation();
@@ -53,9 +54,11 @@ export default function Blogs({
             </div>
           )}
           <div className="row">
-            {paginatedNews.map((item) => (
-              <News key={item.news_id} item={item} />
-            ))}
+            {(limit ? paginatedNews.slice(0, limit) : paginatedNews).map(
+              (item) => (
+                <News key={item.news_id} item={item} />
+              )
+            )}
           </div>
           {showPagination && totalPages > 1 && (
             <Pagination

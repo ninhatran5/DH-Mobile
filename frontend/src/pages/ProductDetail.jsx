@@ -297,6 +297,26 @@ const ProductDetail = () => {
     }
   }, [dispatch, products]);
 
+  useEffect(() => {
+    if (variants.length > 0) {
+      const defaultVariant = variants[0];
+      const defaultOptions = {};
+      defaultVariant.attributes.forEach((attr) => {
+        if (
+          attr.attribute_id &&
+          Array.isArray(attr.values) &&
+          attr.values.length > 0
+        ) {
+          defaultOptions[attr.attribute_id] = attr.values[0].value_id;
+        }
+      });
+      setSelectedOptions(defaultOptions);
+    } else {
+      // Nếu không có biến thể, xóa lựa chọn cũ
+      setSelectedOptions({});
+    }
+  }, [id, variants]);
+
   const relatedProducts = useMemo(() => {
     if (!productDetails.data || !productDetails.data.category_id) return [];
     return products.filter(
@@ -436,7 +456,7 @@ const ProductDetail = () => {
               <p className="text-muted">
                 {t("productDetail.quantity")}:{" "}
                 <span className="fw-bold me-1">
-                  {selectedVariant?.stock ?? ""}
+                  {selectedVariant?.stock ?? 0}
                 </span>
                 {t("productDetail.product")}
               </p>
