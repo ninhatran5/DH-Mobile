@@ -12,8 +12,6 @@ function AddValuePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  console.log("Received attribute:", { attribute_id, name });
-
   const { loading } = useSelector((state) => state.attributeValue);
 
   const handleSubmit = async (e) => {
@@ -37,29 +35,38 @@ function AddValuePage() {
   };
 
   return (
-    <div className="adminattributes">
-      <h1>Thêm giá trị mới cho thuộc tính: <span style={{color: '#007bff', fontWeight: 'bold'}}>{name}</span></h1>
-      {error && <p className="error" style={{color: 'red'}}>{error}</p>}
+    <div className="adminaddattributevalues-container">
+      <h1 className="adminaddattributevalues-title">
+        Thêm giá trị mới cho thuộc tính:{" "}
+        <span className="adminaddattributevalues-highlight">{name}</span>
+      </h1>
 
-      <form onSubmit={handleSubmit}>
-        <div className="attribute-row">
-          <label className="attribute-label">Giá trị:</label>
+      {error && (
+        <p className="adminaddattributevalues-error">{error}</p>
+      )}
+
+      <form onSubmit={handleSubmit} className="adminaddattributevalues-form">
+        <div className="adminaddattributevalues-row">
+          <label className="adminaddattributevalues-label">Giá trị:</label>
           <input
             type="text"
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            className="attribute-data"
-            style={{ flex: "1", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
+            className="adminaddattributevalues-input"
           />
         </div>
 
-        <div className="action-buttons" style={{ marginTop: "16px" }}>
-          <button type="submit" className="btn-add" disabled={loading}>
+        <div className="adminaddattributevalues-buttons">
+          <button
+            type="submit"
+            className="adminaddattributevalues-submit"
+            disabled={loading}
+          >
             {loading ? "Đang thêm..." : "Thêm Value"}
           </button>
           <button
             type="button"
-            className="btn-delete"
+            className="adminaddattributevalues-cancel"
             onClick={() => navigate("/admin/attribute")}
           >
             Hủy

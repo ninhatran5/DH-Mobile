@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { addUser } from '../../slices/adminuserSlice';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
-
+import '../../assets/admin/AddAccount.css';
 const AddAccount = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -26,7 +26,6 @@ const AddAccount = () => {
     password: ''
   });
 
-  const [errors, setErrors] = useState({});
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [provinces, setProvinces] = useState([]);
@@ -122,24 +121,8 @@ const AddAccount = () => {
     }
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.username.trim()) newErrors.username = 'Tên đăng nhập là bắt buộc';
-    if (!formData.email.trim()) newErrors.email = 'Email là bắt buộc';
-    if (!formData.password) newErrors.password = 'Mật khẩu là bắt buộc';
-    if (!formData.phone.trim()) newErrors.phone = 'Số điện thoại là bắt buộc';
-    if (!formData.address.trim()) newErrors.address = 'Địa chỉ là bắt buộc';
-    if (!formData.full_name.trim()) newErrors.full_name = 'Họ tên là bắt buộc';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) {
-      toast.error("Vui lòng kiểm tra lại các trường bắt buộc.");
-      return;
-    }
 
     setLoading(true);
 
@@ -165,139 +148,120 @@ const AddAccount = () => {
   };
 
   return (
-    <Container fluid className="AdminAcccount">
-      <Card className="shadow">
-        <Card.Header className="bg-white">
-          <h4 className="AdminAcccount">Thêm Tài Khoản Mới</h4>
+    <Container fluid className="admin-add-account-container">
+      <Card className="admin-add-account-shadow">
+        <Card.Header className="admin-add-account-bg-white">
+          <h4 className="admin-add-account-title">Thêm Tài Khoản Mới</h4>
         </Card.Header>
         <Card.Body>
-          <Form onSubmit={handleSubmit}>
+          <Form onSubmit={handleSubmit} className="admin-add-account-form">
             <Row>
-              <Col md={8}>
+              <Col md={8} className="admin-add-account-left">
                 <Row>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Tên đăng nhập <span className="text-danger">*</span></Form.Label>
+                  <Col md={6} className="admin-add-account-col">
+                    <Form.Group className="admin-add-account-group mb-3">
+                      <Form.Label className="admin-add-account-label">Tên đăng nhập <span className="admin-add-account-required text-danger">*</span></Form.Label>
                       <Form.Control
                         type="text"
                         name="username"
                         value={formData.username}
                         onChange={handleInputChange}
                         placeholder="Nhập tên đăng nhập"
-                        isInvalid={!!errors.username}
+                        className="admin-add-account-input"
                       />
-                      <Form.Control.Feedback type="invalid">
-                        {errors.username}
-                      </Form.Control.Feedback>
                     </Form.Group>
                   </Col>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Email <span className="text-danger">*</span></Form.Label>
+                  <Col md={6} className="admin-add-account-col">
+                    <Form.Group className="admin-add-account-group mb-3">
+                      <Form.Label className="admin-add-account-label">Email <span className="admin-add-account-required text-danger">*</span></Form.Label>
                       <Form.Control
                         type="email"
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
                         placeholder="Nhập địa chỉ email"
-                        isInvalid={!!errors.email}
+                        className="admin-add-account-input"
                       />
-                      <Form.Control.Feedback type="invalid">
-                        {errors.email}
-                      </Form.Control.Feedback>
                     </Form.Group>
                   </Col>
                 </Row>
 
                 <Row>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Mật khẩu <span className="text-danger">*</span></Form.Label>
-                      <div className="input-group">
+                  <Col md={6} className="admin-add-account-col">
+                    <Form.Group className="admin-add-account-group mb-3">
+                      <Form.Label className="admin-add-account-label">Mật khẩu <span className="admin-add-account-required text-danger">*</span></Form.Label>
+                      <div className="input-group admin-add-account-input-group">
                         <Form.Control
                           type={showPassword ? "text" : "password"}
                           name="password"
                           value={formData.password}
                           onChange={handleInputChange}
                           placeholder="Nhập mật khẩu"
-                          className="form-control-lg"
-                          isInvalid={!!errors.password}
+                          className="form-control-lg admin-add-account-input"
                         />
                         <Button
                           variant="outline-secondary"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="btn-lg"
+                          className="btn-lg admin-add-account-btn-eye"
                           style={{ borderLeft: 'none' }}
                         >
                           <i className={`bi bi-eye${showPassword ? '-slash' : ''}`}></i>
                         </Button>
-                        <Form.Control.Feedback type="invalid">
-                          {errors.password}
-                        </Form.Control.Feedback>
                       </div>
                     </Form.Group>
                   </Col>
                 </Row>
 
                 <Row>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-  <Form.Label>Họ tên <span className="text-danger">*</span></Form.Label>
-  <Form.Control
-    type="text"
-    name="full_name"
-    value={formData.full_name}
-    onChange={handleInputChange}
-    placeholder="Nhập họ và tên"
-    isInvalid={!!errors.full_name}
-  />
-  <Form.Control.Feedback type="invalid">
-    {errors.full_name}
-  </Form.Control.Feedback>
-</Form.Group>
-
+                  <Col md={6} className="admin-add-account-col">
+                    <Form.Group className="admin-add-account-group mb-3">
+                      <Form.Label className="admin-add-account-label">Họ tên <span className="admin-add-account-required text-danger">*</span></Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="full_name"
+                        value={formData.full_name}
+                        onChange={handleInputChange}
+                        placeholder="Nhập họ và tên"
+                        className="admin-add-account-input"
+                      />
+                    </Form.Group>
                   </Col>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Số điện thoại <span className="text-danger">*</span></Form.Label>
+                  <Col md={6} className="admin-add-account-col">
+                    <Form.Group className="admin-add-account-group mb-3">
+                      <Form.Label className="admin-add-account-label">Số điện thoại <span className="admin-add-account-required text-danger">*</span></Form.Label>
                       <Form.Control
                         type="tel"
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
                         placeholder="Nhập số điện thoại"
-                        isInvalid={!!errors.phone}
+                        className="admin-add-account-input"
                       />
-                      <Form.Control.Feedback type="invalid">
-                        {errors.phone}
-                      </Form.Control.Feedback>
                     </Form.Group>
                   </Col>
                 </Row>
 
                 <Row>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Địa chỉ <span className="text-danger">*</span></Form.Label>
+                  <Col md={6} className="admin-add-account-col">
+                    <Form.Group className="admin-add-account-group mb-3">
+                      <Form.Label className="admin-add-account-label">Địa chỉ <span className="admin-add-account-required text-danger">*</span></Form.Label>
                       <Form.Control
                         type="text"
                         name="address"
                         value={formData.address}
                         onChange={handleInputChange}
                         placeholder="Nhập địa chỉ chi tiết"
-                        isInvalid={!!errors.address}
+                        className="admin-add-account-input"
                       />
-                      <Form.Control.Feedback type="invalid">
-                        {errors.address}
-                      </Form.Control.Feedback>
                     </Form.Group>
                   </Col>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Tỉnh/Thành phố</Form.Label>
+                  <Col md={6} className="admin-add-account-col">
+                    <Form.Group className="admin-add-account-group mb-3">
+                      <Form.Label className="admin-add-account-label">Tỉnh/Thành phố</Form.Label>
                       <Form.Select
                         value={selectedProvince}
                         onChange={(e) => setSelectedProvince(e.target.value)}
+                        className="admin-add-account-select"
                       >
                         <option value="">Chọn Tỉnh/Thành phố</option>
                         {provinces.map(province => (
@@ -311,13 +275,14 @@ const AddAccount = () => {
                 </Row>
 
                 <Row>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Quận/Huyện</Form.Label>
+                  <Col md={6} className="admin-add-account-col">
+                    <Form.Group className="admin-add-account-group mb-3">
+                      <Form.Label className="admin-add-account-label">Quận/Huyện</Form.Label>
                       <Form.Select
                         value={selectedDistrict}
                         onChange={(e) => setSelectedDistrict(e.target.value)}
                         disabled={!selectedProvince}
+                        className="admin-add-account-select"
                       >
                         <option value="">Chọn Quận/Huyện</option>
                         {districts.map(district => (
@@ -328,13 +293,14 @@ const AddAccount = () => {
                       </Form.Select>
                     </Form.Group>
                   </Col>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Phường/Xã</Form.Label>
+                  <Col md={6} className="admin-add-account-col">
+                    <Form.Group className="admin-add-account-group mb-3">
+                      <Form.Label className="admin-add-account-label">Phường/Xã</Form.Label>
                       <Form.Select
                         value={selectedWard}
                         onChange={(e) => setSelectedWard(e.target.value)}
                         disabled={!selectedDistrict}
+                        className="admin-add-account-select"
                       >
                         <option value="">Chọn Phường/Xã</option>
                         {wards.map(ward => (
@@ -348,14 +314,14 @@ const AddAccount = () => {
                 </Row>
 
                 <Row>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Vai trò</Form.Label>
+                  <Col md={6} className="admin-add-account-col">
+                    <Form.Group className="admin-add-account-group mb-3">
+                      <Form.Label className="admin-add-account-label">Vai trò</Form.Label>
                       <Form.Select
                         name="role"
                         value={formData.role}
                         onChange={handleInputChange}
-                        className="form-select-lg"
+                        className="form-select-lg admin-add-account-select"
                       >
                         <option value="">Chọn vai trò</option>
                         <option value="customer">Khách hàng</option>
@@ -366,13 +332,14 @@ const AddAccount = () => {
                       </Form.Select>
                     </Form.Group>
                   </Col>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Trạng thái</Form.Label>
+                  <Col md={6} className="admin-add-account-col">
+                    <Form.Group className="admin-add-account-group mb-3">
+                      <Form.Label className="admin-add-account-label">Trạng thái</Form.Label>
                       <Form.Select
                         name="status"
                         value={formData.status}
                         onChange={handleInputChange}
+                        className="admin-add-account-select"
                       >
                         <option value="active">Hoạt động</option>
                         <option value="inactive">Không hoạt động</option>
@@ -383,20 +350,20 @@ const AddAccount = () => {
                 </Row>
               </Col>
 
-              <Col md={4}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Ảnh đại diện</Form.Label>
-                  <div className="image-upload-container">
-                    <div className="image-preview-container mb-3">
+              <Col md={4} className="admin-add-account-right">
+                <Form.Group className="admin-add-account-group mb-3">
+                  <Form.Label className="admin-add-account-label">Ảnh đại diện</Form.Label>
+                  <div className="admin-add-account-image-upload-container">
+                    <div className="admin-add-account-image-preview-container mb-3">
                       {imagePreview ? (
                         <img
                           src={imagePreview}
                           alt="Preview"
-                          className="img-thumbnail"
+                          className="img-thumbnail admin-add-account-img-thumbnail"
                           style={{ maxHeight: '200px', width: 'auto' }}
                         />
                       ) : (
-                        <div className="image-placeholder">
+                        <div className="admin-add-account-image-placeholder">
                           <i className="bi bi-person" style={{ fontSize: '2rem' }}></i>
                           <p>Chọn ảnh đại diện</p>
                         </div>
@@ -406,7 +373,7 @@ const AddAccount = () => {
                       type="file"
                       accept="image/*"
                       onChange={handleAvatarChange}
-                      className="mb-2"
+                      className="mb-2 admin-add-account-input-file"
                     />
                     <small className="text-muted">Định dạng: JPG, PNG. Tối đa 2MB</small>
                   </div>
@@ -414,11 +381,11 @@ const AddAccount = () => {
               </Col>
             </Row>
 
-            <div className="d-flex justify-content-end gap-2 mt-4">
-              <Button variant="secondary" type="button" onClick={() => navigate('/admin/accounts')}>
+            <div className="d-flex justify-content-end gap-2 mt-4 admin-add-account-actions">
+              <Button variant="secondary" type="button" onClick={() => navigate('/admin/accounts')} className="admin-add-account-cancel-btn">
                 Hủy
               </Button>
-              <Button variant="primary" type="submit" disabled={loading}>
+              <Button variant="primary" type="submit" disabled={loading} className="admin-add-account-submit-btn">
                 {loading ? (
                   <>
                     <i className="bi bi-arrow-repeat me-1 spinner"></i> Đang xử lý...

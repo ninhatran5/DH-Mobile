@@ -151,58 +151,58 @@ const UpdateUser = () => {
   };
 
   return (
-    <div className="update-user-container">
-      <h2>Cập nhật người dùng</h2>
+    <div className="admin-edit-account-container">
+      <h2 className="admin-edit-account-title">Cập nhật người dùng</h2>
       {loading && <p>Đang tải...</p>}
       {error && <p>{error}</p>}
 
-      <form onSubmit={handleSubmit} className="update-user-form-horizontal">
-        <div className="form-section">
-          <div className="form-grid">
+      <form onSubmit={handleSubmit} className="admin-edit-account-form-horizontal">
+        <div className="admin-edit-account-section">
+          <div className="admin-edit-account-grid">
             <div>
-              <label>Tên tài khoản</label>
-              <input type="text" name="username" value={formData.username} onChange={handleChange} />
+              <label className="admin-edit-account-label">Tên tài khoản</label>
+              <input type="text" name="username" value={formData.username} onChange={handleChange} className="admin-edit-account-input" />
 
-              <label>Email</label>
-              <input type="email" name="email" value={formData.email} onChange={handleChange} />
+              <label className="admin-edit-account-label">Email</label>
+              <input type="email" name="email" value={formData.email} onChange={handleChange} className="admin-edit-account-input" />
 
-              <label>Họ tên</label>
-              <input type="text" name="full_name" value={formData.full_name} onChange={handleChange} />
+              <label className="admin-edit-account-label">Họ tên</label>
+              <input type="text" name="full_name" value={formData.full_name} onChange={handleChange} className="admin-edit-account-input" />
 
-              <label>Số điện thoại</label>
-              <input type="text" name="phone" value={formData.phone} onChange={handleChange} />
+              <label className="admin-edit-account-label">Số điện thoại</label>
+              <input type="text" name="phone" value={formData.phone} onChange={handleChange} className="admin-edit-account-input" />
 
-              <label>Địa chỉ</label>
-              <input type="text" name="address" value={formData.address} onChange={handleChange} />
+              <label className="admin-edit-account-label">Địa chỉ</label>
+              <input type="text" name="address" value={formData.address} onChange={handleChange} className="admin-edit-account-input" />
             </div>
 
             <div>
-              <label>Thành phố</label>
-              <select name="city" value={formData.city} onChange={handleChange}>
+              <label className="admin-edit-account-label">Thành phố</label>
+              <select name="city" value={formData.city} onChange={handleChange} className="admin-edit-account-select">
                 <option value="">-- Chọn thành phố --</option>
                 {cities.map((city) => (
                   <option key={city.code} value={city.name}>{city.name}</option>
                 ))}
               </select>
 
-              <label>Quận</label>
-              <select name="district" value={formData.district} onChange={handleChange}>
+              <label className="admin-edit-account-label">Quận</label>
+              <select name="district" value={formData.district} onChange={handleChange} className="admin-edit-account-select">
                 <option value="">-- Chọn quận --</option>
                 {districts.map((d) => (
                   <option key={d.code} value={d.name}>{d.name}</option>
                 ))}
               </select>
 
-              <label>Phường</label>
-              <select name="ward" value={formData.ward} onChange={handleChange}>
+              <label className="admin-edit-account-label">Phường</label>
+              <select name="ward" value={formData.ward} onChange={handleChange} className="admin-edit-account-select">
                 <option value="">-- Chọn phường --</option>
                 {wards.map((w) => (
                   <option key={w.code} value={w.name}>{w.name}</option>
                 ))}
               </select>
 
-              <label>Vai trò</label>
-              <select name="role" value={formData.role} onChange={handleChange}>
+              <label className="admin-edit-account-label">Vai trò</label>
+              <select name="role" value={formData.role} onChange={handleChange} className="admin-edit-account-select">
                 <option value="">-- Chọn vai trò --</option>
                 <option value="customer">Khách hàng</option>
                 <option value="admin">Quản trị viên</option>
@@ -212,22 +212,31 @@ const UpdateUser = () => {
               </select>
             </div>
 
-            <div className="image-upload">
-              <label>Ảnh đại diện</label>
-              <input type="file" accept="image/*" onChange={handleImageChange} />
-              {imagePreview && <img src={imagePreview} alt="Preview" className="image-preview" />}
+            <div className="admin-edit-account-image-upload">
+              <label className="admin-edit-account-label">Ảnh đại diện</label>
+              <input type="file" accept="image/*" onChange={handleImageChange} className="admin-edit-account-input-file" />
+              {imagePreview && <img src={imagePreview} alt="Preview" className="admin-edit-account-image-preview" />}
             </div>
           </div>
         </div>
 
-        <div className="form-buttons">
-          <button type="submit" disabled={loading}>
+        <div className="admin-edit-account-form-buttons">
+          <button
+            type="button"
+            className="admin-edit-account-btn-cancel"
+            onClick={() => navigate('/admin/accounts')}
+          >
+            Hủy
+          </button>
+          <button type="submit" className="admin-edit-account-btn-submit" disabled={loading}>
             {loading ? "Đang cập nhật..." : "Cập nhật"}
           </button>
         </div>
+
       </form>
     </div>
   );
 };
 
 export default UpdateUser;
+

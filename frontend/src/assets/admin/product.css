@@ -5,10 +5,11 @@
   border-radius: var(--admin_dh-radius);
   box-shadow: var(--admin_dh-box-shadow);
   border: 1px solid var(--admin_dh-border);
-  padding: var(--admin_dh-spacing-xl);
-  margin-bottom: var(--admin_dh-spacing-lg);
+  padding: var(--admin_dh-spacing-md);
+margin-bottom: var(--admin_dh-spacing-md);
+
   transition: var(--admin_dh-transition);
-  max-width: 1400px;
+  max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -167,7 +168,6 @@
   background-color: var(--admin_dh-primary);
 }
 
-/* List View */
 .admin_dh-product-list {
   border: 1px solid var(--admin_dh-border);
   border-radius: var(--admin_dh-radius-sm);
@@ -310,6 +310,7 @@ tr:hover .admin_dh-product-name {
 .admin_dh-product-price {
   font-weight: 500;
   color: var(--admin_dh-text);
+  font-size: 12px;
 }
 
 .admin_dh-product-stock {
