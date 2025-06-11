@@ -1,25 +1,68 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { TbExchange } from "react-icons/tb";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { fetchProfile } from "../slices/profileSlice";
 import Loading from "../components/Loading";
 // import { fetchCart } from "../slices/cartSlice";
 import numberFormat from "../../utils/numberFormat";
+import { fetchVnpayCheckout } from "../slices/checkOutSlice";
 
 const CheckOut = () => {
+  const [paymentMethod, setPaymentMethod] = useState("cod");
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { profile, loading } = useSelector((state) => state.profile);
   const location = useLocation();
   const selectedItems = location.state?.selectedItems || [];
+  const navigate = useNavigate();
 
   const totalPrice = selectedItems.reduce(
     (sum, item) => sum + item.quantity * item?.variant?.product?.price,
     0
   );
+
+  const handleCheckOutCOD = (event) => {
+    setPaymentMethod(event.target.value);
+  };
+
+  const handleCheckOutVNPAY = (event) => {
+    setPaymentMethod(event.target.value);
+  };
+
+  const handleCheckout = async (e) => {
+    e.preventDefault();
+    if (paymentMethod === "cod") {
+      navigate("/thank-you");
+      return;
+    }
+    if (paymentMethod === "vnpay") {
+      try {
+        const actionResult = await dispatch(
+          fetchVnpayCheckout({
+            user_id: profile.user.id,
+            items: selectedItems.map((item) => ({
+              variant_id: item.variant.id,
+              quantity: item.quantity,
+            })),
+            total_amount: totalPrice,
+          })
+        );
+
+        const result = actionResult.payload;
+        if (result && result.payment_url) {
+          window.location.href = result.payment_url;
+        } else {
+          console.error("Không có URL VNPAY trả về");
+        }
+      } catch (err) {
+        console.error("Thanh toán VNPAY thất bại", err);
+      }
+    }
+  };
+
   useEffect(() => {
     dispatch(fetchProfile());
   }, [dispatch]);
@@ -152,7 +195,14 @@ const CheckOut = () => {
                         <h4 className="checkout-text">
                           {t("checkout.payOnDelivery")}
                         </h4>
-                        <input type="radio" name="checkout" id="acc" />
+                        <input
+                          type="radio"
+                          name="checkout"
+                          id="acc"
+                          value="cod"
+                          checked={paymentMethod === "cod"}
+                          onChange={handleCheckOutCOD}
+                        />
                         <span className="checkmark" />
                       </label>
                     </div>
@@ -161,7 +211,14 @@ const CheckOut = () => {
                         <h4 className="checkout-text">
                           {t("checkout.payViaVNPAY")}
                         </h4>
-                        <input type="radio" name="checkout" id="vnpay" />
+                        <input
+                          type="radio"
+                          name="checkout"
+                          id="vnpay"
+                          value={"vnpay"}
+                          onChange={handleCheckOutVNPAY}
+                          checked={paymentMethod === "vnpay"}
+                        />
                         <span className="checkmark" />
                       </label>
                     </div>
@@ -259,11 +316,9 @@ const CheckOut = () => {
                         <span>{numberFormat(totalPrice)}</span>
                       </li>
                     </ul>
-                    <Link to={"/thank-you"}>
-                      <button className="site-btn">
-                        {t("checkout.payNow")}
-                      </button>
-                    </Link>
+                    <button className="site-btn" onClick={handleCheckout}>
+                      {t("checkout.payNow")}
+                    </button>
                   </div>
                 </div>
               </div>
