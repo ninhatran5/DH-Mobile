@@ -19,6 +19,7 @@ import { fetchBanners } from "../slices/homeSlice";
 import { fetchListFavorite } from "../slices/favoriteProductsSlice";
 import { fetchProducts } from "../slices/productSlice";
 import { fetchCategory } from "../slices/categorySlice";
+import { fetchViewProduct } from "../slices/viewProductSlice";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -29,6 +30,8 @@ const Home = () => {
   const { banners } = useSelector((state) => state.home);
   const { products, loading } = useSelector((state) => state.product);
   const { categorys } = useSelector((state) => state.categorys);
+  const { listViewProduct } = useSelector((state) => state.viewProduct);
+  const userId = localStorage.getItem("userID");
 
   const sliderBanner = banners.filter((banner) =>
     banner.title.includes("Slider")
@@ -43,7 +46,8 @@ const Home = () => {
     dispatch(fetchBanners());
     dispatch(fetchProducts());
     dispatch(fetchCategory());
-  }, [dispatch]);
+    dispatch(fetchViewProduct(userId));
+  }, [dispatch, userId]);
 
   const convertPriceToNumber = (priceString) => {
     if (!priceString || typeof priceString !== "string") return 0;
@@ -371,6 +375,15 @@ const Home = () => {
         </div>
       </section>
 
+      {listViewProduct && listViewProduct.length > 0 && (
+        <ListProductCard
+          title={t("home.viewProduct")}
+          desc={t("home.viewAll")}
+          gotoShop={null}
+          products={listViewProduct.map((view) => view.product)}
+        />
+      )}
+
       <Products
         title={t("home.featuredProducts")}
         showHeader={true}
@@ -384,6 +397,8 @@ const Home = () => {
 
       <ListProductCard
         title={t("home.bestSellingProducts")}
+        desc={t("home.goToShop")}
+        gotoShop={"/products"}
         products={products}
       />
 
