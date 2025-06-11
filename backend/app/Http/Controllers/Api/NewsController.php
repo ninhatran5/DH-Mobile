@@ -25,9 +25,13 @@ class NewsController extends Controller
         $news = news::with('user')->paginate(10);
         return response()->json([
             'message' => 'Lấy danh sách tin tức thành công',
-            'totalPage' =>  $news->lastPage(),
-            'currentPage' =>  $news->currentPage(),
-            'data' => $news,
+            'data' => $news->items(),
+            'meta' => [
+                'current_page' =>  $news->currentPage(),
+                'last_page' =>  $news->lastPage(),
+                'per_page' =>  $news->perPage(),
+                'total' =>  $news->total(),
+            ],
             'status' => 200,
         ])->setStatusCode(200, 'OK');
     }
