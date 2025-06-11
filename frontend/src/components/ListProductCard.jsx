@@ -4,11 +4,9 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import ProductCard from "./ProductsCard";
 
-export default function ListProductCard({ title, products }) {
-  const { t } = useTranslation();
+export default function ListProductCard({ title, products, desc, gotoShop }) {
   const [favorites, setFavorites] = useState([]);
 
   const convertPriceToNumber = (priceString) => {
@@ -37,11 +35,8 @@ export default function ListProductCard({ title, products }) {
             <div className="section-header d-flex flex-wrap justify-content-between my-5">
               <h2 className="section-title">{title}</h2>
               <div className="d-flex align-items-center">
-                <Link
-                  to={"/products"}
-                  className="btn-link text-decoration-none"
-                >
-                  {t("home.goToShop")}
+                <Link to={gotoShop} className="btn-link text-decoration-none">
+                  {desc}
                 </Link>
                 <div className="swiper-buttons">
                   <button className="category-carousel-prev btn btn-primary">

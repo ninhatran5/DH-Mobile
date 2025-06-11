@@ -15,13 +15,15 @@
     "servicesDailyDealsDesc": "New promotions every day just for you",
     "featuredProducts": "Featured Products",
     "goToShop": "Go to shop →",
+    "viewAll": "Browse to view →",
     "bestSellingProducts": "Featured Recommendations",
     "partners": "PARTNERS AND CUSTOMERS",
     "blog": "Blog",
     "seeAll": "See all →",
     "moblieTitle": "Explore the Mobile World at DH Mobile!",
     "relatedProducts": "Related products",
-    "moblieDesc": "Welcome to DH Mobile – the ideal destination for tech enthusiasts! We offer a diverse collection of smartphones from renowned brands like Samsung, Apple, Xiaomi, and more. With reasonable prices and dedicated service, we are committed to providing you with the best shopping experience. Download our app now to discover amazing deals and the latest products!"
+    "moblieDesc": "Welcome to DH Mobile – the ideal destination for tech enthusiasts! We offer a diverse collection of smartphones from renowned brands like Samsung, Apple, Xiaomi, and more. With reasonable prices and dedicated service, we are committed to providing you with the best shopping experience. Download our app now to discover amazing deals and the latest products!",
+    "viewProduct": "Viewed Products"
   },
   "header": {
     "home": "Home",

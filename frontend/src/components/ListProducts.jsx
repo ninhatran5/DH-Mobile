@@ -15,6 +15,7 @@ import "../assets/css/products.css";
 import { fetchCategory } from "../slices/categorySlice";
 import Pagination from "../components/Pagination";
 import { perPage } from "../../utils/consts";
+import { addViewProducts } from "../slices/viewProductSlice";
 
 // Filter helpers
 const filterByCategory = (products, selectedCategoryId) =>
@@ -532,7 +533,10 @@ export default function ListProducts({
                               discountPercent={discountPercent}
                               onClick={() => {
                                 dispatch(
-                                  addViewProducts(product.product_id, userId)
+                                  addViewProducts({
+                                    productId: product.product_id,
+                                    userId,
+                                  })
                                 );
                                 navigate(
                                   `/product-detail/${product.product_id}`

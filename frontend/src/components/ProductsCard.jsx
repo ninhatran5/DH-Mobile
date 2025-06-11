@@ -12,6 +12,7 @@ import {
   fetchListFavorite,
 } from "../slices/favoriteProductsSlice";
 import { fetchUpdateStatus } from "../slices/updateStatusSlice";
+import { addViewProducts } from "../slices/viewProductSlice";
 
 const ProductCard = ({ discountPercent, product }) => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ const ProductCard = ({ discountPercent, product }) => {
   const dispatch = useDispatch();
   const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
   const [favorite, setFavorite] = useState(product.favorite);
+  const userId = localStorage.getItem("userID");
 
   const handleUnFavorites = async () => {
     if (!checkLogin()) return;
@@ -31,10 +33,6 @@ const ProductCard = ({ discountPercent, product }) => {
     } catch (error) {
       toast.error(error?.message || t("products.errorRemovingFavorite"));
     }
-  };
-
-  const nextProductDetail = (id) => {
-    navigate(`/product-detail/${id}`);
   };
 
   const addToFavorites = async () => {
@@ -94,7 +92,15 @@ const ProductCard = ({ discountPercent, product }) => {
       <figure>
         <img
           style={{ cursor: "pointer" }}
-          onClick={() => nextProductDetail(product.product_id)}
+          onClick={() => {
+            dispatch(
+              addViewProducts({
+                productId: product.product_id,
+                userId,
+              })
+            );
+            navigate(`/product-detail/${product.product_id}`);
+          }}
           src={product.image_url}
           className="tab-image"
           alt={product.name}
@@ -104,7 +110,15 @@ const ProductCard = ({ discountPercent, product }) => {
 
       <h3
         style={{ cursor: "pointer" }}
-        onClick={() => nextProductDetail(product.product_id)}
+        onClick={() => {
+          dispatch(
+            addViewProducts({
+              productId: product.product_id,
+              userId,
+            })
+          );
+          navigate(`/product-detail/${product.product_id}`);
+        }}
       >
         {product.title || product.name}
       </h3>
