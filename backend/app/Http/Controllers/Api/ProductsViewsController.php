@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class ProductsViewsController extends Controller
 {
-        /**
+    /**
      * @OA\Post(
      *     path="/api/productsviews/addview",
      *     summary="Ghi nhận lượt xem sản phẩm",
@@ -28,22 +28,40 @@ class ProductsViewsController extends Controller
     // khi người dùng xem sản phẩm, sẽ lưu lại thông tin vào bảng products_views
     public function addview(Request $request)
     {
-        // kiểm tra dữ liệu đầu vào gửi lên frontend
         $validated = $request->validate([
             'product_id' => 'required|integer|exists:products,product_id',
-            'user_id' => 'nullable|integer|exists:users,user_id', // nếu bảng users dùng user_id, còn nếu là id thì để users,id
+            'user_id' => 'nullable|integer|exists:users,user_id',
         ]);
+
+        // kiểm tra nếu đã tồn tại lượt xem này
+        $exists = ProductsViews::where('product_id', $validated['product_id'])
+            ->when(isset($validated['user_id']), function ($query) use ($validated) {
+                return $query->where('user_id', $validated['user_id']);
+            }, function ($query) {
+                return $query->whereNull('user_id');
+            })
+            ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Recently viewed products !!!',
+            ], 409); // Conflict
+        }
+
         $view = ProductsViews::create([
             'user_id' => $validated['user_id'] ?? null,
             'product_id' => $validated['product_id'],
             'viewed_at' => now(),
         ]);
+
         return response()->json([
             'success' => true,
-            'message' => 'Product view recorded successfully',
+            'message' => 'Product view recorded successfully !',
             'data' => $view,
         ], 201);
     }
+
     // // lấy danh sách tất cả các sản phẩm đã xem của người dùng
     // public function getAllViews(Request $request)
     // {
@@ -55,7 +73,7 @@ class ProductsViewsController extends Controller
     //         'data' => $views,
     //     ], 200);
     // }
-        /**
+    /**
      * @OA\Delete(
      *     path="/api/productsviews/{view_id}",
      *     summary="Xóa một bản ghi lượt xem sản phẩm theo view_id",
@@ -108,7 +126,7 @@ class ProductsViewsController extends Controller
             'message' => 'xóa tất cả bản ghi thành công',
         ], 200);
     }
-        /**
+    /**
      * @OA\Get(
      *     path="/api/productsviews/user/{user_id}",
      *     summary="Lấy danh sách sản phẩm đã xem của người dùng theo user_id",
@@ -127,7 +145,7 @@ class ProductsViewsController extends Controller
     public function getViewsByUserId(Request $request, $user_id)
     {
         // kiểm tra xem user_id có tồn tại trong bảng users không
-        $views = ProductsViews::where('user_id', $user_id)->with(['user', 'product'])->orderBy('created_at','desc')->get();
+        $views = ProductsViews::where('user_id', $user_id)->with(['user', 'product'])->orderBy('created_at', 'desc')->get();
 
         if ($views->isEmpty()) {
             return response()->json([
