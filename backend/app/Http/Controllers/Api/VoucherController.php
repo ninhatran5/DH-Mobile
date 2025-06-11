@@ -21,13 +21,21 @@ class VoucherController extends Controller
      */
     public function index()
     {
-        $voucher = Voucher::paginate(10);
-        return response()->json([
-            'message' => 'lấy danh sách voucher thành công',
-            'totalPage' =>  $voucher->lastPage(),
-            'currentPage' =>  $voucher->currentPage(),
-            'data' => $voucher,
-            'status' => $voucher->currentPage() <= $voucher->lastPage() ? 200 : 'Hết trang',
+        $voucher = Voucher::where('is_active', 1)
+       ->orderBy('created_at', 'desc')->
+       paginate(10);
+        
+        
+    return response()->json([
+        'message' => 'lấy danh sách voucher thành công',
+        'data' =>  $voucher->items(), // chỉ lấy mảng data
+        'meta' => [
+            'current_page' =>  $voucher->currentPage(),
+            'last_page' =>  $voucher->lastPage(),
+            'per_page' =>  $voucher->perPage(),
+            'total' =>  $voucher->total(),
+        ],
+        'status' => 200
 
         ])->setStatusCode(200, 'OK',);
     }
