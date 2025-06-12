@@ -26,6 +26,22 @@ class OrderController extends Controller
         $cartItems = DB::table('cart_items')->where('cart_id', $cart->cart_id)->get();
         if ($cartItems->isEmpty()) return response()->json(['message' => 'Giỏ hàng trống'], 400);
 
-        
+        // Bắt đầu transaction để đảm bảo tính toàn vẹn dữ liệu
+        DB::beginTransaction();
+
+        try {
+            // Tạo đơn hàng mới với phương thức COD (method_id = 2)
+            $orderId = DB::table('orders')->insertGetId([
+                'user_id' => $user->user_id,
+                'method_id' => 2, // 2 = COD
+                'total_amount' => 0, // Tổng tiền sẽ được cập nhật sau
+                'status' => 'processing', // Trạng thái: đang xử lý
+                'payment_status' => 'unpaid', // Chưa thanh toán
+                'voucher_id' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } catch (\Throwable $th) {
+        }
     }
 }
