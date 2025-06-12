@@ -22,12 +22,12 @@ const ProductList = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    dispatch(fetchAdminProducts(currentPage));
+    dispatch(fetchAdminProducts());
     dispatch(fetchCategories());
     if (error) {
       toast.error(`Lỗi từ server: ${error}`);
     }
-  }, [dispatch, error, currentPage]);
+  }, [dispatch, error]);
 
   const handleSelectAll = (e) => {
     if (e.target.checked) {
@@ -75,6 +75,13 @@ const ProductList = () => {
     }
   };
 
+  const handleFilterChange = (filterType, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
+
   const getFilteredProducts = () => {
     return Array.isArray(adminproducts) 
       ? adminproducts.filter(product => {
@@ -82,14 +89,20 @@ const ProductList = () => {
           let priceMatch = true;
           const price = parseFloat(product.price);
           switch(filters.priceRange) {
-            case 'under500':
-              priceMatch = price < 500;
+            case 'under5m':
+              priceMatch = price < 5000000;
               break;
-            case '500to1000':
-              priceMatch = price >= 500 && price <= 1000;
+            case '5to10m':
+              priceMatch = price >= 5000000 && price < 10000000;
               break;
-            case 'over1000':
-              priceMatch = price > 1000;
+            case '10to20m':
+              priceMatch = price >= 10000000 && price < 20000000;
+              break;
+            case '20to30m':
+              priceMatch = price >= 20000000 && price < 30000000;
+              break;
+            case 'over30m':
+              priceMatch = price >= 30000000;
               break;
             default:
               priceMatch = true;
@@ -103,13 +116,6 @@ const ProductList = () => {
           return nameMatch && priceMatch && categoryMatch;
         })
       : [];
-  };
-
-  const handleFilterChange = (filterType, value) => {
-    setFilters(prev => ({
-      ...prev,
-      [filterType]: value
-    }));
   };
 
   const formatPrice = (value) => {
@@ -246,9 +252,11 @@ const ProductList = () => {
                 }}
               >
                 <option value="all">Tất cả</option>
-                <option value="under500">Dưới 500</option>
-                <option value="500to1000">500 - 1000</option>
-                <option value="over1000">Trên 1000</option>
+                <option value="under5m">Dưới 5 triệu</option>
+                <option value="5to10m">5 - 10 triệu</option>
+                <option value="10to20m">10 - 20 triệu</option>
+                <option value="20to30m">20 - 30 triệu</option>
+                <option value="over30m">Trên 30 triệu</option>
               </select>
             </div>
 
@@ -330,7 +338,7 @@ const ProductList = () => {
               </tr>
             </thead>
             <tbody>
-              {adminproducts.map((product) => (
+              {filteredProducts.map((product) => (
                 <tr key={product.product_id} className={selectedProducts.includes(product.product_id) ? 'selected' : ''}>
                   <td>
                     <input
