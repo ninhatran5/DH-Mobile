@@ -282,11 +282,17 @@
     "cart": "Giỏ hàng"
   },
   "thanksYou": {
-    "paymentSuccess": "Thanh toán thành công",
+    "paymentSuccess": "Thanh Toán Thành Công",
     "thankYouMessage": "Cảm ơn bạn đã đặt hàng tại cửa hàng của chúng tôi!",
     "thankYouMessage2": "Đơn hàng của bạn đã được xác nhận và sẽ sớm được giao đến bạn.",
     "backToHome": "Trở lại trang chủ",
     "trackOrder": "Theo dõi đơn hàng"
+  },
+  "paymentfailed": {
+    "paymentErrorr": "Thanh Toán Thất Bại",
+    "thankYouMessage": "Có lỗi xảy ra trong quá trình thanh toán",
+    "thankYouMessage2": "Vui lòng thử lại hoặc liên hệ hỗ trợ để được xử lý nhanh chóng",
+    "backToHome": "Trở lại trang chủ"
   },
   "profile": {
     "title": "Hồ Sơ Cá Nhân",
@@ -446,6 +452,8 @@
     "outOfStock": "Sản phẩm này không còn hàng",
     "overLimit": "Số lượng vượt quá giới hạn của sản phẩm",
     "invalidQuantity": "Số lượng không hợp lệ, vui lòng nhập lại",
-    "minQuantity": "Số lượng tối thiểu là 1"
+    "minQuantity": "Số lượng tối thiểu là 1",
+    "deleteSuccess": "Xóa khỏi giỏ hàng thành công",
+    "deleteError": "Xóa khỏi giỏ hàng thất bại"
   }
 }

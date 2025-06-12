@@ -450,6 +450,8 @@
     "outOfStock": "This product is out of stock",
     "overLimit": "The quantity exceeds the product limit",
     "invalidQuantity": "Invalid quantity, please enter again",
-    "minQuantity": "Minimum quantity is 1"
+    "minQuantity": "Minimum quantity is 1",
+    "deleteSuccess": "Removed from cart",
+    "deleteError": "Failed to remove from cart"
   }
 }
