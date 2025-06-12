@@ -689,3 +689,9 @@ tr:hover .admin_dh-product-name {
     grid-template-columns: 1fr;
   }
 }
+
+.admin_dh-product-price-large {
+  font-size: 1rem;
+  font-weight: 700;
+  white-space: nowrap;
+}

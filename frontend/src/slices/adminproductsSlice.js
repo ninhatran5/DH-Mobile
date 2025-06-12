@@ -5,19 +5,27 @@ const initialState = {
   adminproducts: [],
   loading: false,
   error: null,
+  totalPages: 1,
 };
 
 export const fetchAdminProducts = createAsyncThunk(
   "adminproduct/fetchAdminProducts",
-  async (_, { rejectWithValue }) => {
+  async (page = 1, { rejectWithValue }) => {
     try {
-      const res = await axiosConfig.get("/products");
-      return res.data.data;
+      const res = await axiosConfig.get(`/products?page=${page}`);
+
+      console.log('currentPage:', page, 'totalPages:', res.data.totalPages);
+
+      return {
+        products: res.data.data || [],
+        totalPages: res.data.totalPage || 1,
+      };
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Lỗi khi gọi API sản phẩm");
     }
   }
 );
+
 
 // Xóa sản phẩm
 export const deleteAdminProduct = createAsyncThunk(
@@ -91,7 +99,8 @@ const adminProductSlice = createSlice({
       })
       .addCase(fetchAdminProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.adminproducts = action.payload || [];
+        state.adminproducts = action.payload.products || [];
+        state.totalPages = action.payload.totalPages || 1;
         state.error = null;
       })
       .addCase(fetchAdminProducts.rejected, (state, action) => {

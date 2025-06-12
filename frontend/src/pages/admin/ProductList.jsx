@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 
 const ProductList = () => {
   const dispatch = useDispatch();
-  const { adminproducts, loading, error } = useSelector((state) => state.adminproduct);
+  const { adminproducts, loading, error, totalPages } = useSelector((state) => state.adminproduct);
   const { categories } = useSelector((state) => state.category);
 
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -19,14 +19,15 @@ const ProductList = () => {
     priceRange: 'all',
     category: 'all'
   });
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    dispatch(fetchAdminProducts());
+    dispatch(fetchAdminProducts(currentPage));
     dispatch(fetchCategories());
     if (error) {
       toast.error(`Lỗi từ server: ${error}`);
     }
-  }, [dispatch, error]);
+  }, [dispatch, error, currentPage]);
 
   const handleSelectAll = (e) => {
     if (e.target.checked) {
@@ -109,6 +110,11 @@ const ProductList = () => {
       ...prev,
       [filterType]: value
     }));
+  };
+
+  const formatPrice = (value) => {
+    if (!value) return '';
+    return new Intl.NumberFormat('vi-VN').format(Number(value));
   };
 
   const filteredProducts = getFilteredProducts();
@@ -299,7 +305,7 @@ const ProductList = () => {
           <div>Đang tải dữ liệu...</div>
         ) : error ? (
           <div style={{ color: 'red' }}>{error}</div>
-        ) : filteredProducts.length === 0 ? (
+        ) : adminproducts.length === 0 ? (
           <div>Không có sản phẩm phù hợp</div>
         ) : (
           <table className="admin_dh-product-table">
@@ -310,8 +316,8 @@ const ProductList = () => {
                     type="checkbox"
                     className="admin_dh-product-checkbox"
                     onChange={handleSelectAll}
-                    checked={selectedProducts.length === filteredProducts.length && filteredProducts.length > 0}
-                    indeterminate={selectedProducts.length > 0 && selectedProducts.length < filteredProducts.length ? "true" : undefined}
+                    checked={selectedProducts.length === adminproducts.length && adminproducts.length > 0}
+                    indeterminate={selectedProducts.length > 0 && selectedProducts.length < adminproducts.length ? "true" : undefined}
                   />
                 </th>
                 <th style={{ width: '80px' }}>Ảnh</th>
@@ -324,7 +330,7 @@ const ProductList = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredProducts.map((product) => (
+              {adminproducts.map((product) => (
                 <tr key={product.product_id} className={selectedProducts.includes(product.product_id) ? 'selected' : ''}>
                   <td>
                     <input
@@ -354,11 +360,11 @@ const ProductList = () => {
                     </div>
                   </td>
                   <td className="admin_dh-product-category">{product.category?.name || 'Không có danh mục'}</td>
-                  <td className="admin_dh-product-price" style={{ fontWeight: '500', color: 'var(--admin_dh-text)' }}>
-                    {product.price ? `${product.price} VNĐ` : 'Chưa cập nhật'}
+                  <td className="admin_dh-product-price admin_dh-product-price-large">
+                    {product.price ? `${formatPrice(product.price)} VNĐ` : 'Chưa cập nhật'}
                   </td>
-                  <td className="admin_dh-product-price" style={{ fontWeight: '500', color: 'var(--admin_dh-text)' }}>
-                    {product.price_original ? `${product.price_original} VNĐ` : 'Chưa cập nhật'}
+                  <td className="admin_dh-product-price admin_dh-product-price-large">
+                    {product.price_original ? `${formatPrice(product.price_original)} VNĐ` : 'Chưa cập nhật'}
                   </td>
                   
                   <td>{product.updated_at ? new Date(product.updated_at).toLocaleDateString() : 'N/A'}</td>
@@ -393,14 +399,25 @@ const ProductList = () => {
           </table>
         )}
       </div>
-
       <div className="admin_dh-pagination">
         <div className="admin_dh-pagination-info">
-          Hiển thị {filteredProducts.length} sản phẩm
+          Trang {currentPage} / {totalPages}
         </div>
+        {totalPages > 1 && (
+          <div className="admin_dh-pagination-controls">
+            <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
+              Trước
+            </button>
+            <span style={{ margin: '0 12px' }}>Trang {currentPage} / {totalPages}</span>
+            <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
+              Sau
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default ProductList;
+
