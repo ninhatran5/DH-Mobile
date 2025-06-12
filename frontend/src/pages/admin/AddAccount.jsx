@@ -35,6 +35,7 @@ const AddAccount = () => {
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
     const fetchProvinces = async () => {
@@ -106,9 +107,41 @@ const AddAccount = () => {
     }
   }, [selectedWard, wards]);
 
+  const validateField = (name, value) => {
+    let error = '';
+    if (name === 'username') {
+      if (!value.trim()) error = 'Tên đăng nhập là bắt buộc';
+      else if (value.length < 4) error = 'Tên đăng nhập phải từ 4 ký tự trở lên';
+    }
+    if (name === 'full_name') {
+      if (!value.trim()) error = 'Họ tên là bắt buộc';
+      else if (value.length < 2) error = 'Họ tên phải từ 2 ký tự trở lên';
+    }
+    if (name === 'phone') {
+      if (!value.trim()) error = 'Số điện thoại là bắt buộc';
+      else if (!/^\d{9,11}$/.test(value)) error = 'Số điện thoại phải từ 9-11 số';
+    }
+    if (name === 'address') {
+      if (!value.trim()) error = 'Địa chỉ là bắt buộc';
+    }
+    if (name === 'email') {
+      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+      if (!value.trim()) error = 'Email là bắt buộc';
+      else if (!emailRegex.test(value)) error = 'Email không hợp lệ!';
+    }
+    if (name === 'password') {
+      const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
+      if (!value) error = 'Mật khẩu là bắt buộc';
+      else if (!passwordRegex.test(value)) error = 'Mật khẩu phải từ 8-16 ký tự, có chữ hoa, chữ thường, số, ký tự đặc biệt và không chứa khoảng trắng!';
+    }
+    return error;
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    // Validate realtime
+    setFormErrors((prev) => ({ ...prev, [name]: validateField(name, value) }));
   };
 
   const handleAvatarChange = (e) => {
@@ -123,7 +156,14 @@ const AddAccount = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    const errors = {};
+    // Validate tất cả trường
+    Object.keys(formData).forEach((key) => {
+      const err = validateField(key, formData[key]);
+      if (err) errors[key] = err;
+    });
+    setFormErrors(errors);
+    if (Object.keys(errors).length > 0) return;
     setLoading(true);
 
     try {
@@ -169,6 +209,9 @@ const AddAccount = () => {
                         placeholder="Nhập tên đăng nhập"
                         className="admin-add-account-input"
                       />
+                      {formErrors.username && (
+                        <div style={{ color: 'red', fontSize: '0.95em', marginTop: 2 }}>{formErrors.username}</div>
+                      )}
                     </Form.Group>
                   </Col>
                   <Col md={6} className="admin-add-account-col">
@@ -179,9 +222,12 @@ const AddAccount = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        placeholder="Nhập địa chỉ email"
+                        placeholder="Nhập email hợp lệ, ví dụ: example@gmail.com"
                         className="admin-add-account-input"
                       />
+                      {formErrors.email && (
+                        <div style={{ color: 'red', fontSize: '0.95em', marginTop: 2 }}>{formErrors.email}</div>
+                      )}
                     </Form.Group>
                   </Col>
                 </Row>
@@ -208,6 +254,9 @@ const AddAccount = () => {
                           <i className={`bi bi-eye${showPassword ? '-slash' : ''}`}></i>
                         </Button>
                       </div>
+                      {formErrors.password && (
+                        <div style={{ color: 'red', fontSize: '0.95em', marginTop: 2 }}>{formErrors.password}</div>
+                      )}
                     </Form.Group>
                   </Col>
                 </Row>
@@ -224,6 +273,9 @@ const AddAccount = () => {
                         placeholder="Nhập họ và tên"
                         className="admin-add-account-input"
                       />
+                      {formErrors.full_name && (
+                        <div style={{ color: 'red', fontSize: '0.95em', marginTop: 2 }}>{formErrors.full_name}</div>
+                      )}
                     </Form.Group>
                   </Col>
                   <Col md={6} className="admin-add-account-col">
@@ -237,6 +289,9 @@ const AddAccount = () => {
                         placeholder="Nhập số điện thoại"
                         className="admin-add-account-input"
                       />
+                      {formErrors.phone && (
+                        <div style={{ color: 'red', fontSize: '0.95em', marginTop: 2 }}>{formErrors.phone}</div>
+                      )}
                     </Form.Group>
                   </Col>
                 </Row>
@@ -253,6 +308,9 @@ const AddAccount = () => {
                         placeholder="Nhập địa chỉ chi tiết"
                         className="admin-add-account-input"
                       />
+                      {formErrors.address && (
+                        <div style={{ color: 'red', fontSize: '0.95em', marginTop: 2 }}>{formErrors.address}</div>
+                      )}
                     </Form.Group>
                   </Col>
                   <Col md={6} className="admin-add-account-col">
