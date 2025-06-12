@@ -18,7 +18,7 @@ const ChangeCheckout = () => {
   const selectedItems = location.state?.selectedItems || [];
 
   const totalPrice = selectedItems.reduce(
-    (sum, item) => sum + item.quantity * item?.variant?.product?.price,
+    (sum, item) => sum + item.quantity * item?.variant?.price,
     0
   );
 
@@ -182,7 +182,6 @@ const ChangeCheckout = () => {
                     )}
                   </div>
 
-                  {/* Select Thành phố */}
                   <div className="checkout__input">
                     <p>
                       {t("checkout.city")}
@@ -325,14 +324,14 @@ const ChangeCheckout = () => {
 
                   <div style={{ marginTop: -30, width: "60%" }}>
                     <div className="checkout__input__checkbox">
-                      <label htmlFor="acc">
+                      <label htmlFor="cod">
                         <h4 className="checkout-text">
                           {t("checkout.payOnDelivery")}
                         </h4>
                         <input
                           type="radio"
                           name="paymentMethod"
-                          id="acc"
+                          id="cod"
                           value="cod"
                           {...register("paymentMethod", {
                             required: t("checkout.paymentMethodRequired"),
@@ -431,7 +430,7 @@ const ChangeCheckout = () => {
                                 )}
                               </div>
                               <p className="checkout_card_price">
-                                {numberFormat(item?.variant?.product?.price)}
+                                {numberFormat(item?.variant?.price)}
                               </p>
                             </div>
                             <div className="checkout_card_right">
@@ -440,7 +439,7 @@ const ChangeCheckout = () => {
                               </div>
                               <span className="checkout_card_total">
                                 {numberFormat(
-                                  item?.quantity * item?.variant?.product?.price
+                                  item?.quantity * item?.variant?.price
                                 )}
                               </span>
                             </div>

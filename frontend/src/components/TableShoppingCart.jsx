@@ -10,6 +10,7 @@ const TableShoppingCart = ({
   handleDecrease,
   handleChangeQuantity,
 }) => {
+  console.log("🚀 ~ item:", item);
   const navigate = useNavigate();
   const handleNextPageDetail = () => {
     navigate(`/product-detail/${item?.variant?.product_id}`);
@@ -61,7 +62,7 @@ const TableShoppingCart = ({
         {item?.variant?.attribute_values?.[1]?.value}
       </td>
       <td className="cart__price text-end">
-        {numberFomat(item?.quantity * item?.variant?.product?.price)}
+        {numberFomat(item?.quantity * item?.variant?.price)}
       </td>
       <td className="cart__close" style={{ cursor: "pointer" }}>
         <i style={{ marginLeft: 27 }}></i>

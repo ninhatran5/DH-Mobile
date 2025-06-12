@@ -453,19 +453,27 @@ const ProductDetail = () => {
               <h2 className="mb-3">{productDetails.data?.name}</h2>
               <div className="price">
                 <h4 className="text-price_sale">
-                  {numberFomat(selectedVariant?.price)}
+                  {numberFomat(
+                    selectedVariant?.price || productDetails?.data?.price
+                  )}
                 </h4>
                 <p className="text-price_original">
-                  {numberFomat(selectedVariant?.price_original)}
+                  {numberFomat(
+                    selectedVariant?.price_original ||
+                      productDetails?.data?.price_original
+                  )}
                 </p>
               </div>
-              <p className="text-muted">
-                {t("productDetail.quantity")}:{" "}
-                <span className="fw-bold me-1">
-                  {selectedVariant?.stock ?? 0}
-                </span>
-                {t("productDetail.product")}
-              </p>
+              {Object.keys(selectedOptions).length === allAttributes.length && (
+                <p className="text-muted">
+                  {t("productDetail.quantity")}:{" "}
+                  <span className="fw-bold me-1">
+                    {selectedVariant?.stock ?? 0}
+                  </span>
+                  {t("productDetail.product")}
+                </p>
+              )}
+
               <p className="text-muted">{productDetails.data?.description}</p>
             </div>
 
