@@ -76,7 +76,6 @@ const VariantDisplay = ({ variant, onEdit, onDelete, attributeValues }) => {
           )}
         </div>
 
-        {/* Thông tin cơ bản */}
         <div style={{ flex: "1" }}>
           <div style={{ 
             fontSize: "16px",
@@ -119,13 +118,11 @@ const VariantDisplay = ({ variant, onEdit, onDelete, attributeValues }) => {
             </div>
           </div>
 
-          {/* Thuộc tính */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <span style={{ color: "#666" }}>Thuộc tính:</span>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
               {variant.attributes && variant.attributes.length > 0 ? (
                 variant.attributes.map((attr) => {
-                  // Tìm attribute_id nếu chưa có
                   let attributeId = attr.attribute_id;
                   if (!attributeId) {
                     attributeId = Object.keys(attributeValues).find(id => {
@@ -133,9 +130,7 @@ const VariantDisplay = ({ variant, onEdit, onDelete, attributeValues }) => {
                       return arr && arr.length > 0 && arr[0].attribute && arr[0].attribute.name.toLowerCase() === attr.name.toLowerCase();
                     });
                   }
-                  // Lấy danh sách value cho thuộc tính này
                   const values = attributeValues[attributeId] || [];
-                  // Hiển thị tên thuộc tính và giá trị hiện tại, kèm danh sách value nếu muốn
                   return (
                     <span 
                       key={attr.value_id}
@@ -266,14 +261,12 @@ const AdminProductEdit = () => {
     if (!categories || categories.length === 0) {
       dispatch(fetchCategories());
     }
-    // Chỉ fetch variant attribute values
     dispatch(fetchVariantAttributeValues()).unwrap()
       .then(response => {
         console.log("Response từ API variants:", response);
       });
   }, [dispatch, adminproducts, categories]);
   
-  // Fetch attribute values khi component mount
   useEffect(() => {
     dispatch(fetchAttributeValues());
   }, [dispatch]);
@@ -462,11 +455,10 @@ const AdminProductEdit = () => {
       )}
 
       {!loading && !specsLoading && !categoriesLoading && !error && !specsError && !categoriesError && (
-        <div className="row g-3">
-          {/* Main product information column */}
+        <div className="row g-3 align-items-stretch">
           <div className="col-md-6">
-            <div className="card shadow-sm">
-              <div className="card-body">
+            <div className="card shadow-sm h-100">
+              <div className="card-body d-flex flex-column justify-content-between" style={{ padding: 18 }}>
                 <h4 className="card-title mb-4">Thông tin cơ bản</h4>
                 <form onSubmit={handleSubmit} className="admineditproduct-form">
                   {[
@@ -593,48 +585,63 @@ const AdminProductEdit = () => {
           {/* Thông số kỹ thuật section */}
           <div className="col-md-6">
             <div className="card shadow-sm h-100">
-              <div className="card-body">
-                <div className="d-flex justify-content-between align-items-center mb-4">
-                  <h4 className="card-title mb-0">Thông số kỹ thuật</h4>
+              <div
+                className="card-body d-flex flex-column"
+                style={{
+                  padding: 18,
+                  fontSize: 14,
+                  background: "#fafbfc",
+                  borderRadius: 10,
+                  minHeight: 0,
+                  height: "100%",
+                }}
+              >
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <h4 className="card-title mb-0" style={{ fontSize: 17 }}>Thông số kỹ thuật</h4>
                   <button
                     type="button"
-                    className="btn btn-primary"
+                    className="btn btn-primary btn-sm"
+                    style={{ fontSize: 17, padding: '4px 12px' }}
                     onClick={() => setShowAddSpecForm(!showAddSpecForm)}
                   >
                     <i className="bi bi-plus"></i> Thêm thông số
                   </button>
                 </div>
-
+                
+                <hr />
                 {/* Form thêm thông số mới */}
                 {showAddSpecForm && (
-                  <div className="add-spec-form mb-4 p-4 border rounded bg-light">
-                    <h5 className="mb-3">Thêm thông số mới</h5>
+                  <div className="add-spec-form mb-3 p-3 border rounded bg-light">
+                    <h5 className="mb-2" style={{ fontSize: 14 }}>Thêm thông số mới</h5>
                     <form onSubmit={handleAddSpecification}>
-                      <div className="mb-3">
-                        <label className="form-label">Tên thông số</label>
+                      <div className="mb-2">
+                        <label className="form-label" style={{ fontSize: 13 }}>Tên thông số</label>
                         <input
                           type="text"
-                          className="form-control form-control-lg mb-3"
+                          className="form-control form-control-sm mb-2"
+                          style={{ fontSize: 13, padding: '4px 8px', background: '#f6f8fa', border: '1px solid #e0e0e0', borderRadius: 6 }}
                           placeholder="Ví dụ: RAM, CPU, Màn hình..."
                           value={newSpec.spec_name}
                           onChange={(e) => setNewSpec(prev => ({ ...prev, spec_name: e.target.value }))}
                         />
-                        <label className="form-label">Giá trị</label>
+                        <label className="form-label" style={{ fontSize: 13 }}>Giá trị</label>
                         <input
                           type="text"
-                          className="form-control form-control-lg"
+                          className="form-control form-control-sm"
+                          style={{ fontSize: 13, padding: '4px 8px', background: '#f6f8fa', border: '1px solid #e0e0e0', borderRadius: 6 }}
                           placeholder="Nhập giá trị thông số"
                           value={newSpec.spec_value}
                           onChange={(e) => setNewSpec(prev => ({ ...prev, spec_value: e.target.value }))}
                         />
                       </div>
                       <div className="d-flex gap-2">
-                        <button type="submit" className="btn btn-success btn-lg">
-                          <i className="bi bi-check-lg"></i> Lưu thông số
+                        <button type="submit" className="btn btn-success btn-sm" style={{ fontSize: 13, padding: '4px 12px' }}>
+                          <i className="bi bi-check-lg"></i> Lưu
                         </button>
                         <button
                           type="button"
-                          className="btn btn-secondary btn-lg"
+                          className="btn btn-secondary btn-sm"
+                          style={{ fontSize: 13, padding: '4px 12px' }}
                           onClick={() => {
                             setShowAddSpecForm(false);
                             setNewSpec({ spec_name: "", spec_value: "" });
@@ -646,18 +653,27 @@ const AdminProductEdit = () => {
                     </form>
                   </div>
                 )}
-
                 <div className="specifications-container">
                   {specificationsData.map((spec, index) => (
                     <div
                       className="specification-row mb-3"
                       key={spec.spec_id || index}
+                      style={{
+                        background: "#fff",
+                        border: "1px solid #ececec",
+                        borderRadius: 8,
+                        padding: "12px 12px",
+                        marginBottom: 18,
+                        fontSize: 16,
+                      }}
                     >
-                      <div className="row g-2">
-                        <div className="col-md-5">
+                      <div className="row g-2 w-100">
+                        <div className="col-md-5 mb-2">
+                          <div style={{ fontWeight: 500, fontSize: 15, marginBottom: 4 }}>Tên thông số</div>
                           <input
                             type="text"
-                            className="form-control form-control-lg"
+                            className="form-control form-control-sm"
+                            style={{ fontSize: 15, padding: '6px 10px', background: '#f6f8fa', border: '1px solid #e0e0e0', borderRadius: 6 }}
                             placeholder="Tên thông số"
                             value={spec.spec_name || ""}
                             onChange={(e) =>
@@ -665,10 +681,12 @@ const AdminProductEdit = () => {
                             }
                           />
                         </div>
-                        <div className="col-md-5">
+                        <div className="col-md-5 mb-2">
+                          <div style={{ fontWeight: 500, fontSize: 15, marginBottom: 4 }}>Thông số kỹ thuật</div>
                           <input
                             type="text"
-                            className="form-control form-control-lg"
+                            className="form-control form-control-sm"
+                            style={{ fontSize: 15, padding: '6px 10px', background: '#f6f8fa', border: '1px solid #e0e0e0', borderRadius: 6 }}
                             placeholder="Giá trị"
                             value={spec.spec_value || ""}
                             onChange={(e) =>
@@ -676,35 +694,45 @@ const AdminProductEdit = () => {
                             }
                           />
                         </div>
-                        <div className="col-md-2">
+                        <div className="col-md-2 d-flex align-items-end justify-content-end">
                           <button
                             type="button"
-                            className="btn btn-danger btn-lg w-100"
+                            className="btn btn-danger btn-sm"
+                            style={{ fontSize: 15, padding: '6px 10px', borderRadius: 6, background: '#fff0f0', color: '#d32f2f', border: '1px solid #ffd6d6' }}
                             onClick={() => handleDeleteSpecification(spec.spec_id)}
                             disabled={!spec.spec_id}
                           >
-                            <i className="bi bi-trash"></i>
+                            <i className="bi bi-trash"> Xoá</i>
                           </button>
                         </div>
                       </div>
                     </div>
                   ))}
-                  
                   {specificationsData.length > 0 && (
-                    <div className="mt-4">
+                    <div className="mt-3">
                       <button
                         type="button"
                         onClick={handleUpdateSpecifications}
-                        className="btn btn-primary btn-lg w-100"
+                        className="btn btn-warning btn-sm w-100"
+                        style={{
+                          fontSize: 14,
+                          padding: "7px 0",
+                          borderRadius: 6,
+                          width: "100%",
+                          marginTop: 10,
+                          fontWeight: 500,
+                          background: "#ffe066",
+                          color: "#7c5c00",
+                          border: "1px solid #ffe066",
+                        }}
                       >
                         <i className="bi bi-save"></i> Cập nhật tất cả thông số kỹ thuật
                       </button>
                     </div>
                   )}
-
                   {specificationsData.length === 0 && (
-                    <div className="text-center py-5 text-muted">
-                      <i className="bi bi-clipboard-data" style={{ fontSize: "2rem" }}></i>
+                    <div className="text-center py-4 text-muted" style={{ fontSize: 13 }}>
+                      <i className="bi bi-clipboard-data" style={{ fontSize: "1.3rem" }}></i>
                       <p className="mt-2">Chưa có thông số kỹ thuật nào. Hãy thêm thông số mới!</p>
                     </div>
                   )}
