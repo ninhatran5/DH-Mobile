@@ -28,9 +28,9 @@ const ChangeCheckout = () => {
     0
   );
 
-  const [selectedCityCode, setSelectedCityCode] = useState(null);
-  const [selectedDistrictCode, setSelectedDistrictCode] = useState(null);
-  const [selectedWardCode, setSelectedWardCode] = useState(null);
+  const [selectedCityName, setSelectedCityName] = useState("");
+  const [selectedDistrictName, setSelectedDistrictName] = useState("");
+  const [selectedWardName, setSelectedWardName] = useState("");
 
   const {
     register,
@@ -54,34 +54,29 @@ const ChangeCheckout = () => {
 
   const paymentMethod = watch("paymentMethod");
 
-  useEffect(() => {
-    dispatch(fetchCart());
-    dispatch(fetchAddress());
-  }, [dispatch]);
-
-  const selectedCity = data.find((city) => city.code === selectedCityCode);
+  const selectedCity = data.find((city) => city.name === selectedCityName);
   const filteredDistricts = selectedCity?.districts || [];
   const selectedDistrict = filteredDistricts.find(
-    (district) => district.code === selectedDistrictCode
+    (district) => district.name === selectedDistrictName
   );
   const filteredWards = selectedDistrict?.wards || [];
 
   useEffect(() => {
-    setValue("city", selectedCityCode || "");
-    setValue("district", selectedDistrictCode || "");
-    setValue("ward", selectedWardCode || "");
-  }, [selectedCityCode, selectedDistrictCode, selectedWardCode, setValue]);
+    setValue("city", selectedCityName);
+    setValue("district", selectedDistrictName);
+    setValue("ward", selectedWardName);
+  }, [selectedCityName, selectedDistrictName, selectedWardName, setValue]);
 
   const onSubmit = async (formData) => {
-    const cityName =
-      data.find((city) => city.code === Number(formData.city))?.name || "";
-    const districtName =
-      filteredDistricts.find(
-        (district) => district.code === Number(formData.district)
-      )?.name || "";
-    const wardName =
-      filteredWards.find((ward) => ward.code === Number(formData.ward))?.name ||
-      "";
+    // const cityName =
+    //   data.find((city) => city.code === Number(formData.city))?.name || "";
+    // const districtName =
+    //   filteredDistricts.find(
+    //     (district) => district.code === Number(formData.district)
+    //   )?.name || "";
+    // const wardName =
+    //   filteredWards.find((ward) => ward.code === Number(formData.ward))?.name ||
+    //   "";
 
     if (paymentMethod === "cod") {
       navigate("/thank-you");
@@ -94,16 +89,28 @@ const ChangeCheckout = () => {
           fetchVnpayCheckout({
             user_id: profile.user.id,
             items: selectedItems.map((item) => ({
-              variant_id: item.variant.id,
+              variant_id: item.variant_id,
               quantity: item.quantity,
             })),
             total_amount: totalPrice,
             full_name: formData.fullName,
             phone: formData.phone,
             email: formData.email,
-            address: `${formData.addressDetail}, ${wardName}, ${districtName}, ${cityName}`,
+            address: `${formData.addressDetail}, ${formData.city}, ${formData.district}, ${formData.ward}`,
           })
         );
+        console.log({
+          user_id: profile.user.id,
+          items: selectedItems.map((item) => ({
+            variant_id: item.variant_id,
+            quantity: item.quantity,
+          })),
+          total_amount: totalPrice,
+          full_name: formData.fullName,
+          phone: formData.phone,
+          email: formData.email,
+          address: `${formData.addressDetail}, ${formData.city}, ${formData.district}, ${formData.ward}`,
+        });
 
         const result = actionResult.payload;
         if (result && result.payment_url) {
@@ -116,6 +123,11 @@ const ChangeCheckout = () => {
       }
     }
   };
+
+  useEffect(() => {
+    dispatch(fetchCart());
+    dispatch(fetchAddress());
+  }, [dispatch]);
 
   return (
     <>
@@ -227,21 +239,22 @@ const ChangeCheckout = () => {
                         required: t("checkout.cityRequired"),
                       })}
                       onChange={(e) => {
-                        const code = Number(e.target.value);
-                        setSelectedCityCode(code);
-                        setSelectedDistrictCode(null);
-                        setSelectedWardCode(null);
+                        const name = e.target.value;
+                        setSelectedCityName(name);
+                        setSelectedDistrictName("");
+                        setSelectedWardName("");
                         setValue("district", "");
                         setValue("ward", "");
                       }}
                     >
                       <option value="">{t("checkout.city")}</option>
                       {data.map((city) => (
-                        <option key={city.code} value={city.code}>
+                        <option key={city.code} value={city.name}>
                           {city.name}
                         </option>
                       ))}
                     </select>
+
                     {errors.city && (
                       <p className="error_message_checkout">
                         {errors.city.message}
@@ -262,20 +275,21 @@ const ChangeCheckout = () => {
                         required: t("checkout.districtRequired"),
                       })}
                       onChange={(e) => {
-                        const code = Number(e.target.value);
-                        setSelectedDistrictCode(code);
-                        setSelectedWardCode(null);
+                        const name = e.target.value;
+                        setSelectedDistrictName(name);
+                        setSelectedWardName("");
                         setValue("ward", "");
                       }}
-                      disabled={!selectedCityCode}
+                      disabled={!selectedCityName}
                     >
                       <option value="">{t("checkout.district")}</option>
                       {filteredDistricts.map((district) => (
-                        <option key={district.code} value={district.code}>
+                        <option key={district.code} value={district.name}>
                           {district.name}
                         </option>
                       ))}
                     </select>
+
                     {errors.district && (
                       <p className="error_message_checkout">
                         {errors.district.message}
@@ -295,18 +309,20 @@ const ChangeCheckout = () => {
                       {...register("ward", {
                         required: t("checkout.wardRequired"),
                       })}
-                      onChange={(e) =>
-                        setSelectedWardCode(Number(e.target.value))
-                      }
-                      disabled={!selectedDistrictCode}
+                      onChange={(e) => {
+                        const name = e.target.value;
+                        setSelectedWardName(name);
+                      }}
+                      disabled={!selectedDistrictName}
                     >
                       <option value="">{t("checkout.ward")}</option>
                       {filteredWards.map((ward) => (
-                        <option key={ward.code} value={ward.code}>
+                        <option key={ward.code} value={ward.name}>
                           {ward.name}
                         </option>
                       ))}
                     </select>
+
                     {errors.ward && (
                       <p className="error_message_checkout">
                         {errors.ward.message}
