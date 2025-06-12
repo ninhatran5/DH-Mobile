@@ -15,7 +15,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\AttributeController;
 use App\Http\Controllers\Api\ProductLikeController;
 use App\Http\Controllers\Api\AttributevalueController;
-use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\CodController;
 use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
 use App\Http\Controllers\Api\ProductsViewsController;
@@ -29,13 +29,11 @@ use App\Http\Controllers\Api\VnpayController;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/vnpay/checkout', [VnpayController::class, 'createPayment']);
+    Route::post('/codpay/checkout', [CodController::class, 'createCodOrder']);
 });
 
 Route::get('/vnpay/return', [VnpayController::class, 'handleReturn']);
-// thanh toán cod
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/cod/checkout', [OrderController::class, 'payCODOrder'] );
-});
+
 
 
 

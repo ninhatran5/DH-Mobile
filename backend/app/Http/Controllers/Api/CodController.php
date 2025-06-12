@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PaymentSuccessMail;
 
-class OrderController extends Controller
+class CodController extends Controller
 {
     //
     public function createCodOrder(Request $request)
