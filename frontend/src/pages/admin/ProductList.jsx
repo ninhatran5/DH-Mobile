@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 
 const ProductList = () => {
   const dispatch = useDispatch();
-  const { adminproducts, loading, error, totalPages } = useSelector((state) => state.adminproduct);
+  const { adminproducts, loading, error } = useSelector((state) => state.adminproduct);
   const { categories } = useSelector((state) => state.category);
 
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -20,6 +20,7 @@ const ProductList = () => {
     category: 'all'
   });
   const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 10;
 
   useEffect(() => {
     dispatch(fetchAdminProducts());
@@ -124,6 +125,8 @@ const ProductList = () => {
   };
 
   const filteredProducts = getFilteredProducts();
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const paginatedProducts = filteredProducts.slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage);
 
   return (
     <div className="admin_dh-product-container">
@@ -221,7 +224,6 @@ const ProductList = () => {
           </button>
         </div>
 
-        {/* Phần bộ lọc mở rộng */}
         {showFilters && (
           <div className="admin_dh-filters-panel" style={{
             display: 'flex',
@@ -229,7 +231,6 @@ const ProductList = () => {
             padding: '16px',
             borderTop: '1px solid #e5e7eb'
           }}>
-            {/* Lọc theo khoảng giá */}
             <div className="filter-group" style={{ flex: 1 }}>
               <label className="filter-label" style={{ 
                 display: 'block', 
@@ -260,7 +261,6 @@ const ProductList = () => {
               </select>
             </div>
 
-            {/* Lọc theo danh mục */}
             <div className="filter-group" style={{ flex: 1 }}>
               <label className="filter-label" style={{ 
                 display: 'block', 
@@ -338,7 +338,7 @@ const ProductList = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredProducts.map((product) => (
+              {paginatedProducts.map((product) => (
                 <tr key={product.product_id} className={selectedProducts.includes(product.product_id) ? 'selected' : ''}>
                   <td>
                     <input

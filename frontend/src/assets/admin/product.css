@@ -695,3 +695,41 @@ tr:hover .admin_dh-product-name {
   font-weight: 700;
   white-space: nowrap;
 }
+.admin_dh-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.admin_dh-pagination-info {
+  font-size: 16px;
+  color: #333;
+}
+
+.admin_dh-pagination-controls {
+  display: flex;
+  align-items: center;
+}
+
+.admin_dh-pagination-controls button {
+  padding: 6px 12px;
+  margin: 0 4px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.admin_dh-pagination-controls button:hover:not(:disabled) {
+  background-color: #f0f0f0;
+}
+
+.admin_dh-pagination-controls button:disabled {
+  background-color: #e0e0e0;
+  cursor: not-allowed;
+  color: #999;
+}
