@@ -122,6 +122,6 @@ class VnpayController extends Controller
             return redirect()->away("http://localhost:5173/thank-you?order_id={$orderId}&status=success");
         }
 
-        return response()->json(['message' => 'Thanh toán thất bại'], 400);
+        return redirect()->away("http://localhost:5173/payment-failed?order_id={$orderId}&status=success");
     }
 }
