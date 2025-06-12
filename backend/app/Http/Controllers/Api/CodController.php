@@ -76,6 +76,9 @@ class OrderController extends Controller
             DB::table('orders')->where('order_id', $orderId)->update([
                 'total_amount' => $total,
             ]);
+
+            // Xoá toàn bộ sản phẩm trong giỏ hàng (sau khi đã đặt đơn)
+            DB::table('cart_items')->where('cart_id', $cart->cart_id)->delete();
         } catch (\Throwable $th) {
         }
     }
