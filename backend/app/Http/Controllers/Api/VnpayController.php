@@ -17,24 +17,26 @@ class VnpayController extends Controller
     {
         $user = Auth::user();
 
-        // Lấy danh sách sản phẩm từ request theo cấu trúc frontend gửi
-        $items = $request->input('items', []);
-        if (empty($items)) {
+        // Kiểm tra request có chứa danh sách sản phẩm được chọn không
+        $selectedItems = $request->input('selected_items', []);
+
+        // Đảm bảo $selectedItems là một mảng
+        if (is_string($selectedItems)) {
+            $selectedItems = json_decode($selectedItems, true) ?? [];
+        }
+
+        // Kiểm tra mảng rỗng
+        if (empty($selectedItems) || !is_array($selectedItems)) {
             return response()->json(['message' => 'Vui lòng chọn sản phẩm để thanh toán'], 400);
         }
 
         $cart = DB::table('carts')->where('user_id', $user->user_id)->first();
         if (!$cart) return response()->json(['message' => 'Giỏ hàng rỗng'], 400);
 
-        // Lấy danh sách variant_id từ items
-        $variantIds = array_map(function($item) {
-            return $item['variant_id'];
-        }, $items);
-
-        // Lấy thông tin sản phẩm từ giỏ hàng dựa vào variant_id
+        // Chỉ lấy các sản phẩm được chọn từ giỏ hàng
         $cartItems = DB::table('cart_items')
                         ->where('cart_id', $cart->cart_id)
-                        ->whereIn('variant_id', $variantIds)
+                        ->whereIn('variant_id', $selectedItems)
                         ->get();
 
         if ($cartItems->isEmpty()) return response()->json(['message' => 'Không tìm thấy sản phẩm đã chọn'], 400);
@@ -52,25 +54,16 @@ class VnpayController extends Controller
 
         $total = 0;
         foreach ($cartItems as $item) {
-            // Tìm số lượng từ request
-            $quantity = 0;
-            foreach ($items as $requestItem) {
-                if ($requestItem['variant_id'] == $item->variant_id) {
-                    $quantity = $requestItem['quantity'];
-                    break;
-                }
-            }
-
             DB::table('order_items')->insert([
                 'order_id' => $orderId,
                 'product_id' => DB::table('product_variants')->where('variant_id', $item->variant_id)->value('product_id'),
                 'variant_id' => $item->variant_id,
-                'quantity' => $quantity,
+                'quantity' => $item->quantity,
                 'price' => $item->price_snapshot,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-            $total += $item->price_snapshot * $quantity;
+            $total += $item->price_snapshot * $item->quantity;
         }
 
         // Cập nhật lại tổng tiền - đảm bảo giá trị nằm trong phạm vi cho phép
