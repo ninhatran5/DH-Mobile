@@ -10,9 +10,15 @@ const initialState = {
 ///CALL API BANNER
 export const fetchProductVariationDetail = createAsyncThunk(
   "productVariationDetail/fetchProductDetail",
-  async (id) => {
-    const response = await axiosConfig.get(`/productvariants/${id}`);
-    return response.data;
+  async (id, thunkAPI) => {
+    try {
+      const response = await axiosConfig.get(`/productvariants/${id}`);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Không tìm thấy biến thể sản phẩm"
+      );
+    }
   }
 );
 

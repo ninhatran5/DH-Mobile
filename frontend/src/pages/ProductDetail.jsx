@@ -112,8 +112,10 @@ const ProductDetail = () => {
   const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
   const { products = [] } = useSelector((state) => state.product);
   const { t } = useTranslation();
-
-  const variants = productVariationDetails?.data?.variants || [];
+  const variants = useMemo(
+    () => productVariationDetails?.data?.variants || [],
+    [productVariationDetails]
+  );
   const allAttributes = getAllAttributes(variants);
   const variantId = findVariantId(variants, selectedOptions);
   const selectedVariant = variants.find((v) => v.variant_id === variantId);
@@ -310,13 +312,17 @@ const ProductDetail = () => {
           defaultOptions[attr.attribute_id] = attr.values[0].value_id;
         }
       });
-      setSelectedOptions(defaultOptions);
+
+      setSelectedOptions((prev) => {
+        if (JSON.stringify(prev) !== JSON.stringify(defaultOptions)) {
+          return defaultOptions;
+        }
+        return prev;
+      });
     } else {
-      // Nếu không có biến thể, xóa lựa chọn cũ
       setSelectedOptions({});
     }
   }, [id, variants]);
-
   const relatedProducts = useMemo(() => {
     if (!productDetails.data || !productDetails.data.category_id) return [];
     return products.filter(

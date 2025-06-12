@@ -11,14 +11,27 @@ const initialState = {
 export const addViewProducts = createAsyncThunk(
   "viewProduct/addViewProducts",
   async ({ productId, userId }, thunkAPI) => {
+    const { viewProduct } = thunkAPI.getState();
+    const { listViewProduct } = viewProduct;
+
+    const hasViewed = listViewProduct.some(
+      (item) => item.product_id === productId
+    );
+
+    if (hasViewed) {
+      return thunkAPI.rejectWithValue("Đã xem sản phẩm này rồi");
+    }
+
     try {
       const response = await axiosConfig.post(`/productsviews`, {
         product_id: productId,
         user_id: userId,
       });
+
       if (response.data?.message === "Sản phẩm không tồn tại") {
         return thunkAPI.rejectWithValue("Sản phẩm không tồn tại");
       }
+
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
