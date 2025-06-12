@@ -4,11 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Orders;
-use App\Models\OrderItems;
-use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PaymentSuccessMail;
 
 class OrderController extends Controller
 {
@@ -79,6 +78,20 @@ class OrderController extends Controller
 
             // Xoá toàn bộ sản phẩm trong giỏ hàng (sau khi đã đặt đơn)
             DB::table('cart_items')->where('cart_id', $cart->cart_id)->delete();
+
+            // // Gửi email xác nhận đơn hàng
+            // $order = DB::table('orders')->where('order_id', $orderId)->first();
+            // $userData = DB::table('users')->where('user_id', $user->user_id)->first();
+            // Mail::to($userData->email)->send(new PaymentSuccessMail($order, $userData));
+
+            // Commit dữ liệu - lưu thay đổi vào database
+            DB::commit();
+
+            // Trả về JSON phản hồi thành công
+            return response()->json([
+                'message' => 'Đặt hàng thành công. Thanh toán khi nhận hàng.',
+                'order_id' => $orderId,
+            ]);
         } catch (\Throwable $th) {
         }
     }
