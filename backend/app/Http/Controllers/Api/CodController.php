@@ -93,6 +93,9 @@ class OrderController extends Controller
                 'order_id' => $orderId,
             ]);
         } catch (\Throwable $th) {
+            // Nếu có lỗi trong quá trình xử lý, rollback lại toàn bộ
+            DB::rollBack();
+            return response()->json(['message' => 'Đặt hàng thất bại', 'error' => $th->getMessage()], 500);
         }
     }
 }
