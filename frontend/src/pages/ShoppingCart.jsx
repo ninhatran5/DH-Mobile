@@ -141,10 +141,7 @@ const ShoppingCart = () => {
 
   const totalPrice = cartItems
     .filter((item) => item.selected)
-    .reduce(
-      (sum, item) => sum + item.quantity * item.variant?.product?.price,
-      0
-    );
+    .reduce((sum, item) => sum + item.quantity * item.variant?.price, 0);
 
   const handleCheckout = () => {
     const selectedItems = cartItems.filter((item) => item.selected);
