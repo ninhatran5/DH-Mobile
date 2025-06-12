@@ -17,27 +17,10 @@ class VnpayController extends Controller
     {
         $user = Auth::user();
 
-        // Lấy danh sách sản phẩm từ request theo cấu trúc frontend gửi
-        $items = $request->input('items', []);
-        if (empty($items)) {
-            return response()->json(['message' => 'Vui lòng chọn sản phẩm để thanh toán'], 400);
-        }
-
         $cart = DB::table('carts')->where('user_id', $user->user_id)->first();
         if (!$cart) return response()->json(['message' => 'Giỏ hàng rỗng'], 400);
-
-        // Lấy danh sách variant_id từ items
-        $variantIds = array_map(function($item) {
-            return $item['variant_id'];
-        }, $items);
-
-        // Lấy thông tin sản phẩm từ giỏ hàng dựa vào variant_id
-        $cartItems = DB::table('cart_items')
-                        ->where('cart_id', $cart->cart_id)
-                        ->whereIn('variant_id', $variantIds)
-                        ->get();
-
-        if ($cartItems->isEmpty()) return response()->json(['message' => 'Không tìm thấy sản phẩm đã chọn'], 400);
+        $cartItems = DB::table('cart_items')->where('cart_id', $cart->cart_id)->get();
+        if ($cartItems->isEmpty()) return response()->json(['message' => 'Giỏ hàng trống'], 400);
 
         $orderId = DB::table('orders')->insertGetId([
             'user_id' => $user->user_id,
@@ -52,26 +35,22 @@ class VnpayController extends Controller
 
         $total = 0;
         foreach ($cartItems as $item) {
-            // Tìm số lượng từ request
-            $quantity = 0;
-            foreach ($items as $requestItem) {
-                if ($requestItem['variant_id'] == $item->variant_id) {
-                    $quantity = $requestItem['quantity'];
-                    break;
-                }
-            }
-
             DB::table('order_items')->insert([
                 'order_id' => $orderId,
                 'product_id' => DB::table('product_variants')->where('variant_id', $item->variant_id)->value('product_id'),
                 'variant_id' => $item->variant_id,
-                'quantity' => $quantity,
+                'quantity' => $item->quantity,
                 'price' => $item->price_snapshot,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-            $total += $item->price_snapshot * $quantity;
+            $total += $item->price_snapshot * $item->quantity;
         }
+
+        // Check if total exceeds the database limit (decimal 10,2)
+        // if ($total > 99999999.99) {
+        //     return response()->json(['message' => 'Tổng giá trị đơn hàng vượt quá giới hạn cho phép'], 400);
+        // }
 
         // Cập nhật lại tổng tiền - đảm bảo giá trị nằm trong phạm vi cho phép
         DB::table('orders')->where('order_id', $orderId)->update([

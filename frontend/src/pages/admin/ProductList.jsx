@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 
 const ProductList = () => {
   const dispatch = useDispatch();
-  const { adminproducts, loading, error, totalPages } = useSelector((state) => state.adminproduct);
+  const { adminproducts, loading, error } = useSelector((state) => state.adminproduct);
   const { categories } = useSelector((state) => state.category);
 
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -20,14 +20,15 @@ const ProductList = () => {
     category: 'all'
   });
   const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 10;
 
   useEffect(() => {
-    dispatch(fetchAdminProducts(currentPage));
+    dispatch(fetchAdminProducts());
     dispatch(fetchCategories());
     if (error) {
       toast.error(`Lỗi từ server: ${error}`);
     }
-  }, [dispatch, error, currentPage]);
+  }, [dispatch, error]);
 
   const handleSelectAll = (e) => {
     if (e.target.checked) {
@@ -75,6 +76,13 @@ const ProductList = () => {
     }
   };
 
+  const handleFilterChange = (filterType, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
+
   const getFilteredProducts = () => {
     return Array.isArray(adminproducts) 
       ? adminproducts.filter(product => {
@@ -82,14 +90,20 @@ const ProductList = () => {
           let priceMatch = true;
           const price = parseFloat(product.price);
           switch(filters.priceRange) {
-            case 'under500':
-              priceMatch = price < 500;
+            case 'under5m':
+              priceMatch = price < 5000000;
               break;
-            case '500to1000':
-              priceMatch = price >= 500 && price <= 1000;
+            case '5to10m':
+              priceMatch = price >= 5000000 && price < 10000000;
               break;
-            case 'over1000':
-              priceMatch = price > 1000;
+            case '10to20m':
+              priceMatch = price >= 10000000 && price < 20000000;
+              break;
+            case '20to30m':
+              priceMatch = price >= 20000000 && price < 30000000;
+              break;
+            case 'over30m':
+              priceMatch = price >= 30000000;
               break;
             default:
               priceMatch = true;
@@ -105,19 +119,14 @@ const ProductList = () => {
       : [];
   };
 
-  const handleFilterChange = (filterType, value) => {
-    setFilters(prev => ({
-      ...prev,
-      [filterType]: value
-    }));
-  };
-
   const formatPrice = (value) => {
     if (!value) return '';
     return new Intl.NumberFormat('vi-VN').format(Number(value));
   };
 
   const filteredProducts = getFilteredProducts();
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const paginatedProducts = filteredProducts.slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage);
 
   return (
     <div className="admin_dh-product-container">
@@ -215,7 +224,6 @@ const ProductList = () => {
           </button>
         </div>
 
-        {/* Phần bộ lọc mở rộng */}
         {showFilters && (
           <div className="admin_dh-filters-panel" style={{
             display: 'flex',
@@ -223,7 +231,6 @@ const ProductList = () => {
             padding: '16px',
             borderTop: '1px solid #e5e7eb'
           }}>
-            {/* Lọc theo khoảng giá */}
             <div className="filter-group" style={{ flex: 1 }}>
               <label className="filter-label" style={{ 
                 display: 'block', 
@@ -246,13 +253,14 @@ const ProductList = () => {
                 }}
               >
                 <option value="all">Tất cả</option>
-                <option value="under500">Dưới 500</option>
-                <option value="500to1000">500 - 1000</option>
-                <option value="over1000">Trên 1000</option>
+                <option value="under5m">Dưới 5 triệu</option>
+                <option value="5to10m">5 - 10 triệu</option>
+                <option value="10to20m">10 - 20 triệu</option>
+                <option value="20to30m">20 - 30 triệu</option>
+                <option value="over30m">Trên 30 triệu</option>
               </select>
             </div>
 
-            {/* Lọc theo danh mục */}
             <div className="filter-group" style={{ flex: 1 }}>
               <label className="filter-label" style={{ 
                 display: 'block', 
@@ -330,7 +338,7 @@ const ProductList = () => {
               </tr>
             </thead>
             <tbody>
-              {adminproducts.map((product) => (
+              {paginatedProducts.map((product) => (
                 <tr key={product.product_id} className={selectedProducts.includes(product.product_id) ? 'selected' : ''}>
                   <td>
                     <input
