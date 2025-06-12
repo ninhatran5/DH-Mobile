@@ -48,9 +48,9 @@ class VnpayController extends Controller
         }
 
         // Check if total exceeds the database limit (decimal 10,2)
-        if ($total > 99999999.99) {
-            return response()->json(['message' => 'Tổng giá trị đơn hàng vượt quá giới hạn cho phép'], 400);
-        }
+        // if ($total > 99999999.99) {
+        //     return response()->json(['message' => 'Tổng giá trị đơn hàng vượt quá giới hạn cho phép'], 400);
+        // }
 
         // Cập nhật lại tổng tiền - đảm bảo giá trị nằm trong phạm vi cho phép
         DB::table('orders')->where('order_id', $orderId)->update([
