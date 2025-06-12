@@ -10,15 +10,24 @@ const initialState = {
 
 export const fetchAdminProducts = createAsyncThunk(
   "adminproduct/fetchAdminProducts",
-  async (page = 1, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const res = await axiosConfig.get(`/products?page=${page}`);
-
-      console.log('currentPage:', page, 'totalPages:', res.data.totalPages);
-
+      // Lấy trang đầu tiên để biết tổng số trang
+      const firstPageRes = await axiosConfig.get(`/products?page=1`);
+      const firstPageData = firstPageRes.data.data || [];
+      const totalPages = firstPageRes.data.totalPage || 1;
+      const allProducts = [...firstPageData];
+      const pageRequests = [];
+      for (let page = 2; page <= totalPages; page++) {
+        pageRequests.push(axiosConfig.get(`/products?page=${page}`));
+      }
+      const remainingPages = await Promise.all(pageRequests);
+      remainingPages.forEach((res) => {
+        allProducts.push(...(res.data.data || []));
+      });
       return {
-        products: res.data.data || [],
-        totalPages: res.data.totalPage || 1,
+        products: allProducts,
+        totalPages,
       };
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Lỗi khi gọi API sản phẩm");
