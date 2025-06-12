@@ -17,10 +17,29 @@ class VnpayController extends Controller
     {
         $user = Auth::user();
 
+        // Kiểm tra request có chứa danh sách sản phẩm được chọn không
+        $selectedItems = $request->input('selected_items', []);
+
+        // Đảm bảo $selectedItems là một mảng
+        if (is_string($selectedItems)) {
+            $selectedItems = json_decode($selectedItems, true) ?? [];
+        }
+
+        // Kiểm tra mảng rỗng
+        if (empty($selectedItems) || !is_array($selectedItems)) {
+            return response()->json(['message' => 'Vui lòng chọn sản phẩm để thanh toán'], 400);
+        }
+
         $cart = DB::table('carts')->where('user_id', $user->user_id)->first();
         if (!$cart) return response()->json(['message' => 'Giỏ hàng rỗng'], 400);
-        $cartItems = DB::table('cart_items')->where('cart_id', $cart->cart_id)->get();
-        if ($cartItems->isEmpty()) return response()->json(['message' => 'Giỏ hàng trống'], 400);
+
+        // Chỉ lấy các sản phẩm được chọn từ giỏ hàng
+        $cartItems = DB::table('cart_items')
+                        ->where('cart_id', $cart->cart_id)
+                        ->whereIn('variant_id', $selectedItems)
+                        ->get();
+
+        if ($cartItems->isEmpty()) return response()->json(['message' => 'Không tìm thấy sản phẩm đã chọn'], 400);
 
         $orderId = DB::table('orders')->insertGetId([
             'user_id' => $user->user_id,
@@ -46,11 +65,6 @@ class VnpayController extends Controller
             ]);
             $total += $item->price_snapshot * $item->quantity;
         }
-
-        // Check if total exceeds the database limit (decimal 10,2)
-        // if ($total > 99999999.99) {
-        //     return response()->json(['message' => 'Tổng giá trị đơn hàng vượt quá giới hạn cho phép'], 400);
-        // }
 
         // Cập nhật lại tổng tiền - đảm bảo giá trị nằm trong phạm vi cho phép
         DB::table('orders')->where('order_id', $orderId)->update([
