@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { fetchAddress } from "../slices/addressSlice";
-
 import { useForm } from "react-hook-form";
 import "../../src/assets/css/checkout.css";
 import { fetchCart } from "../slices/cartSlice";
@@ -16,10 +15,10 @@ const ChangeCheckout = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { profile } = useSelector((state) => state.profile);
   const { data } = useSelector((state) => state.address);
   const location = useLocation();
   const selectedItems = location.state?.selectedItems || [];
+  const userID = localStorage.getItem("userID");
   const handleNextPageDetail = (id) => {
     navigate(`/product-detail/${id}`);
   };
@@ -68,16 +67,6 @@ const ChangeCheckout = () => {
   }, [selectedCityName, selectedDistrictName, selectedWardName, setValue]);
 
   const onSubmit = async (formData) => {
-    // const cityName =
-    //   data.find((city) => city.code === Number(formData.city))?.name || "";
-    // const districtName =
-    //   filteredDistricts.find(
-    //     (district) => district.code === Number(formData.district)
-    //   )?.name || "";
-    // const wardName =
-    //   filteredWards.find((ward) => ward.code === Number(formData.ward))?.name ||
-    //   "";
-
     if (paymentMethod === "cod") {
       navigate("/thank-you");
       return;
@@ -87,7 +76,7 @@ const ChangeCheckout = () => {
       try {
         const actionResult = await dispatch(
           fetchVnpayCheckout({
-            user_id: profile.user.id,
+            user_id: userID,
             items: selectedItems.map((item) => ({
               variant_id: item.variant_id,
               quantity: item.quantity,
@@ -99,19 +88,6 @@ const ChangeCheckout = () => {
             address: `${formData.addressDetail}, ${formData.city}, ${formData.district}, ${formData.ward}`,
           })
         );
-        console.log({
-          user_id: profile.user.id,
-          items: selectedItems.map((item) => ({
-            variant_id: item.variant_id,
-            quantity: item.quantity,
-          })),
-          total_amount: totalPrice,
-          full_name: formData.fullName,
-          phone: formData.phone,
-          email: formData.email,
-          address: `${formData.addressDetail}, ${formData.city}, ${formData.district}, ${formData.ward}`,
-        });
-
         const result = actionResult.payload;
         if (result && result.payment_url) {
           window.location.href = result.payment_url;
