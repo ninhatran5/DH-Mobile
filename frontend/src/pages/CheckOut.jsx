@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { fetchProfile } from "../slices/profileSlice";
 import Loading from "../components/Loading";
-// import { fetchCart } from "../slices/cartSlice";
 import numberFormat from "../../utils/numberFormat";
 import { fetchVnpayCheckout } from "../slices/checkOutSlice";
 
@@ -18,7 +17,9 @@ const CheckOut = () => {
   const location = useLocation();
   const selectedItems = location.state?.selectedItems || [];
   const navigate = useNavigate();
-
+  const handleNextPageDetail = (id) => {
+    navigate(`/product-detail/${id}`);
+  };
   const totalPrice = selectedItems.reduce(
     (sum, item) => sum + item.quantity * item?.variant?.price,
     0
@@ -189,7 +190,9 @@ const CheckOut = () => {
                       </h6>
                     </Link>
                   </div>
-                  <div style={{ marginTop: -30, width: "60%" }}>
+
+                  {/* marginTop: -30, */}
+                  <div style={{ width: "60%" }}>
                     <div className="checkout__input__checkbox">
                       <label htmlFor="cod">
                         <h4 className="checkout-text">
@@ -262,18 +265,34 @@ const CheckOut = () => {
                       >
                         <li>
                           <div className="checkout_card">
-                            <div className="checkout_card_image">
+                            <div
+                              className="checkout_card_image"
+                              onClick={() =>
+                                handleNextPageDetail(
+                                  item?.variant?.product?.product_id
+                                )
+                              }
+                            >
                               <img
                                 src={item?.variant?.image_url}
                                 alt={item?.variant?.product?.name}
                                 style={{
                                   width: "100%",
                                   objectFit: "cover",
+                                  cursor: "pointer",
                                 }}
                               />
                             </div>
                             <div className="checkout_card_info">
-                              <p className="checkout_card_name">
+                              <p
+                                onClick={() =>
+                                  handleNextPageDetail(
+                                    item?.variant?.product?.product_id
+                                  )
+                                }
+                                className="checkout_card_name"
+                                style={{ cursor: "pointer" }}
+                              >
                                 {item?.variant?.product?.name}
                               </p>
                               <div className="checkout_card_attrs">

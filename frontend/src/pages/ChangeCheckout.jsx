@@ -1,22 +1,28 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IoReturnDownBack } from "react-icons/io5";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { fetchAddress } from "../slices/addressSlice";
+
 import { useForm } from "react-hook-form";
 import "../../src/assets/css/checkout.css";
 import { fetchCart } from "../slices/cartSlice";
 import numberFormat from "../../utils/numberFormat";
+import { fetchVnpayCheckout } from "../slices/checkOutSlice";
 
 const ChangeCheckout = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { profile } = useSelector((state) => state.profile);
   const { data } = useSelector((state) => state.address);
   const location = useLocation();
   const selectedItems = location.state?.selectedItems || [];
-
+  const handleNextPageDetail = (id) => {
+    navigate(`/product-detail/${id}`);
+  };
   const totalPrice = selectedItems.reduce(
     (sum, item) => sum + item.quantity * item?.variant?.price,
     0
@@ -25,16 +31,19 @@ const ChangeCheckout = () => {
   const [selectedCityCode, setSelectedCityCode] = useState(null);
   const [selectedDistrictCode, setSelectedDistrictCode] = useState(null);
   const [selectedWardCode, setSelectedWardCode] = useState(null);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
+    watch,
   } = useForm({
     mode: "onChange",
     defaultValues: {
       fullName: "",
       phone: "",
+      email: "",
       city: "",
       district: "",
       ward: "",
@@ -42,6 +51,8 @@ const ChangeCheckout = () => {
       paymentMethod: "",
     },
   });
+
+  const paymentMethod = watch("paymentMethod");
 
   useEffect(() => {
     dispatch(fetchCart());
@@ -61,8 +72,7 @@ const ChangeCheckout = () => {
     setValue("ward", selectedWardCode || "");
   }, [selectedCityCode, selectedDistrictCode, selectedWardCode, setValue]);
 
-  // Handle form submission: chuyển code thành name trước khi gửi
-  const onSubmit = (formData) => {
+  const onSubmit = async (formData) => {
     const cityName =
       data.find((city) => city.code === Number(formData.city))?.name || "";
     const districtName =
@@ -73,15 +83,38 @@ const ChangeCheckout = () => {
       filteredWards.find((ward) => ward.code === Number(formData.ward))?.name ||
       "";
 
-    const dataToSend = {
-      ...formData,
-      city: cityName,
-      district: districtName,
-      ward: wardName,
-    };
+    if (paymentMethod === "cod") {
+      navigate("/thank-you");
+      return;
+    }
 
-    console.log("Form Data with Names:", dataToSend);
-    // Thực hiện gửi dataToSend lên server ở đây
+    if (paymentMethod === "vnpay") {
+      try {
+        const actionResult = await dispatch(
+          fetchVnpayCheckout({
+            user_id: profile.user.id,
+            items: selectedItems.map((item) => ({
+              variant_id: item.variant.id,
+              quantity: item.quantity,
+            })),
+            total_amount: totalPrice,
+            full_name: formData.fullName,
+            phone: formData.phone,
+            email: formData.email,
+            address: `${formData.addressDetail}, ${wardName}, ${districtName}, ${cityName}`,
+          })
+        );
+
+        const result = actionResult.payload;
+        if (result && result.payment_url) {
+          window.location.href = result.payment_url;
+        } else {
+          console.error("Không có URL VNPAY trả về");
+        }
+      } catch (err) {
+        console.error("Thanh toán VNPAY thất bại", err);
+      }
+    }
   };
 
   return (
@@ -322,7 +355,8 @@ const ChangeCheckout = () => {
                     </Link>
                   </div>
 
-                  <div style={{ marginTop: -30, width: "60%" }}>
+                  {/* marginTop: -30, */}
+                  <div style={{ width: "60%" }}>
                     <div className="checkout__input__checkbox">
                       <label htmlFor="cod">
                         <h4 className="checkout-text">
@@ -403,18 +437,34 @@ const ChangeCheckout = () => {
                       >
                         <li>
                           <div className="checkout_card">
-                            <div className="checkout_card_image">
+                            <div
+                              className="checkout_card_image"
+                              onClick={() =>
+                                handleNextPageDetail(
+                                  item?.variant?.product?.product_id
+                                )
+                              }
+                            >
                               <img
                                 src={item?.variant?.image_url}
                                 alt={item?.variant?.product?.name}
                                 style={{
                                   width: "100%",
                                   objectFit: "cover",
+                                  cursor: "pointer",
                                 }}
                               />
                             </div>
                             <div className="checkout_card_info">
-                              <p className="checkout_card_name">
+                              <p
+                                onClick={() =>
+                                  handleNextPageDetail(
+                                    item?.variant?.product?.product_id
+                                  )
+                                }
+                                className="checkout_card_name"
+                                style={{ cursor: "pointer" }}
+                              >
                                 {item?.variant?.product?.name}
                               </p>
                               <div className="checkout_card_attrs">

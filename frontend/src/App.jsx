@@ -62,6 +62,7 @@ import EditAccount from "./pages/admin/EditAcccount";
 import AddVariant from "./pages/admin/AddVariant";
 import EditVoucher from "./pages/admin/EditVoucher";
 import EditVariant from "./pages/admin/UpdateVariant";
+import PaymentFailed from "./pages/PaymentFailed";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -112,6 +113,10 @@ const routerConfig = [
   {
     path: "/thank-you",
     element: withLayoutClient(ThanksYou, true),
+  },
+  {
+    path: "/payment-failed",
+    element: withLayoutClient(PaymentFailed, true),
   },
   {
     path: "/vouchers",
