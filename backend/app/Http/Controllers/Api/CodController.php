@@ -66,10 +66,10 @@ class CodController extends Controller
             }
 
             // Kiểm tra giới hạn kiểu decimal(10,2) ~ tối đa 99,999,999.99
-            if ($total > 99999999.99) {
-                DB::rollBack(); // Hủy transaction
-                return response()->json(['message' => 'Tổng đơn vượt quá giới hạn'], 400);
-            }
+            // if ($total > 99999999.99) {
+            //     DB::rollBack(); // Hủy transaction
+            //     return response()->json(['message' => 'Tổng đơn vượt quá giới hạn'], 400);
+            // }
 
             // Cập nhật lại tổng tiền đơn hàng sau khi tính xong
             DB::table('orders')->where('order_id', $orderId)->update([
