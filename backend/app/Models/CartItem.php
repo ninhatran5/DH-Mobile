@@ -14,6 +14,7 @@ class CartItem extends Model
         'variant_id',
         'price_snapshot',
         'quantity',
+        'is_selected',
         'created_at',
         'updated_at',
     ];

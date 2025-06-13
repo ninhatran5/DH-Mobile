@@ -19,8 +19,32 @@ class VnpayController extends Controller
 
         $cart = DB::table('carts')->where('user_id', $user->user_id)->first();
         if (!$cart) return response()->json(['message' => 'Giỏ hàng rỗng'], 400);
-        $cartItems = DB::table('cart_items')->where('cart_id', $cart->cart_id)->get();
-        if ($cartItems->isEmpty()) return response()->json(['message' => 'Giỏ hàng trống'], 400);
+
+        // Chỉ lấy các sản phẩm đã được chọn
+        $cartItems = DB::table('cart_items')
+            ->where('cart_id', $cart->cart_id)
+            ->where('is_selected', true)
+            ->get();
+
+        if ($cartItems->isEmpty()) {
+            return response()->json([
+                'message' => 'Vui lòng chọn sản phẩm để thanh toán'
+            ], 400);
+        }
+
+        // Kiểm tra số lượng tồn kho của các sản phẩm được chọn
+        foreach ($cartItems as $item) {
+            $variant = DB::table('product_variants')
+                ->where('variant_id', $item->variant_id)
+                ->first();
+
+            if (!$variant || $variant->stock < $item->quantity) {
+                return response()->json([
+                    'message' => 'Sản phẩm đã hết hàng hoặc không đủ số lượng',
+                    'variant_id' => $item->variant_id
+                ], 400);
+            }
+        }
 
         $orderId = DB::table('orders')->insertGetId([
             'user_id' => $user->user_id,
@@ -46,11 +70,6 @@ class VnpayController extends Controller
             ]);
             $total += $item->price_snapshot * $item->quantity;
         }
-
-        // Check if total exceeds the database limit (decimal 10,2)
-        // if ($total > 99999999.99) {
-        //     return response()->json(['message' => 'Tổng giá trị đơn hàng vượt quá giới hạn cho phép'], 400);
-        // }
 
         // Cập nhật lại tổng tiền - đảm bảo giá trị nằm trong phạm vi cho phép
         DB::table('orders')->where('order_id', $orderId)->update([
@@ -117,28 +136,27 @@ class VnpayController extends Controller
 
             foreach ($orderItems as $item) {
                 DB::table('product_variants')
-                    ->where('variant_id', $item->variant_id) // đổi tên cột nếu khác
-                    ->decrement('stock', $item->quantity); // trừ số lượng
+                    ->where('variant_id', $item->variant_id)
+                    ->decrement('stock', $item->quantity);
             }
 
             // Sau đó mới lấy thông tin đơn hàng đã được cập nhật
             $order = DB::table('orders')->where('order_id', $orderId)->first();
-
 
             // Lấy thông tin người dùng
             $user = DB::table('users')->where('user_id', $order->user_id)->first();
 
             Mail::to($user->email)->send(new PaymentSuccessMail($order, $user));
 
+            // Chỉ xóa các sản phẩm đã chọn khỏi giỏ hàng
             $cart = DB::table('carts')->where('user_id', $order->user_id)->first();
-
             if ($cart) {
                 DB::table('cart_items')
                     ->where('cart_id', $cart->cart_id)
-                    ->whereIn('variant_id', $orderItems->pluck('variant_id'))
+                    ->where('is_selected', true)
                     ->delete();
             }
-            
+
             return redirect()->away("http://localhost:5173/thank-you?order_id={$orderId}&status=success");
         }
 
