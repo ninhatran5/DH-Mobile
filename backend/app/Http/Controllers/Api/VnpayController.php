@@ -26,8 +26,8 @@ class VnpayController extends Controller
             'user_id' => $user->user_id,
             'method_id' => 1, // VNPAY giả định
             'total_amount' => 0, // Sẽ cập nhật lại
-            'status' => 'pending',
-            'payment_status' => 'unpaid',
+            'status' => 'đang chờ',
+            'payment_status' => 'chưa thanh toán',
             'voucher_id' => null,
             'created_at' => now(),
             'updated_at' => now(),
@@ -107,8 +107,8 @@ class VnpayController extends Controller
         if ($responseCode == '00') {
             // Cập nhật trạng thái đơn hàng trước
             DB::table('orders')->where('order_id', $orderId)->update([
-                'status' => 'paid',
-                'payment_status' => 'paid',
+                'status' => 'đã thanh toán',
+                'payment_status' => 'đã thanh toán',
                 'updated_at' => now(),
             ]);
 

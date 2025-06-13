@@ -13,8 +13,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('method_id')->nullable();
             $table->decimal('total_amount', 10, 2)->nullable();
-            $table->enum('status', ['pending','paid','shipped','completed','cancelled','returned'])->default('pending');
-            $table->enum('payment_status', ['unpaid','paid','refunded','failed'])->default('unpaid');
+            $table->enum('status', ['đang chờ', 'đã thanh toán', 'đã vận chuyển', 'đã hoàn thành', 'đã hủy', 'đã trả lại'])->default('đang chờ');
+            $table->enum('payment_status', ['chưa thanh toán', 'đã thanh toán', 'đã hoàn trả', 'không thành công'])->default('chưa thanh toán');
             $table->unsignedBigInteger('voucher_id')->nullable();
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();

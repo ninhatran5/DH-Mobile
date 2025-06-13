@@ -15,7 +15,7 @@ return new class extends Migration
             $table->dateTime('viewed_at')->useCurrent();
             $table->foreign('user_id')->references('user_id')->on('users');
             $table->foreign('product_id')->references('product_id')->on('products');
-            $table->timestamps(); // Thêm dòng này
+            $table->timestamps(); 
         });
     }
 
