@@ -34,8 +34,8 @@ class CodController extends Controller
                 'user_id' => $user->user_id,
                 'method_id' => 2, // 2 = COD
                 'total_amount' => 0, // Tổng tiền sẽ được cập nhật sau
-                'status' => 'processing', // Trạng thái: đang xử lý
-                'payment_status' => 'unpaid', // Chưa thanh toán
+                'status' => 'chờ xử lý', // Trạng thái: đang xử lý
+                'payment_status' => 'chưa thanh toán', // Chưa thanh toán
                 'voucher_id' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
