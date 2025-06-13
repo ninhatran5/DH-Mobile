@@ -76,6 +76,13 @@ class CodController extends Controller
                 'total_amount' => $total,
             ]);
 
+            // THÊM: Trừ số lượng tồn kho 
+            foreach ($cartItems as $item) {
+                DB::table('product_variants')
+                    ->where('variant_id', $item->variant_id)
+                    ->decrement('stock', $item->quantity);
+            }
+
             // Xoá toàn bộ sản phẩm trong giỏ hàng (sau khi đã đặt đơn)
             DB::table('cart_items')->where('cart_id', $cart->cart_id)->delete();
 
