@@ -36,4 +36,9 @@ class Orders extends Model
     {
         return $this->hasMany(User_vouchers::class, 'order_id', 'order_id');
     }
+
+    public function paymentMethods()
+    {
+        return $this->belongsTo(Payment_methods::class, 'method_id', 'method_id');
+    }
 }
