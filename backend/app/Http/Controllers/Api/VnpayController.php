@@ -112,13 +112,33 @@ class VnpayController extends Controller
                 'updated_at' => now(),
             ]);
 
+            // Trừ số lượng biến thể sản phẩm trong đơn hàng
+            $orderItems = DB::table('order_items')->where('order_id', $orderId)->get();
+
+            foreach ($orderItems as $item) {
+                DB::table('product_variants')
+                    ->where('variant_id', $item->variant_id) // đổi tên cột nếu khác
+                    ->decrement('stock', $item->quantity); // trừ số lượng
+            }
+
             // Sau đó mới lấy thông tin đơn hàng đã được cập nhật
             $order = DB::table('orders')->where('order_id', $orderId)->first();
+
 
             // Lấy thông tin người dùng
             $user = DB::table('users')->where('user_id', $order->user_id)->first();
 
             Mail::to($user->email)->send(new PaymentSuccessMail($order, $user));
+
+            $cart = DB::table('carts')->where('user_id', $order->user_id)->first();
+
+            if ($cart) {
+                DB::table('cart_items')
+                    ->where('cart_id', $cart->cart_id)
+                    ->whereIn('variant_id', $orderItems->pluck('variant_id'))
+                    ->delete();
+            }
+            
             return redirect()->away("http://localhost:5173/thank-you?order_id={$orderId}&status=success");
         }
 
