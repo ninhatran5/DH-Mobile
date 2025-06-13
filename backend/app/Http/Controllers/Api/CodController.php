@@ -83,13 +83,15 @@ class CodController extends Controller
                     ->decrement('stock', $item->quantity);
             }
 
-            // Xoá toàn bộ sản phẩm trong giỏ hàng (sau khi đã đặt đơn)
-            DB::table('cart_items')->where('cart_id', $cart->cart_id)->delete();
 
             // // Gửi email xác nhận đơn hàng
             // $order = DB::table('orders')->where('order_id', $orderId)->first();
             // $userData = DB::table('users')->where('user_id', $user->user_id)->first();
             // Mail::to($userData->email)->send(new PaymentSuccessMail($order, $userData));
+
+            // Xoá toàn bộ sản phẩm trong giỏ hàng (sau khi đã đặt đơn)
+            DB::table('cart_items')->where('cart_id', $cart->cart_id)->delete();
+
 
             // Commit dữ liệu - lưu thay đổi vào database
             DB::commit();
