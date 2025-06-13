@@ -10,11 +10,12 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id('order_id');
+            $table->string('order_code', 50)->unique();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('method_id')->nullable();
             $table->decimal('total_amount', 10, 2)->nullable();
-            $table->enum('status', ['đang chờ', 'đã thanh toán', 'đã vận chuyển', 'đã hoàn thành', 'đã hủy', 'đã trả lại'])->default('đang chờ');
-            $table->enum('payment_status', ['chưa thanh toán', 'đã thanh toán', 'đã hoàn trả', 'không thành công'])->default('chưa thanh toán');
+            $table->enum('status', ['Đang chờ', 'Đã thanh toán', 'Đã vận chuyển', 'Đã hoàn thành', 'Đã hủy', 'Đã trả lại'])->default('Đang chờ');
+            $table->enum('payment_status', ['Chưa thanh toán', 'Đã thanh toán', 'Đã hoàn trả', 'Không thành công'])->default('Chưa thanh toán');
             $table->unsignedBigInteger('voucher_id')->nullable();
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();

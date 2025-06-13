@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Mail;
 
 class VnpayController extends Controller
 {
+
+
     public function createPayment(Request $request)
     {
         $user = Auth::user();
@@ -46,12 +48,16 @@ class VnpayController extends Controller
             }
         }
 
+        // Tạo mã đơn hàng
+        $orderCode = $this->generateOrderCode();
+
         $orderId = DB::table('orders')->insertGetId([
             'user_id' => $user->user_id,
+            'order_code' => $orderCode,
             'method_id' => 1, // VNPAY giả định
             'total_amount' => 0, // Sẽ cập nhật lại
-            'status' => 'đang chờ',
-            'payment_status' => 'chưa thanh toán',
+            'status' => 'Đang chờ',
+            'payment_status' => 'Chưa thanh toán',
             'voucher_id' => null,
             'created_at' => now(),
             'updated_at' => now(),
@@ -77,8 +83,8 @@ class VnpayController extends Controller
         ]);
 
         // Tạo URL thanh toán VNPAY
-        $vnp_TxnRef = Str::uuid();
-        $vnp_OrderInfo = 'Thanh toán đơn hàng #' . $orderId;
+        $vnp_TxnRef = $orderCode; // Sử dụng order_code làm mã giao dịch
+        $vnp_OrderInfo = 'Thanh toán đơn hàng ' . $orderCode;
         $vnp_Amount = (int)($total * 100); // VNPAY requires amount in smallest currency unit (cents)
 
         $vnp_Url = config('vnpay.vnp_Url');
@@ -115,7 +121,10 @@ class VnpayController extends Controller
         $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
         $vnpUrl = $vnp_Url . "?" . $query . '&vnp_SecureHash=' . $vnpSecureHash;
 
-        return response()->json(['payment_url' => $vnpUrl]);
+        return response()->json([
+            'payment_url' => $vnpUrl,
+            'order_code' => $orderCode
+        ]);
     }
 
     public function handleReturn(Request $request)
@@ -123,11 +132,17 @@ class VnpayController extends Controller
         $orderId = $request->query('order_id');
         $responseCode = $request->input('vnp_ResponseCode');
 
+        // Lấy thông tin đơn hàng trước khi xử lý
+        $order = DB::table('orders')->where('order_id', $orderId)->first();
+        if (!$order) {
+            return redirect()->away("http://localhost:5173/payment-failed?status=failed&message=order_not_found");
+        }
+
         if ($responseCode == '00') {
             // Cập nhật trạng thái đơn hàng trước
             DB::table('orders')->where('order_id', $orderId)->update([
-                'status' => 'đã thanh toán',
-                'payment_status' => 'đã thanh toán',
+                'status' => 'Đã thanh toán',
+                'payment_status' => 'Đã thanh toán',
                 'updated_at' => now(),
             ]);
 
@@ -139,9 +154,6 @@ class VnpayController extends Controller
                     ->where('variant_id', $item->variant_id)
                     ->decrement('stock', $item->quantity);
             }
-
-            // Sau đó mới lấy thông tin đơn hàng đã được cập nhật
-            $order = DB::table('orders')->where('order_id', $orderId)->first();
 
             // Lấy thông tin người dùng
             $user = DB::table('users')->where('user_id', $order->user_id)->first();
@@ -156,10 +168,32 @@ class VnpayController extends Controller
                     ->where('is_selected', true)
                     ->delete();
             }
-
-            return redirect()->away("http://localhost:5173/thank-you?order_id={$orderId}&status=success");
+            return redirect()->away("http://localhost:5173/thank-you?order_id={$orderId}&status=success&order_code={$order->order_code}");
         }
 
-        return redirect()->away("http://localhost:5173/payment-failed?order_id={$orderId}&status=success");
+        // Nếu thanh toán thất bại, xóa đơn hàng và order items
+        DB::transaction(function () use ($orderId) {
+            // Xóa order items trước vì có khóa ngoại
+            DB::table('order_items')->where('order_id', $orderId)->delete();
+            // Sau đó xóa order
+            DB::table('orders')->where('order_id', $orderId)->delete();
+        });
+
+        return redirect()->away("http://localhost:5173/payment-failed?order_id={$orderId}&status=failed&order_code={$order->order_code}");
+    }
+
+    private function generateOrderCode()
+    {
+        $prefix = 'DH'; // Prefix cho mã đơn hàng (DH = Đơn Hàng)
+        $timestamp = now()->format('ymd'); // Format: YYMMDD
+        $randomStr = strtoupper(Str::random(4)); // 4 ký tự ngẫu nhiên
+
+        // Đếm số đơn hàng trong ngày để tạo số thứ tự
+        $orderCount = DB::table('orders')
+            ->whereDate('created_at', today())
+            ->count();
+        $sequence = str_pad($orderCount + 1, 4, '0', STR_PAD_LEFT); // Số thứ tự 4 chữ số
+
+        return $prefix . $timestamp . $sequence . $randomStr;
     }
 }
