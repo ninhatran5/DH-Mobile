@@ -34,8 +34,8 @@ class CodController extends Controller
                 'user_id' => $user->user_id,
                 'method_id' => 2, // 2 = COD
                 'total_amount' => 0, // Tổng tiền sẽ được cập nhật sau
-                'status' => 'processing', // Trạng thái: đang xử lý
-                'payment_status' => 'unpaid', // Chưa thanh toán
+                'status' => 'chờ xử lý', // Trạng thái: đang xử lý
+                'payment_status' => 'chưa thanh toán', // Chưa thanh toán
                 'voucher_id' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -66,23 +66,32 @@ class CodController extends Controller
             }
 
             // Kiểm tra giới hạn kiểu decimal(10,2) ~ tối đa 99,999,999.99
-            if ($total > 99999999.99) {
-                DB::rollBack(); // Hủy transaction
-                return response()->json(['message' => 'Tổng đơn vượt quá giới hạn'], 400);
-            }
+            // if ($total > 99999999.99) {
+            //     DB::rollBack(); // Hủy transaction
+            //     return response()->json(['message' => 'Tổng đơn vượt quá giới hạn'], 400);
+            // }
 
             // Cập nhật lại tổng tiền đơn hàng sau khi tính xong
             DB::table('orders')->where('order_id', $orderId)->update([
                 'total_amount' => $total,
             ]);
 
-            // Xoá toàn bộ sản phẩm trong giỏ hàng (sau khi đã đặt đơn)
-            DB::table('cart_items')->where('cart_id', $cart->cart_id)->delete();
+            // THÊM: Trừ số lượng tồn kho 
+            foreach ($cartItems as $item) {
+                DB::table('product_variants')
+                    ->where('variant_id', $item->variant_id)
+                    ->decrement('stock', $item->quantity);
+            }
+
 
             // // Gửi email xác nhận đơn hàng
             // $order = DB::table('orders')->where('order_id', $orderId)->first();
             // $userData = DB::table('users')->where('user_id', $user->user_id)->first();
             // Mail::to($userData->email)->send(new PaymentSuccessMail($order, $userData));
+
+            // Xoá toàn bộ sản phẩm trong giỏ hàng (sau khi đã đặt đơn)
+            DB::table('cart_items')->where('cart_id', $cart->cart_id)->delete();
+
 
             // Commit dữ liệu - lưu thay đổi vào database
             DB::commit();
