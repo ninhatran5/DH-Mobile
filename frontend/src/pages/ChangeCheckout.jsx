@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IoReturnDownBack } from "react-icons/io5";
 import Breadcrumb from "../components/Breadcrumb";
@@ -9,9 +10,14 @@ import { useForm } from "react-hook-form";
 import "../../src/assets/css/checkout.css";
 import { fetchCart } from "../slices/cartSlice";
 import numberFormat from "../../utils/numberFormat";
-import { fetchVnpayCheckout } from "../slices/checkOutSlice";
+import { fetchCODCheckout, fetchVnpayCheckout } from "../slices/checkOutSlice";
+import { toast } from "react-toastify";
 
 const ChangeCheckout = () => {
+  const [selectedCityName, setSelectedCityName] = useState("");
+  const [selectedDistrictName, setSelectedDistrictName] = useState("");
+  const [selectedWardName, setSelectedWardName] = useState("");
+
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -19,17 +25,13 @@ const ChangeCheckout = () => {
   const location = useLocation();
   const selectedItems = location.state?.selectedItems || [];
   const userID = localStorage.getItem("userID");
-  const handleNextPageDetail = (id) => {
-    navigate(`/product-detail/${id}`);
-  };
   const totalPrice = selectedItems.reduce(
     (sum, item) => sum + item.quantity * item?.variant?.price,
     0
   );
-
-  const [selectedCityName, setSelectedCityName] = useState("");
-  const [selectedDistrictName, setSelectedDistrictName] = useState("");
-  const [selectedWardName, setSelectedWardName] = useState("");
+  const handleNextPageDetail = (id) => {
+    navigate(`/product-detail/${id}`);
+  };
 
   const {
     register,
@@ -68,7 +70,26 @@ const ChangeCheckout = () => {
 
   const onSubmit = async (formData) => {
     if (paymentMethod === "cod") {
-      navigate("/thank-you");
+      try {
+        await dispatch(
+          fetchCODCheckout({
+            user_id: userID,
+            items: selectedItems.map((item) => ({
+              variant_id: item.variant_id,
+              quantity: item.quantity,
+            })),
+            total_amount: totalPrice,
+            full_name: formData.fullName,
+            phone: formData.phone,
+            email: formData.email,
+            address: `${formData.addressDetail}, ${formData.city}, ${formData.district}, ${formData.ward}`,
+          })
+        ).unwrap();
+        toast.success(t("toast.paymentSuccess"));
+        navigate("/thank-you");
+      } catch (err) {
+        toast.error(t("toast.paymentError"));
+      }
       return;
     }
 
@@ -92,10 +113,10 @@ const ChangeCheckout = () => {
         if (result && result.payment_url) {
           window.location.href = result.payment_url;
         } else {
-          console.error("Không có URL VNPAY trả về");
+          toast.error(t("toast.maxOnlineAmount"));
         }
       } catch (err) {
-        console.error("Thanh toán VNPAY thất bại", err);
+        toast.error(t("toast.paymentError"));
       }
     }
   };
