@@ -454,6 +454,9 @@
     "invalidQuantity": "Số lượng không hợp lệ, vui lòng nhập lại",
     "minQuantity": "Số lượng tối thiểu là 1",
     "deleteSuccess": "Xóa khỏi giỏ hàng thành công",
-    "deleteError": "Xóa khỏi giỏ hàng thất bại"
+    "deleteError": "Xóa khỏi giỏ hàng thất bại",
+    "paymentSuccess": "Thanh toán thành công!",
+    "paymentError": "Thanh toán thất bại, vui lòng thử lại",
+    "maxOnlineAmount": "Số tiền tối đa được phép thanh toán online là 100 triệu đồng"
   }
 }

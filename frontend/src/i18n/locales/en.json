@@ -452,6 +452,9 @@
     "invalidQuantity": "Invalid quantity, please enter again",
     "minQuantity": "Minimum quantity is 1",
     "deleteSuccess": "Removed from cart",
-    "deleteError": "Failed to remove from cart"
+    "deleteError": "Failed to remove from cart",
+    "paymentSuccess": "Payment successful!",
+    "paymentError": "Payment failed, please try again",
+    "maxOnlineAmount": "The maximum amount allowed for online payment is 100 million VND"
   }
 }

@@ -384,6 +384,7 @@ const EditProfile = () => {
                           type="file"
                           id="customFile"
                           name="file"
+                          accept="image/*"
                           hidden
                           onChange={onChangeAvatar}
                         />

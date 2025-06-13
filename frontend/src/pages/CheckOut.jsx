@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { TbExchange } from "react-icons/tb";
 import Breadcrumb from "../components/Breadcrumb";
@@ -7,7 +8,8 @@ import { useEffect, useState } from "react";
 import { fetchProfile } from "../slices/profileSlice";
 import Loading from "../components/Loading";
 import numberFormat from "../../utils/numberFormat";
-import { fetchVnpayCheckout } from "../slices/checkOutSlice";
+import { fetchCODCheckout, fetchVnpayCheckout } from "../slices/checkOutSlice";
+import { toast } from "react-toastify";
 
 const CheckOut = () => {
   const [paymentMethod, setPaymentMethod] = useState("cod");
@@ -36,9 +38,25 @@ const CheckOut = () => {
   const handleCheckout = async (e) => {
     e.preventDefault();
     if (paymentMethod === "cod") {
-      navigate("/thank-you");
+      try {
+        await dispatch(
+          fetchCODCheckout({
+            user_id: profile.user.id,
+            items: selectedItems.map((item) => ({
+              variant_id: item.variant.id,
+              quantity: item.quantity,
+            })),
+            total_amount: totalPrice,
+          })
+        ).unwrap();
+        toast.success(t("toast.paymentSuccess"));
+        navigate("/thank-you");
+      } catch (error) {
+        toast.error(t("toast.paymentError"));
+      }
       return;
     }
+
     if (paymentMethod === "vnpay") {
       try {
         const actionResult = await dispatch(
@@ -56,10 +74,10 @@ const CheckOut = () => {
         if (result && result.payment_url) {
           window.location.href = result.payment_url;
         } else {
-          console.error("Không có URL VNPAY trả về");
+          toast.error(t("toast.maxOnlineAmount"));
         }
       } catch (err) {
-        console.error("Thanh toán VNPAY thất bại", err);
+        toast.error(t("toast.paymentError"));
       }
     }
   };
