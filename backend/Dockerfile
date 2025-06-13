@@ -19,6 +19,9 @@ RUN composer install --no-dev --optimize-autoloader \
 # Copy nginx + supervisor config
 COPY docker/default.conf /etc/nginx/conf.d/default.conf
 COPY supervisord.conf /etc/supervisord.conf
+COPY .env.production /var/www/.env
+
+EXPOSE 80
 
 # Start cả nginx và php-fpm cùng lúc
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
