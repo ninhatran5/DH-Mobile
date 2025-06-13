@@ -223,12 +223,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('cart/remove/{id}', [CartItemController::class, 'removeProductFromCart']);
     // // xóa toàn bộ giỏ hàng
     Route::delete('cart/clear', [CartItemController::class, 'clearCart']);
-
+    // // chọn/bỏ chọn sản phẩm trong giỏ hàng
+    Route::post('cart/toggle-select/{id}', [CartItemController::class, 'toggleSelectCartItem']);
+    // // chọn tất cả sản phẩm trong giỏ hàng
+    Route::post('cart/select-all', [CartItemController::class, 'selectAllCartItems']);
+    // // bỏ chọn tất cả sản phẩm trong giỏ hàng
+    Route::post('cart/unselect-all', [CartItemController::class, 'unselectAllCartItems']);
+    // // lấy danh sách sản phẩm đã chọn
+    Route::get('cart/selected-items', [CartItemController::class, 'getSelectedItems']);
 
     // payment
-
     Route::middleware('auth:sanctum')->group(function () {
-
         Route::get('getPaymentMethods', [PaymentMethodController::class, 'getPaymentMethods']);
 
         Route::middleware(CheckAdmin::class)->group(function () {

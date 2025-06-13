@@ -45,8 +45,6 @@ class CartItemController extends Controller
             ], 400);
         }
 
-
-
         // Kiểm tra xem người dùng đã có giỏ hàng chưa
         $cart = Cart::firstOrCreate(   // Tự động tạo giỏ hàng nếu chưa có
             ['user_id' => $user->user_id]
@@ -74,6 +72,7 @@ class CartItemController extends Controller
             'variant_id' => $productVariant->variant_id,
             'quantity' => $validated['quantity'] = $validated['quantity'] ?? 1,
             'price_snapshot' => $productVariant->price,
+            'is_selected' => false,
         ]);
 
         return response()->json([
@@ -82,11 +81,8 @@ class CartItemController extends Controller
         ], 201);
     }
 
-
-
     public function getCart(request $request)
     {
-
         $user = $request->user();
         if (!$user) {
             return response()->json([
@@ -106,24 +102,20 @@ class CartItemController extends Controller
             ->with(['variant.product','variant.attributeValues'])
             ->get();
 
-        // // Transform cart items to hide price_snapshot and use variant price instead
-        // $cartItems->each(function ($item) {
-        //     $item->makeHidden('price_snapshot');
-        // });
-
-        $totalPrice = $cartItems->sum(function ($item) {
+        $totalPrice = $cartItems->where('is_selected', true)->sum(function ($item) {
             return $item->variant->price * $item->quantity;
         });
+
+        $selectedCount = $cartItems->where('is_selected', true)->count();
 
         return response()->json([
             'message' => 'Lấy giỏ hàng thành công',
             'cart' => $cart,
             'cart_items' => $cartItems,
-            'total_price' => $totalPrice
+            'total_price' => $totalPrice,
+            'selected_count' => $selectedCount
         ], 200);
     }
-
-
 
     public function updateProductQuantity(request $request, $id)
     {
@@ -181,7 +173,6 @@ class CartItemController extends Controller
             'cart_item' => $cartItem
         ], 200);
     }
-
 
     public function removeProductFromCart(request $request, $id)
     {
@@ -250,6 +241,141 @@ class CartItemController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Đã xóa tất cả sản phẩm trong giỏ hàng'
+        ], 200);
+    }
+
+    public function toggleSelectCartItem(Request $request, $id)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Chưa đăng nhập'
+            ], 401);
+        }
+
+        $cart = Cart::where('user_id', $user->user_id)->first();
+        if (!$cart) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Giỏ hàng không tồn tại'
+            ], 404);
+        }
+
+        $cartItem = CartItem::where('cart_id', $cart->cart_id)
+            ->where('variant_id', $id)
+            ->first();
+
+        if (!$cartItem) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Sản phẩm không có trong giỏ hàng'
+            ], 404);
+        }
+
+        $cartItem->is_selected = !$cartItem->is_selected;
+        $cartItem->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => $cartItem->is_selected ? 'Đã chọn sản phẩm' : 'Đã bỏ chọn sản phẩm',
+            'cart_item' => $cartItem
+        ], 200);
+    }
+
+    public function selectAllCartItems(Request $request)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Chưa đăng nhập'
+            ], 401);
+        }
+
+        $cart = Cart::where('user_id', $user->user_id)->first();
+        if (!$cart) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Giỏ hàng không tồn tại'
+            ], 404);
+        }
+
+        CartItem::where('cart_id', $cart->cart_id)->update(['is_selected' => true]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Đã chọn tất cả sản phẩm trong giỏ hàng'
+        ], 200);
+    }
+
+    public function unselectAllCartItems(Request $request)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Chưa đăng nhập'
+            ], 401);
+        }
+
+        $cart = Cart::where('user_id', $user->user_id)->first();
+        if (!$cart) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Giỏ hàng không tồn tại'
+            ], 404);
+        }
+
+        CartItem::where('cart_id', $cart->cart_id)->update(['is_selected' => false]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Đã bỏ chọn tất cả sản phẩm trong giỏ hàng'
+        ], 200);
+    }
+
+    public function getSelectedItems(Request $request)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Chưa đăng nhập'
+            ], 401);
+        }
+
+        $cart = Cart::where('user_id', $user->user_id)->first();
+        if (!$cart) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Giỏ hàng không tồn tại'
+            ], 404);
+        }
+
+        $selectedItems = CartItem::where('cart_id', $cart->cart_id)
+            ->where('is_selected', true)
+            ->with(['variant.product', 'variant.attributeValues'])
+            ->get();
+
+        if ($selectedItems->isEmpty()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Chưa có sản phẩm nào được chọn',
+                'selected_items' => [],
+                'total_price' => 0
+            ], 200);
+        }
+
+        $totalPrice = $selectedItems->sum(function ($item) {
+            return $item->variant->price * $item->quantity;
+        });
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy danh sách sản phẩm đã chọn thành công',
+            'selected_items' => $selectedItems,
+            'total_price' => $totalPrice
         ], 200);
     }
 }
