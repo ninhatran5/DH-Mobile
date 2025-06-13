@@ -17,4 +17,6 @@ class Payment_methods extends Model
         'created_at',
         'updated_at'
     ];
+
+
 }
