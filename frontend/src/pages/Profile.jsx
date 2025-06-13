@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { fetchProfile } from "../slices/profileSlice";
 import Loading from "../components/Loading";
 import { fetchListFavorite } from "../slices/favoriteProductsSlice";
+import { fetchOrder } from "../slices/orderSlice";
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -17,10 +18,12 @@ const Profile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { listFavorite } = useSelector((state) => state.favoriteProduct);
+  const { orders } = useSelector((state) => state.order);
 
   useEffect(() => {
     dispatch(fetchListFavorite());
     dispatch(fetchProfile());
+    dispatch(fetchOrder());
   }, [dispatch]);
 
   const personalInformations = [
@@ -49,7 +52,7 @@ const Profile = () => {
     {
       id: 1,
       label: t("profile.statisticals.orders"),
-      value: `5 ${t("profile.order")}`,
+      value: orders.length + ` ${t("profile.order")}`,
     },
     {
       id: 2,
@@ -60,44 +63,6 @@ const Profile = () => {
       id: 3,
       label: t("profile.statisticals.likedProducts"),
       value: listFavorite.length + ` ${t("profile.product")}`,
-    },
-  ];
-  const orders = [
-    {
-      id: 1,
-      orderCode: "ORD001",
-      product: "ÁKDFJK",
-      price: "1.000.000₫",
-      location: "Thanh Hóa",
-      paymentMethod: "Thanh toán online",
-      status: "Đang giao hàng",
-    },
-    {
-      id: 2,
-      orderCode: "ORD001",
-      product: "ÁKDFJK",
-      price: "1.000.000₫",
-      location: "Thanh Hóa",
-      paymentMethod: "Thanh toán online",
-      status: "Đang giao hàng",
-    },
-    {
-      id: 3,
-      orderCode: "ORD001",
-      product: "ÁKDFJK",
-      price: "1.000.000₫",
-      location: "Thanh Hóa",
-      paymentMethod: "Thanh toán online",
-      status: "Đang giao hàng",
-    },
-    {
-      id: 4,
-      orderCode: "ORD001",
-      product: "ÁKDFJK",
-      price: "1.000.000₫",
-      location: "Thanh Hóa",
-      paymentMethod: "Thanh toán online",
-      status: "Đang giao hàng",
     },
   ];
 
@@ -275,7 +240,22 @@ const Profile = () => {
                     </h4>
                   </Link>
                 </div>
-                <OrderHistory orders={orders} />
+                <table className="profile-table">
+                  <thead>
+                    <tr>
+                      <th>{t("orderHistory.orderCode")}</th>
+                      <th>{t("orderHistory.orderName")}</th>
+                      <th>{t("orderHistory.price")}</th>
+                      <th>{t("orderHistory.address")}</th>
+                      <th>{t("orderHistory.paymentMethod")}</th>
+                      <th>{t("orderHistory.status")}</th>
+                      <th>{t("orderHistory.detail")}</th>
+                    </tr>
+                  </thead>
+                  {orders.slice(0, 5).map((order) => (
+                    <OrderHistory key={order.order_id} order={order} />
+                  ))}
+                </table>
               </div>
             </div>
           </div>
