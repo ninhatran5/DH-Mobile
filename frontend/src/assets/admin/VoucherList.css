@@ -112,7 +112,7 @@
 .admineditvoucher-group {
   display: flex;
   flex-direction: column;
-  width: calc(50% - 10px); /* 2 columns layout */
+  width: calc(50% - 10px); 
 }
 
 .admineditvoucher-label {
@@ -211,8 +211,8 @@
   color: #007bff;       /* Xanh dương */
   margin-right: 10px;
   cursor: pointer;
-  font-size: 18px;
   transition: color 0.3s ease;
+  font-size: 30px;
 }
 
 .icon-edit:hover {
@@ -222,7 +222,7 @@
 .icon-delete {
   color: #dc3545;        /* Đỏ */
   cursor: pointer;
-  font-size: 18px;
+  font-size: 30px;
   transition: color 0.3s ease;
 }
 
@@ -395,4 +395,206 @@
   background-color: #ca7308;
   color: white;
 
+}
+
+/* --- VOUCHER TICKET ADMIN --- */
+.admin-voucher-ticket {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto 24px auto;
+  display: flex;
+  align-items: center;
+  background: #ffc94d;
+  border-radius: 18px;
+  min-height: 140px;
+  box-shadow: 0 2px 12px #0002;
+  padding: 0 40px 0 40px;
+  position: relative;
+  overflow: hidden;
+  padding-right: 100px; /* Để không bị đè lên nút */
+}
+.ticket-icon {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  background: #fff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  margin-right: 32px;
+  z-index: 2;
+}
+.ticket-dash {
+  position: absolute;
+  left: 110px;
+  top: 18px;
+  bottom: 18px;
+  width: 2px;
+  border-left: 2px dashed #fff;
+  z-index: 1;
+}
+.ticket-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #fff;
+  z-index: 2;
+  margin-left: 72px;
+}
+.ticket-code {
+  font-weight: bold;
+  font-size: 18px;
+  letter-spacing: 2px;
+}
+.ticket-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 4px 0 8px 0;
+}
+.ticket-date {
+  font-size: 15px;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.ticket-info-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+.admin-actions-wrapper, .admin-actions {
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  z-index: 5;
+}
+.icon-edit, .icon-delete {
+  font-size: 22px;
+  background: #fff;
+  border-radius: 50%;
+  padding: 7px;
+  box-shadow: 0 2px 8px #0001;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-edit:hover {
+  color: #007bff;
+  background: #e3f0ff;
+  box-shadow: 0 4px 16px #007bff33;
+}
+.icon-delete:hover {
+  color: #dc3545;
+  background: #ffeaea;
+  box-shadow: 0 4px 16px #dc354533;
+}
+@media (max-width: 900px) {
+  .admin-voucher-ticket {
+    max-width: 100%;
+    padding: 0 10px 0 10px;
+    padding-right: 70px;
+  }
+  .admin-actions-wrapper, .admin-actions {
+    right: 10px;
+    top: 10px;
+    gap: 7px;
+  }
+  .icon-edit, .icon-delete {
+    font-size: 18px;
+    padding: 5px;
+  }
+  .ticket-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 26px;
+    margin-right: 16px;
+  }
+  .ticket-dash {
+    left: 70px;
+    top: 10px;
+    bottom: 10px;
+  }
+}
+.ticket-circle {
+  width: 36px;
+  height: 36px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  left: -18px;
+  z-index: 1;
+  box-shadow: 0 0 0 1px #ffc94d;
+}
+.ticket-circle.top-circle {
+  top: -18px;
+}
+.ticket-circle.bottom-circle {
+  bottom: -18px;
+}
+@media (max-width: 900px) {
+  .ticket-circle {
+    width: 22px;
+    height: 22px;
+    left: -11px;
+  }
+  .ticket-circle.top-circle {
+    top: -11px;
+  }
+  .ticket-circle.bottom-circle {
+    bottom: -11px;
+  }
+}
+.btn-update, .btn-delete {
+  min-width: 110px;
+  width: max-content;
+  text-align: center;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 15px;
+  box-shadow: 0 2px 8px #0001;
+  transition: background 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border: none;
+}
+.btn-update {
+  background: #fef9c3;
+  color: #854d0e;
+  border: 1px solid #eab308;
+}
+.btn-update:hover {
+  background: #fde047;
+  color: #a16207;
+  box-shadow: 0 4px 16px #eab30833;
+}
+.btn-delete {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #dc2626;
+}
+.btn-delete:hover {
+  background: #fecaca;
+  color: #b91c1c;
+  box-shadow: 0 4px 16px #dc262633;
+}
+@media (max-width: 900px) {
+  .btn-update, .btn-delete {
+    font-size: 13px;
+    padding: 6px 12px;
+    min-width: 80px;
+    border-radius: 14px;
+  }
 }

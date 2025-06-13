@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { FaEdit, FaTrash, FaSearch, FaFilter, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import "../../assets/admin/VoucherList.css";
+import CouponAdmin from "../../components/CouponAdmin";
 
 const VoucherList = () => {
   const dispatch = useDispatch();
@@ -151,43 +152,26 @@ const VoucherList = () => {
         <p className="adminvoucher-empty">Không tìm thấy mã giảm giá nào.</p>
       ) : (
         <>
-          <table className="adminvoucher-table">
-            <thead>
-              <tr>
-                <th>STT</th>
-                <th>Mã Voucher</th>
-                <th>Tiêu đề</th>
-                <th>Giảm giá</th>
-                <th>Đơn hàng tối thiểu</th>
-                <th>Ngày bắt đầu</th>
-                <th>Ngày kết thúc</th>
-                <th>Hành động</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedVouchers.map((voucher, index) => (
-                <tr key={voucher.voucher_id}>
-                  <td>{(currentPage - 1) * vouchersPerPage + index + 1}</td>
-                  <td>{voucher.code}</td>
-                  <td>{voucher.title}</td>
-                  <td>{voucher.discount_amount.toLocaleString()}₫</td>
-                  <td>{voucher.min_order_value.toLocaleString()}₫</td>
-                  <td>{voucher.start_date}</td>
-                  <td>{voucher.end_date}</td>
-                  <td>
-                    <Link to={`/admin/EditVoucher/${voucher.voucher_id}`}>
-                      <FaEdit className="icon-edit" />
-                    </Link>
-                    <FaTrash
-                      className="icon-delete"
-                      onClick={() => handleDelete(voucher.voucher_id)}
-                    />
-                  </td>
-                </tr>
+          <div className="voucher_margin">
+            <div className="row g-3">
+              {paginatedVouchers.map((voucher) => (
+                <div className="col-12" key={voucher.voucher_id}>
+                  <CouponAdmin voucher={voucher}>
+                    <div className="admin-actions" style={{ position: "absolute", top: 18, right: 24, display: "flex", gap: "24px" }}>
+                      <Link to={`/admin/EditVoucher/${voucher.voucher_id}`}>
+                        <FaEdit className="icon-edit" style={{ fontSize: 68 }} />
+                      </Link>
+                      <FaTrash
+                        className="icon-delete"
+                        onClick={() => handleDelete(voucher.voucher_id)}
+                        style={{ cursor: "pointer", fontSize: 68 }}
+                      />
+                    </div>
+                  </CouponAdmin>
+                </div>
               ))}
-            </tbody>
-          </table>
-
+            </div>
+          </div>
           <div className="pagination">
             <button
               disabled={currentPage === 1}
