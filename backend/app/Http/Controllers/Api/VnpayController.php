@@ -178,13 +178,19 @@ class VnpayController extends Controller
                     }
                 }
 
-                // Xóa các sản phẩm đã chọn khỏi giỏ hàng
+                // Xóa chỉ các sản phẩm đã thanh toán khỏi giỏ hàng
                 $cart = DB::table('carts')->where('user_id', $order->user_id)->first();
                 if ($cart && is_object($cart) && isset($cart->cart_id)) {
-                    DB::table('cart_items')
-                        ->where('cart_id', $cart->cart_id)
-                        // ->where('is_selected', true)
-                        ->delete();
+                    // Lấy danh sách variant_id từ order_items
+                    $paidVariantIds = $orderItems->pluck('variant_id')->toArray();
+
+                    // Chỉ xóa các sản phẩm trong giỏ hàng có variant_id nằm trong danh sách đã thanh toán
+                    if (!empty($paidVariantIds)) {
+                        DB::table('cart_items')
+                            ->where('cart_id', $cart->cart_id)
+                            ->whereIn('variant_id', $paidVariantIds)
+                            ->delete();
+                    }
                 }
 
                 // Gửi mail nếu có user
