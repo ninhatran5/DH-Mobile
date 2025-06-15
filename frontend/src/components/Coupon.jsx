@@ -24,7 +24,7 @@ const Coupon = ({ voucher, isMyVoucher }) => {
   };
 
   return (
-    <div className="col-lg-3 mb-4">
+    <div className="col-lg-4 mb-5">
       <div className="userVoucher-card">
         <div className="userVoucher-leftSide">
           <RiShoppingBag3Fill className="userVoucher-icon-bag" />
