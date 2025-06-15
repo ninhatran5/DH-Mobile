@@ -578,10 +578,68 @@
     transform: translateY(0);
   }
 }
-.adminaddproduct-delete-btn {
-  color: #dc3545 !important;
-  font-weight: bold;
-  opacity: 1 !important;
+
+
+.adminAddProduct-variant-item {
+  background-color: rgba(142, 142, 147, 0.06);
+  border-radius: var(--admin_dh-radius-sm);
+  padding: var(--admin_dh-spacing-lg);
+  margin-bottom: var(--admin_dh-spacing-md);
+  border: 1px solid var(--admin_dh-border);
+  transition: var(--admin_dh-transition);
+}
+
+.adminAddProduct-variant-item:hover {
+  border-color: var(--admin_dh-primary);
+  background-color: rgba(0, 113, 227, 0.03);
+  box-shadow: var(--admin_dh-box-shadow);
+}
+
+.adminAddProduct-variant-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--admin_dh-spacing-md);
+}
+
+.adminAddProduct-expand-btn {
+  color: var(--admin_dh-primary);
+  cursor: pointer;
+  transition: var(--admin_dh-transition);
+  text-decoration: none !important;
+  color: #1f3dff !important;
+
+}
+
+.adminAddProduct-expand-btn:hover {
   text-decoration: underline;
 }
 
+.adminAddProduct-delete-btn {
+  color: var(--admin_dh-danger);
+  cursor: pointer;
+  color: #dc3545 !important;
+  transition: var(--admin_dh-transition);
+  text-decoration: none !important;
+
+}
+
+.adminAddProduct-delete-btn:hover {
+  text-decoration: underline;
+}
+
+.adminAddProduct-variant-details {
+  padding-top: var(--admin_dh-spacing-md);
+  border-top: 1px solid var(--admin_dh-border);
+}
+
+.adminAddProduct-variant-details p {
+  margin-bottom: var(--admin_dh-spacing-sm);
+  color: var(--admin_dh-text);
+}
+
+.adminAddProduct-error {
+  color: #dc3545; 
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}

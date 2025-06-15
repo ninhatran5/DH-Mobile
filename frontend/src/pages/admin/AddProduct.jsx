@@ -50,6 +50,8 @@ const AdminAddProduct = () => {
   const [variants, setVariants] = useState([]);
   const [variantExpanded, setVariantExpanded] = useState([]);
 
+  const [errors, setErrors] = useState({});
+
   const handleVariantInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setVariantFormData((prev) => ({
@@ -151,15 +153,20 @@ const AdminAddProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.category_id || !formData.name || !formData.price) {
+    const newErrors = {};
+    if (!formData.category_id) newErrors.category_id = 'Vui lòng chọn danh mục.';
+    if (!formData.name) newErrors.name = 'Vui lòng nhập tên sản phẩm.';
+    if (!formData.price) newErrors.price = 'Vui lòng nhập giá bán.';
+    if (!formData.price_original) newErrors.price_original = 'Vui lòng nhập giá gốc.';
+    specifications.forEach((spec, index) => {
+      if (!spec.spec_name.trim()) newErrors[`spec_name_${index}`] = 'Vui lòng nhập tên thông số.';
+      if (!spec.spec_value.trim()) newErrors[`spec_value_${index}`] = 'Vui lòng nhập giá trị thông số.';
+    });
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       toast.error('Vui lòng điền đầy đủ các trường bắt buộc.');
       return;
-    }
-    for (const spec of specifications) {
-      if (!spec.spec_name.trim() || !spec.spec_value.trim()) {
-        toast.error('Vui lòng điền đầy đủ thông số kỹ thuật!');
-        return;
-      }
     }
 
     const form = new FormData();
@@ -271,6 +278,7 @@ const AdminAddProduct = () => {
                   ))}
                 </select>
               )}
+              {errors.category_id && <div className="adminAddProduct-error">{errors.category_id}</div>}
             </div>
 
             {/* Tên sản phẩm */}
@@ -282,7 +290,9 @@ const AdminAddProduct = () => {
                 value={formData.name}
                 onChange={handleChange}
                 className="form-control adminAddProduct-input"
+                placeholder="Nhập tên sản phẩm"
               />
+              {errors.name && <div className="adminAddProduct-error">{errors.name}</div>}
             </div>
 
             {/* Mô tả */}
@@ -292,6 +302,7 @@ const AdminAddProduct = () => {
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
+                placeholder="Nhập mô tả"
                 className="form-control adminAddProduct-textarea"
                 rows="4"
               />
@@ -307,7 +318,9 @@ const AdminAddProduct = () => {
                   value={formData.price}
                   onChange={handleChange}
                   className="form-control adminAddProduct-input"
+                  placeholder="Nhập giá bán"
                 />
+                {errors.price && <div className="adminAddProduct-error">{errors.price}</div>}
               </div>
               <div className="col-6 mb-3 adminAddProduct-price-original">
                 <label className="form-label fw-bold adminAddProduct-label">Giá gốc:</label>
@@ -317,7 +330,9 @@ const AdminAddProduct = () => {
                   value={formData.price_original}
                   onChange={handleChange}
                   className="form-control adminAddProduct-input"
+                  placeholder="Nhập giá gốc"
                 />
+                {errors.price_original && <div className="adminAddProduct-error">{errors.price_original}</div>}
               </div>
             </div>
 
@@ -335,6 +350,7 @@ const AdminAddProduct = () => {
                       onChange={(e) => handleSpecChange(index, e)}
                       className="form-control adminAddProduct-input"
                     />
+                    {errors[`spec_name_${index}`] && <div className="adminAddProduct-error">{errors[`spec_name_${index}`]}</div>}
                   </div>
                   <div className="col-5 adminAddProduct-spec-value">
                     <input
@@ -345,6 +361,7 @@ const AdminAddProduct = () => {
                       onChange={(e) => handleSpecChange(index, e)}
                       className="form-control adminAddProduct-input"
                     />
+                    {errors[`spec_value_${index}`] && <div className="adminAddProduct-error">{errors[`spec_value_${index}`]}</div>}
                   </div>
                   <div className="col-2 adminAddProduct-spec-remove">
                     {specifications.length > 1 && (
@@ -368,19 +385,7 @@ const AdminAddProduct = () => {
 
           {/* Cột phải */}
           <div className="col-md-6 adminAddProduct-right-column">
-            {/* Trạng thái */}
-            <div className="mb-3 adminAddProduct-status">
-              <label className="form-label fw-bold adminAddProduct-label">Trạng thái:</label>
-              <select
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-                className="form-select adminAddProduct-select"
-              >
-                <option value={0}>Ẩn</option>
-                <option value={1}>Hiển thị</option>
-              </select>
-            </div>
+           
 
             {/* Ảnh */}
             <div className="mb-3 adminAddProduct-image">
@@ -429,7 +434,6 @@ const AdminAddProduct = () => {
                     <p>Giá: {variant.price}</p>
                     <p>Giá gốc: {variant.price_original}</p>
                     <p>Tồn kho: {variant.stock}</p>
-                    <p>Trạng thái: {variant.is_active ? 'Kích hoạt' : 'Không kích hoạt'}</p>
                     <p>Ảnh URL: {variant.image_url instanceof File ? URL.createObjectURL(variant.image_url) : variant.image_url}</p>
                     <p>Thuộc tính:</p>
                     <ul>
