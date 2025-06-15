@@ -246,7 +246,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // đơn hàng
 
     Route::middleware('auth:sanctum')->group(function(){
-        // Client 
+        // Client
         Route::get('getOrder',[OrderController::class , 'getOrder']);
         Route::get('getDetailOrder',[OrderController::class , 'getOrder']);
     });
