@@ -1,126 +1,194 @@
-.voucher-title {
-  text-transform: uppercase;
-  font-weight: 900;
-  border-left: 10px solid #fec500;
-  padding-left: 10px;
-  margin-bottom: 30px;
+.userVoucher-margin {
+  margin: 40px 0;
 }
 
-.voucher-card {
-  background-color: #f2bc41;
-  position: relative;
-}
-
-.voucher-date {
-  width: 80px;
-  border-right: 2px dashed white;
+.userVoucher-card {
+  background-color: #ffc94d;
+  border-radius: 16px;
   position: relative;
   display: flex;
-  flex-direction: column;
+  height: 140px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.userVoucher-leftSide {
+  width: 80px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 23px;
-}
-.btn_copy_voucher {
-  position: absolute;
-  top: -13px;
-  right: 0;
-  font-size: 23px;
-  cursor: pointer;
+  padding: 20px;
+  flex-shrink: 0;
 }
 
-.tooltip {
-  visibility: hidden;
-  width: auto;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  text-align: center;
-  border-radius: 5px;
-  padding: 8px 12px;
-  position: absolute;
-  z-index: 1;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  opacity: 0;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  font-size: 14px;
-  white-space: nowrap;
-}
-
-.btn_copy_voucher:hover .tooltip {
-  visibility: visible;
-  opacity: 1;
-  transform: translate(-50%, -5px);
-}
-.voucher-day {
-  margin-right: 13px;
-  font-size: 3rem;
-  font-weight: bold;
+.userVoucher-icon-bag {
+  font-size: 32px;
   color: white;
-  line-height: 1;
 }
-.voucher_margin {
-  margin-bottom: 40px;
+
+.userVoucher-dashedLine {
+  position: relative;
+  width: 2px;
+  border-left: 2px dashed rgba(255,255,255,0.8);
+  margin: 0;
+  flex-shrink: 0;
 }
-.voucher-circle {
-  width: 25px;
-  height: 25px;
+
+.userVoucher-circle {
+  width: 20px;
+  height: 20px;
   background: white;
   border-radius: 50%;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+  z-index: 1;
 }
 
-.top-circle {
-  top: -29px;
-  margin-left: 160px;
+.userVoucher-topCircle {
+  top: -10px;
 }
 
-.bottom-circle {
-  bottom: -40px;
-  margin-left: 160px;
+.userVoucher-bottomCircle {
+  bottom: -10px;
 }
 
-.voucher-content {
-  color: white;
+.userVoucher-content {
   flex: 1;
+  color: white;
   position: relative;
+  padding: 16px 40px 16px 20px;
+  min-width: 0;
 }
 
-.voucher-heading {
-  font-weight: 700;
-  color: white;
-  margin: 0.2rem 0 0.5rem;
-}
-
-.text-strike {
-  text-decoration: line-through;
-}
-
-.voucher-info {
-  font-size: 0.9rem;
-  color: white;
-}
-
-.voucher-btn {
+.userVoucher-copyBtn {
   position: absolute;
-  right: 15px;
-  bottom: 15px;
-  color: #fff;
-  width: 90px;
+  right: 16px;
+  top: 16px;
+  cursor: pointer;
 }
 
-.voucher-btn.tickets {
-  background-color: #ced4da;
+.userVoucher-icon {
+  font-size: 20px;
   color: white;
 }
 
-.voucher-btn.booked {
-  background-color: #007bff;
+.userVoucher-tooltip {
+  visibility: hidden;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  text-align: center;
+  padding: 6px 12px;
+  border-radius: 4px;
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  top: 100%;
+  margin-top: 5px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
-.voucher-btn.cancel {
-  background-color: #f8504c;
+.userVoucher-copyBtn:hover .userVoucher-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.userVoucher-code {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userVoucher-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 6px 0;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userVoucher-date {
+  font-size: 13px;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 1200px) {
+  .userVoucher-card {
+    height: 130px;
+  }
+
+  .userVoucher-leftSide {
+    width: 70px;
+    padding: 15px;
+  }
+
+  .userVoucher-icon-bag {
+    font-size: 28px;
+  }
+
+  .userVoucher-content {
+    padding: 14px 35px 14px 16px;
+  }
+
+  .userVoucher-code {
+    font-size: 13px;
+  }
+
+  .userVoucher-title {
+    font-size: 16px;
+  }
+
+  .userVoucher-date {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .userVoucher-card {
+    height: 120px;
+  }
+
+  .userVoucher-leftSide {
+    width: 60px;
+    padding: 12px;
+  }
+
+  .userVoucher-icon-bag {
+    font-size: 24px;
+  }
+
+  .userVoucher-content {
+    padding: 12px 30px 12px 14px;
+  }
+
+  .userVoucher-code {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .userVoucher-title {
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+
+  .userVoucher-date {
+    font-size: 11px;
+  }
+
+  .userVoucher-icon {
+    font-size: 18px;
+  }
 }

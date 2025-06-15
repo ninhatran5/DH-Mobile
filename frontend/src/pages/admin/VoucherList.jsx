@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { FaEdit, FaTrash, FaSearch, FaFilter, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import "../../assets/admin/VoucherList.css";
-import CouponAdmin from "../../components/CouponAdmin";
+import moment from "moment";
 
 const VoucherList = () => {
   const dispatch = useDispatch();
@@ -33,6 +33,17 @@ const VoucherList = () => {
     }
   };
 
+  const formatDate = (date) => {
+    return moment(date).format("DD/MM/YYYY HH:mm:ss");
+  };
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('vi-VN', { 
+      style: 'currency', 
+      currency: 'VND' 
+    }).format(amount);
+  };
+
   const filteredVouchers = useMemo(() => {
     const today = new Date();
     const plusDays = (days) => {
@@ -49,7 +60,7 @@ const VoucherList = () => {
 
       let matchesDiscount = true;
       if (discountFilter !== "") {
-        const discount = v.discount_amount;
+        const discount = parseFloat(v.discount_amount);
         if (discountFilter === "0-50000") {
           matchesDiscount = discount <= 50000;
         } else if (discountFilter === "50000-100000") {
@@ -91,11 +102,11 @@ const VoucherList = () => {
   return (
     <div className="adminvoucher-container">
       <h2 className="adminvoucher-title">Danh sách mã giảm giá</h2>
-    <div className="adminvoucher-actions">
-  <Link to="/admin/addvoucher" className="adminvoucher-add-btn">
-    + Thêm mã giảm giá
-  </Link>
-</div>
+      <div className="adminvoucher-actions">
+        <Link to="/admin/addvoucher" className="adminvoucher-add-btn">
+          + Thêm mã giảm giá
+        </Link>
+      </div>
 
       <div className="adminvoucher-filters-header">
         <div className="adminvoucher-search-wrapper">
@@ -156,18 +167,40 @@ const VoucherList = () => {
             <div className="row g-3">
               {paginatedVouchers.map((voucher) => (
                 <div className="col-12" key={voucher.voucher_id}>
-                  <CouponAdmin voucher={voucher}>
-                    <div className="admin-actions" style={{ position: "absolute", top: 18, right: 24, display: "flex", gap: "24px" }}>
+                  <div className="admin-voucher-ticket">
+                    <div className="ticket-content">
+                      <div className="ticket-code">Mã: {voucher.code}</div>
+                      <div className="ticket-title">{voucher.title}</div>
+                      <div className="ticket-info-row">
+                        <span>ID: {voucher.voucher_id}</span>
+                        <span>Giảm giá: {formatCurrency(voucher.discount_amount)}</span>
+                        <span>Đơn tối thiểu: {formatCurrency(voucher.min_order_value)}</span>
+                      </div>
+                      <div className="ticket-info-row">
+                        <span>Bắt đầu: {formatDate(voucher.start_date)}</span>
+                        <span>Kết thúc: {formatDate(voucher.end_date)}</span>
+                      </div>
+                      <div className="ticket-info-row">
+                        <span>Trạng thái: {voucher.is_active ? "Đang hoạt động" : "Không hoạt động"}</span>
+                        <span>Tạo lúc: {formatDate(voucher.created_at)}</span>
+                        <span>Cập nhật: {formatDate(voucher.updated_at)}</span>
+                      </div>
+                      {voucher.deleted_at && (
+                        <div className="ticket-info-row">
+                          <span>Đã xóa lúc: {formatDate(voucher.deleted_at)}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="admin-actions">
                       <Link to={`/admin/EditVoucher/${voucher.voucher_id}`}>
-                        <FaEdit className="icon-edit" style={{ fontSize: 68 }} />
+                        <FaEdit className="icon-edit" />
                       </Link>
                       <FaTrash
                         className="icon-delete"
                         onClick={() => handleDelete(voucher.voucher_id)}
-                        style={{ cursor: "pointer", fontSize: 68 }}
                       />
                     </div>
-                  </CouponAdmin>
+                  </div>
                 </div>
               ))}
             </div>

@@ -44,7 +44,7 @@ const Voucher = () => {
         showMainItem2={false}
       />
       <section className="container-fluid">
-        <div className="voucher_margin">
+        <div className="userVoucher-margin">
           <div className="row">
             {paginatedVouchers.map((voucher) => (
               <Coupon
