@@ -46,22 +46,13 @@ class VnpayController extends Controller
             }
         }
 
-        // Tạo mã đơn hàng
+        // Tạo mã đơn hàng tạm thời để sử dụng trong thanh toán
         $orderCode = $this->generateOrderCode();
 
-        $orderId = DB::table('orders')->insertGetId([
-            'user_id' => $user->user_id,
-            'order_code' => $orderCode,
-            'method_id' => 1,
-            'total_amount' => 0,
-            'status' => 'Đang chờ',
-            'payment_status' => 'Chưa thanh toán',
-            'voucher_id' => null,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
+        // Tính tổng tiền
         $total = 0;
+        $orderItems = [];
+
         foreach ($items as $item) {
             if (
                 !is_array($item) ||
@@ -74,24 +65,28 @@ class VnpayController extends Controller
 
             $variant = DB::table('product_variants')->where('variant_id', $item['variant_id'])->first();
             if (!$variant || !is_object($variant) || !isset($variant->product_id)) {
-                continue; // Bỏ qua nếu không tìm thấy variant hoặc không lấy được product_id
+                continue;
             }
 
-            DB::table('order_items')->insert([
-                'order_id' => $orderId,
+            // Lưu thông tin sản phẩm vào session để tạo đơn hàng sau khi thanh toán thành công
+            $orderItems[] = [
                 'product_id' => $variant->product_id,
                 'variant_id' => $item['variant_id'],
                 'quantity' => $item['quantity'],
                 'price' => $item['price_snapshot'],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            ];
+
             $total += $item['price_snapshot'] * $item['quantity'];
         }
 
-        // Cập nhật tổng tiền
-        DB::table('orders')->where('order_id', $orderId)->update([
-            'total_amount' => $total
+        // Lưu thông tin đơn hàng vào session
+        session([
+            'pending_order' => [
+                'user_id' => $user->user_id,
+                'order_code' => $orderCode,
+                'total_amount' => $total,
+                'items' => $orderItems
+            ]
         ]);
 
         // Tạo URL thanh toán VNPAY
@@ -115,7 +110,7 @@ class VnpayController extends Controller
             "vnp_Locale" => "vn",
             "vnp_OrderInfo" => $vnp_OrderInfo,
             "vnp_OrderType" => "billpayment",
-            "vnp_ReturnUrl" => $vnp_Returnurl . '?order_id=' . $orderId,
+            "vnp_ReturnUrl" => $vnp_Returnurl,
             "vnp_TxnRef" => $vnp_TxnRef,
         ];
 
@@ -142,47 +137,57 @@ class VnpayController extends Controller
 
     public function handleReturn(Request $request)
     {
-        $orderId = $request->query('order_id');
         $responseCode = $request->input('vnp_ResponseCode');
+        $vnpTxnRef = $request->input('vnp_TxnRef'); // Mã đơn hàng từ VNPAY
 
-        // Lấy thông tin đơn hàng - sử dụng first() để lấy đối tượng
-        $order = DB::table('orders')->where('order_id', $orderId)->first();
+        // Lấy thông tin đơn hàng từ session
+        $pendingOrder = session('pending_order');
 
-        // Lưu order_code để sử dụng sau này
-        $orderCode = $order->order_code;
+        if (!$pendingOrder || $pendingOrder['order_code'] !== $vnpTxnRef) {
+            return redirect()->away("http://localhost:5173/payment-failed?status=failed&message=invalid_order");
+        }
 
         // Xử lý thanh toán thành công
         if ($responseCode === '00') {
-            DB::transaction(function () use ($order) {
-                // Cập nhật trạng thái đơn hàng
-                DB::table('orders')->where('order_id', $order->order_id)->update([
-                    'status' => 'Đã thanh toán',
+            $orderId = null;
+
+            DB::transaction(function () use ($pendingOrder, &$orderId) {
+                // Tạo đơn hàng mới
+                $orderId = DB::table('orders')->insertGetId([
+                    'user_id' => $pendingOrder['user_id'],
+                    'order_code' => $pendingOrder['order_code'],
+                    'method_id' => 1,
+                    'total_amount' => $pendingOrder['total_amount'],
+                    'status' => 'Chờ xác nhận',
                     'payment_status' => 'Đã thanh toán',
+                    'voucher_id' => null,
+                    'created_at' => now(),
                     'updated_at' => now(),
                 ]);
 
-                // Lấy danh sách order items - sử dụng get() để lấy collection
-                $orderItems = DB::table('order_items')
-                    ->where('order_id', $order->order_id)
-                    ->get();
+                // Thêm các sản phẩm vào đơn hàng
+                foreach ($pendingOrder['items'] as $item) {
+                    DB::table('order_items')->insert([
+                        'order_id' => $orderId,
+                        'product_id' => $item['product_id'],
+                        'variant_id' => $item['variant_id'],
+                        'quantity' => $item['quantity'],
+                        'price' => $item['price'],
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
 
-                if ($orderItems->isNotEmpty()) {
                     // Trừ tồn kho theo biến thể
-                    foreach ($orderItems as $item) {
-                        // Đảm bảo $item là object trước khi truy cập thuộc tính
-                        if (is_object($item) && isset($item->variant_id) && isset($item->quantity)) {
-                            DB::table('product_variants')
-                                ->where('variant_id', $item->variant_id)
-                                ->decrement('stock', $item->quantity);
-                        }
-                    }
+                    DB::table('product_variants')
+                        ->where('variant_id', $item['variant_id'])
+                        ->decrement('stock', $item['quantity']);
                 }
 
-                // Xóa chỉ các sản phẩm đã thanh toán khỏi giỏ hàng
-                $cart = DB::table('carts')->where('user_id', $order->user_id)->first();
+                // Xóa các sản phẩm đã thanh toán khỏi giỏ hàng
+                $cart = DB::table('carts')->where('user_id', $pendingOrder['user_id'])->first();
                 if ($cart && is_object($cart) && isset($cart->cart_id)) {
                     // Lấy danh sách variant_id từ order_items
-                    $paidVariantIds = $orderItems->pluck('variant_id')->toArray();
+                    $paidVariantIds = collect($pendingOrder['items'])->pluck('variant_id')->toArray();
 
                     // Chỉ xóa các sản phẩm trong giỏ hàng có variant_id nằm trong danh sách đã thanh toán
                     if (!empty($paidVariantIds)) {
@@ -194,22 +199,23 @@ class VnpayController extends Controller
                 }
 
                 // Gửi mail nếu có user
-                $user = DB::table('users')->where('user_id', $order->user_id)->first();
+                $user = DB::table('users')->where('user_id', $pendingOrder['user_id'])->first();
                 if ($user && is_object($user) && isset($user->email)) {
+                    $order = DB::table('orders')->where('order_id', $orderId)->first();
                     Mail::to($user->email)->send(new PaymentSuccessMail($order, $user));
                 }
             });
 
-            return redirect()->away("http://localhost:5173/thank-you?order_id={$orderId}&status=success&order_code={$orderCode}");
+            // Xóa thông tin đơn hàng tạm thời khỏi session
+            session()->forget('pending_order');
+
+            return redirect()->away("http://localhost:5173/thank-you?order_id={$orderId}&status=success&order_code={$pendingOrder['order_code']}");
         }
 
-        // Nếu thanh toán thất bại, rollback đơn hàng
-        DB::transaction(function () use ($orderId) {
-            DB::table('order_items')->where('order_id', $orderId)->delete();
-            DB::table('orders')->where('order_id', $orderId)->delete();
-        });
+        // Xóa thông tin đơn hàng tạm thời khỏi session
+        session()->forget('pending_order');
 
-        return redirect()->away("http://localhost:5173/payment-failed?order_id={$orderId}&status=failed&order_code={$orderCode}");
+        return redirect()->away("http://localhost:5173/payment-failed?status=failed&order_code={$pendingOrder['order_code']}");
     }
 
     private function generateOrderCode()
