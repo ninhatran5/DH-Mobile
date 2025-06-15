@@ -24,40 +24,39 @@ const Coupon = ({ voucher, isMyVoucher }) => {
   };
 
   return (
-    <div className="col-md-4 mb-4">
-      <div className="voucher-card d-flex rounded shadow-sm p-3">
-        <div className="voucher-date text-center position-relative">
-          <div className="voucher-circle top-circle"></div>
-          <div className="voucher-date-inner">
-            <span className="voucher-day">
-              <RiShoppingBag3Fill />
-            </span>
-          </div>
-          <div className="voucher-circle bottom-circle"></div>
+    <div className="col-lg-3 mb-4">
+      <div className="userVoucher-card">
+        <div className="userVoucher-leftSide">
+          <RiShoppingBag3Fill className="userVoucher-icon-bag" />
+        </div>
+        
+        <div className="userVoucher-dashedLine">
+          <div className="userVoucher-circle userVoucher-topCircle"></div>
+          <div className="userVoucher-circle userVoucher-bottomCircle"></div>
         </div>
 
-        <div className="voucher-content pl-4">
-          <div className="btn_copy_voucher">
+        <div className="userVoucher-content">
+          <div className="userVoucher-copyBtn">
             {isMyVoucher ? (
               <>
                 <HiSave
                   onClick={handleSaveVoucher}
-                  style={{ cursor: "pointer", width: 28 }}
+                  className="userVoucher-icon"
                 />
-                <span className="tooltip">{t("voucher.iconSave")}</span>
+                <span className="userVoucher-tooltip">{t("voucher.iconSave")}</span>
               </>
             ) : (
               <>
                 <FaCopy
                   onClick={handleCopyVoucher}
-                  style={{ cursor: "pointer" }}
+                  className="userVoucher-icon"
                 />
-                <span className="tooltip">{t("voucher.iconCopy")}</span>
+                <span className="userVoucher-tooltip">{t("voucher.iconCopy")}</span>
               </>
             )}
           </div>
 
-          <small className="fw-bold">{voucher.code}</small>
+          <div className="userVoucher-code">{voucher.code}</div>
           <input
             ref={inputRef}
             value={voucher.code}
@@ -65,12 +64,9 @@ const Coupon = ({ voucher, isMyVoucher }) => {
             style={{ position: "absolute", left: "-9999px" }}
           />
 
-          <h5 className="voucher-heading">{voucher.title}</h5>
-          <div className="voucher-info">
-            <span>
-              {dayjs(voucher.start_date).format("HH:mm | DD.MM.YYYY")} -{" "}
-              {dayjs(voucher.end_date).format("HH:mm | DD.MM.YYYY")}
-            </span>
+          <h5 className="userVoucher-title">{voucher.title}</h5>
+          <div className="userVoucher-date">
+            {dayjs(voucher.start_date).format("HH:mm")} | {dayjs(voucher.start_date).format("DD.MM.YYYY")} - {dayjs(voucher.end_date).format("HH:mm")} | {dayjs(voucher.end_date).format("DD.MM.YYYY")}
           </div>
         </div>
       </div>
