@@ -14,8 +14,22 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('method_id')->nullable();
             $table->decimal('total_amount', 10, 2)->nullable();
-            $table->enum('status', ['Đang chờ', 'Đã thanh toán', 'Đã vận chuyển', 'Đã hoàn thành', 'Đã hủy', 'Đã trả lại'])->default('Đang chờ');
-            $table->enum('payment_status', ['Chưa thanh toán', 'Đã thanh toán', 'Đã hoàn trả', 'Không thành công'])->default('Chưa thanh toán');
+            $table->enum('status', [
+                'Chờ xác nhận',
+                'Chờ lấy hàng',
+                'Đang giao',
+                'Đã giao',
+                'Đã hủy',
+                'Trả hàng/Hoàn tiền'
+            ])->default('Chờ xác nhận');
+
+            $table->enum('payment_status', [
+                'Chưa thanh toán',
+                'Đã thanh toán',
+                'Đã hoàn tiền',
+                'Thanh toán thất bại'
+            ])->default('Chưa thanh toán');
+
             $table->unsignedBigInteger('voucher_id')->nullable();
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
