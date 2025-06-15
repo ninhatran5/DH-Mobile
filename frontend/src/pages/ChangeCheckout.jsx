@@ -97,10 +97,10 @@ const ChangeCheckout = () => {
       try {
         const actionResult = await dispatch(
           fetchVnpayCheckout({
-            user_id: userID,
+            user_id: Number(userID),
             items: selectedItems.map((item) => ({
-              variant_id: item.variant_id,
-              quantity: item.quantity,
+              variant_id: Number(item.variant.variant_id),
+              quantity: Number(item.quantity),
             })),
             total_amount: totalPrice,
             full_name: formData.fullName,
@@ -111,7 +111,7 @@ const ChangeCheckout = () => {
         );
         const result = actionResult.payload;
         if (result && result.payment_url) {
-          window.location.href = result.payment_url;
+          window.open(result.payment_url);
         } else {
           toast.error(t("toast.maxOnlineAmount"));
         }
