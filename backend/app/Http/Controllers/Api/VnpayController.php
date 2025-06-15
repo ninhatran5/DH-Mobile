@@ -26,7 +26,11 @@ class VnpayController extends Controller
         // Kiểm tra tồn kho từng sản phẩm
         foreach ($items as $item) {
             // Kiểm tra item có cấu trúc hợp lệ không
-            if (!is_array($item) || !isset($item['variant_id']) || !isset($item['quantity'])) {
+            if (
+                !is_array($item) ||
+                !array_key_exists('variant_id', $item) ||
+                !array_key_exists('quantity', $item)
+            ) {
                 return response()->json(['message' => 'Dữ liệu sản phẩm không hợp lệ'], 400);
             }
 
@@ -59,8 +63,13 @@ class VnpayController extends Controller
 
         $total = 0;
         foreach ($items as $item) {
-            if (!is_array($item) || !isset($item['variant_id']) || !isset($item['quantity']) || !isset($item['price_snapshot'])) {
-                continue; // Bỏ qua các item không hợp lệ
+            if (
+                !is_array($item) ||
+                !array_key_exists('variant_id', $item) ||
+                !array_key_exists('quantity', $item) ||
+                !array_key_exists('price_snapshot', $item)
+            ) {
+                continue;
             }
 
             $variant = DB::table('product_variants')->where('variant_id', $item['variant_id'])->first();

@@ -18,6 +18,7 @@ const CheckOut = () => {
   const { profile, loading } = useSelector((state) => state.profile);
   const location = useLocation();
   const selectedItems = location.state?.selectedItems || [];
+  console.log("🚀 ~ CheckOut ~ selectedItems:", selectedItems);
   const navigate = useNavigate();
   const handleNextPageDetail = (id) => {
     navigate(`/product-detail/${id}`);
@@ -63,10 +64,11 @@ const CheckOut = () => {
           fetchVnpayCheckout({
             user_id: profile.user.id,
             items: selectedItems.map((item) => ({
-              variant_id: item.variant.id,
-              quantity: item.quantity,
+              variant_id: Number(item.variant.variant_id),
+              quantity: Number(item.quantity),
+              price_snapshot: Number(item.price_snapshot),
             })),
-            total_amount: totalPrice,
+            total_amount: Number(totalPrice),
           })
         );
 
