@@ -6,6 +6,10 @@ import { fetchCategories } from "../../slices/adminCategories";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import "../../assets/admin/AddProduct.css";
+import { fetchAttributeValues } from "../../slices/attributeValueSlice";
+import { fetchAttributes } from "../../slices/Attribute";
+import { addAdminProductVariant } from "../../slices/AdminProductVariants";
+import { addVariantAttributeValue } from "../../slices/variantAttributeValueSlice";
 
 const AdminAddProduct = () => {
   const dispatch = useDispatch();
@@ -23,9 +27,90 @@ const AdminAddProduct = () => {
     price_original: "",
     status: 0,
   });
-
+  const { attributeValues } = useSelector(state => state.attributeValue || {});
+  const { attributes } = useSelector(state => state.attribute || {});
+  const [variantFormData, setVariantFormData] = useState({
+    sku: "",
+    price: "",
+    price_original: "",
+    stock: 0,
+    image_url: "",
+    is_active: 1,
+    attributes: []
+  });
+  
+  useEffect(() => {
+    dispatch(fetchAttributeValues());
+    dispatch(fetchAttributes());
+  }, [dispatch]);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+
+  const [showVariantForm, setShowVariantForm] = useState(false);
+  const [variants, setVariants] = useState([]);
+  const [variantExpanded, setVariantExpanded] = useState([]);
+
+  const handleVariantInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setVariantFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? (checked ? 1 : 0) : value
+    }));
+  };
+  
+  const handleAttributeChange = (attributeId, value_id) => {
+    if (!attributeId || !value_id) return;
+  
+    const selectedValue = attributeValues[attributeId]?.find(
+      av => String(av.value_id) === String(value_id)
+    );
+    const attribute = attributes.find(attr => String(attr.attribute_id) === String(attributeId));
+    if (!selectedValue || !attribute) return;
+  
+    setVariantFormData(prev => {
+      const newAttributes = [...(prev.attributes || [])];
+      const existingIndex = newAttributes.findIndex(
+        attr => String(attr.attribute_id) === String(attributeId)
+      );
+      const newAttribute = {
+        attribute_id: parseInt(attributeId),
+        value_id: parseInt(value_id),
+        name: attribute.name,
+        value: selectedValue.value
+      };
+      if (existingIndex !== -1) {
+        newAttributes[existingIndex] = newAttribute;
+      } else {
+        newAttributes.push(newAttribute);
+      }
+      return { ...prev, attributes: newAttributes };
+    });
+  };
+  
+  const handleAddVariant = () => {
+    if (variants.length >= 3) {
+      toast.warning('Chỉ có thể thêm tối đa 3 biến thể.');
+      return;
+    }
+    setShowVariantForm(true);
+  };
+
+  const handleAddVariantSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!variantFormData.sku.trim()) return toast.warning('SKU không được để trống');
+    if (!variantFormData.price || isNaN(variantFormData.price)) return toast.warning('Giá không hợp lệ');
+    if (!variantFormData.stock || isNaN(variantFormData.stock)) return toast.warning('Số lượng tồn kho không hợp lệ');
+    if (!variantFormData.attributes || variantFormData.attributes.length === 0)
+      return toast.warning('Vui lòng chọn thuộc tính cho biến thể');
+
+    setVariants([...variants, variantFormData]);
+    setVariantFormData({
+      sku: '', price: '', price_original: '', stock: 0, image_url: '', is_active: 1, attributes: []
+    });
+    setShowVariantForm(false);
+    toast.success('Biến thể đã được thêm vào danh sách.');
+  };
 
   const [specifications, setSpecifications] = useState([{ spec_name: "", spec_value: "" }]);
 
@@ -66,14 +151,13 @@ const AdminAddProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation
     if (!formData.category_id || !formData.name || !formData.price) {
-      toast.error("Vui lòng điền đầy đủ các trường bắt buộc.");
+      toast.error('Vui lòng điền đầy đủ các trường bắt buộc.');
       return;
     }
     for (const spec of specifications) {
       if (!spec.spec_name.trim() || !spec.spec_value.trim()) {
-        toast.error("Vui lòng điền đầy đủ thông số kỹ thuật!");
+        toast.error('Vui lòng điền đầy đủ thông số kỹ thuật!');
         return;
       }
     }
@@ -83,7 +167,7 @@ const AdminAddProduct = () => {
       form.append(key, value);
     });
     if (imageFile) {
-      form.append("image_url", imageFile);
+      form.append('image_url', imageFile);
     }
 
     try {
@@ -98,47 +182,88 @@ const AdminAddProduct = () => {
         })).unwrap();
       }
 
-      toast.success("Thêm sản phẩm thành công!");
+      for (const variant of variants) {
+        const variantData = {
+          ...variant,
+          product_id: newProductId
+        };
+        let variantResponse;
+        if (variant.image_url instanceof File) {
+          const imageFormData = new FormData();
+          imageFormData.append('image_url', variant.image_url);
+          Object.entries(variantData).forEach(([key, value]) => {
+            imageFormData.append(key, value);
+          });
+          variantResponse = await dispatch(addAdminProductVariant(imageFormData)).unwrap();
+        } else {
+          variantResponse = await dispatch(addAdminProductVariant(variantData)).unwrap();
+        }
+
+        const variant_id = variantResponse?.variant_id;
+        if (!variant_id) throw new Error('Không nhận được ID biến thể');
+
+        for (const attr of variant.attributes) {
+          await dispatch(addVariantAttributeValue({
+            variant_id,
+            attribute_id: parseInt(attr.attribute_id),
+            value_id: parseInt(attr.value_id)
+          })).unwrap();
+        }
+      }
+
+      toast.success('Thêm sản phẩm và biến thể thành công!');
       setFormData({
-        category_id: "",
-        name: "",
-        description: "",
-        price: "",
-        price_original: "",
+        category_id: '',
+        name: '',
+        description: '',
+        price: '',
+        price_original: '',
         status: 0,
       });
       setImageFile(null);
       setImagePreview(null);
-      setSpecifications([{ spec_name: "", spec_value: "" }]);
-      navigate("/admin/product");
+      setSpecifications([{ spec_name: '', spec_value: '' }]);
+      setVariants([]);
+      navigate('/admin/product');
     } catch (error) {
-      toast.error(error || "Lỗi khi thêm sản phẩm.");
+      toast.error(error || 'Lỗi khi thêm sản phẩm.');
     }
   };
 
+  const toggleVariantExpand = (index) => {
+    setVariantExpanded((prev) => {
+      const newExpanded = [...prev];
+      newExpanded[index] = !newExpanded[index];
+      return newExpanded;
+    });
+  };
+
+  const handleDeleteVariant = (index) => {
+    setVariants((prev) => prev.filter((_, i) => i !== index));
+  };
+
   return (
-    <div className="container mt-2 p-4 rounded shadow" style={{ maxWidth: "1200px", backgroundColor: "#f9f9f9", minHeight: "600px" }}>
-      <h2 className="mb-4 text-center">Thêm sản phẩm mới</h2>
+    <div className="container mt-2 p-4 rounded shadow adminAddProduct-container" style={{ maxWidth: "1200px", backgroundColor: "#f9f9f9", minHeight: "600px" }}>
+      <h2 className="mb-4 text-center adminAddProduct-title">Thêm sản phẩm mới</h2>
       {(productError || specError) && (
-        <div className="alert alert-danger">{productError || specError}</div>
+        <div className="alert alert-danger adminAddProduct-alert">{productError || specError}</div>
       )}
 
-      <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <div className="row">
+      <form onSubmit={handleSubmit} encType="multipart/form-data" className="adminAddProduct-form">
+        <div className="row adminAddProduct-row">
           {/* Cột trái */}
-          <div className="col-md-6">
+          <div className="col-md-6 adminAddProduct-left-column">
             {/* Danh mục */}
-            <div className="mb-3">
-              <label className="form-label fw-bold">Danh mục:</label>
+            <div className="mb-3 adminAddProduct-category">
+              <label className="form-label fw-bold adminAddProduct-label">Danh mục:</label>
               {categoryLoading ? (
-                <div className="form-text">Đang tải danh mục...</div>
+                <div className="form-text adminAddProduct-loading">Đang tải danh mục...</div>
               ) : (
                 <select
                   name="category_id"
                   value={formData.category_id}
                   onChange={handleChange}
-                  className="form-select"
-                  
+                  className="form-select adminAddProduct-select"
                 >
                   <option value="">-- Chọn danh mục --</option>
                   {categories.map((cat) => (
@@ -149,87 +274,83 @@ const AdminAddProduct = () => {
             </div>
 
             {/* Tên sản phẩm */}
-            <div className="mb-3">
-              <label className="form-label fw-bold">Tên sản phẩm:</label>
+            <div className="mb-3 adminAddProduct-name">
+              <label className="form-label fw-bold adminAddProduct-label">Tên sản phẩm:</label>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="form-control"
-                
+                className="form-control adminAddProduct-input"
               />
             </div>
 
             {/* Mô tả */}
-            <div className="mb-3">
-              <label className="form-label fw-bold">Mô tả:</label>
+            <div className="mb-3 adminAddProduct-description">
+              <label className="form-label fw-bold adminAddProduct-label">Mô tả:</label>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                className="form-control"
+                className="form-control adminAddProduct-textarea"
                 rows="4"
               />
             </div>
 
             {/* Giá bán và Giá gốc */}
-            <div className="row">
-              <div className="col-6 mb-3">
-                <label className="form-label fw-bold">Giá bán:</label>
+            <div className="row adminAddProduct-price-row">
+              <div className="col-6 mb-3 adminAddProduct-price">
+                <label className="form-label fw-bold adminAddProduct-label">Giá bán:</label>
                 <input
                   type="number"
                   name="price"
                   value={formData.price}
                   onChange={handleChange}
-                  className="form-control"
-                  
+                  className="form-control adminAddProduct-input"
                 />
               </div>
-              <div className="col-6 mb-3">
-                <label className="form-label fw-bold">Giá gốc:</label>
+              <div className="col-6 mb-3 adminAddProduct-price-original">
+                <label className="form-label fw-bold adminAddProduct-label">Giá gốc:</label>
                 <input
                   type="number"
                   name="price_original"
                   value={formData.price_original}
                   onChange={handleChange}
-                  className="form-control"
+                  className="form-control adminAddProduct-input"
                 />
               </div>
             </div>
 
             {/* Thông số kỹ thuật */}
-            <div className="mb-3">
-              <label className="form-label fw-bold">Thông số kỹ thuật:</label>
+            <div className="mb-3 adminAddProduct-specifications">
+              <label className="form-label fw-bold adminAddProduct-label">Thông số kỹ thuật:</label>
               {specifications.map((spec, index) => (
-                <div key={index} className="row mb-2">
-                  <div className="col-5">
+                <div key={index} className="row mb-2 adminAddProduct-spec-row">
+                  <div className="col-5 adminAddProduct-spec-name">
                     <input
                       type="text"
                       name="spec_name"
                       placeholder="Tên thông số"
                       value={spec.spec_name}
                       onChange={(e) => handleSpecChange(index, e)}
-                      className="form-control"
-                      
+                      className="form-control adminAddProduct-input"
                     />
                   </div>
-                  <div className="col-5">
+                  <div className="col-5 adminAddProduct-spec-value">
                     <input
                       type="text"
                       name="spec_value"
                       placeholder="Giá trị"
                       value={spec.spec_value}
                       onChange={(e) => handleSpecChange(index, e)}
-                      className="form-control"
-                      
+                      className="form-control adminAddProduct-input"
                     />
                   </div>
-                  <div className="col-2">
+                  <div className="col-2 adminAddProduct-spec-remove">
                     {specifications.length > 1 && (
                       <button
                         type="button"
-                        className="btn btn-danger w-100"
+                        className="btn btn-danger w-100 adminAddProduct-remove-btn"
                         onClick={() => removeSpecField(index)}
                       >
                         Xóa
@@ -238,7 +359,7 @@ const AdminAddProduct = () => {
                   </div>
                 </div>
               ))}
-              <button type="button" className="btn btn-primary" onClick={addSpecField}>
+              <button type="button" className="btn btn-primary adminAddProduct-add-spec-btn" onClick={addSpecField}>
                 <i className="bi bi-plus-lg me-1"></i>
                 Thêm thông số kỹ thuật
               </button>
@@ -246,15 +367,15 @@ const AdminAddProduct = () => {
           </div>
 
           {/* Cột phải */}
-          <div className="col-md-6">
+          <div className="col-md-6 adminAddProduct-right-column">
             {/* Trạng thái */}
-            <div className="mb-3">
-              <label className="form-label fw-bold">Trạng thái:</label>
+            <div className="mb-3 adminAddProduct-status">
+              <label className="form-label fw-bold adminAddProduct-label">Trạng thái:</label>
               <select
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
-                className="form-select"
+                className="form-select adminAddProduct-select"
               >
                 <option value={0}>Ẩn</option>
                 <option value={1}>Hiển thị</option>
@@ -262,15 +383,15 @@ const AdminAddProduct = () => {
             </div>
 
             {/* Ảnh */}
-            <div className="mb-3">
-              <label className="form-label fw-bold">Ảnh sản phẩm:</label>
+            <div className="mb-3 adminAddProduct-image">
+              <label className="form-label fw-bold adminAddProduct-label">Ảnh sản phẩm:</label>
               <input 
                 type="file" 
                 onChange={handleFileChange}
-                className="form-control"
+                className="form-control adminAddProduct-input"
               />
               {imagePreview && (
-                <div className="mt-3 text-center">
+                <div className="mt-3 text-center adminAddProduct-image-preview">
                   <img
                     src={imagePreview}
                     alt="Preview"
@@ -283,18 +404,129 @@ const AdminAddProduct = () => {
                 </div>
               )}
             </div>
+
+            {/* Form thêm biến thể */}
+            {variants.map((variant, index) => (
+              <div key={index} className="variant-item adminAddProduct-variant-item">
+                <div className="d-flex justify-content-between align-items-center adminAddProduct-variant-header">
+                  <span>Biến thể {index + 1}</span>
+                  <div>
+                    <button type="button" className="btn btn-link adminAddProduct-expand-btn" onClick={() => toggleVariantExpand(index)}>
+                      {variantExpanded[index] ? 'Thu gọn' : 'Mở rộng'}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-link adminAddProduct-delete-btn"
+                      onClick={() => handleDeleteVariant(index)}
+                    >
+                      Xóa
+                    </button>
+                  </div>
+                </div>
+                {variantExpanded[index] && (
+                  <div className="variant-details adminAddProduct-variant-details">
+                    <p>SKU: {variant.sku}</p>
+                    <p>Giá: {variant.price}</p>
+                    <p>Giá gốc: {variant.price_original}</p>
+                    <p>Tồn kho: {variant.stock}</p>
+                    <p>Trạng thái: {variant.is_active ? 'Kích hoạt' : 'Không kích hoạt'}</p>
+                    <p>Ảnh URL: {variant.image_url instanceof File ? URL.createObjectURL(variant.image_url) : variant.image_url}</p>
+                    <p>Thuộc tính:</p>
+                    <ul>
+                      {variant.attributes.map((attr, i) => (
+                        <li key={i}>{attr.name}: {attr.value}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            ))}
+
+            <button type="button" className="btn btn-secondary adminAddProduct-add-variant-btn" onClick={handleAddVariant}>
+              Thêm biến thể
+            </button>
+
+            {showVariantForm && (
+              <div className="mt-4 adminAddProduct-variant-form">
+                <h4>Thêm biến thể sản phẩm</h4>
+                <div className="mb-3 adminAddProduct-variant-sku">
+                  <label>SKU:</label>
+                  <input className="form-control adminAddProduct-input" name="sku" value={variantFormData.sku} onChange={handleVariantInputChange} />
+                </div>
+                <div className="mb-3 adminAddProduct-variant-price">
+                  <label>Giá:</label>
+                  <input type="number" className="form-control adminAddProduct-input" name="price" value={variantFormData.price} onChange={handleVariantInputChange} />
+                </div>
+                <div className="mb-3 adminAddProduct-variant-price-original">
+                  <label>Giá gốc:</label>
+                  <input type="number" className="form-control adminAddProduct-input" name="price_original" value={variantFormData.price_original} onChange={handleVariantInputChange} />
+                </div>
+                <div className="mb-3 adminAddProduct-variant-stock">
+                  <label>Tồn kho:</label>
+                  <input type="number" className="form-control adminAddProduct-input" name="stock" value={variantFormData.stock} onChange={handleVariantInputChange} />
+                </div>
+                <div className="mb-3 adminAddProduct-variant-image">
+                  <label>Ảnh:</label>
+                  <input
+                    type="file"
+                    className="form-control adminAddProduct-input"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        setVariantFormData((prev) => ({ ...prev, image_url: file }));
+                      }
+                    }}
+                  />
+                </div>
+                <div className="mb-3 adminAddProduct-variant-attributes">
+                  <label>Thuộc tính:</label>
+                  {attributes.map(attribute => (
+                    <div key={attribute.attribute_id} className="mb-2 adminAddProduct-attribute">
+                      <label>{attribute.name}</label>
+                      <select
+                        className="form-select adminAddProduct-select"
+                        onChange={(e) => handleAttributeChange(attribute.attribute_id, e.target.value)}
+                        value={
+                          variantFormData.attributes.find(a => a.attribute_id === attribute.attribute_id)?.value_id || ''
+                        }
+                      >
+                        <option value="">-- Chọn {attribute.name} --</option>
+                        {attributeValues[attribute.attribute_id]?.map(val => (
+                          <option key={val.value_id} value={val.value_id}>{val.value}</option>
+                        ))}
+                      </select>
+                    </div>
+                  ))}
+                </div>
+                <div className="form-check mb-3 adminAddProduct-variant-active">
+                  <input
+                    className="form-check-input adminAddProduct-checkbox"
+                    type="checkbox"
+                    name="is_active"
+                    checked={variantFormData.is_active === 1}
+                    onChange={handleVariantInputChange}
+                  />
+                  <label className="form-check-label adminAddProduct-label">Kích hoạt</label>
+                </div>
+                <div className="d-flex justify-content-between adminAddProduct-variant-buttons">
+                  <button className="btn btn-primary adminAddProduct-add-variant-submit-btn" type="button" onClick={handleAddVariantSubmit}>Thêm biến thể</button>
+                  <button className="btn btn-secondary adminAddProduct-cancel-btn" type="button" onClick={() => setShowVariantForm(false)}>Hủy</button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="text-center mt-4">
+        <div className="text-center mt-4 adminAddProduct-submit">
           <button
             type="submit"
-            className="btn btn-primary btn-lg"
+            className="btn btn-primary btn-lg adminAddProduct-submit-btn"
             disabled={productLoading || specLoading}
           >
             {(productLoading || specLoading) ? (
               <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                <span className="spinner-border spinner-border-sm me-2 adminAddProduct-spinner" role="status" aria-hidden="true"></span>
                 Đang thêm...
               </>
             ) : (
@@ -304,6 +536,7 @@ const AdminAddProduct = () => {
         </div>
       </form>
     </div>
+    
   );
 };
 

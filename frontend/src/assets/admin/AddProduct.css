@@ -578,3 +578,10 @@
     transform: translateY(0);
   }
 }
+.adminaddproduct-delete-btn {
+  color: #dc3545 !important;
+  font-weight: bold;
+  opacity: 1 !important;
+  text-decoration: underline;
+}
+
