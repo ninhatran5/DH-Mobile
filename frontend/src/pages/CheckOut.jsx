@@ -74,7 +74,7 @@ const CheckOut = () => {
 
         const result = actionResult.payload;
         if (result && result.payment_url) {
-          window.location.href = result.payment_url;
+          window.open(result.payment_url);
         } else {
           toast.error(t("toast.maxOnlineAmount"));
         }
