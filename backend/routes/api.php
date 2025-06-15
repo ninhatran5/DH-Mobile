@@ -1,12 +1,15 @@
 <?php
 
-use App\Http\Controllers\Api\PaymentMethodController;
+use GuzzleHttp\Client;
 use App\Http\Middleware\CheckAdmin;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\CodController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\VnpayController;
 use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\VoucherController;
@@ -14,19 +17,18 @@ use App\Http\Controllers\Api\CartItemController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\AttributeController;
 use App\Http\Controllers\Api\ProductLikeController;
+use App\Http\Controllers\Api\PaymentMethodController;
+use App\Http\Controllers\Api\ProductsViewsController;
 use App\Http\Controllers\Api\AttributevalueController;
-use App\Http\Controllers\Api\CodController;
 use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
-use App\Http\Controllers\Api\ProductsViewsController;
 use App\Http\Controllers\Api\VariantAttributeValuesController;
-use App\Http\Controllers\Api\VnpayController;
 
 
 
 
 
-
+// API than toán
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/vnpay/checkout', [VnpayController::class, 'createPayment']);
     Route::post('/codpay/checkout', [CodController::class, 'createCodOrder']);
@@ -240,4 +242,16 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('addPayment', [PaymentMethodController::class, 'addPayment']);
         });
     });
+
+    // đơn hàng
+
+    Route::middleware('auth:sanctum')->group(function(){
+        // Client
+        Route::get('getOrder',[OrderController::class , 'getOrder']);
+        Route::get('getDetailOrder',[OrderController::class , 'getOrder']);
+    });
+
+
+
+
 });

@@ -1,59 +1,22 @@
 import OrderHistory from "./OrderHistory";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { fetchOrder } from "../slices/orderSlice";
+import Loading from "./Loading";
 
 const OrderTable = () => {
-  const orders = [
-    {
-      id: 1,
-      orderCode: "ORD001",
-      product: "ÁKDFJK",
-      price: "1.000.000₫",
-      location: "Thanh Hóa",
-      paymentMethod: "Thanh toán online",
-      status: "Đang giao hàng",
-    },
-    {
-      id: 2,
-      orderCode: "ORD002",
-      product: "ÁKDFJK",
-      price: "1.000.000₫",
-      location: "Thanh Hóa",
-      paymentMethod: "Thanh toán online",
-      status: "Đang giao hàng",
-    },
-    {
-      id: 3,
-      orderCode: "ORD003",
-      product: "ÁKDFJK",
-      price: "1.000.000₫",
-      location: "Thanh Hóa",
-      paymentMethod: "Thanh toán online",
-      status: "Đang giao hàng",
-    },
-    {
-      id: 4,
-      orderCode: "ORD004",
-      product: "ÁKDFJK",
-      price: "1.000.000₫",
-      location: "Thanh Hóa",
-      paymentMethod: "Thanh toán online",
-      status: "Đang giao hàng",
-    },
-    {
-      id: 5,
-      orderCode: "ORD005",
-      product: "ÁKDFJK",
-      price: "1.000.000₫",
-      location: "Thanh Hóa",
-      paymentMethod: "Thanh toán online",
-      status: "Đang giao hàng",
-    },
-  ];
+  const dispatch = useDispatch();
+  const { orders, loading } = useSelector((state) => state.order);
   const { t } = useTranslation();
 
+  useEffect(() => {
+    dispatch(fetchOrder());
+  }, [dispatch]);
   return (
     <>
+      {loading && <Loading />}
       <Breadcrumb
         title={t("breadcrumbOrder.breadcrumbHeader")}
         mainItem={t("header.home")}
@@ -72,7 +35,24 @@ const OrderTable = () => {
           padding: "1.5rem",
         }}
       >
-        <OrderHistory orders={orders} />
+        <div className="profile-table-wrapper">
+          <table className="profile-table">
+            <thead>
+              <tr>
+                <th>{t("orderHistory.orderCode")}</th>
+                <th>{t("orderHistory.orderName")}</th>
+                <th>{t("orderHistory.price")}</th>
+                <th>{t("orderHistory.address")}</th>
+                <th>{t("orderHistory.paymentMethod")}</th>
+                <th>{t("orderHistory.status")}</th>
+                <th>{t("orderHistory.detail")}</th>
+              </tr>
+            </thead>
+            {orders.map((order) => (
+              <OrderHistory key={order.order_id} order={order} />
+            ))}
+          </table>
+        </div>
       </div>
     </>
   );

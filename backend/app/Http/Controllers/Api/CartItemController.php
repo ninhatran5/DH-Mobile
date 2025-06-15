@@ -102,11 +102,11 @@ class CartItemController extends Controller
             ->with(['variant.product','variant.attributeValues'])
             ->get();
 
-        $totalPrice = $cartItems->where('is_selected', true)->sum(function ($item) {
+        $totalPrice = $cartItems->sum(function ($item) {
             return $item->variant->price * $item->quantity;
         });
 
-        $selectedCount = $cartItems->where('is_selected', true)->count();
+        $selectedCount = $cartItems->count();
 
         return response()->json([
             'message' => 'Lấy giỏ hàng thành công',

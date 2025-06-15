@@ -161,7 +161,7 @@
         </div>
 
         <div class="receipt-title">HÓA ĐƠN THANH TOÁN</div>
-        <div class="receipt-id">Mã đơn hàng: #{{ $order->order_id }}</div>
+        <div class="receipt-id">Mã đơn hàng: #{{ $order->order_code }}</div>
         <div class="receipt-date">Ngày: {{ date('d/m/Y H:i:s') }}</div>
 
         <div class="divider"></div>

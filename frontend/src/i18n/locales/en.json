@@ -289,6 +289,12 @@
     "backToHome": "Back to Home",
     "trackOrder": "Track Order"
   },
+  "paymentfailed": {
+    "paymentErrorr": "Payment Failed",
+    "thankYouMessage": "An error occurred during the payment process",
+    "thankYouMessage2": "Please try again or contact support for prompt assistance",
+    "backToHome": "Back to Home"
+  },
   "profile": {
     "title": "Personal Profile",
     "home": "Home",

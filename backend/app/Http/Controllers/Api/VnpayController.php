@@ -13,73 +13,82 @@ use Illuminate\Support\Facades\Mail;
 
 class VnpayController extends Controller
 {
+
     public function createPayment(Request $request)
     {
         $user = Auth::user();
 
-        $cart = DB::table('carts')->where('user_id', $user->user_id)->first();
-        if (!$cart) return response()->json(['message' => 'Giỏ hàng rỗng'], 400);
-
-        // Chỉ lấy các sản phẩm đã được chọn
-        $cartItems = DB::table('cart_items')
-            ->where('cart_id', $cart->cart_id)
-            ->where('is_selected', true)
-            ->get();
-
-        if ($cartItems->isEmpty()) {
-            return response()->json([
-                'message' => 'Vui lòng chọn sản phẩm để thanh toán'
-            ], 400);
+        $items = $request->input('items');
+        if (empty($items) || !is_array($items)) {
+            return response()->json(['message' => 'Không có sản phẩm nào được chọn'], 400);
         }
 
-        // Kiểm tra số lượng tồn kho của các sản phẩm được chọn
-        foreach ($cartItems as $item) {
+        // Kiểm tra tồn kho từng sản phẩm
+        foreach ($items as $item) {
+            // Kiểm tra item có cấu trúc hợp lệ không
+            if (!is_array($item) || !isset($item['variant_id']) || !isset($item['quantity'])) {
+                return response()->json(['message' => 'Dữ liệu sản phẩm không hợp lệ'], 400);
+            }
+
             $variant = DB::table('product_variants')
-                ->where('variant_id', $item->variant_id)
+                ->where('variant_id', $item['variant_id'])
                 ->first();
 
-            if (!$variant || $variant->stock < $item->quantity) {
+            if (!$variant || !is_object($variant) || !isset($variant->stock) || $variant->stock < $item['quantity']) {
                 return response()->json([
                     'message' => 'Sản phẩm đã hết hàng hoặc không đủ số lượng',
-                    'variant_id' => $item->variant_id
+                    'variant_id' => $item['variant_id']
                 ], 400);
             }
         }
 
+        // Tạo mã đơn hàng
+        $orderCode = $this->generateOrderCode();
+
         $orderId = DB::table('orders')->insertGetId([
             'user_id' => $user->user_id,
-            'method_id' => 1, // VNPAY giả định
-            'total_amount' => 0, // Sẽ cập nhật lại
-            'status' => 'đang chờ',
-            'payment_status' => 'chưa thanh toán',
+            'order_code' => $orderCode,
+            'method_id' => 1,
+            'total_amount' => 0,
+            'status' => 'Đang chờ',
+            'payment_status' => 'Chưa thanh toán',
             'voucher_id' => null,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
         $total = 0;
-        foreach ($cartItems as $item) {
+        foreach ($items as $item) {
+            if (!is_array($item) || !isset($item['variant_id']) || !isset($item['quantity']) || !isset($item['price_snapshot'])) {
+                continue; // Bỏ qua các item không hợp lệ
+            }
+
+            $variant = DB::table('product_variants')->where('variant_id', $item['variant_id'])->first();
+            if (!$variant || !is_object($variant) || !isset($variant->product_id)) {
+                continue; // Bỏ qua nếu không tìm thấy variant hoặc không lấy được product_id
+            }
+
             DB::table('order_items')->insert([
                 'order_id' => $orderId,
-                'product_id' => DB::table('product_variants')->where('variant_id', $item->variant_id)->value('product_id'),
-                'variant_id' => $item->variant_id,
-                'quantity' => $item->quantity,
-                'price' => $item->price_snapshot,
+                'product_id' => $variant->product_id,
+                'variant_id' => $item['variant_id'],
+                'quantity' => $item['quantity'],
+                'price' => $item['price_snapshot'],
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-            $total += $item->price_snapshot * $item->quantity;
+            $total += $item['price_snapshot'] * $item['quantity'];
         }
 
-        // Cập nhật lại tổng tiền - đảm bảo giá trị nằm trong phạm vi cho phép
+        // Cập nhật tổng tiền
         DB::table('orders')->where('order_id', $orderId)->update([
             'total_amount' => $total
         ]);
 
         // Tạo URL thanh toán VNPAY
-        $vnp_TxnRef = Str::uuid();
-        $vnp_OrderInfo = 'Thanh toán đơn hàng #' . $orderId;
-        $vnp_Amount = (int)($total * 100); // VNPAY requires amount in smallest currency unit (cents)
+        $vnp_TxnRef = $orderCode;
+        $vnp_OrderInfo = 'Thanh toán đơn hàng ' . $orderCode;
+        $vnp_Amount = (int)($total * 100);
 
         $vnp_Url = config('vnpay.vnp_Url');
         $vnp_Returnurl = config('vnpay.vnp_ReturnUrl');
@@ -110,12 +119,16 @@ class VnpayController extends Controller
             $query .= $encodedKey . "=" . $encodedValue . "&";
             $hashdata .= $encodedKey . "=" . $encodedValue . "&";
         }
+
         $query = rtrim($query, "&");
         $hashdata = rtrim($hashdata, "&");
         $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
         $vnpUrl = $vnp_Url . "?" . $query . '&vnp_SecureHash=' . $vnpSecureHash;
 
-        return response()->json(['payment_url' => $vnpUrl]);
+        return response()->json([
+            'payment_url' => $vnpUrl,
+            'order_code' => $orderCode
+        ]);
     }
 
     public function handleReturn(Request $request)
@@ -123,43 +136,79 @@ class VnpayController extends Controller
         $orderId = $request->query('order_id');
         $responseCode = $request->input('vnp_ResponseCode');
 
-        if ($responseCode == '00') {
-            // Cập nhật trạng thái đơn hàng trước
-            DB::table('orders')->where('order_id', $orderId)->update([
-                'status' => 'đã thanh toán',
-                'payment_status' => 'đã thanh toán',
-                'updated_at' => now(),
-            ]);
+        // Lấy thông tin đơn hàng - sử dụng first() để lấy đối tượng
+        $order = DB::table('orders')->where('order_id', $orderId)->first();
 
-            // Trừ số lượng biến thể sản phẩm trong đơn hàng
-            $orderItems = DB::table('order_items')->where('order_id', $orderId)->get();
+        // Lưu order_code để sử dụng sau này
+        $orderCode = $order->order_code;
 
-            foreach ($orderItems as $item) {
-                DB::table('product_variants')
-                    ->where('variant_id', $item->variant_id)
-                    ->decrement('stock', $item->quantity);
-            }
+        // Xử lý thanh toán thành công
+        if ($responseCode === '00') {
+            DB::transaction(function () use ($order) {
+                // Cập nhật trạng thái đơn hàng
+                DB::table('orders')->where('order_id', $order->order_id)->update([
+                    'status' => 'Đã thanh toán',
+                    'payment_status' => 'Đã thanh toán',
+                    'updated_at' => now(),
+                ]);
 
-            // Sau đó mới lấy thông tin đơn hàng đã được cập nhật
-            $order = DB::table('orders')->where('order_id', $orderId)->first();
+                // Lấy danh sách order items - sử dụng get() để lấy collection
+                $orderItems = DB::table('order_items')
+                    ->where('order_id', $order->order_id)
+                    ->get();
 
-            // Lấy thông tin người dùng
-            $user = DB::table('users')->where('user_id', $order->user_id)->first();
+                if ($orderItems->isNotEmpty()) {
+                    // Trừ tồn kho theo biến thể
+                    foreach ($orderItems as $item) {
+                        // Đảm bảo $item là object trước khi truy cập thuộc tính
+                        if (is_object($item) && isset($item->variant_id) && isset($item->quantity)) {
+                            DB::table('product_variants')
+                                ->where('variant_id', $item->variant_id)
+                                ->decrement('stock', $item->quantity);
+                        }
+                    }
+                }
 
-            Mail::to($user->email)->send(new PaymentSuccessMail($order, $user));
+                // Xóa các sản phẩm đã chọn khỏi giỏ hàng
+                $cart = DB::table('carts')->where('user_id', $order->user_id)->first();
+                if ($cart && is_object($cart) && isset($cart->cart_id)) {
+                    DB::table('cart_items')
+                        ->where('cart_id', $cart->cart_id)
+                        // ->where('is_selected', true)
+                        ->delete();
+                }
 
-            // Chỉ xóa các sản phẩm đã chọn khỏi giỏ hàng
-            $cart = DB::table('carts')->where('user_id', $order->user_id)->first();
-            if ($cart) {
-                DB::table('cart_items')
-                    ->where('cart_id', $cart->cart_id)
-                    ->where('is_selected', true)
-                    ->delete();
-            }
+                // Gửi mail nếu có user
+                $user = DB::table('users')->where('user_id', $order->user_id)->first();
+                if ($user && is_object($user) && isset($user->email)) {
+                    Mail::to($user->email)->send(new PaymentSuccessMail($order, $user));
+                }
+            });
 
-            return redirect()->away("http://localhost:5173/thank-you?order_id={$orderId}&status=success");
+            return redirect()->away("http://localhost:5173/thank-you?order_id={$orderId}&status=success&order_code={$orderCode}");
         }
 
-        return redirect()->away("http://localhost:5173/payment-failed?order_id={$orderId}&status=success");
+        // Nếu thanh toán thất bại, rollback đơn hàng
+        DB::transaction(function () use ($orderId) {
+            DB::table('order_items')->where('order_id', $orderId)->delete();
+            DB::table('orders')->where('order_id', $orderId)->delete();
+        });
+
+        return redirect()->away("http://localhost:5173/payment-failed?order_id={$orderId}&status=failed&order_code={$orderCode}");
+    }
+
+    private function generateOrderCode()
+    {
+        $prefix = 'DH'; // Prefix cho mã đơn hàng (DH = Đơn Hàng)
+        $timestamp = now()->format('ymd'); // Format: YYMMDD
+        $randomStr = strtoupper(Str::random(4)); // 4 ký tự ngẫu nhiên
+
+        // Đếm số đơn hàng trong ngày để tạo số thứ tự
+        $orderCount = DB::table('orders')
+            ->whereDate('created_at', today())
+            ->count();
+        $sequence = str_pad($orderCount + 1, 4, '0', STR_PAD_LEFT); // Số thứ tự 4 chữ số
+
+        return $prefix . $timestamp . $sequence . $randomStr;
     }
 }

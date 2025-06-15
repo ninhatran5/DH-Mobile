@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PaymentSuccessMail;
+use Illuminate\Support\Str;
 
 class CodController extends Controller
 {
@@ -17,25 +18,37 @@ class CodController extends Controller
         // Lấy thông tin người dùng đang đăng nhập
         $user = Auth::user();
 
+        $orderId = $request->query('order_id');
+
         // Tìm giỏ hàng tương ứng với người dùng
         $cart = DB::table('carts')->where('user_id', $user->user_id)->first();
         if (!$cart) return response()->json(['message' => 'Giỏ hàng rỗng'], 400);
 
         // Lấy danh sách các sản phẩm trong giỏ hàng
-        $cartItems = DB::table('cart_items')->where('cart_id', $cart->cart_id)->get();
+        $cartItems = DB::table('cart_items')->where('cart_id', $cart->cart_id)->where('is_selected', true)->get();
         if ($cartItems->isEmpty()) return response()->json(['message' => 'Giỏ hàng trống'], 400);
+
+        // Lấy thông tin đơn hàng trước khi xử lý
+        $order = DB::table('orders')->where('order_id', $orderId)->first();
+        if (!$order) {
+            return redirect()->away("http://localhost:5173/payment-failed?status=failed&message=order_not_found");
+        }
 
         // Bắt đầu transaction để đảm bảo tính toàn vẹn dữ liệu
         DB::beginTransaction();
+
+        // Tạo mã đơn hàng
+        $orderCode = $this->generateOrderCode();
 
         try {
             // Tạo đơn hàng mới với phương thức COD (method_id = 2)
             $orderId = DB::table('orders')->insertGetId([
                 'user_id' => $user->user_id,
+                'order_code' => $orderCode,
                 'method_id' => 2, // 2 = COD
                 'total_amount' => 0, // Tổng tiền sẽ được cập nhật sau
-                'status' => 'chờ xử lý', // Trạng thái: đang xử lý
-                'payment_status' => 'chưa thanh toán', // Chưa thanh toán
+                'status' => 'Đang chờ', // Trạng thái: đang xử lý
+                'payment_status' => 'Chưa thanh toán', // Chưa thanh toán
                 'voucher_id' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -89,8 +102,15 @@ class CodController extends Controller
             // $userData = DB::table('users')->where('user_id', $user->user_id)->first();
             // Mail::to($userData->email)->send(new PaymentSuccessMail($order, $userData));
 
-            // Xoá toàn bộ sản phẩm trong giỏ hàng (sau khi đã đặt đơn)
-            DB::table('cart_items')->where('cart_id', $cart->cart_id)->delete();
+            // Chỉ xóa các sản phẩm đã chọn khỏi giỏ hàng
+            $cart = DB::table('carts')->where('user_id', $order->user_id)->first();
+            if ($cart) {
+                DB::table('cart_items')
+                    ->where('cart_id', $cart->cart_id)
+                    ->where('is_selected', true)
+                    ->delete();
+            }
+            return redirect()->away("http://localhost:5173/thank-you?order_id={$orderId}&status=success&order_code={$order->order_code}");
 
 
             // Commit dữ liệu - lưu thay đổi vào database
@@ -106,5 +126,19 @@ class CodController extends Controller
             DB::rollBack();
             return response()->json(['message' => 'Đặt hàng thất bại', 'error' => $th->getMessage()], 500);
         }
+    }
+    private function generateOrderCode()
+    {
+        $prefix = 'DH'; // Prefix cho mã đơn hàng (DH = Đơn Hàng)
+        $timestamp = now()->format('ymd'); // Format: YYMMDD
+        $randomStr = strtoupper(Str::random(4)); // 4 ký tự ngẫu nhiên
+
+        // Đếm số đơn hàng trong ngày để tạo số thứ tự
+        $orderCount = DB::table('orders')
+            ->whereDate('created_at', today())
+            ->count();
+        $sequence = str_pad($orderCount + 1, 4, '0', STR_PAD_LEFT); // Số thứ tự 4 chữ số
+
+        return $prefix . $timestamp . $sequence . $randomStr;
     }
 }
