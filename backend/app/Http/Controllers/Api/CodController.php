@@ -168,10 +168,10 @@ class CodController extends Controller
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
-            return response()->json([
-                'message' => 'Đặt hàng thất bại',
-                'error' => $e->getMessage()
-            ], 500);
+            // return response()->json([
+            //     'message' => 'Đặt hàng thất bại',
+            //     'error' => $e->getMessage()
+            // ], 500);
         }
     }
 
