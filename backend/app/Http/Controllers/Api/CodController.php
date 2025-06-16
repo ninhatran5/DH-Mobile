@@ -16,6 +16,36 @@ class CodController extends Controller
     {
         $user = Auth::user();
 
+        $items = $request->input('items');
+        if (empty($items) || !is_array($items)) {
+            return response()->json(['message' => 'Không có sản phẩm nào được chọn'], 400);
+        }
+
+
+        foreach ($items as $item) {
+            // Kiểm tra item có cấu trúc hợp lệ không
+            if (
+                !is_array($item) ||
+                !array_key_exists('variant_id', $item) ||
+                !array_key_exists('quantity', $item)
+            ) {
+                return response()->json(['message' => 'Dữ liệu sản phẩm không hợp lệ'], 400);
+            }
+
+            $variant = DB::table('product_variants')
+                ->where('variant_id', $item['variant_id'])
+                ->first();
+
+            if (!$variant || !is_object($variant) || !isset($variant->stock) || $variant->stock < $item['quantity']) {
+                return response()->json([
+                    'message' => 'Sản phẩm đã hết hàng hoặc không đủ số lượng',
+                    'variant_id' => $item['variant_id']
+                ], 400);
+            }
+        }
+
+
+
         // Kiểm tra người dùng đã có giỏ hàng chưa
         $cart = DB::table('carts')->where('user_id', $user->user_id)->first();
         if (!$cart) {
@@ -29,6 +59,8 @@ class CodController extends Controller
         }
 
         DB::beginTransaction();
+
+        
         try {
             $orderCode = $this->generateOrderCode();
 
@@ -44,50 +76,77 @@ class CodController extends Controller
                 'updated_at' => now(),
             ]);
 
+
+            // Lấy thông tin đơn hàng - sử dụng first() để lấy đối tượng
+            $order = DB::table('orders')->where('order_id', $orderId)->first();
             $total = 0;
 
-            foreach ($cartItems as $item) {
-                $variant = DB::table('product_variants')
-                    ->where('variant_id', $item->variant_id)
-                    ->first();
-
-                if (!$variant || $variant->stock < $item->quantity) {
-                    DB::rollBack();
-                    return response()->json([
-                        'message' => 'Sản phẩm đã hết hàng hoặc không đủ số lượng',
-                        'variant_id' => $item->variant_id
-                    ], 400);
+            foreach ($items as $item) {
+                if (
+                    !is_array($item) ||
+                    !array_key_exists('variant_id', $item) ||
+                    !array_key_exists('quantity', $item) ||
+                    !array_key_exists('price_snapshot', $item)
+                ) {
+                    continue;
                 }
 
-                if (!isset($item->price_snapshot)) {
-                    DB::rollBack();
-                    return response()->json(['message' => 'Thiếu giá sản phẩm'], 400);
+                $variant = DB::table('product_variants')->where('variant_id', $item['variant_id'])->first();
+                if (!$variant || !is_object($variant) || !isset($variant->product_id)) {
+                    continue; // Bỏ qua nếu không tìm thấy variant hoặc không lấy được product_id
                 }
 
                 DB::table('order_items')->insert([
                     'order_id' => $orderId,
                     'product_id' => $variant->product_id,
-                    'variant_id' => $item->variant_id,
-                    'quantity' => $item->quantity,
-                    'price' => $item->price_snapshot,
+                    'variant_id' => $item['variant_id'],
+                    'quantity' => $item['quantity'],
+                    'price' => $item['price_snapshot'],
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
-
-                $total += $item->price_snapshot * $item->quantity;
-
-                DB::table('product_variants')
-                    ->where('variant_id', $item->variant_id)
-                    ->decrement('stock', $item->quantity);
+                $total += $item['price_snapshot'] * $item['quantity'];
             }
 
+            // cập nhật tổng tiền 
             DB::table('orders')->where('order_id', $orderId)->update([
                 'total_amount' => $total,
                 'updated_at' => now(),
             ]);
 
-            // Xóa các item đã mua khỏi giỏ hàng
-            DB::table('cart_items')->where('cart_id', $cart->cart_id)->delete();
+
+            // Lấy danh sách order items - sử dụng get() để lấy collection
+            $orderItems = DB::table('order_items')
+                ->where('order_id', $order->order_id)
+                ->get();
+
+            if ($orderItems->isNotEmpty()) {
+                // Trừ tồn kho theo biến thể
+                foreach ($orderItems as $item) {
+                    // Đảm bảo $item là object trước khi truy cập thuộc tính
+                    if (is_object($item) && isset($item->variant_id) && isset($item->quantity)) {
+                        DB::table('product_variants')
+                            ->where('variant_id', $item->variant_id)
+                            ->decrement('stock', $item->quantity);
+                    }
+                }
+            }
+
+            // Xóa chỉ các sản phẩm đã thanh toán khỏi giỏ hàng
+            $cart = DB::table('carts')->where('user_id', $order->user_id)->first();
+            if ($cart && is_object($cart) && isset($cart->cart_id)) {
+                // Lấy danh sách variant_id từ order_items
+                $paidVariantIds = $orderItems->pluck('variant_id')->toArray();
+
+                // Chỉ xóa các sản phẩm trong giỏ hàng có variant_id nằm trong danh sách đã thanh toán
+                if (!empty($paidVariantIds)) {
+                    DB::table('cart_items')
+                        ->where('cart_id', $cart->cart_id)
+                        ->whereIn('variant_id', $paidVariantIds)
+                        ->delete();
+                }
+            }
+
 
             // Gửi email
             $order = DB::table('orders')->where('order_id', $orderId)->first();
