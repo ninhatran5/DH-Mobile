@@ -29,17 +29,14 @@ class CodController extends Controller
         }
 
         DB::beginTransaction();
-
         try {
-            // Tạo mã đơn hàng
             $orderCode = $this->generateOrderCode();
 
-            // Tạo đơn hàng
             $orderId = DB::table('orders')->insertGetId([
                 'user_id' => $user->user_id,
                 'order_code' => $orderCode,
-                'method_id' => 2, // COD
-                'total_amount' => 0, // Sẽ cập nhật sau
+                'method_id' => 2,
+                'total_amount' => 0,
                 'status' => 'Chờ xác nhận',
                 'payment_status' => 'Chưa thanh toán',
                 'voucher_id' => null,
@@ -62,7 +59,11 @@ class CodController extends Controller
                     ], 400);
                 }
 
-                // Thêm vào order_items
+                if (!isset($item->price_snapshot)) {
+                    DB::rollBack();
+                    return response()->json(['message' => 'Thiếu giá sản phẩm'], 400);
+                }
+
                 DB::table('order_items')->insert([
                     'order_id' => $orderId,
                     'product_id' => $variant->product_id,
@@ -73,25 +74,22 @@ class CodController extends Controller
                     'updated_at' => now(),
                 ]);
 
-                // Tính tổng tiền
                 $total += $item->price_snapshot * $item->quantity;
 
-                // Trừ tồn kho
                 DB::table('product_variants')
                     ->where('variant_id', $item->variant_id)
                     ->decrement('stock', $item->quantity);
             }
 
-            // Cập nhật lại tổng tiền
             DB::table('orders')->where('order_id', $orderId)->update([
                 'total_amount' => $total,
                 'updated_at' => now(),
             ]);
 
-            // Xoá giỏ hàng sau khi đặt
+            // Xóa các item đã mua khỏi giỏ hàng
             DB::table('cart_items')->where('cart_id', $cart->cart_id)->delete();
 
-            //  Gửi email xác nhận
+            // Gửi email
             $order = DB::table('orders')->where('order_id', $orderId)->first();
             $userData = DB::table('users')->where('user_id', $user->user_id)->first();
             Mail::to($userData->email)->send(new CodPaymentSuccessMail($order, $userData));
@@ -112,16 +110,17 @@ class CodController extends Controller
         }
     }
 
-    // Hàm tạo mã đơn hàng duy nhất
     private function generateOrderCode()
     {
-        $prefix = 'DH';
-        $timestamp = now()->format('ymd'); // YYMMDD
-        $randomStr = strtoupper(Str::random(4));
+        $prefix = 'DH'; // Prefix cho mã đơn hàng (DH = Đơn Hàng)
+        $timestamp = now()->format('ymd'); // Format: YYMMDD
+        $randomStr = strtoupper(Str::random(4)); // 4 ký tự ngẫu nhiên
+
+        // Đếm số đơn hàng trong ngày để tạo số thứ tự
         $orderCount = DB::table('orders')
             ->whereDate('created_at', today())
             ->count();
-        $sequence = str_pad($orderCount + 1, 4, '0', STR_PAD_LEFT);
+        $sequence = str_pad($orderCount + 1, 4, '0', STR_PAD_LEFT); // Số thứ tự 4 chữ số
 
         return $prefix . $timestamp . $sequence . $randomStr;
     }
