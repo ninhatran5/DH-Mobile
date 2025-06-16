@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('order_code', 50)->unique();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('method_id')->nullable();
-            $table->decimal('total_amount', 10, 2)->nullable();
+            $table->decimal('price', 12, 2)->nullable();
             $table->enum('status', [
                 'Chờ xác nhận',
                 'Chờ lấy hàng',
