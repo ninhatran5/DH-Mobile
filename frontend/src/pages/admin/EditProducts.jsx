@@ -707,8 +707,8 @@ const AdminProductEdit = () => {
                         <div className="col-md-2 d-flex align-items-end justify-content-end">
                           <button
                             type="button"
-                            className="btn btn-danger btn-sm"
-                            style={{ fontSize: 15, padding: '6px 10px', borderRadius: 6, background: '#fff0f0', color: '#d32f2f', border: '1px solid #ffd6d6' }}
+                            className="admin-edit-product-btn btn-danger btn-sm"
+                            style={{ fontSize: 15, padding: '6px 10px ',margin: '0px 1px 7px 0px', borderRadius: 6, background: '#fff0f0', color: '#d32f2f', border: '1px solid #ffd6d6' }}
                             onClick={() => handleDeleteSpecification(spec.spec_id)}
                             disabled={!spec.spec_id}
                           >
