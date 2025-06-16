@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import { axiosConfig } from "../../utils/axiosConfig";
 
 const initialState = {
   banners: [],
@@ -15,10 +15,10 @@ export const fetchBanners = createAsyncThunk(
   "banner/fetchBanners",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("https://dhmobile-website-production.up.railway.app/api/getbanners");
-      return response.data;
+      const res = await axiosConfig.get("/getbanners");
+      return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Lỗi không xác định");
+      return rejectWithValue(err.response?.data?.message || "Lỗi khi lấy danh sách banner");
     }
   }
 );
@@ -28,15 +28,12 @@ export const fetchBannerById = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await axios.get(
-        `https://dhmobile-website-production.up.railway.app/api/getbanners`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const banner = response.data.find(b => b.banner_id.toString() === id.toString());
+      const res = await axiosConfig.get("/getbanners", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const banner = res.data.find(b => b.banner_id.toString() === id.toString());
       if (!banner) {
         return rejectWithValue("Không tìm thấy banner với ID này");
       }
@@ -47,7 +44,6 @@ export const fetchBannerById = createAsyncThunk(
   }
 );
 
-
 export const updateBanner = createAsyncThunk(
   "banner/updateBanner",
   async ({ id, data }, { rejectWithValue }) => {
@@ -57,25 +53,21 @@ export const updateBanner = createAsyncThunk(
         return rejectWithValue("Token không tồn tại hoặc hết hạn");
       }
 
-      const response = await axios.request({
-        url: `https://dhmobile-website-production.up.railway.app/api/updatebanners/${id}`,
-        method: "POST",
-        data: data, 
+      const res = await axiosConfig.post(`/updatebanners/${id}`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
         },
       });
 
-      return response.data;
+      return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Lỗi không xác định khi cập nhật banner");
+      return rejectWithValue(err.response?.data?.message || "Lỗi khi cập nhật banner");
     }
   }
 );
 
-
-
-export const bannerSlice = createSlice({
+const bannerSlice = createSlice({
   name: "banner",
   initialState,
   reducers: {
@@ -87,6 +79,7 @@ export const bannerSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Fetch list
       .addCase(fetchBanners.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -97,9 +90,10 @@ export const bannerSlice = createSlice({
       })
       .addCase(fetchBanners.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || action.error?.message;
+        state.error = action.payload;
       })
 
+      // Fetch by ID
       .addCase(fetchBannerById.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -111,9 +105,10 @@ export const bannerSlice = createSlice({
       })
       .addCase(fetchBannerById.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || action.error?.message;
+        state.error = action.payload;
       })
 
+      // Update banner
       .addCase(updateBanner.pending, (state) => {
         state.updateLoading = true;
         state.updateError = null;
@@ -122,20 +117,20 @@ export const bannerSlice = createSlice({
       .addCase(updateBanner.fulfilled, (state, action) => {
         state.updateLoading = false;
         state.updateSuccess = true;
-        const updatedBanner = action.payload;
 
-        const index = state.banners.findIndex(b => b.banner_id === updatedBanner.banner_id);
+        const updated = action.payload;
+        const index = state.banners.findIndex(b => b.banner_id === updated.banner_id);
         if (index !== -1) {
-          state.banners[index] = updatedBanner;
+          state.banners[index] = updated;
         }
 
-        if (state.selectedBanner?.banner_id === updatedBanner.banner_id) {
-          state.selectedBanner = updatedBanner;
+        if (state.selectedBanner?.banner_id === updated.banner_id) {
+          state.selectedBanner = updated;
         }
       })
       .addCase(updateBanner.rejected, (state, action) => {
         state.updateLoading = false;
-        state.updateError = action.payload || action.error?.message;
+        state.updateError = action.payload;
       });
   },
 });
