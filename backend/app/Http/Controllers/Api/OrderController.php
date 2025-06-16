@@ -14,7 +14,7 @@ class OrderController extends Controller
     {
         $user = $request->user();
         $orders = Orders::with(['user', 'paymentMethods'])
-            ->select('order_id', 'order_code', 'user_id', 'total_amount', 'status', 'method_id')
+            ->select('order_id', 'order_code', 'user_id', 'total_amount', 'status','payment_status', 'method_id')
             ->where('user_id', $user->user_id)
             ->get();
 
@@ -25,11 +25,13 @@ class OrderController extends Controller
                 'customer' => $order->user->full_name,
                 'total_amount' => $order->total_amount,
                 'address' => $order->user->address . ', ' .
-                            $order->user->ward . ', ' .
-                            $order->user->district . ', ' .
-                            $order->user->city,
+                    $order->user->ward . ', ' .
+                    $order->user->district . ', ' .
+                    $order->user->city,
+                'payment_status' => $order->payment_status,
                 'payment_method' => $order->paymentMethods->name,
-                'status' => $order->status
+                'status' => $order->status,
+
             ];
         });
 
