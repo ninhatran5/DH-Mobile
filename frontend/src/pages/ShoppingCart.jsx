@@ -93,26 +93,25 @@ const ShoppingCart = () => {
   };
 
   const handleChangeQuantity = (id, value) => {
-    const newQuantity = Number(value);
-    if (!isNaN(newQuantity) && newQuantity >= 1) {
-      const item = cartItems.find((item) => item.cart_item_id === id);
-      if (item) {
-        dispatch(
-          fetchUpdateCartQuantity({
-            variant_id: item.variant_id,
-            quantity: newQuantity,
-          })
-        )
-          .unwrap()
-          .then(() => {
-            dispatch(fetchCart());
-          })
-          .catch(() => {
-            toast.error(t("toast.updateQuantityError"));
-          });
-      }
-    } else {
-      toast.warn(t("toast.invalidQuantity"));
+    let newQuantity = Number(value);
+    if (value === "" || isNaN(newQuantity) || newQuantity < 1) {
+      newQuantity = 1;
+    }
+    const item = cartItems.find((item) => item.cart_item_id === id);
+    if (item) {
+      dispatch(
+        fetchUpdateCartQuantity({
+          variant_id: item.variant_id,
+          quantity: newQuantity,
+        })
+      )
+        .unwrap()
+        .then(() => {
+          dispatch(fetchCart());
+        })
+        .catch(() => {
+          toast.error(t("toast.updateQuantityError"));
+        });
     }
   };
 
