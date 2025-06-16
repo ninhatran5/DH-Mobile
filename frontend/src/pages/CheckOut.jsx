@@ -18,7 +18,6 @@ const CheckOut = () => {
   const { profile, loading } = useSelector((state) => state.profile);
   const location = useLocation();
   const selectedItems = location.state?.selectedItems || [];
-  console.log("🚀 ~ CheckOut ~ selectedItems:", selectedItems);
   const navigate = useNavigate();
   const handleNextPageDetail = (id) => {
     navigate(`/product-detail/${id}`);
@@ -74,7 +73,7 @@ const CheckOut = () => {
 
         const result = actionResult.payload;
         if (result && result.payment_url) {
-          window.location.href = result.payment_url;
+          window.open(result.payment_url);
         } else {
           toast.error(t("toast.maxOnlineAmount"));
         }

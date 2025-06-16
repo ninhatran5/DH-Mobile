@@ -54,7 +54,7 @@ class VnpayController extends Controller
             'order_code' => $orderCode,
             'method_id' => 1,
             'total_amount' => 0,
-            'status' => 'Đang chờ',
+            'status' => 'Chờ xác nhận',
             'payment_status' => 'Chưa thanh toán',
             'voucher_id' => null,
             'created_at' => now(),
@@ -156,7 +156,7 @@ class VnpayController extends Controller
             DB::transaction(function () use ($order) {
                 // Cập nhật trạng thái đơn hàng
                 DB::table('orders')->where('order_id', $order->order_id)->update([
-                    'status' => 'Đã thanh toán',
+                    'status' => 'Chờ xác nhận',
                     'payment_status' => 'Đã thanh toán',
                     'updated_at' => now(),
                 ]);
@@ -178,13 +178,19 @@ class VnpayController extends Controller
                     }
                 }
 
-                // Xóa các sản phẩm đã chọn khỏi giỏ hàng
+                // Xóa chỉ các sản phẩm đã thanh toán khỏi giỏ hàng
                 $cart = DB::table('carts')->where('user_id', $order->user_id)->first();
                 if ($cart && is_object($cart) && isset($cart->cart_id)) {
-                    DB::table('cart_items')
-                        ->where('cart_id', $cart->cart_id)
-                        // ->where('is_selected', true)
-                        ->delete();
+                    // Lấy danh sách variant_id từ order_items
+                    $paidVariantIds = $orderItems->pluck('variant_id')->toArray();
+
+                    // Chỉ xóa các sản phẩm trong giỏ hàng có variant_id nằm trong danh sách đã thanh toán
+                    if (!empty($paidVariantIds)) {
+                        DB::table('cart_items')
+                            ->where('cart_id', $cart->cart_id)
+                            ->whereIn('variant_id', $paidVariantIds)
+                            ->delete();
+                    }
                 }
 
                 // Gửi mail nếu có user

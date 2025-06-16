@@ -52,7 +52,7 @@ const Profile = () => {
     {
       id: 1,
       label: t("profile.statisticals.orders"),
-      value: orders.length + ` ${t("profile.order")}`,
+      value: orders?.length + ` ${t("profile.order")}`,
     },
     {
       id: 2,
@@ -62,7 +62,7 @@ const Profile = () => {
     {
       id: 3,
       label: t("profile.statisticals.likedProducts"),
-      value: listFavorite.length + ` ${t("profile.product")}`,
+      value: listFavorite?.length + ` ${t("profile.product")}`,
     },
   ];
 
@@ -245,15 +245,15 @@ const Profile = () => {
                     <tr>
                       <th>{t("orderHistory.orderCode")}</th>
                       <th>{t("orderHistory.orderName")}</th>
-                      <th>{t("orderHistory.price")}</th>
                       <th>{t("orderHistory.address")}</th>
                       <th>{t("orderHistory.paymentMethod")}</th>
+                      <th>{t("orderHistory.price")}</th>
                       <th>{t("orderHistory.status")}</th>
                       <th>{t("orderHistory.detail")}</th>
                     </tr>
                   </thead>
-                  {orders.slice(0, 5).map((order) => (
-                    <OrderHistory key={order.order_id} order={order} />
+                  {orders?.orders?.slice(0, 5).map((order) => (
+                    <OrderHistory key={order?.order_id} order={order} />
                   ))}
                 </table>
               </div>

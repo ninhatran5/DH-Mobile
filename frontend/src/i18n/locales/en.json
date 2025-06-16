@@ -289,6 +289,13 @@
     "backToHome": "Back to Home",
     "trackOrder": "Track Order"
   },
+  "warn": {
+    "paymentSuccess": "Pending Payment",
+    "thankYouMessage": "Thank you for placing an order at our store!",
+    "thankYouMessage2": "We will deliver your order as soon as possible. Please make the payment upon delivery.",
+    "backToHome": "Back to Home",
+    "trackOrder": "Track Order"
+  },
   "paymentfailed": {
     "paymentErrorr": "Payment Failed",
     "thankYouMessage": "An error occurred during the payment process",

@@ -12,7 +12,7 @@ export const fetchOrder = createAsyncThunk(
   async (thunkAPI) => {
     try {
       const response = await axiosConfig.get(`/getOrder`);
-      return response.data.order;
+      return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Đã có lỗi xảy ra"

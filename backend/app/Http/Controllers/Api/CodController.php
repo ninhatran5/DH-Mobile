@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\PaymentSuccessMail;
+use App\Mail\CodPaymentSuccessMail;
 use Illuminate\Support\Str;
 
 class CodController extends Controller
@@ -40,7 +40,7 @@ class CodController extends Controller
                 'order_code' => $orderCode,
                 'method_id' => 2, // COD
                 'total_amount' => 0, // Sẽ cập nhật sau
-                'status' => 'Đang chờ',
+                'status' => 'Chờ xác nhận',
                 'payment_status' => 'Chưa thanh toán',
                 'voucher_id' => null,
                 'created_at' => now(),
@@ -91,10 +91,10 @@ class CodController extends Controller
             // Xoá giỏ hàng sau khi đặt
             DB::table('cart_items')->where('cart_id', $cart->cart_id)->delete();
 
-            // (Tùy chọn) Gửi email xác nhận
-            // $order = DB::table('orders')->where('order_id', $orderId)->first();
-            // $userData = DB::table('users')->where('user_id', $user->user_id)->first();
-            // Mail::to($userData->email)->send(new PaymentSuccessMail($order, $userData));
+            //  Gửi email xác nhận
+            $order = DB::table('orders')->where('order_id', $orderId)->first();
+            $userData = DB::table('users')->where('user_id', $user->user_id)->first();
+            Mail::to($userData->email)->send(new CodPaymentSuccessMail($order, $userData));
 
             DB::commit();
 

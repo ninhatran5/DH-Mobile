@@ -63,6 +63,7 @@ import AddVariant from "./pages/admin/AddVariant";
 import EditVoucher from "./pages/admin/EditVoucher";
 import EditVariant from "./pages/admin/UpdateVariant";
 import PaymentFailed from "./pages/PaymentFailed";
+import WaitingForPayment from "./pages/WaitingForPayment";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -141,6 +142,10 @@ const routerConfig = [
   {
     path: "/delivery-policy",
     element: withLayoutClient(DeliveryPolicy),
+  },
+  {
+    path: "/waiting-for-payment",
+    element: withLayoutClient(WaitingForPayment),
   },
   {
     path: "/profile/:id",

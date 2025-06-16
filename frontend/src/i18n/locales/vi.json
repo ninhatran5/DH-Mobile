@@ -288,6 +288,13 @@
     "backToHome": "Trở lại trang chủ",
     "trackOrder": "Theo dõi đơn hàng"
   },
+  "warn": {
+    "paymentSuccess": "Đang Chờ Thanh Toán",
+    "thankYouMessage": "Cảm ơn bạn đã đặt hàng tại cửa hàng của chúng tôi!",
+    "thankYouMessage2": "Chúng tôi sẽ giao hàng đến bạn sớm nhất. Vui lòng thanh toán khi nhận hàng.",
+    "backToHome": "Trở lại trang chủ",
+    "trackOrder": "Theo dõi đơn hàng"
+  },
   "paymentfailed": {
     "paymentErrorr": "Thanh Toán Thất Bại",
     "thankYouMessage": "Có lỗi xảy ra trong quá trình thanh toán",
@@ -330,8 +337,8 @@
   },
   "orderHistory": {
     "orderCode": "Mã đơn hàng",
-    "orderName": "Tên đơn hàng",
-    "price": "Giá tiền",
+    "orderName": "Tên người nhận",
+    "price": "Tổng tiền",
     "address": "Địa chỉ",
     "paymentMethod": "Phương thức thanh toán",
     "status": "Trạng thái",
