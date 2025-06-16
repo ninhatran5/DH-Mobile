@@ -64,9 +64,7 @@
   font-size: 0.95rem;
 }
 
-.admin_dh-form-tab:hover {
-  color: var(--admin_dh-primary);
-}
+
 
 .admin_dh-form-tab-active {
   color: var(--admin_dh-primary);
@@ -174,9 +172,7 @@
   transition: var(--admin_dh-transition);
 }
 
-.admin_dh-color-option:hover {
-  background-color: rgba(142, 142, 147, 0.12);
-}
+
 
 .admin_dh-color-swatch {
   width: 24px;
@@ -218,12 +214,6 @@
   font-weight: 500;
 }
 
-.admin_dh-add-color-btn:hover {
-  border-color: var(--admin_dh-primary);
-  color: var(--admin_dh-primary);
-  background-color: rgba(0, 113, 227, 0.03);
-  transform: translateY(-2px);
-}
 
 .admin_dh-variant-container {
   background-color: rgba(142, 142, 147, 0.06);
@@ -270,9 +260,7 @@
   transition: var(--admin_dh-transition);
 }
 
-.admin_dh-variant-remove:hover {
-  transform: scale(1.1);
-}
+
 
 .admin_dh-image-dropzone {
   border: 2px dashed var(--admin_dh-border);
@@ -283,10 +271,7 @@
   transition: var(--admin_dh-transition);
 }
 
-.admin_dh-image-dropzone:hover {
-  border-color: var(--admin_dh-primary);
-  background-color: rgba(0, 122, 255, 0.02);
-}
+
 
 .admin_dh-dropzone-icon {
   font-size: 2rem;
@@ -408,10 +393,7 @@
   transition: var(--admin_dh-transition);
 }
 
-.admin_dh-generate-btn:hover {
-  background-color: rgba(142, 142, 147, 0.1);
-  border-color: var(--admin_dh-primary);
-}
+
 
 .admin_dh-actions-container {
   display: flex;
@@ -445,10 +427,7 @@
   color: white;
 }
 
-.admin_dh-btn-primary:hover {
-  background-color: rgba(0, 122, 255, 0.9);
-  transform: translateY(-1px);
-}
+
 
 .admin_dh-btn-outline {
   background-color: transparent;
@@ -465,9 +444,7 @@
   color: white;
 }
 
-.admin_dh-btn-danger:hover {
-  background-color: rgba(255, 59, 48, 0.9);
-}
+
 
 .admin_dh-btn-icon {
   font-size: 1.1rem;
@@ -496,9 +473,7 @@
   transition: var(--admin_dh-transition);
 }
 
-.admin_dh-tag-remove:hover {
-  color: var(--admin_dh-danger);
-}
+
 
 .admin_dh-tag-input {
   flex: 1;
@@ -589,11 +564,7 @@
   transition: var(--admin_dh-transition);
 }
 
-.adminAddProduct-variant-item:hover {
-  border-color: var(--admin_dh-primary);
-  background-color: rgba(0, 113, 227, 0.03);
-  box-shadow: var(--admin_dh-box-shadow);
-}
+
 
 .adminAddProduct-variant-header {
   display: flex;
@@ -611,9 +582,7 @@
 
 }
 
-.adminAddProduct-expand-btn:hover {
-  text-decoration: underline;
-}
+
 
 .adminAddProduct-delete-btn {
   color: var(--admin_dh-danger);
@@ -624,9 +593,6 @@
 
 }
 
-.adminAddProduct-delete-btn:hover {
-  text-decoration: underline;
-}
 
 .adminAddProduct-variant-details {
   padding-top: var(--admin_dh-spacing-md);
