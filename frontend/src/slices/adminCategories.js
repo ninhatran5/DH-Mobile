@@ -124,6 +124,25 @@ export const restoreCategory = createAsyncThunk(
   }
 );
 
+export const forceDeleteCategory = createAsyncThunk(
+  "category/forceDeleteCategory",
+  async (categoryId, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      await axiosConfig.delete(`/categories/forceDelete/${categoryId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return categoryId;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Lỗi khi xóa vĩnh viễn danh mục"
+      );
+    }
+  }
+);
+
 const categorySlice = createSlice({
   name: "category",
   initialState,
@@ -195,6 +214,20 @@ const categorySlice = createSlice({
         );
       })
       .addCase(restoreCategory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(forceDeleteCategory.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(forceDeleteCategory.fulfilled, (state, action) => {
+        state.loading = false;
+        state.trashedCategories = state.trashedCategories.filter(
+          (cat) => cat.category_id !== action.payload
+        );
+      })
+      .addCase(forceDeleteCategory.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
