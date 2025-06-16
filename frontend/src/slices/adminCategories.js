@@ -99,6 +99,31 @@ export const updateCategory = createAsyncThunk(
   }
 );
 
+export const restoreCategory = createAsyncThunk(
+  "category/restoreCategory",
+  async (categoryId, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+
+      await axiosConfig.put(
+        `/categories/restore/${categoryId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return categoryId;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Lỗi khi khôi phục danh mục"
+      );
+    }
+  }
+);
+
 const categorySlice = createSlice({
   name: "category",
   initialState,
@@ -158,6 +183,20 @@ const categorySlice = createSlice({
         if (index !== -1) {
           state.categories[index] = updatedCategory;
         }
+      })
+      .addCase(restoreCategory.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(restoreCategory.fulfilled, (state, action) => {
+        state.loading = false;
+        state.trashedCategories = state.trashedCategories.filter(
+          (cat) => cat.category_id !== action.payload
+        );
+      })
+      .addCase(restoreCategory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
