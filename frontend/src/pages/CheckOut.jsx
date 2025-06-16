@@ -43,8 +43,9 @@ const CheckOut = () => {
           fetchCODCheckout({
             user_id: profile.user.id,
             items: selectedItems.map((item) => ({
-              variant_id: item.variant.id,
-              quantity: item.quantity,
+              variant_id: Number(item.variant.variant_id),
+              quantity: Number(item.quantity),
+              price_snapshot: Number(item.price_snapshot),
             })),
             total_amount: totalPrice,
           })
