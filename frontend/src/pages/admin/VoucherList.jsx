@@ -34,7 +34,7 @@ const VoucherList = () => {
   };
 
   const formatDate = (date) => {
-    return moment(date).format("DD/MM/YYYY HH:mm:ss");
+    return moment(date).format("HH:mm | DD.MM.YYYY");
   };
 
   const formatCurrency = (amount) => {
@@ -101,16 +101,11 @@ const VoucherList = () => {
 
   return (
     <div className="adminvoucher-container">
-      <h2 className="adminvoucher-title">Danh sách mã giảm giá</h2>
-      <div className="adminvoucher-actions">
-        <Link to="/admin/addvoucher" className="adminvoucher-add-btn">
-          + Thêm mã giảm giá
-        </Link>
-      </div>
+        <h1>Danh sách mã giảm giá</h1>
 
-      <div className="adminvoucher-filters-header">
+      <div className="adminvoucher-header">
         <div className="adminvoucher-search-wrapper">
-          <FaSearch className="search-icon" />
+          <FaSearch className="adminvoucher-search-icon" />
           <input
             type="text"
             placeholder="Tìm theo mã hoặc tiêu đề..."
@@ -119,12 +114,17 @@ const VoucherList = () => {
           />
         </div>
 
-        <button
-          className="filter-toggle-btn"
-          onClick={() => setShowFilters(!showFilters)}
-        >
-          <FaFilter /> Bộ lọc
-        </button>
+        <div className="adminvoucher-actions">
+          <Link to="/admin/addvoucher" className="adminvoucher-add-btn">
+            + Thêm mã giảm giá
+          </Link>
+          <button 
+            className="adminvoucher-filter-btn"
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <FaFilter /> Bộ lọc
+          </button>
+        </div>
       </div>
 
       {showFilters && (
@@ -162,68 +162,85 @@ const VoucherList = () => {
       {paginatedVouchers.length === 0 ? (
         <p className="adminvoucher-empty">Không tìm thấy mã giảm giá nào.</p>
       ) : (
-        <>
-          <div className="voucher_margin">
-            <div className="row g-3">
-              {paginatedVouchers.map((voucher) => (
-                <div className="col-12" key={voucher.voucher_id}>
-                  <div className="admin-voucher-ticket">
-                    <div className="ticket-content">
-                      <div className="ticket-code">Mã: {voucher.code}</div>
-                      <div className="ticket-title">{voucher.title}</div>
-                      <div className="ticket-info-row">
-                        <span>ID: {voucher.voucher_id}</span>
-                        <span>Giảm giá: {formatCurrency(voucher.discount_amount)}</span>
-                        <span>Đơn tối thiểu: {formatCurrency(voucher.min_order_value)}</span>
-                      </div>
-                      <div className="ticket-info-row">
-                        <span>Bắt đầu: {formatDate(voucher.start_date)}</span>
-                        <span>Kết thúc: {formatDate(voucher.end_date)}</span>
-                      </div>
-                      <div className="ticket-info-row">
-                        <span>Trạng thái: {voucher.is_active ? "Đang hoạt động" : "Không hoạt động"}</span>
-                        <span>Tạo lúc: {formatDate(voucher.created_at)}</span>
-                        <span>Cập nhật: {formatDate(voucher.updated_at)}</span>
-                      </div>
-                      {voucher.deleted_at && (
-                        <div className="ticket-info-row">
-                          <span>Đã xóa lúc: {formatDate(voucher.deleted_at)}</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="admin-actions">
-                      <Link to={`/admin/EditVoucher/${voucher.voucher_id}`}>
-                        <FaEdit className="icon-edit" />
-                      </Link>
-                      <FaTrash
-                        className="icon-delete"
-                        onClick={() => handleDelete(voucher.voucher_id)}
-                      />
-                    </div>
+        <div className="adminvoucher-list">
+          {paginatedVouchers.map((voucher) => (
+            <div className="adminvoucher-card" key={voucher.voucher_id}>
+              <div className="adminvoucher-card-left">
+                <h2 className="adminvoucher-card-title">GIFT VOUCHER</h2>
+                <div className="adminvoucher-card-code">{voucher.code}</div>
+                <div className="adminvoucher-card-id">ID: {voucher.voucher_id}</div>
+              </div>
+              
+              <div className="adminvoucher-card-divider"></div>
+              
+              <div className="adminvoucher-card-center">
+                <div className="adminvoucher-card-name">{voucher.title}</div>
+                <div className="adminvoucher-info-row">
+                  <div className="adminvoucher-info-item">
+                    <span>Giảm giá:</span>
+                    <strong>{formatCurrency(voucher.discount_amount)}</strong>
+                  </div>
+                  <div className="adminvoucher-info-item">
+                    <span>Đơn tối thiểu:</span>
+                    <strong>{formatCurrency(voucher.min_order_value)}</strong>
                   </div>
                 </div>
-              ))}
+              </div>
+
+              <div className="adminvoucher-card-divider"></div>
+              
+              <div className="adminvoucher-card-right">
+                <div className="adminvoucher-content-wrapper">
+                  <div className="adminvoucher-date-group">
+                    <div className="adminvoucher-date-row">
+                      <div className="adminvoucher-date">
+                        <div className="date-label-value">
+                          <span>Bắt đầu:</span>
+                          <div className="date-value">{formatDate(voucher.start_date)}</div>
+                        </div>
+                      </div>
+                      <div className="adminvoucher-date">
+                        <div className="date-label-value">
+                          <span>Kết thúc:</span>
+                          <div className="date-value">{formatDate(voucher.end_date)}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="adminvoucher-card-actions">
+                    <Link to={`/admin/EditVoucher/${voucher.voucher_id}`}>
+                      <FaEdit className="adminvoucher-icon-edit" />
+                    </Link>
+                    <FaTrash
+                      className="adminvoucher-icon-delete"
+                      onClick={() => handleDelete(voucher.voucher_id)}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="pagination">
-            <button
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage((p) => p - 1)}
-            >
-              <FaChevronLeft /> Trước
-            </button>
-            <span>
-              Trang {currentPage} / {totalPages}
-            </span>
-            <button
-              disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage((p) => p + 1)}
-            >
-              Sau <FaChevronRight />
-            </button>
-          </div>
-        </>
+          ))}
+        </div>
       )}
+
+      <div className="adminvoucher-pagination">
+        <button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage((p) => p - 1)}
+        >
+          <FaChevronLeft /> Trước
+        </button>
+        <span>
+          Trang {currentPage} / {totalPages}
+        </span>
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage((p) => p + 1)}
+        >
+          Sau <FaChevronRight />
+        </button>
+      </div>
     </div>
   );
 };
