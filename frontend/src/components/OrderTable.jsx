@@ -48,7 +48,7 @@ const OrderTable = () => {
                 <th>{t("orderHistory.detail")}</th>
               </tr>
             </thead>
-            {orders.map((order) => (
+            {orders?.map((order) => (
               <OrderHistory key={order.order_id} order={order} />
             ))}
           </table>
