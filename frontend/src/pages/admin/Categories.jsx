@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategories, deleteCategory, fetchTrashedCategories } from "../../slices/adminCategories";
+import { fetchCategories, deleteCategory, fetchTrashedCategories, restoreCategory } from "../../slices/adminCategories";
 import "../../assets/admin/Categories.css";
 import { Link } from "react-router-dom";
 
@@ -22,6 +22,16 @@ const CategoryList = () => {
   const handleDelete = (id) => {
     if (window.confirm("Bạn có chắc muốn xóa danh mục này không? Danh mục sẽ được chuyển vào thùng rác.")) {
       dispatch(deleteCategory(id)).then(() => {
+        dispatch(fetchCategories());
+        dispatch(fetchTrashedCategories());
+      });
+    }
+  };
+
+  const handleRestore = (id) => {
+    if (window.confirm("Bạn có chắc muốn khôi phục danh mục này không?")) {
+      dispatch(restoreCategory(id)).then(() => {
+        // Cập nhật cả hai danh sách sau khi khôi phục
         dispatch(fetchCategories());
         dispatch(fetchTrashedCategories());
       });
@@ -51,26 +61,25 @@ const CategoryList = () => {
             className="admin_dh-search-input"
           />
           <button
-  onClick={toggleTrash}
-  className="admin_dh-trash-btn"
-  style={{
-    padding: '8px 15px',
-    borderRadius: '4px',
-    border: 'none',
-    backgroundColor: showTrash ? '#666' : '#ff4444',
-    color: 'white',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '5px',
-    marginLeft: 'auto' ,
-    marginRight: '16px' 
-  }}
->
-  {!showTrash && <i className="bi bi-trash"></i>}
-  {showTrash ? "Xem danh mục" : "Thùng rác"}
-</button>
-
+            onClick={toggleTrash}
+            className="admin_dh-trash-btn"
+            style={{
+              padding: '8px 15px',
+              borderRadius: '4px',
+              border: 'none',
+              backgroundColor: showTrash ? '#666' : '#ff4444',
+              color: 'white',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
+              marginLeft: 'auto',
+              marginRight: '16px'
+            }}
+          >
+            {!showTrash && <i className="bi bi-trash"></i>}
+            {showTrash ? "Xem danh mục" : "Thùng rác"}
+          </button>
           {!showTrash && (
             <Link to="/admin/Addcategories" className="admin_dh-add-btn">
               + Thêm danh mục
@@ -131,7 +140,23 @@ const CategoryList = () => {
                 }) || "22/05/2025 10:00:00"}</td>
                 <td>
                   <div style={{ display: "flex", gap: "8px" }}>
-                    {!showTrash && (
+                    {showTrash ? (
+                      <button
+                        className="admin_dh-action-btn restore"
+                        onClick={() => handleRestore(cat.category_id)}
+                        title="Khôi phục"
+                        style={{
+                          backgroundColor: '#28a745',
+                          border: 'none',
+                          padding: '6px 12px',
+                          borderRadius: '4px',
+                          color: 'white',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <i className="bi bi-arrow-counterclockwise"></i>
+                      </button>
+                    ) : (
                       <>
                         <Link to={`/admin/EditCategories/${cat.category_id}`} className="admin_dh-action-btn edit" title="Chỉnh sửa">
                           <i className="bi bi-pencil-fill"></i>
