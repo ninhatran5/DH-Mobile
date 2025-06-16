@@ -49,7 +49,13 @@ const EditProfile = () => {
       ?.wards || [];
 
   useEffect(() => {
-    if (profile?.user && data.length > 0) {
+    if (
+      profile?.user &&
+      data.length > 0 &&
+      profile.user.city &&
+      profile.user.district &&
+      profile.user.ward
+    ) {
       setValue("full_name", profile.user.full_name || "");
       setValue("phone", profile.user.phone || "");
       setValue("email", profile.user.email || "");
