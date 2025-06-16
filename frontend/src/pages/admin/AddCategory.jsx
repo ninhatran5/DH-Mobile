@@ -2,13 +2,15 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addCategory } from "../../slices/adminCategories";
 import { useNavigate } from "react-router-dom";
-import "../../assets/admin/AddCategories.css"; 
+import { toast } from "react-toastify";
+import "../../assets/admin/AddCategories.css";
 
 const AddCategory = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [is_active, setIsActive] = useState(true);
+  const [showValidation, setShowValidation] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -18,6 +20,12 @@ const AddCategory = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    setShowValidation(true);
+
+    if (!name.trim() || !description.trim() || !imageFile) {
+      return;
+    }
 
     const formData = new FormData();
     formData.append("name", name);
@@ -27,17 +35,13 @@ const AddCategory = () => {
       formData.append("image_url", imageFile);
     }
 
-    const token = localStorage.getItem("adminToken");
-    console.log("Token:", token);
-
-    const formDataEntries = {};
-    formData.forEach((value, key) => {
-      formDataEntries[key] = value;
-    });
-    console.log("FormData entries to submit:", formDataEntries);
-
-    await dispatch(addCategory(formData));
-    navigate("/admin/categories");
+    try {
+      await dispatch(addCategory(formData));
+      toast.success("Thêm danh mục thành công!");
+      navigate("/admin/categories");
+    } catch (error) {
+      toast.error("Có lỗi xảy ra khi thêm danh mục!");
+    }
   };
 
   return (
@@ -45,26 +49,49 @@ const AddCategory = () => {
       <h2 className="addcategories-title">Thêm danh mục mới</h2>
       <form onSubmit={handleSubmit} className="addcategories-form">
         <div className="addcategories-group">
-          <label>Tên danh mục</label>
+          <label>
+            Tên danh mục
+            {showValidation && !name.trim() && <span className="required">*</span>}
+          </label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            
+            placeholder="Nhập tên danh mục"
           />
+          {showValidation && !name.trim() && (
+            <span className="validation-message">Tên danh mục là bắt buộc</span>
+          )}
         </div>
 
         <div className="addcategories-group">
-          <label>Mô tả</label>
+          <label>
+            Mô tả
+            {showValidation && !description.trim() && <span className="required">*</span>}
+          </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            placeholder="Nhập mô tả danh mục"
           ></textarea>
+          {showValidation && !description.trim() && (
+            <span className="validation-message">Mô tả là bắt buộc</span>
+          )}
         </div>
 
         <div className="addcategories-group">
-          <label>Hình ảnh</label>
-          <input type="file" accept="image/*" onChange={handleFileChange} />
+          <label>
+            Hình ảnh
+            {showValidation && !imageFile && <span className="required">*</span>}
+          </label>
+          <input 
+            type="file" 
+            accept="image/*" 
+            onChange={handleFileChange}
+          />
+          {showValidation && !imageFile && (
+            <span className="validation-message">Hình ảnh là bắt buộc</span>
+          )}
         </div>
 
         {imageFile && (

@@ -24,6 +24,7 @@
 
 .addcategories-group {
   margin-bottom: 20px;
+  position: relative;
 }
 
 .addcategories-group label {
@@ -31,6 +32,18 @@
   font-weight: 500;
   margin-bottom: 8px;
   color: #3a3a3c;
+}
+
+.required {
+  color: #ff4d4f;
+  margin-left: 4px;
+}
+
+.validation-message {
+  color: #ff4d4f;
+  font-size: 13px;
+  margin-top: 4px;
+  display: block;
 }
 
 .addcategories-group input[type="text"],
@@ -42,7 +55,7 @@
   font-size: 15px;
   background-color: #ffffff;
   color: #1c1c1e;
-  transition: border-color 0.2s;
+  transition: all 0.2s;
 }
 
 .addcategories-group textarea {
@@ -56,9 +69,24 @@
   outline: none;
 }
 
+/* Placeholder styles */
+.addcategories-group input[type="text"]::placeholder,
+.addcategories-group textarea::placeholder {
+  color: #a0a0a0;
+  font-size: 14px;
+}
+
+/* Validation styles */
+.addcategories-group input[type="text"]:invalid,
+.addcategories-group textarea:invalid {
+  border-bottom: 2px solid #ff4d4f;
+}
+
 .addcategories-group input[type="file"] {
   font-size: 14px;
   color: #1c1c1e;
+  width: 100%;
+  padding: 8px 0;
 }
 
 .addcategories-group input[type="checkbox"] {
