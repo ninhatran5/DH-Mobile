@@ -30,6 +30,13 @@ const AddVariant = () => {
     attributes: []
   });
 
+  const [errors, setErrors] = useState({
+    sku: '',
+    price: '',
+    stock: '',
+    attributes: ''
+  });
+
   useEffect(() => {
     if (!product_id || isNaN(parseInt(product_id, 10))) {
       toast.error("ID sản phẩm không hợp lệ");
@@ -90,22 +97,35 @@ const AddVariant = () => {
     }
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.sku.trim()) {
+      newErrors.sku = "SKU không được để trống";
+    }
+    
+    if (!formData.price || isNaN(formData.price)) {
+      newErrors.price = "Giá không hợp lệ";
+    } else if (parseFloat(formData.price) <= 0) {
+      newErrors.price = "Giá phải lớn hơn 0";
+    }
+    
+    if (!formData.stock || isNaN(formData.stock)) {
+      newErrors.stock = "Số lượng tồn kho không hợp lệ";
+    }
+    
+    if (!formData.attributes || formData.attributes.length === 0) {
+      newErrors.attributes = "Vui lòng chọn thuộc tính cho biến thể";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.sku.trim()) {
-      toast.warning("SKU không được để trống");
-      return;
-    }
-    if (!formData.price || isNaN(formData.price)) {
-      toast.warning("Giá không hợp lệ");
-      return;
-    }
-    if (!formData.stock || isNaN(formData.stock)) {
-      toast.warning("Số lượng tồn kho không hợp lệ");
-      return;
-    }
-    if (!formData.attributes || formData.attributes.length === 0) {
-      toast.warning("Vui lòng chọn thuộc tính cho biến thể");
+    
+    if (!validateForm()) {
       return;
     }
 
@@ -169,74 +189,81 @@ const AddVariant = () => {
   };
 
   return (
-    <div className="container my-5">
-      <div className="card shadow">
-        <div className="card-body">
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h2 className="card-title mb-0">Thêm biến thể mới</h2>
+    <div className="addvariant-container container my-5">
+      <div className="addvariant-card card shadow">
+        <div className="addvariant-card-body card-body">
+          <div className="addvariant-header d-flex justify-content-between align-items-center mb-4">
+            <h2 className="addvariant-title card-title mb-0">Thêm biến thể mới</h2>
             <button
               type="button"
-              className="btn btn-outline-secondary"
+              className="addvariant-back-btn btn btn-outline-secondary"
               onClick={() => navigate(`/admin/editproduct/${product_id}`)}
             >
               <i className="bi bi-arrow-left"></i> Quay lại
             </button>
           </div>
 
-          <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label htmlFor="sku" className="form-label">SKU:</label>
+          <form onSubmit={handleSubmit} className="addvariant-form">
+            <div className="addvariant-form-group mb-3">
+              <label htmlFor="sku" className="addvariant-label form-label">SKU:</label>
               <input
                 type="text"
-                className="form-control"
+                className={`addvariant-input form-control ${errors.sku ? 'is-invalid' : ''}`}
                 id="sku"
                 name="sku"
                 value={formData.sku}
                 onChange={handleInputChange}
+                placeholder="Nhập mã SKU..."
               />
+              {errors.sku && <div className="addvariant-error invalid-feedback">{errors.sku}</div>}
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="price" className="form-label">Giá:</label>
+            <div className="addvariant-form-group mb-3">
+              <label htmlFor="price" className="addvariant-label form-label">Giá:</label>
               <input
                 type="number"
-                className="form-control"
+                className={`addvariant-input form-control ${errors.price ? 'is-invalid' : ''}`}
                 id="price"
                 name="price"
                 value={formData.price}
                 onChange={handleInputChange}
+                placeholder="Nhập giá sản phẩm..."
               />
+              {errors.price && <div className="addvariant-error invalid-feedback">{errors.price}</div>}
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="price_original" className="form-label">Giá gốc:</label>
+            <div className="addvariant-form-group mb-3">
+              <label htmlFor="price_original" className="addvariant-label form-label">Giá gốc:</label>
               <input
                 type="number"
-                className="form-control"
+                className="addvariant-input form-control"
                 id="price_original"
                 name="price_original"
                 value={formData.price_original}
                 onChange={handleInputChange}
+                placeholder="Nhập giá gốc (nếu có)..."
               />
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="stock" className="form-label">Tồn kho:</label>
+            <div className="addvariant-form-group mb-3">
+              <label htmlFor="stock" className="addvariant-label form-label">Tồn kho:</label>
               <input
                 type="number"
-                className="form-control"
+                className={`addvariant-input form-control ${errors.stock ? 'is-invalid' : ''}`}
                 id="stock"
                 name="stock"
                 value={formData.stock}
                 onChange={handleInputChange}
+                placeholder="Nhập số lượng tồn kho..."
               />
+              {errors.stock && <div className="addvariant-error invalid-feedback">{errors.stock}</div>}
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="image" className="form-label">Ảnh:</label>
+            <div className="addvariant-form-group mb-3">
+              <label htmlFor="image" className="addvariant-label form-label">Ảnh:</label>
               <input
                 type="file"
-                className="form-control"
+                className="addvariant-file-input form-control"
                 id="image"
                 accept="image/*"
                 onChange={(e) => {
@@ -248,20 +275,20 @@ const AddVariant = () => {
               />
             </div>
 
-            <div className="mb-4">
-              <label className="form-label fw-bold">Thuộc tính:</label>
+            <div className="addvariant-attributes mb-4">
+              <label className="addvariant-label form-label fw-bold">Thuộc tính:</label>
               {attributesLoading ? (
-                <div className="text-center py-3">
+                <div className="addvariant-loading text-center py-3">
                   <div className="spinner-border text-primary" role="status">
                     <span className="visually-hidden">Đang tải thuộc tính...</span>
                   </div>
                 </div>
               ) : attributes && attributes.length > 0 ? (
                 attributes.map(attribute => (
-                  <div className="mb-3" key={attribute.attribute_id}>
-                    <label className="form-label">{attribute.name}:</label>
+                  <div className="addvariant-attribute mb-3" key={attribute.attribute_id}>
+                    <label className="addvariant-label form-label">{attribute.name}:</label>
                     <select
-                      className="form-select"
+                      className={`addvariant-select form-select ${errors.attributes ? 'is-invalid' : ''}`}
                       onChange={(e) => handleAttributeChange(attribute.attribute_id, e.target.value)}
                       value={formData.attributes.find(
                         attr => String(attr.attribute_id) === String(attribute.attribute_id)
@@ -274,33 +301,34 @@ const AddVariant = () => {
                         </option>
                       ))}
                     </select>
+                    {errors.attributes && <div className="addvariant-error invalid-feedback">{errors.attributes}</div>}
                   </div>
                 ))
               ) : (
-                <div className="alert alert-info">
+                <div className="addvariant-no-attributes alert alert-info">
                   Không có thuộc tính nào được định nghĩa
                 </div>
               )}
             </div>
 
-            <div className="mb-4">
-              <div className="form-check">
+            <div className="addvariant-active-section mb-4">
+              <div className="addvariant-checkbox form-check">
                 <input
                   type="checkbox"
-                  className="form-check-input"
+                  className="addvariant-checkbox-input form-check-input"
                   id="is_active"
                   name="is_active"
                   checked={formData.is_active === 1}
                   onChange={handleInputChange}
                 />
-                <label className="form-check-label" htmlFor="is_active">
+                <label className="addvariant-checkbox-label form-check-label" htmlFor="is_active">
                   Kích hoạt
                 </label>
               </div>
             </div>
 
-            <div className="d-flex gap-2">
-              <button type="submit" className="btn btn-primary">
+            <div className="addvariant-actions d-flex gap-2">
+              <button type="submit" className="addvariant-submit-btn btn btn-primary">
                 Thêm biến thể
               </button>
             </div>

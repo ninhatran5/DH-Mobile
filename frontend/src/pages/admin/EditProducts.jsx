@@ -29,10 +29,8 @@ import "../../assets/admin/EditProducts.css";
 const VariantDisplay = ({ variant, onEdit, onDelete, attributeValues }) => {
   console.log("variant:", variant);
 
-  const handleDelete = async () => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa biến thể này không?')) {
-      onDelete(variant.variant_id);
-    }
+  const handleDelete = () => {
+    onDelete(variant.variant_id);
   };
 
   return (
@@ -352,7 +350,6 @@ const AdminProductEdit = () => {
       await dispatch(addAdminProductSpecification(newSpecData)).unwrap();
       toast.success("Thêm thông số kỹ thuật thành công!");
       
-      // Reset form và load lại danh sách
       setNewSpec({ spec_name: "", spec_value: "" });
       setShowAddSpecForm(false);
       dispatch(fetchAdminProductSpecifications());
@@ -409,14 +406,27 @@ const AdminProductEdit = () => {
   };
 
   const handleDeleteVariant = async (variantId) => {
-    try {
-      await dispatch(deleteAdminProductVariant(variantId)).unwrap();
-      // Sau khi xóa thành công, cập nhật lại danh sách variants
-      dispatch(fetchVariantAttributeValues());
-      toast.success("Xóa biến thể thành công!");
-    } catch (error) {
-      console.error("Error deleting variant:", error);
-      toast.error("Lỗi khi xóa biến thể: " + error.message);
+    if (window.confirm('Bạn có chắc chắn muốn xóa biến thể này không? Thao tác này không thể hoàn tác.')) {
+      try {
+        await dispatch(deleteAdminProductVariant(variantId)).unwrap();
+        await dispatch(fetchVariantAttributeValues());
+        toast.success("Xóa biến thể thành công!");
+      } catch (error) {
+        console.error("Error deleting variant:", error);
+        let errorMessage = "Lỗi khi xóa biến thể";
+        
+        if (error.message) {
+          if (error.message.includes("foreign key constraint")) {
+            errorMessage = "Không thể xóa biến thể do còn liên kết với dữ liệu khác";
+          } else if (error.message.includes("not found")) {
+            errorMessage = "Không tìm thấy biến thể để xóa";
+          } else {
+            errorMessage = error.message;
+          }
+        }
+        
+        toast.error(errorMessage);
+      }
     }
   };
 
@@ -697,8 +707,8 @@ const AdminProductEdit = () => {
                         <div className="col-md-2 d-flex align-items-end justify-content-end">
                           <button
                             type="button"
-                            className="btn btn-danger btn-sm"
-                            style={{ fontSize: 15, padding: '6px 10px', borderRadius: 6, background: '#fff0f0', color: '#d32f2f', border: '1px solid #ffd6d6' }}
+                            className="admin-edit-product-btn btn-danger btn-sm"
+                            style={{ fontSize: 15, padding: '6px 10px ',margin: '0px 1px 7px 0px', borderRadius: 6, background: '#fff0f0', color: '#d32f2f', border: '1px solid #ffd6d6' }}
                             onClick={() => handleDeleteSpecification(spec.spec_id)}
                             disabled={!spec.spec_id}
                           >

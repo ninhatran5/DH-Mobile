@@ -97,10 +97,11 @@ function isValidCombination(variants, selectedOptions, currentAttrId, valueId) {
   });
 }
 
-const ProductDetail = () => {
+const ProductDetail = ({ productId, isQuickView }) => {
   const [activeTab, setActiveTab] = useState("description");
   const [selectedOptions, setSelectedOptions] = useState({});
-  const { id } = useParams();
+  const { id: paramId } = useParams();
+  const id = productId || paramId;
   const dispatch = useDispatch();
   const { productDetails, loading } = useSelector(
     (state) => state.productDetail
@@ -366,89 +367,105 @@ const ProductDetail = () => {
   return (
     <>
       {loading && <Loading />}
-      <Breadcrumb
-        title={t("breadcrumbProductDetail.breadcrumbHeader")}
-        mainItem={t("breadcrumbProductDetail.breadcrumbTitleHome")}
-        mainItem2={t("breadcrumbProductDetail.breadcrumbTitleProduct")}
-        secondaryItem={productDetails.data?.name}
-        linkMainItem={"/"}
-        linkMainItem2={"/products"}
-      />
+      {!isQuickView && (
+        <Breadcrumb
+          title={t("breadcrumbProductDetail.breadcrumbHeader")}
+          mainItem={t("breadcrumbProductDetail.breadcrumbTitleHome")}
+          mainItem2={t("breadcrumbProductDetail.breadcrumbTitleProduct")}
+          secondaryItem={productDetails.data?.name}
+          linkMainItem={"/"}
+          linkMainItem2={"/products"}
+        />
+      )}
 
-      <div className="container-fluid" style={{ marginBottom: 80 }}>
+      <div
+        className={isQuickView ? "" : "container-fluid"}
+        style={isQuickView ? { padding: 0, margin: 0 } : { marginBottom: 80 }}
+      >
         <div className="row">
-          <div className="col-md-6 mb-5 position-relative">
-            <div className="border rounded mb-3 p-3 text-center position-relative">
-              <img
-                ref={productImgRef}
-                src={currentImage}
-                alt="iPhone"
-                className="img-fluid"
-                style={{ maxHeight: "400px", cursor: "pointer" }}
-                onClick={handleShowModal}
-              />
-              <button
-                className="btn-zoom btn position-absolute"
-                style={{
-                  top: "10px",
-                  right: "10px",
-                  zIndex: "1",
-                  fontSize: 23,
-                  color: "black",
-                  border: "none",
-                  outline: "none",
-                  background: "transparent",
-                }}
-                onClick={handleShowModal}
-              >
-                <MdOutlineZoomInMap />
-              </button>
-            </div>
-            <div className="product_detail_image d-flex justify-content-center">
-              {productImages.map((item) => (
+          {/* Nếu là quick view thì chỉ render phần phải */}
+          {!isQuickView && (
+            <div className="col-md-6 mb-5 position-relative">
+              <div className="border rounded mb-3 p-3 text-center position-relative">
                 <img
-                  key={item.id}
-                  src={item.image}
-                  alt="thumbnail"
-                  className={`img-thumbnail mx-1 ${
-                    item.image === currentImage ? "active" : ""
-                  }`}
-                  onClick={() => handleThumbnailClick(item.image)}
+                  ref={productImgRef}
+                  src={currentImage}
+                  alt="iPhone"
+                  className="img-fluid"
+                  style={{ maxHeight: "400px", cursor: "pointer" }}
+                  onClick={handleShowModal}
                 />
-              ))}
-            </div>
-          </div>
-
-          <Modal show={showModal} onHide={handleCloseModal} centered size="lg">
-            <Modal.Header closeButton className="border-0"></Modal.Header>
-            <Modal.Body className="text-center p-0">
-              <div {...handlers} className="carousel-swipeable-container">
-                <Carousel
-                  data-bs-theme="dark"
-                  interval={null}
-                  activeIndex={activeIndex}
-                  onSelect={handleSelect}
-                  indicators={false}
-                  touch={false}
-                  slide={true}
+                <button
+                  className="btn-zoom btn position-absolute"
+                  style={{
+                    top: "10px",
+                    right: "10px",
+                    zIndex: "1",
+                    fontSize: 23,
+                    color: "black",
+                    border: "none",
+                    outline: "none",
+                    background: "transparent",
+                  }}
+                  onClick={handleShowModal}
                 >
-                  {productImages.map((item) => (
-                    <Carousel.Item key={item.id}>
-                      <img
-                        className="d-block w-100"
-                        src={item.image}
-                        alt="Product image"
-                        draggable={false}
-                        loading="eager"
-                      />
-                    </Carousel.Item>
-                  ))}
-                </Carousel>
+                  <MdOutlineZoomInMap />
+                </button>
               </div>
-            </Modal.Body>
-          </Modal>
+              <div className="product_detail_image d-flex justify-content-center">
+                {productImages.map((item) => (
+                  <img
+                    key={item.id}
+                    src={item.image}
+                    alt="thumbnail"
+                    className={`img-thumbnail mx-1 ${
+                      item.image === currentImage ? "active" : ""
+                    }`}
+                    onClick={() => handleThumbnailClick(item.image)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
 
-          <div className="col-md-6">
+          {/* Modal carousel chỉ hiện khi không phải quick view */}
+          {!isQuickView && (
+            <Modal
+              show={showModal}
+              onHide={handleCloseModal}
+              centered
+              size="lg"
+            >
+              <Modal.Header closeButton className="border-0"></Modal.Header>
+              <Modal.Body className="text-center p-0">
+                <div {...handlers} className="carousel-swipeable-container">
+                  <Carousel
+                    data-bs-theme="dark"
+                    interval={null}
+                    activeIndex={activeIndex}
+                    onSelect={handleSelect}
+                    indicators={false}
+                    touch={false}
+                    slide={true}
+                  >
+                    {productImages.map((item) => (
+                      <Carousel.Item key={item.id}>
+                        <img
+                          className="d-block w-100"
+                          src={item.image}
+                          alt="Product image"
+                          draggable={false}
+                          loading="eager"
+                        />
+                      </Carousel.Item>
+                    ))}
+                  </Carousel>
+                </div>
+              </Modal.Body>
+            </Modal>
+          )}
+
+          <div className={isQuickView ? "col-12" : "col-md-6"}>
             <div key={productDetails.data?.product_id}>
               <h2 className="mb-3">{productDetails.data?.name}</h2>
               <div className="price">
@@ -575,75 +592,85 @@ const ProductDetail = () => {
             </div>
           </div>
         </div>
-        <div
-          className="card_introducde_product_detail"
-          style={{ marginTop: 80 }}
-        >
-          <ul className="introduce_productdetail nav">
-            <li className="nav-item">
-              <button
-                style={{ fontWeight: 800 }}
-                className={`nav-link ${
-                  activeTab === "description" ? "active" : ""
-                }`}
-                onClick={() => setActiveTab("description")}
-              >
-                {t("productDetail.describe")}
-              </button>
-            </li>
-            <li className="nav-item">
-              <button
-                style={{ fontWeight: 800 }}
-                className={`nav-link ${activeTab === "info" ? "active" : ""}`}
-                onClick={() => setActiveTab("info")}
-              >
-                {t("productDetail.parameter")}
-              </button>
-            </li>
-            <li className="nav-item">
-              <button
-                style={{ fontWeight: 800 }}
-                className={`nav-link ${
-                  activeTab === "reviews" ? "active" : ""
-                }`}
-                onClick={() => setActiveTab("reviews")}
-              >
-                {t("productDetail.comment")}
-              </button>
-            </li>
-          </ul>
 
-          <div className="p-4">
-            {activeTab === "description" && (
-              <div className="tab-pane fade show active">
-                <p className="desc_productdetai">
-                  {productDetails.data?.description}
-                </p>
+        {/* Chỉ render các tab, mô tả, sản phẩm liên quan khi không phải quick view */}
+        {!isQuickView && (
+          <>
+            <div
+              className="card_introducde_product_detail"
+              style={{ marginTop: 80 }}
+            >
+              <ul className="introduce_productdetail nav">
+                <li className="nav-item">
+                  <button
+                    style={{ fontWeight: 800 }}
+                    className={`nav-link ${
+                      activeTab === "description" ? "active" : ""
+                    }`}
+                    onClick={() => setActiveTab("description")}
+                  >
+                    {t("productDetail.describe")}
+                  </button>
+                </li>
+                <li className="nav-item">
+                  <button
+                    style={{ fontWeight: 800 }}
+                    className={`nav-link ${
+                      activeTab === "info" ? "active" : ""
+                    }`}
+                    onClick={() => setActiveTab("info")}
+                  >
+                    {t("productDetail.parameter")}
+                  </button>
+                </li>
+                <li className="nav-item">
+                  <button
+                    style={{ fontWeight: 800 }}
+                    className={`nav-link ${
+                      activeTab === "reviews" ? "active" : ""
+                    }`}
+                    onClick={() => setActiveTab("reviews")}
+                  >
+                    {t("productDetail.comment")}
+                  </button>
+                </li>
+              </ul>
+
+              <div className="p-4">
+                {activeTab === "description" && (
+                  <div className="tab-pane fade show active">
+                    <p className="desc_productdetai">
+                      {productDetails.data?.description}
+                    </p>
+                  </div>
+                )}
+                {activeTab === "info" && (
+                  <div className="tab-pane fade show active">
+                    <ul className="desc_productdetai mb-0">
+                      {specifications?.map((spec) => (
+                        <li key={spec.spec_id}>
+                          <span className="fw-bold me-2">
+                            {spec.spec_name}:
+                          </span>
+                          <span>{spec.spec_value}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {activeTab === "reviews" && <Comment />}
               </div>
-            )}
-            {activeTab === "info" && (
-              <div className="tab-pane fade show active">
-                <ul className="desc_productdetai mb-0">
-                  {specifications?.map((spec) => (
-                    <li key={spec.spec_id}>
-                      <span className="fw-bold me-2">{spec.spec_name}:</span>
-                      <span>{spec.spec_value}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {activeTab === "reviews" && <Comment />}
-          </div>
-        </div>
-        <div style={{ marginTop: 30 }}>
-          <ListProductCard
-            title={t("home.relatedProducts")}
-            desc={t("home.goToShop")}
-            gotoShop={"/products"}
-            products={relatedProducts}
-          />
-        </div>
+            </div>
+            <div style={{ marginTop: 30 }}>
+              <ListProductCard
+                title={t("home.relatedProducts")}
+                desc={t("home.goToShop")}
+                gotoShop={"/products"}
+                products={relatedProducts}
+              />
+            </div>
+          </>
+        )}
       </div>
     </>
   );

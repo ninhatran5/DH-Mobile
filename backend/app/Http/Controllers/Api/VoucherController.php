@@ -24,11 +24,16 @@ class VoucherController extends Controller
         $voucher = Voucher::where('is_active', 1)
        ->orderBy('created_at', 'desc')->
        paginate(10);
-        
-        
+
+        // Định dạng discount_amount
+        $formattedVouchers = collect($voucher->items())->map(function ($item) {
+            $item->discount_amount = number_format($item->discount_amount, 0, '.', '');
+            return $item;
+        });
+
     return response()->json([
         'message' => 'lấy danh sách voucher thành công',
-        'data' =>  $voucher->items(), // chỉ lấy mảng data
+        'data' => $formattedVouchers, // sử dụng dữ liệu đã định dạng
         'meta' => [
             'current_page' =>  $voucher->currentPage(),
             'last_page' =>  $voucher->lastPage(),
@@ -103,6 +108,12 @@ class VoucherController extends Controller
     public function show(string $id)
     {
         $voucher = Voucher::find($id);
+
+        // Định dạng discount_amount
+        if ($voucher) {
+            $voucher->discount_amount = number_format($voucher->discount_amount, 0, '.', '');
+        }
+
         return response()->json([
             'message' => 'Lấy voucher thành công',
             'data' => $voucher

@@ -3,6 +3,7 @@ import { axiosConfig } from "../../utils/axiosConfig";
 
 const initialState = {
   categories: [],
+  trashedCategories: [],
   loading: false,
   error: null,
 };
@@ -19,12 +20,29 @@ export const fetchCategories = createAsyncThunk(
   }
 );
 
+export const fetchTrashedCategories = createAsyncThunk(
+  "category/fetchTrashedCategories",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      const res = await axiosConfig.get("/categories/trashed", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return res.data.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Lỗi khi lấy danh mục đã xóa");
+    }
+  }
+);
+
 export const deleteCategory = createAsyncThunk(
   "category/deleteCategory",
   async (categoryId, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const res = await axiosConfig.delete(`/categories/${categoryId}`, {
+      await axiosConfig.post(`/categories/${categoryId}?_method=DELETE`, {}, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -58,7 +76,6 @@ export const addCategory = createAsyncThunk(
   }
 );
 
-
 export const updateCategory = createAsyncThunk(
   "category/updateCategory",
   async ({ id, updatedData }, { rejectWithValue }) => {
@@ -82,9 +99,49 @@ export const updateCategory = createAsyncThunk(
   }
 );
 
+export const restoreCategory = createAsyncThunk(
+  "category/restoreCategory",
+  async (categoryId, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
 
+      await axiosConfig.put(
+        `/categories/restore/${categoryId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
+      return categoryId;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Lỗi khi khôi phục danh mục"
+      );
+    }
+  }
+);
 
+export const forceDeleteCategory = createAsyncThunk(
+  "category/forceDeleteCategory",
+  async (categoryId, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      await axiosConfig.delete(`/categories/forceDelete/${categoryId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return categoryId;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Lỗi khi xóa vĩnh viễn danh mục"
+      );
+    }
+  }
+);
 
 const categorySlice = createSlice({
   name: "category",
@@ -104,13 +161,30 @@ const categorySlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-
+      .addCase(fetchTrashedCategories.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchTrashedCategories.fulfilled, (state, action) => {
+        state.loading = false;
+        state.trashedCategories = action.payload;
+      })
+      .addCase(fetchTrashedCategories.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       .addCase(deleteCategory.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(deleteCategory.fulfilled, (state, action) => {
         state.loading = false;
+        const deletedCategory = state.categories.find(
+          (cat) => cat.category_id === action.payload
+        );
+        if (deletedCategory) {
+          state.trashedCategories.push(deletedCategory);
+        }
         state.categories = state.categories.filter(
           (cat) => cat.category_id !== action.payload
         );
@@ -123,16 +197,41 @@ const categorySlice = createSlice({
         state.categories.push(action.payload);
       })
       .addCase(updateCategory.fulfilled, (state, action) => {
-  const updatedCategory = action.payload;
-  const index = state.categories.findIndex(cat => cat.category_id === updatedCategory.category_id);
-  if (index !== -1) {
-    state.categories[index] = updatedCategory;
-  }
-})
-
-
+        const updatedCategory = action.payload;
+        const index = state.categories.findIndex(cat => cat.category_id === updatedCategory.category_id);
+        if (index !== -1) {
+          state.categories[index] = updatedCategory;
+        }
+      })
+      .addCase(restoreCategory.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(restoreCategory.fulfilled, (state, action) => {
+        state.loading = false;
+        state.trashedCategories = state.trashedCategories.filter(
+          (cat) => cat.category_id !== action.payload
+        );
+      })
+      .addCase(restoreCategory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(forceDeleteCategory.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(forceDeleteCategory.fulfilled, (state, action) => {
+        state.loading = false;
+        state.trashedCategories = state.trashedCategories.filter(
+          (cat) => cat.category_id !== action.payload
+        );
+      })
+      .addCase(forceDeleteCategory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
-
 
 export default categorySlice.reducer;
