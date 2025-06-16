@@ -40,7 +40,7 @@ class CodController extends Controller
                 'order_code' => $orderCode,
                 'method_id' => 2, // COD
                 'total_amount' => 0, // Sẽ cập nhật sau
-                'status' => 'Đang chờ',
+                'status' => 'Chờ xác nhận',
                 'payment_status' => 'Chưa thanh toán',
                 'voucher_id' => null,
                 'created_at' => now(),
