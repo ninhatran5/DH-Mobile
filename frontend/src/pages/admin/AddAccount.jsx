@@ -243,12 +243,12 @@ const AddAccount = () => {
                           value={formData.password}
                           onChange={handleInputChange}
                           placeholder="Nhập mật khẩu"
-                          className="form-control-lg admin-add-account-input"
+                          className="admin-add-account-input"
                         />
                         <Button
                           variant="outline-secondary"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="btn-lg admin-add-account-btn-eye"
+                          className="admin-add-account-btn-eye"
                           style={{ borderLeft: 'none' }}
                         >
                           <i className={`bi bi-eye${showPassword ? '-slash' : ''}`}></i>
@@ -379,7 +379,7 @@ const AddAccount = () => {
                         name="role"
                         value={formData.role}
                         onChange={handleInputChange}
-                        className="form-select-lg admin-add-account-select"
+                        className="admin-add-account-select"
                       >
                         <option value="">Chọn vai trò</option>
                         <option value="customer">Khách hàng</option>

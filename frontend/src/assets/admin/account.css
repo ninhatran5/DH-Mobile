@@ -33,9 +33,7 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.adminuser-add-button:hover {
-  background-color: #005fd6;
-}
+
 
 /* Bảng */
 .adminuser-table-wrapper {
@@ -82,9 +80,7 @@
   color: #ff3b30;
 }
 
-.adminuser-icon:hover {
-  transform: scale(1.1);
-}
+
 
 /* Trạng thái loading & lỗi */
 .adminuser-loading,
@@ -121,10 +117,7 @@
   transition: all 0.2s ease;
 }
 
-.pagination-btn:hover {
-  background-color: #007aff;
-  color: white;
-}
+
 
 .pagination-btn.active {
   background-color: #007aff;
@@ -152,9 +145,7 @@
   cursor: pointer;
 }
 
-.adminuser-add-button:hover {
-  background-color: #0056b3;
-}
+
 .adminuser-filters {
   display: flex;
   justify-content: space-between;
