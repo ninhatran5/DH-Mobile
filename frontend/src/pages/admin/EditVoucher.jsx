@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { updateAdminVoucher, fetchAdminVouchers, addAdminVoucher } from "../../slices/AdminVoucher";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "../../assets/admin/VoucherList.css";
+import "../../assets/admin/VoucherEdit.css";
 
 const EditVoucher = () => {
   const { id } = useParams();
@@ -121,7 +121,6 @@ const EditVoucher = () => {
     e.preventDefault();
     if (codeError) return;
 
-    // Tạo FormData để gửi (nếu backend yêu cầu multipart/form-data)
     const updatedData = new FormData();
 
     updatedData.append("code", formData.code);
