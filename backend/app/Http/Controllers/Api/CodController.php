@@ -161,11 +161,11 @@ class CodController extends Controller
 
             DB::commit();
 
-            return response()->json([
-                'message' => 'Đặt hàng thành công (COD)',
-                'order_id' => $orderId,
-                'order_code' => $orderCode
-            ]);
+            // return response()->json([
+            //     'message' => 'Đặt hàng thành công (COD)',
+            //     'order_id' => $orderId,
+            //     'order_code' => $orderCode
+            // ]);
         } catch (\Throwable $e) {
             DB::rollBack();
             // return response()->json([
