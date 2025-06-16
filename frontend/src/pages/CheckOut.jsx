@@ -18,7 +18,6 @@ const CheckOut = () => {
   const { profile, loading } = useSelector((state) => state.profile);
   const location = useLocation();
   const selectedItems = location.state?.selectedItems || [];
-  console.log("🚀 ~ CheckOut ~ selectedItems:", selectedItems);
   const navigate = useNavigate();
   const handleNextPageDetail = (id) => {
     navigate(`/product-detail/${id}`);

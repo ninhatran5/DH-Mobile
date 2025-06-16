@@ -83,8 +83,8 @@ const EditProfile = () => {
     dataToSend.append("_method", "PUT");
 
     try {
+      // eslint-disable-next-line no-unused-vars
       const result = await dispatch(fetchEditProfile(dataToSend)).unwrap();
-      console.log("🚀 ~ onSubmit ~ result:", result);
       toast.success("Cập nhật hồ sơ thành công!");
     } catch (error) {
       toast.error(error);
