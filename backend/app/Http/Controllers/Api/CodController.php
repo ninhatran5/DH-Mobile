@@ -14,14 +14,16 @@ class CodController extends Controller
 {
     public function createCodOrder(Request $request)
     {
+        // Lấy thông tin người dùng đang đăng nhập
         $user = Auth::user();
 
+        // Lấy danh sách sản phẩm từ request
         $items = $request->input('items');
         if (empty($items) || !is_array($items)) {
             return response()->json(['message' => 'Không có sản phẩm nào được chọn'], 400);
         }
 
-
+        // Kiểm tra từng sản phẩm xem hợp lệ và đủ tồn kho không
         foreach ($items as $item) {
             // Kiểm tra item có cấu trúc hợp lệ không
             if (
@@ -58,12 +60,15 @@ class CodController extends Controller
             return response()->json(['message' => 'Giỏ hàng đang trống'], 400);
         }
 
+        // Bắt đầu transaction
         DB::beginTransaction();
 
-        
+
         try {
+            // Tạo mã đơn hàng
             $orderCode = $this->generateOrderCode();
 
+            // Tạo đơn hàng mới
             $orderId = DB::table('orders')->insertGetId([
                 'user_id' => $user->user_id,
                 'order_code' => $orderCode,
@@ -81,6 +86,7 @@ class CodController extends Controller
             $order = DB::table('orders')->where('order_id', $orderId)->first();
             $total = 0;
 
+            // Lưu từng sản phẩm vào bảng order_items
             foreach ($items as $item) {
                 if (
                     !is_array($item) ||
