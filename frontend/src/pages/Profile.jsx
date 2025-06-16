@@ -245,14 +245,14 @@ const Profile = () => {
                     <tr>
                       <th>{t("orderHistory.orderCode")}</th>
                       <th>{t("orderHistory.orderName")}</th>
-                      <th>{t("orderHistory.price")}</th>
                       <th>{t("orderHistory.address")}</th>
                       <th>{t("orderHistory.paymentMethod")}</th>
+                      <th>{t("orderHistory.price")}</th>
                       <th>{t("orderHistory.status")}</th>
                       <th>{t("orderHistory.detail")}</th>
                     </tr>
                   </thead>
-                  {orders?.slice(0, 5).map((order) => (
+                  {orders?.orders?.slice(0, 5).map((order) => (
                     <OrderHistory key={order?.order_id} order={order} />
                   ))}
                 </table>
