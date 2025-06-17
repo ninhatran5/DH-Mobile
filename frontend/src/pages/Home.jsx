@@ -39,6 +39,10 @@ const Home = () => {
   const smallBanner = banners.filter((banner) =>
     banner.title.includes("Banner")
   );
+  const bestSellingProducts = [...products]
+    .filter((item) => item.view_count && item.view_count > 0)
+    .sort((a, b) => b.view_count - a.view_count)
+    .slice(0, 10);
 
   const { listFavorite } = useSelector((state) => state.favoriteProduct);
   useEffect(() => {
@@ -385,7 +389,7 @@ const Home = () => {
       )}
 
       <Products
-        title={t("home.featuredProducts")}
+        title={t("home.bestSellingProducts")}
         showHeader={true}
         padding={"py-3"}
         filter={false}
@@ -396,10 +400,10 @@ const Home = () => {
       />
 
       <ListProductCard
-        title={t("home.bestSellingProducts")}
+        title={t("home.featuredProducts")}
         desc={t("home.goToShop")}
         gotoShop={"/products"}
-        products={products}
+        products={bestSellingProducts}
       />
 
       <section className="py-2 mt-4">
