@@ -23,7 +23,8 @@ return new class extends Migration
                 'Đã giao',
                 'Hoàn thành/Đã nhận hàng',
                 'Đã hủy',
-                'Trả hàng/Hoàn tiền'
+                'Trả hàng/Hoàn tiền',
+                'Đã hoàn tiền'
             ])->default('Chờ xác nhận');
 
             $table->enum('payment_status', [
