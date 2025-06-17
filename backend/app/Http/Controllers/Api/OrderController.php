@@ -396,4 +396,36 @@ class OrderController extends Controller
             'refund_amount' => $approve ? $refundAmount : null
         ]);
     }
+
+    // Client hủy đơn hàng khi đang ở trạng thái Chờ lấy hàng
+    public function clientCancelOrder(Request $request, $id)
+    {
+        $order = Orders::find($id);
+        if (!$order) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Không tìm thấy đơn hàng'
+            ], 404);
+        }
+        if ($order->status !== 'Chờ lấy hàng') {
+            return response()->json([
+                'status' => false,
+                'message' => 'Chỉ được hủy đơn hàng khi ở trạng thái Chờ lấy hàng'
+            ], 400);
+        }
+        // Kiểm tra quyền: chỉ chủ đơn hàng mới được hủy
+        if ($order->user_id !== $request->user()->user_id) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Bạn không có quyền hủy đơn hàng này'
+            ], 403);
+        }
+        $order->status = 'Đã hủy';
+        $order->save();
+        return response()->json([
+            'status' => true,
+            'message' => 'Đơn hàng đã được hủy thành công',
+            'order' => $order
+        ]);
+    }
 }
