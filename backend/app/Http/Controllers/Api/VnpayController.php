@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use App\Models\Order;
 
 class VnpayController extends Controller
 {
@@ -197,6 +198,19 @@ class VnpayController extends Controller
                 $user = DB::table('users')->where('user_id', $order->user_id)->first();
                 if ($user && is_object($user) && isset($user->email)) {
                     Mail::to($user->email)->send(new PaymentSuccessMail($order, $user));
+                }
+
+                // Tạo thông báo đơn hàng mới
+                $admin = DB::table('users')->where('role', 'admin')->first();
+                if ($admin) {
+                    DB::table('order_notifications')->insert([
+                        'order_id' => $order->order_id,
+                        'user_id' => $admin->user_id,
+                        'type' => 'new_order',
+                        'message' => 'Đơn hàng mới #' . $order->order_code . ' vừa được tạo.',
+                        'is_read' => 0,
+                        'created_at' => now()
+                    ]);
                 }
             });
 

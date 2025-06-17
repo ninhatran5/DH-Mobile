@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\CartItemController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\AttributeController;
 use App\Http\Controllers\Api\ProductLikeController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Controllers\Api\ProductsViewsController;
 use App\Http\Controllers\Api\AttributevalueController;
@@ -244,6 +245,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('getOrder', [OrderController::class, 'getOrder']);
         Route::get('getDetailOrder/{id}', [OrderController::class, 'getDetailOrder']);
     });
+
+
+// Thông báo
+    Route::get('admin/notifications', [NotificationController::class, 'index']);
+    Route::post('admin/notifications/read', [NotificationController::class, 'markAsRead']);
+
 });
 
 // quản lý đơn hàng dành cho admin 
