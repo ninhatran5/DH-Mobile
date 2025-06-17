@@ -10,6 +10,7 @@ import Loading from "../components/Loading";
 import numberFormat from "../../utils/numberFormat";
 import { fetchCODCheckout, fetchVnpayCheckout } from "../slices/checkOutSlice";
 import { toast } from "react-toastify";
+import { fetchCart } from "../slices/cartSlice";
 
 const CheckOut = () => {
   const [paymentMethod, setPaymentMethod] = useState("cod");
@@ -38,7 +39,7 @@ const CheckOut = () => {
   const handleCheckout = async (e) => {
     e.preventDefault();
     const { address, city, district, ward, phone } = profile.user || {};
-    if ( !address || !city || !district || !ward || !phone) {
+    if (!address || !city || !district || !ward || !phone) {
       toast.error(t("toast.missingAddress"));
       return;
     }
@@ -91,6 +92,14 @@ const CheckOut = () => {
   useEffect(() => {
     dispatch(fetchProfile());
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchCart()).then((res) => {
+      if (!res.payload || res.payload.length === 0) {
+        navigate("/shopping-cart");
+      }
+    });
+  }, [dispatch, navigate]);
 
   return (
     <>
