@@ -585,7 +585,7 @@ const ProductDetail = ({ productId, isQuickView }) => {
               <button
                 onClick={addToShoppingCart}
                 className="btn-custom px-4"
-                disabled={!variantId}
+                disabled={variantId}
               >
                 {t("products.addToCart")}
               </button>
