@@ -204,15 +204,16 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        //
         $category = Category::find($id);
         if (!$category) {
             return response()->json([
                 'message' => 'Danh mục không tồn tại',
-                'status' => 404,
-            ], 404);
+                'status' => 200,
+            ])->setStatusCode(200, 'OK');
         }
+
         $category->delete();
+
         return response()->json([
             'message' => 'Đã bỏ vào thùng rác thành công',
             'status' => 200,
@@ -235,8 +236,8 @@ class CategoryController extends Controller
             return response()->json([
                 'message' => 'Không tìm thấy danh mục đã xóa mềm',
                 'data' => [],
-                'status' => 404,
-            ], 404);
+                'status' => 200,
+            ], 200);
         }
 
         return response()->json([
