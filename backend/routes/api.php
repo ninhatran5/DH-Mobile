@@ -250,6 +250,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/orders/{id}/request-return', [OrderController::class, 'clientRequestReturn']);
         // Client xác nhận đã nhận hàng (chuyển trạng thái đơn hàng sang Hoàn thành)
         Route::post('/orders/{id}/confirm-received', [OrderController::class, 'clientConfirmReceived']);
+        // Client hủy đơn hàng khi đang ở trạng thái Chờ lấy hàng
+        Route::post('/orders/{id}/cancel', [OrderController::class, 'clientCancelOrder']);
     });
 
 
