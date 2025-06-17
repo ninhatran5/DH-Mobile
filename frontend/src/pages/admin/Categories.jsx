@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategories, deleteCategory, fetchTrashedCategories, restoreCategory, forceDeleteCategory } from "../../slices/adminCategories";
+import { fetchCategories, deleteCategory, restoreCategory, forceDeleteCategory, fetchTrashedCategories } from "../../slices/adminCategories";
 import "../../assets/admin/Categories.css";
 import { Link } from "react-router-dom";
 
