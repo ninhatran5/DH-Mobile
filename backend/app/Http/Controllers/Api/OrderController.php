@@ -59,13 +59,11 @@ class OrderController extends Controller
 
         // Định dạng chi tiết sản phẩm
         $orderItems = $order->orderItems->map(function ($item) {
-            $variantInfo = '';
+
             $variantAttributes = [];
 
             if ($item->variant) {
-                // Lấy thông tin biến thể (nếu có)
-                $variantInfo = ' - ' . $item->variant->sku;
-
+               
                 // Lấy thông tin thuộc tính của biến thể
                 $variantAttributes = $item->variant->variantAttributeValues->map(function ($attrValue) {
                     return [
@@ -76,7 +74,7 @@ class OrderController extends Controller
             }
 
             return [
-                'product_name' => $item->product->name . $variantInfo,
+                'product_name' => $item->product->name,
                 'product_image' => $item->variant ? $item->variant->image_url : $item->product->image_url,
                 'quantity' => $item->quantity,
                 'price' => number_format($item->price, 0, ".", ""),
@@ -112,7 +110,7 @@ class OrderController extends Controller
         ]);
     }
 
-    // quản lý đơn hàng admin 
+    // quản lý đơn hàng admin
     public function adminIndex(Request $request)
     {
         $query = Orders::with(['user', 'paymentMethods']);
