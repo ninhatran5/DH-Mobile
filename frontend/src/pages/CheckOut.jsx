@@ -51,7 +51,6 @@ const CheckOut = () => {
           })
         ).unwrap();
         toast.success(t("toast.paymentSuccess"));
-        navigate("/thank-you");
       } catch (error) {
         toast.error(t("toast.paymentError"));
       }

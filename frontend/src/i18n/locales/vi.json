@@ -343,7 +343,8 @@
     "paymentMethod": "Phương thức thanh toán",
     "status": "Trạng thái",
     "detail": "Chi tiết",
-    "viewDetail": "Xem chi tiết"
+    "viewDetail": "Xem chi tiết",
+    "payment_status": "Trạng thái thanh toán"
   },
   "breadcrumbOrder": {
     "breadcrumbHeader": "Lịch Sử Mua Hàng"
