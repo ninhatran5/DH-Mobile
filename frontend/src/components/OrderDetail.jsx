@@ -25,7 +25,7 @@ const OrderDetail = () => {
   }, [id, dispatch]);
 
   const statusOrder = [
-    "pending", 
+    "pending",
     "confirmed",
     "shipping",
     "shipped",
@@ -113,7 +113,9 @@ const OrderDetail = () => {
               {statusSteps.map((step, index) => (
                 <li
                   key={index}
-                  className={`step0 ${step.active ? "active" : ""} ${index === currentStatusIndex ? "current" : ""}`}
+                  className={`step0 ${step.active ? "active" : ""} ${
+                    index === currentStatusIndex ? "current" : ""
+                  }`}
                 >
                   <span className="step-label">{step.label}</span>
                 </li>
