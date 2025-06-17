@@ -13,7 +13,7 @@ const OrderHistory = ({ order }) => {
   return (
     <tbody>
       <tr>
-        <td style={{ fontWeight: 600 }}>#{order?.order_code}</td>
+        <td onClick={() => handleNextPageOrderDetail(order.order_id)} style={{ fontWeight: 600, cursor: "pointer" }}>#{order?.order_code}</td>
         <td>{order?.customer}</td>
         <td>{order?.address}</td>
         <td>{order?.payment_method}</td>

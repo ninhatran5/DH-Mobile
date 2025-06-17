@@ -8,7 +8,7 @@ const initialState = {
 };
 
 export const fetchOrder = createAsyncThunk(
-  "orders/fetchOrder",
+  "order/fetchOrder",
   async (thunkAPI) => {
     try {
       const response = await axiosConfig.get(`/getOrder`);
@@ -22,11 +22,11 @@ export const fetchOrder = createAsyncThunk(
 );
 
 export const fetchOrderDetail = createAsyncThunk(
-  "orders/fetchOrder",
+  "order/fetchOrderDetail",
   async (id, thunkAPI) => {
     try {
-      const response = await axiosConfig.get(`/getOrder/${id}`);
-      return response.data;
+      const response = await axiosConfig.get(`/getDetailOrder/${id}`);
+      return response.data.order;
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Đã có lỗi xảy ra"
@@ -53,6 +53,20 @@ export const ordersSlice = createSlice({
       })
       // call lỗi
       .addCase(fetchOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Đã có lỗi xảy ra";
+      })
+      .addCase(fetchOrderDetail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      // call thành công
+      .addCase(fetchOrderDetail.fulfilled, (state, action) => {
+        state.loading = false;
+        state.orders = action.payload;
+      })
+      // call lỗi
+      .addCase(fetchOrderDetail.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
       });

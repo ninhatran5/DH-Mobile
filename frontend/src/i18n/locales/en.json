@@ -365,7 +365,8 @@
     "phone": "Phone Number",
     "address": "Address",
     "paymentMethod": "Payment Method",
-    "cod": "Cash on Delivery (COD)",
+    "payment_status_note": "Payment status",
+    "order_status_note": "Order status",
     "note": "Note",
     "productDetail": "Product Details",
     "product": "Product name",
@@ -376,12 +377,12 @@
     "totalPrice": "Total Price",
     "back": "Back to Purchase History",
     "total": "Total:",
-    "status": {
+    "order_status": {
       "pending": "Pending Confirmation",
       "confirmed": "Confirmed",
-      "waitingPickup": "Awaiting Pickup ",
-      "delivering": "Delivering",
-      "delivered": "Delivered"
+      "shipping": "Shipping",
+      "shipped": "Shipped",
+      "delivered": "Completed"
     }
   },
   "auth": {
@@ -470,6 +471,7 @@
     "paymentSuccess": "Payment successful!",
     "paymentError": "Payment failed, please try again",
     "maxOnlineAmount": "The maximum amount allowed for online payment is 100 million VND",
-    "updateQuantityError": "Please update your full address before making the payment!"
+    "updateQuantityError": "Please update your full address before making the payment!",
+    "pending_update": "Pending update"
   }
 }
