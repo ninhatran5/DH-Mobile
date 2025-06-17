@@ -111,6 +111,9 @@ class ProductController extends Controller
         //
         $product = Product::with('category')->find($id);
         if ($product) {
+            // Tăng view_count lên 1
+            $product->increment('view_count');
+
             $product->price = number_format($product->price, 0, '', '');
             $product->price_original = number_format($product->price_original, 0, '', '');
 
