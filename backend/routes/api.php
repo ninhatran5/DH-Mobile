@@ -245,3 +245,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('getDetailOrder/{id}', [OrderController::class, 'getDetailOrder']);
     });
 });
+
+// quản lý đơn hàng dành cho admin 
+Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(function () {
+    Route::get('orders', [OrderController::class, 'adminIndex']); // Danh sách đơn hàng
+    Route::get('orders/{id}', [OrderController::class, 'adminShow']); // Chi tiết đơn hàng
+    Route::put('orders/{id}/status', [OrderController::class, 'adminUpdateStatus']); // Cập nhật trạng thái đơn hàng
+});
