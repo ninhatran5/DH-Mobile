@@ -470,6 +470,6 @@
     "paymentSuccess": "Payment successful!",
     "paymentError": "Payment failed, please try again",
     "maxOnlineAmount": "The maximum amount allowed for online payment is 100 million VND",
-    "updateQuantityError": "Quantity exceeds stock. Please update it."
+    "updateQuantityError": "Please update your full address before making the payment!"
   }
 }
