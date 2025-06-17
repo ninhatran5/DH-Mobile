@@ -26,7 +26,7 @@ class PaymentSuccessMail extends Mailable
 
     public function build()
     {
-        return $this->subject("Thanh toán đơn hàng #{$this->order->order_id} thành công")
+        return $this->subject("Thanh toán đơn hàng #{$this->order->order_code} thành công")
             ->view('emails.payment_success');
     }
 }

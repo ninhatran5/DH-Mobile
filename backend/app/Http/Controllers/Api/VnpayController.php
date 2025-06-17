@@ -115,6 +115,13 @@ class VnpayController extends Controller
             $orderCode = $request->query('order_code');
             $totalAmount = $request->query('total_amount');
 
+            // Kiểm tra xem đơn hàng với mã này đã tồn tại chưa
+            $existingOrder = DB::table('orders')->where('order_code', $orderCode)->first();
+            if ($existingOrder) {
+                // Nếu đã tồn tại, trả về trang thank-you với thông tin đơn hàng hiện có
+                return redirect()->away("http://localhost:5173/thank-you?order_id={$existingOrder->order_id}&status=success&order_code={$orderCode}");
+            }
+
             // Tạo đơn hàng thực sự trong DB
             $orderId = DB::table('orders')->insertGetId([
                 'user_id' => $user_id,
