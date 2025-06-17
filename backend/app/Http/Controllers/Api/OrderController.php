@@ -5,8 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Orders;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
-
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -289,7 +288,7 @@ class OrderController extends Controller
         ]);
     }
 
-    // Client gửi yêu cầu hoàn hàng
+    // Client gửi yêu cầu hoàn hàng (sử dụng bảng return_requests)
     public function clientRequestReturn(Request $request, $id)
     {
         $order = Orders::find($id);
@@ -308,47 +307,85 @@ class OrderController extends Controller
         $request->validate([
             'return_reason' => 'required|string',
         ]);
-        $order->return_reason = $request->return_reason;
-        $order->return_status = 'Yêu cầu hoàn hàng';
-        $order->save();
+
+        // Kiểm tra đã có yêu cầu hoàn hàng cho đơn này chưa
+        $existingRequest = DB::table('return_requests')
+            ->where('order_id', $order->order_id)
+            ->where('user_id', $request->user()->user_id)
+            ->first();
+        if ($existingRequest) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Bạn đã gửi yêu cầu hoàn hàng cho đơn này rồi.'
+            ], 400);
+        }
+
+        // Tạo mới yêu cầu hoàn hàng
+        $returnId = DB::table('return_requests')->insertGetId([
+            'order_id' => $order->order_id,
+            'user_id' => $request->user()->user_id,
+            'reason' => $request->return_reason,
+            'status' => 'đã yêu cầu',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
         return response()->json([
             'status' => true,
             'message' => 'Đã gửi yêu cầu hoàn hàng',
-            'order' => $order
+            'return_request_id' => $returnId
         ]);
     }
-    
-    // Admin duyệt hoặc từ chối hoàn hàng
-    public function adminHandleReturnRequest(Request $request, $id)
-    {
-        $order = Orders::find($id);
-        if (!$order) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Không tìm thấy đơn hàng'
-            ], 404);
-        }
-        if ($order->return_status !== 'Yêu cầu hoàn hàng') {
-            return response()->json([
-                'status' => false,
-                'message' => 'Đơn hàng không có yêu cầu hoàn hàng'
-            ], 400);
-        }
-        $request->validate([
-            'approve' => 'required|boolean',
-        ]);
-        if ($request->approve) {
-            $order->status = 'Đã hoàn tiền';
-            $order->payment_status = 'Đã hoàn tiền';
-            $order->return_status = 'Đã hoàn tiền';
-        } else {
-            $order->return_status = 'Từ chối hoàn hàng';
-        }
-        $order->save();
-        return response()->json([
-            'status' => true,
-            'message' => $request->approve ? 'Đã duyệt hoàn tiền' : 'Đã từ chối hoàn hàng',
-            'order' => $order
-        ]);
-    }
+
+    //  đang bị lỗi 
+    // // Admin duyệt hoặc từ chối hoàn hàng (sử dụng bảng return_requests)
+    // public function adminHandleReturnRequest(Request $request, $id)
+    // {
+    //     // Chấp nhận cả '1', '0', true, false từ form-data
+    //     $approve = filter_var($request->input('approve'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+    //     if (!is_bool($approve)) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Trường approve phải là true/false hoặc 1/0.'
+    //         ], 422);
+    //     }
+
+    //     // Tìm yêu cầu hoàn hàng theo return_id (nếu truyền return_id) hoặc theo order_id
+    //     $returnRequest = DB::table('return_requests')
+    //         ->where('order_id', $id)
+    //         ->whereIn('status', ['Đã yêu cầu', 'Đang xử lý'])
+    //         ->first();
+    //     if (!$returnRequest) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Không tìm thấy yêu cầu hoàn hàng đang chờ xử lý cho đơn hàng này'
+    //         ], 404);
+    //     }
+
+    //     // Cập nhật trạng thái yêu cầu hoàn hàng
+    //     $newStatus = $approve ? 'Đã hoàn lại' : 'Đã từ chối';
+    //     DB::table('return_requests')
+    //         ->where('return_id', $returnRequest->return_id)
+    //         ->update([
+    //             'status' => $newStatus,
+    //             'updated_at' => now(),
+    //         ]);
+
+    //     // Nếu duyệt hoàn tiền thì cập nhật trạng thái đơn hàng
+    //     if ($approve) {
+    //         $order = Orders::find($id);
+    //         if ($order) {
+    //             $order->status = 'Đã hoàn tiền';
+    //             $order->payment_status = 'Đã hoàn tiền';
+    //             $order->save();
+    //         }
+    //     }
+
+    //     return response()->json([
+    //         'status' => true,
+    //         'message' => $approve ? 'Đã duyệt hoàn tiền' : 'Đã từ chối hoàn hàng',
+    //         'return_request_id' => $returnRequest->return_id,
+    //         'return_request_status' => $newStatus
+    //     ]);
+    // }
 }
