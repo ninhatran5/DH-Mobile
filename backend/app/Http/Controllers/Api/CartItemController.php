@@ -11,7 +11,6 @@ use App\Http\Controllers\Controller;
 class CartItemController extends Controller
 {
     //
-
     public function addProductToCart(request $request, $id)
     {
         $user = $request->user();
@@ -99,7 +98,7 @@ class CartItemController extends Controller
         }
 
         $cartItems = CartItem::where('cart_id', $cart->cart_id)
-            ->with(['variant.product','variant.attributeValues'])
+            ->with(['variant.product', 'variant.attributeValues'])
             ->get();
 
         $totalPrice = $cartItems->sum(function ($item) {
