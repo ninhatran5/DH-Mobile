@@ -244,13 +244,18 @@ Route::middleware('auth:sanctum')->group(function () {
         // Client
         Route::get('getOrder', [OrderController::class, 'getOrder']);
         Route::get('getDetailOrder/{id}', [OrderController::class, 'getDetailOrder']);
+
+
+        // Client gửi yêu cầu hoàn hàng cho đơn hàng (kèm lý do hoàn hàng)
+        Route::post('/orders/{id}/request-return', [OrderController::class, 'clientRequestReturn']);
+        // Client xác nhận đã nhận hàng (chuyển trạng thái đơn hàng sang Hoàn thành)
+        Route::post('/orders/{id}/confirm-received', [OrderController::class, 'clientConfirmReceived']);
     });
 
 
-// Thông báo
+    // Thông báo
     Route::get('admin/notifications', [NotificationController::class, 'index']);
     Route::post('admin/notifications/read', [NotificationController::class, 'markAsRead']);
-
 });
 
 // quản lý đơn hàng dành cho admin 
@@ -258,4 +263,8 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(f
     Route::get('orders', [OrderController::class, 'adminIndex']); // Danh sách đơn hàng
     Route::get('orders/{id}', [OrderController::class, 'adminShow']); // Chi tiết đơn hàng
     Route::put('orders/{id}/status', [OrderController::class, 'adminUpdateStatus']); // Cập nhật trạng thái đơn hàng
+
+
+    // Admin duyệt hoặc từ chối yêu cầu hoàn hàng của đơn hàng
+    Route::post('/orders/{id}/handle-return', [OrderController::class, 'adminHandleReturnRequest']);
 });
