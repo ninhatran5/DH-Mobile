@@ -194,10 +194,13 @@ class VnpayController extends Controller
                     }
                 }
 
+                // Lấy lại thông tin đơn hàng đã cập nhật
+                $updatedOrder = DB::table('orders')->where('order_id', $order->order_id)->first();
+
                 // Gửi mail nếu có user
                 $user = DB::table('users')->where('user_id', $order->user_id)->first();
                 if ($user && is_object($user) && isset($user->email)) {
-                    Mail::to($user->email)->send(new PaymentSuccessMail($order, $user));
+                    Mail::to($user->email)->send(new PaymentSuccessMail($updatedOrder, $user));
                 }
 
                 // Tạo thông báo đơn hàng mới
