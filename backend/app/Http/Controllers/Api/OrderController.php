@@ -238,17 +238,16 @@ class OrderController extends Controller
         $nextStatus = $request->status;
         // Định nghĩa thứ tự trạng thái hợp lệ
         $validTransitions = [
-            'Chờ xác nhận' => 'Chờ lấy hàng',
-            'Chờ lấy hàng' => 'Đang giao',
-            'Đang giao' => 'Đã giao',
-            // Có thể bổ sung các trạng thái tiếp theo nếu cần
+            'Chờ xác nhận' => ['Chờ lấy hàng', 'Hủy'],
+            'Chờ lấy hàng' => ['Đang giao', 'Hủy'],
+            'Đang giao' => ['Đã giao'],
+            //'Đã giao' => ['Hoàn thành/Đã nhận hàng'], // Hoàn thành sẽ do client hoặc job tự động
         ];
 
-        // Kiểm tra chuyển trạng thái hợp lệ
-        if (!isset($validTransitions[$currentStatus]) || $validTransitions[$currentStatus] !== $nextStatus) {
+        if (!isset($validTransitions[$currentStatus]) || !in_array($nextStatus, $validTransitions[$currentStatus])) {
             return response()->json([
                 'status' => false,
-                'message' => 'Chỉ được chuyển trạng thái theo thứ tự: Chờ xác nhận → Chờ lấy hàng → Đang giao → Đã giao'
+                'message' => 'Chuyển trạng thái không hợp lệ!'
             ], 400);
         }
 
@@ -266,4 +265,31 @@ class OrderController extends Controller
             'order' => $order
         ]);
     }
+
+    // Client xác nhận đã nhận hàng (chuyển Đã giao -> Hoàn thành)
+    public function clientConfirmReceived(Request $request, $id)
+    {
+        $order = Orders::find($id);
+        if (!$order) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Không tìm thấy đơn hàng'
+            ], 404);
+        }
+        if ($order->status !== 'Đã giao') {
+            return response()->json([
+                'status' => false,
+                'message' => 'Chỉ xác nhận khi đơn hàng ở trạng thái Đã giao'
+            ], 400);
+        }
+        $order->status = 'Hoàn thành/Đã nhận hàng';
+        $order->save();
+        return response()->json([
+            'status' => true,
+            'message' => 'Đơn hàng đã được xác nhận hoàn thành',
+            'order' => $order
+        ]);
+    }
+
+
 }

@@ -21,6 +21,7 @@ return new class extends Migration
                 'Chờ lấy hàng',
                 'Đang giao',
                 'Đã giao',
+                'Hoàn thành/Đã nhận hàng',
                 'Đã hủy',
                 'Trả hàng/Hoàn tiền'
             ])->default('Chờ xác nhận');

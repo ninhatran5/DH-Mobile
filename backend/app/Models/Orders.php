@@ -14,6 +14,11 @@ class Orders extends Model
         'user_id',
         'total_amount',
         'status',
+        'payment_status',
+        'voucher_id',
+        'method_id',
+        'return_reason',
+        'return_status',
         'created_at',
         'updated_at',
     ];

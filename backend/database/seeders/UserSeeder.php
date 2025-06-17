@@ -106,6 +106,36 @@ class UserSeeder extends Seeder
                 'role' => 'admin',
                 'created_at' => now(),
                 'updated_at' => now()
+            ],
+            [
+                'username' => 'ninhatran',
+                'password_hash' => Hash::make('Ninh@123'),
+                'email' => 'ninhtnph49084@gmail.com',
+                'full_name' => 'Nhật Ninh Trần',
+                'phone' => '0971366828',
+                'address' => 'Vĩnh Phúc',
+                'ward' => 'Thị Trấn Hợp Hòa',
+                'district' => 'Huyện Tam Dương',
+                'city' => 'Tỉnh Vĩnh phúc',
+                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1747896461/users/default-admin.jpg',
+                'role' => 'admin',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'username' => 'ninhatran5',
+                'password_hash' => Hash::make('Ninh@123'),
+                'email' => 'tnnpalk@gmail.com',
+                'full_name' => 'Nhật Ninh Trần',
+                'phone' => '0971366828',
+                'address' => 'Vĩnh Phúc',
+                'ward' => 'Thị Trấn Hợp Hòa',
+                'district' => 'Huyện Tam Dương',
+                'city' => 'Tỉnh Vĩnh phúc',
+                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1747896461/users/default-admin.jpg',
+                'role' => 'customer',
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ];
 
