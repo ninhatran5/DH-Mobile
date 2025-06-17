@@ -361,8 +361,8 @@
     "phone": "Số điện thoại",
     "address": "Địa chỉ",
     "paymentMethod": "Phương thức thanh toán",
-    "cod": "Thanh toán khi nhận hàng (COD)",
-    "note": "Ghi chú",
+    "payment_status_note": "Trạng thái thanh toán",
+    "order_status_note": "Trạng thái đơn hàng",
     "productDetail": "Chi tiết sản phẩm",
     "product": "Tên sản phẩm",
     "quantity": "Số lượng",
@@ -372,12 +372,12 @@
     "totalPrice": "Tổng tiền",
     "total": "Tổng cộng:",
     "back": "Quay lại lịch sử mua hàng ",
-    "status": {
+    "order_status": {
       "pending": "Chờ xác nhận",
       "confirmed": "Đã xác nhận",
-      "waitingPickup": "Chờ lấy hàng",
-      "delivering": "Đang giao hàng",
-      "delivered": "Giao hàng thành công"
+      "shipping": "Đang giao hàng",
+      "shipped": "Đã giao hàng",
+      "delivered": "Hoàn thành"
     }
   },
   "auth": {
@@ -466,6 +466,8 @@
     "paymentSuccess": "Thanh toán thành công!",
     "paymentError": "Thanh toán thất bại, vui lòng thử lại",
     "maxOnlineAmount": "Số tiền tối đa được phép thanh toán online là 100 triệu đồng",
-    "updateQuantityError": "Sản phẩm đã vượt quá số lượng của kho hàng, vui lòng cập nhật lại số lượng"
+    "updateQuantityError": "Sản phẩm đã vượt quá số lượng của kho hàng, vui lòng cập nhật lại số lượng",
+    "missingAddress": "Vui lòng cập nhật đầy đủ địa chỉ trước khi thanh toán!",
+    "pending_update": "Chưa cập nhật"
   }
 }

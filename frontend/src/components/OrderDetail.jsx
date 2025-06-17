@@ -1,51 +1,83 @@
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import "../assets/css/order_detail.css";
-import iphone from "../assets/images/iphone-16-pro-max.webp";
 import Breadcrumb from "./Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { RiArrowGoBackFill } from "react-icons/ri";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { fetchOrderDetail } from "../slices/orderSlice";
+import Loading from "./Loading";
+import numberFormat from "../../utils/numberFormat";
+import OrderProductRow from "./OrderProductRow";
 
 const OrderDetail = () => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const { id } = useParams();
 
-  const statusSteps = [
-    { label: t("orderDetail.status.pending"), active: true },
-    { label: t("orderDetail.status.confirmed"), active: true },
-    { label: t("orderDetail.status.waitingPickup"), active: true },
-    { label: t("orderDetail.status.delivering"), active: false },
-    { label: t("orderDetail.status.delivered"), active: false },
+  const { orders, loading } = useSelector((state) => state.order);
+  console.log("🚀 ~ OrderDetail ~ orders:", orders);
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchOrderDetail(id));
+    }
+  }, [id, dispatch]);
+
+  const statusOrder = [
+    "pending", 
+    "confirmed",
+    "shipping",
+    "shipped",
+    "delivered",
   ];
 
+  const statusMap = {
+    "chờ xác nhận": "pending",
+    "đã xác nhận": "confirmed",
+    "đang giao": "shipping",
+    "đã giao hàng": "shipped",
+    "hoàn thành": "delivered",
+  };
+
+  const currentStatusKey = statusMap[orders.status] || "pending";
+  const currentStatusIndex = statusOrder.indexOf(currentStatusKey);
+
+  const statusSteps = statusOrder.map((key, idx) => ({
+    label: t(`orderDetail.order_status.${key}`),
+    active: idx <= currentStatusIndex,
+  }));
+
   const orderInfo = [
-    { label: t("orderDetail.receiver"), value: "Nguyễn Văn A" },
-    { label: t("orderDetail.phone"), value: "0123456789" },
+    {
+      label: t("orderDetail.receiver"),
+      value: orders?.customer || t("toast.pending_update"),
+    },
+    {
+      label: t("orderDetail.phone"),
+      value: orders?.phone || t("toast.pending_update"),
+    },
     {
       label: t("orderDetail.address"),
-      value: "123 Đường ABC, Phường XYZ, Quận 1, TP.HCM",
+      value: orders?.address || t("toast.pending_update"),
     },
     {
       label: t("orderDetail.paymentMethod"),
-      value: t("orderDetail.cod"),
+      value: orders?.payment_method?.[1] || t("toast.pending_update"),
     },
-    { label: t("orderDetail.note"), value: "Giao hàng giờ hành chính" },
-  ];
-
-  const products = [
     {
-      name: "iPhone 14 Pro Max",
-      image: iphone,
-      quantity: 2,
-      color: "Tím",
-      version: "256GB",
-      unitPrice: "27.990.000₫",
-      totalPrice: "55.980.000₫",
+      label: t("orderDetail.payment_status_note"),
+      value: orders?.payment_status || t("toast.pending_update"),
+    },
+    {
+      label: t("orderDetail.order_status_note"),
+      value: orders?.status || t("toast.pending_update"),
     },
   ];
-
-  const totalAmount = "56.010.000₫";
 
   return (
     <>
+      {loading && <Loading />}
       <Breadcrumb
         title={t("orderDetail.title")}
         mainItem={t("orderDetail.home")}
@@ -63,13 +95,14 @@ const OrderDetail = () => {
                 className="text-primary font-weight-bold"
                 style={{ marginLeft: 8 }}
               >
-                #Y34XDHR
+                #{orders?.order_code || t("toast.pending_update")}
               </span>
             </h5>
           </div>
           <div className="d-flex flex-column text-sm-right">
             <p className="mb-0">
-              {t("orderDetail.orderDate")}: <span>01/12/19</span>
+              {t("orderDetail.orderDate")}:{" "}
+              <span>{orders?.order_date || t("toast.pending_update")}</span>
             </p>
           </div>
         </div>
@@ -127,31 +160,8 @@ const OrderDetail = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {products.map((p, index) => (
-                      <tr key={index}>
-                        <td>
-                          <div className="d-flex align-items-center">
-                            <img
-                              src={p.image}
-                              alt={p.name}
-                              className="me-2"
-                              style={{
-                                width: 50,
-                                height: 50,
-                                objectFit: "cover",
-                              }}
-                            />
-                          </div>
-                        </td>
-                        <td>
-                          <div className="fw-bold">{p.name}</div>
-                        </td>
-                        <td className="align-middle">{p.quantity}</td>
-                        <td className="align-middle">{p.color}</td>
-                        <td className="align-middle">{p.version}</td>
-                        <td className="align-middle">{p.unitPrice}</td>
-                        <td className="align-middle fw-bold">{p.totalPrice}</td>
-                      </tr>
+                    {(orders?.products || []).map((order) => (
+                      <OrderProductRow key={orders.order_id} product={order} />
                     ))}
                   </tbody>
                   <tfoot className="bg-light">
@@ -159,7 +169,10 @@ const OrderDetail = () => {
                       <td colSpan="6" className="text-end fw-bold">
                         {t("orderDetail.total")}
                       </td>
-                      <td className="fw-bold text-primary">{totalAmount}</td>
+                      <td className="fw-bold text-primary">
+                        {numberFormat(orders?.total_amount) ||
+                          t("toast.pending_update")}
+                      </td>
                     </tr>
                   </tfoot>
                 </table>

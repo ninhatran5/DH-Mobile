@@ -37,6 +37,11 @@ const CheckOut = () => {
 
   const handleCheckout = async (e) => {
     e.preventDefault();
+    const { address, city, district, ward, phone } = profile.user || {};
+    if (!name || !address || !city || !district || !ward || !phone) {
+      toast.error(t("toast.missingAddress"));
+      return;
+    }
     if (paymentMethod === "cod") {
       try {
         await dispatch(
