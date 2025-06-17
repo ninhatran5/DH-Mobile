@@ -4,6 +4,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { fetchUsers, updateUser } from "../../slices/adminuserSlice";
 import { toast } from "react-toastify";
 import "../../assets/admin/EditAcccount.css";
+import defaultAvatar from "../../assets/images/adminacccount.jpg";
+
 
 const API_BASE = "https://provinces.open-api.vn/api";
 
@@ -53,7 +55,11 @@ const UpdateUser = () => {
           image_file: null,
           image_url: userToEdit.image_url || "",
         });
-        setImagePreview(userToEdit.image_url || "");
+        setImagePreview(
+          userToEdit.image_url && userToEdit.image_url.trim() !== ""
+            ? userToEdit.image_url
+            : defaultAvatar
+        );
       } else {
         toast.error("Không tìm thấy user cần chỉnh sửa!");
         navigate("/admin/accounts");
@@ -213,10 +219,26 @@ const UpdateUser = () => {
             </div>
 
             <div className="admin-edit-account-image-upload">
-              <label className="admin-edit-account-label">Ảnh đại diện</label>
-              <input type="file" accept="image/*" onChange={handleImageChange} className="admin-edit-account-input-file" />
-              {imagePreview && <img src={imagePreview} alt="Preview" className="admin-edit-account-image-preview" />}
-            </div>
+  <label className="admin-edit-account-label">Ảnh đại diện</label>
+  <input
+    type="file"
+    accept="image/*"
+    onChange={handleImageChange}
+    className="admin-edit-account-input-file"
+  />
+  {imagePreview && (
+    <img
+      src={imagePreview}
+      onError={(e) => {
+        e.target.onerror = null;
+        e.target.src = defaultAvatar;
+      }}
+      alt="Avatar Preview"
+      className="admin-edit-account-image-preview"
+    />
+  )}
+</div>
+
           </div>
         </div>
 

@@ -183,11 +183,7 @@ h1 {
   transition: all 0.2s ease;
 }
 
-.btn-edit:hover {
-  background-color: #0c08d7;
-  box-shadow: 0 8px 24px rgba(8, 12, 248, 0.5);
-  transform: translateY(-2px);
-}
+
 
 .btn-delete-attribute {
   background-color: #ff3b30;
