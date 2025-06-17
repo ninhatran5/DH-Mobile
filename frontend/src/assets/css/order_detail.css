@@ -148,3 +148,19 @@ body {
     width: 50%;
   }
 }
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(80, 0, 255, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(80, 0, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(80, 0, 255, 0);
+  }
+}
+
+.step0.current::before {
+  animation: pulse 1.2s infinite;
+}
