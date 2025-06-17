@@ -63,7 +63,7 @@ class OrderController extends Controller
             $variantAttributes = [];
 
             if ($item->variant) {
-               
+
                 // Lấy thông tin thuộc tính của biến thể
                 $variantAttributes = $item->variant->variantAttributeValues->map(function ($attrValue) {
                     return [
@@ -289,4 +289,32 @@ class OrderController extends Controller
         ]);
     }
 
+    // Client gửi yêu cầu hoàn hàng
+    public function clientRequestReturn(Request $request, $id)
+    {
+        $order = Orders::find($id);
+        if (!$order) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Không tìm thấy đơn hàng'
+            ], 404);
+        }
+        if (!in_array($order->status, ['Đã giao', 'Hoàn thành/Đã nhận hàng'])) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Chỉ được yêu cầu hoàn hàng khi đơn hàng ở trạng thái Đã giao hoặc Hoàn thành'
+            ], 400);
+        }
+        $request->validate([
+            'return_reason' => 'required|string',
+        ]);
+        $order->return_reason = $request->return_reason;
+        $order->return_status = 'Yêu cầu hoàn hàng';
+        $order->save();
+        return response()->json([
+            'status' => true,
+            'message' => 'Đã gửi yêu cầu hoàn hàng',
+            'order' => $order
+        ]);
+    }
 }
