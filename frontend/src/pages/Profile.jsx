@@ -52,7 +52,7 @@ const Profile = () => {
     {
       id: 1,
       label: t("profile.statisticals.orders"),
-      value: orders?.length + ` ${t("profile.order")}`,
+      value: orders?.orders?.length + ` ${t("profile.order")}`,
     },
     {
       id: 2,
@@ -247,6 +247,7 @@ const Profile = () => {
                       <th>{t("orderHistory.orderName")}</th>
                       <th>{t("orderHistory.address")}</th>
                       <th>{t("orderHistory.paymentMethod")}</th>
+                      <th>{t("orderHistory.payment_status")}</th>
                       <th>{t("orderHistory.price")}</th>
                       <th>{t("orderHistory.status")}</th>
                       <th>{t("orderHistory.detail")}</th>

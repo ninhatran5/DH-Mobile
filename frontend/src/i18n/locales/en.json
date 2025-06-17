@@ -347,7 +347,8 @@
     "paymentMethod": "Payment Method",
     "status": "Status",
     "detail": "Detail",
-    "viewDetail": "View Details"
+    "viewDetail": "View Details",
+    "payment_status": "Payment Status"
   },
   "breadcrumbOrder": {
     "breadcrumbHeader": "Purchase History"

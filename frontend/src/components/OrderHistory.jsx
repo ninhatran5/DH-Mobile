@@ -17,6 +17,7 @@ const OrderHistory = ({ order }) => {
         <td>{order?.customer}</td>
         <td>{order?.address}</td>
         <td>{order?.payment_method}</td>
+        <td>{order?.payment_status}</td>
         <td style={{ fontWeight: 600 }}>{NumberFormat(order?.total_amount)}</td>
         <td>{order?.status}</td>
         <td onClick={() => handleNextPageOrderDetail(order?.order_id)}>

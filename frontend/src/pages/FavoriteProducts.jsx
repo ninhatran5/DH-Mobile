@@ -12,6 +12,7 @@ const FavoriteProducts = () => {
   const { listFavorite, loading } = useSelector(
     (state) => state.favoriteProduct
   );
+  console.log("🚀 ~ FavoriteProducts ~ listFavorite:", listFavorite)
   useEffect(() => {
     dispatch(fetchListFavorite());
   }, [dispatch]);

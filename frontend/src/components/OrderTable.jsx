@@ -43,6 +43,7 @@ const OrderTable = () => {
                 <th>{t("orderHistory.orderName")}</th>
                 <th>{t("orderHistory.address")}</th>
                 <th>{t("orderHistory.paymentMethod")}</th>
+                <th>{t("orderHistory.payment_status")}</th>
                 <th>{t("orderHistory.price")}</th>
                 <th>{t("orderHistory.status")}</th>
                 <th>{t("orderHistory.detail")}</th>
