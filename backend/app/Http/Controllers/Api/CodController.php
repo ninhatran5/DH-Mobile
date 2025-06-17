@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\CodPaymentSuccessMail;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Mail\CodPaymentSuccessMail;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+
 
 class CodController extends Controller
 {
@@ -114,7 +115,7 @@ class CodController extends Controller
                 $total += $item['price_snapshot'] * $item['quantity'];
             }
 
-            // cập nhật tổng tiền 
+            // cập nhật tổng tiền
             DB::table('orders')->where('order_id', $orderId)->update([
                 'total_amount' => $total,
                 'updated_at' => now(),
@@ -159,6 +160,19 @@ class CodController extends Controller
             $userData = DB::table('users')->where('user_id', $user->user_id)->first();
             Mail::to($userData->email)->send(new CodPaymentSuccessMail($order, $userData));
 
+            // Tạo thông báo đơn hàng mới
+            $admin = DB::table('users')->where('role', 'admin')->first();
+            if ($admin) {
+                DB::table('order_notifications')->insert([
+                    'order_id' => $order->order_id,
+                    'user_id' => $admin->user_id,
+                    'type' => 'new_order',
+                    'message' => 'Đơn hàng mới #' . $order->order_code . ' vừa được tạo.',
+                    'is_read' => 0,
+                    'created_at' => now()
+                ]);
+            }
+
             DB::commit();
 
             return response()->json([
@@ -191,7 +205,7 @@ class CodController extends Controller
     }
 }
 
-// bản tối ưu lại code 
+// bản tối ưu lại code
 
 // <?php
 
