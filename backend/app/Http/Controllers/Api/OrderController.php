@@ -74,6 +74,7 @@ class OrderController extends Controller
             }
 
             return [
+                'product_id' => $item->product_id,
                 'product_name' => $item->product->name,
                 'product_image' => $item->variant ? $item->variant->image_url : $item->product->image_url,
                 'quantity' => $item->quantity,
