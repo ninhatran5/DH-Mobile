@@ -126,6 +126,13 @@ const ChangeCheckout = () => {
     dispatch(fetchAddress());
   }, [dispatch]);
 
+  useEffect(() => {
+    dispatch(fetchCart()).then((res) => {
+      if (!res.payload || res.payload.length === 0) {
+        navigate("/shopping-cart");
+      }
+    });
+  }, [dispatch, navigate]);
   return (
     <>
       <Breadcrumb
