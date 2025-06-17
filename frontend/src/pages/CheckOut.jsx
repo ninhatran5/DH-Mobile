@@ -50,7 +50,7 @@ const CheckOut = () => {
             total_amount: totalPrice,
           })
         ).unwrap();
-        toast.success(t("toast.paymentSuccess"));
+        navigate("/waiting-for-payment");
       } catch (error) {
         toast.error(t("toast.paymentError"));
       }
