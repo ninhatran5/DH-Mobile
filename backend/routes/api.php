@@ -28,7 +28,7 @@ use App\Http\Controllers\Api\VariantAttributeValuesController;
 
 
 
-// API than toán
+// API thanh toán
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/vnpay/checkout', [VnpayController::class, 'createPayment']);
     Route::post('/codpay/checkout', [CodController::class, 'createCodOrder']);
@@ -225,14 +225,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('cart/remove/{id}', [CartItemController::class, 'removeProductFromCart']);
     // // xóa toàn bộ giỏ hàng
     Route::delete('cart/clear', [CartItemController::class, 'clearCart']);
-    // // chọn/bỏ chọn sản phẩm trong giỏ hàng
-    Route::post('cart/toggle-select/{id}', [CartItemController::class, 'toggleSelectCartItem']);
-    // // chọn tất cả sản phẩm trong giỏ hàng
-    Route::post('cart/select-all', [CartItemController::class, 'selectAllCartItems']);
-    // // bỏ chọn tất cả sản phẩm trong giỏ hàng
-    Route::post('cart/unselect-all', [CartItemController::class, 'unselectAllCartItems']);
-    // // lấy danh sách sản phẩm đã chọn
-    Route::get('cart/selected-items', [CartItemController::class, 'getSelectedItems']);
+
+
+
 
     // payment
     Route::middleware('auth:sanctum')->group(function () {
@@ -244,14 +239,9 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // đơn hàng
-
-    Route::middleware('auth:sanctum')->group(function(){
+    Route::middleware('auth:sanctum')->group(function () {
         // Client
-        Route::get('getOrder',[OrderController::class , 'getOrder']);
-        Route::get('getDetailOrder',[OrderController::class , 'getOrder']);
+        Route::get('getOrder', [OrderController::class, 'getOrder']);
+        Route::get('getDetailOrder/{id}', [OrderController::class, 'getDetailOrder']);
     });
-
-
-
-
 });
