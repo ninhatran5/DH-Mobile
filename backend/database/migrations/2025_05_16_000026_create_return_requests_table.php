@@ -13,7 +13,7 @@ return new class extends Migration
             $table->unsignedBigInteger('order_id')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->text('reason')->nullable();
-            $table->enum('status', ['requested','approved','rejected','processing','refunded','cancelled'])->default('requested');
+            $table->enum('status', ['đã yêu cầu','đã chấp thuận','đã từ chối','đang xử lý','đã hoàn lại','đã hủy'])->default('requested');
             $table->decimal('refund_amount', 10, 2)->nullable();
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
