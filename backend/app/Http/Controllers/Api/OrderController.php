@@ -317,4 +317,38 @@ class OrderController extends Controller
             'order' => $order
         ]);
     }
+    
+    // Admin duyệt hoặc từ chối hoàn hàng
+    public function adminHandleReturnRequest(Request $request, $id)
+    {
+        $order = Orders::find($id);
+        if (!$order) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Không tìm thấy đơn hàng'
+            ], 404);
+        }
+        if ($order->return_status !== 'Yêu cầu hoàn hàng') {
+            return response()->json([
+                'status' => false,
+                'message' => 'Đơn hàng không có yêu cầu hoàn hàng'
+            ], 400);
+        }
+        $request->validate([
+            'approve' => 'required|boolean',
+        ]);
+        if ($request->approve) {
+            $order->status = 'Đã hoàn tiền';
+            $order->payment_status = 'Đã hoàn tiền';
+            $order->return_status = 'Đã hoàn tiền';
+        } else {
+            $order->return_status = 'Từ chối hoàn hàng';
+        }
+        $order->save();
+        return response()->json([
+            'status' => true,
+            'message' => $request->approve ? 'Đã duyệt hoàn tiền' : 'Đã từ chối hoàn hàng',
+            'order' => $order
+        ]);
+    }
 }
