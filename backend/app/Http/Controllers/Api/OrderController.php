@@ -113,8 +113,6 @@ class OrderController extends Controller
     }
 
     // quản lý đơn hàng admin 
-    // ================== ADMIN ORDER MANAGEMENT ==================
-    // Lấy danh sách đơn hàng (có thể lọc theo trạng thái, tìm kiếm theo mã đơn, user, ...)
     public function adminIndex(Request $request)
     {
         $query = Orders::with(['user', 'paymentMethods']);
@@ -235,8 +233,30 @@ class OrderController extends Controller
             'status' => 'required|string',
             'payment_status' => 'nullable|string',
         ]);
-        $order->status = $request->status;
-        if ($request->has('payment_status')) {
+
+        $currentStatus = $order->status;
+        $nextStatus = $request->status;
+        // Định nghĩa thứ tự trạng thái hợp lệ
+        $validTransitions = [
+            'Chờ xác nhận' => 'Chờ lấy hàng',
+            'Chờ lấy hàng' => 'Đang giao',
+            'Đang giao' => 'Đã giao',
+            // Có thể bổ sung các trạng thái tiếp theo nếu cần
+        ];
+
+        // Kiểm tra chuyển trạng thái hợp lệ
+        if (!isset($validTransitions[$currentStatus]) || $validTransitions[$currentStatus] !== $nextStatus) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Chỉ được chuyển trạng thái theo thứ tự: Chờ xác nhận → Chờ lấy hàng → Đang giao → Đã giao'
+            ], 400);
+        }
+
+        $order->status = $nextStatus;
+        // Nếu chuyển sang Đã giao và payment_status hiện tại là Chưa thanh toán thì tự động cập nhật
+        if ($nextStatus === 'Đã giao' && $order->payment_status === 'Chưa thanh toán') {
+            $order->payment_status = 'Đã thanh toán';
+        } elseif ($request->has('payment_status')) {
             $order->payment_status = $request->payment_status;
         }
         $order->save();
@@ -246,5 +266,4 @@ class OrderController extends Controller
             'order' => $order
         ]);
     }
-    // ================== END ADMIN ORDER MANAGEMENT ==================
 }
