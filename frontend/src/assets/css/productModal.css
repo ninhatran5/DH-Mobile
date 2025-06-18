@@ -1,0 +1,67 @@
+.product-modal .modal-dialog {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 100vh !important;
+  margin: 0 auto !important; 
+}
+
+.product-modal .modal-content {
+  background: #fff !important;
+  max-width: 80vw;
+  max-height: 90vh;
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Căn giữa nội dung theo chiều dọc */
+  align-items: center;
+}
+
+.product-modal-body {
+  position: relative;
+  overflow-y: auto;
+  max-height: 80vh;
+  width: 100%;
+  margin: 0 auto; 
+  background: transparent;
+}
+
+.product-modal-content-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  /* Bỏ height: 100vh; */
+  min-height: 100%; /* fallback */
+}
+
+.product-modal-btn-close {
+  position: absolute;
+  top: -40px;
+  right: 0px;
+  z-index: 10;
+  background: transparent !important;
+  color: #222 !important;
+  font-size: 2rem;
+  opacity: 1 !important;
+  border: none;
+}
+
+.product-modal-backdrop.modal-backdrop {
+  background-color: #000 !important;
+  opacity: 0 !important;
+}
+
+@media (max-width: 600px) {
+  .product-modal .modal-content {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  .product-modal-body {
+    max-height: 100vh;
+  }
+}

@@ -97,7 +97,7 @@ function isValidCombination(variants, selectedOptions, currentAttrId, valueId) {
   });
 }
 
-const ProductDetail = ({ productId, isQuickView }) => {
+const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
   const [activeTab, setActiveTab] = useState("description");
   const [selectedOptions, setSelectedOptions] = useState({});
   const { id: paramId } = useParams();
@@ -367,7 +367,8 @@ const ProductDetail = ({ productId, isQuickView }) => {
   return (
     <>
       {loading && <Loading />}
-      {!isQuickView && (
+      {/* Ẩn breadcrumb nếu là quick view hoặc hideExtraInfo */}
+      {!isQuickView && !hideExtraInfo && (
         <Breadcrumb
           title={t("breadcrumbProductDetail.breadcrumbHeader")}
           mainItem={t("breadcrumbProductDetail.breadcrumbTitleHome")}
@@ -383,7 +384,7 @@ const ProductDetail = ({ productId, isQuickView }) => {
         style={isQuickView ? { padding: 0, margin: 0 } : { marginBottom: 80 }}
       >
         <div className="row">
-          {/* Nếu là quick view thì chỉ render phần phải */}
+          {/* Ẩn ảnh trái nếu là quick view hoặc hideExtraInfo */}
           {!isQuickView && (
             <div className="col-md-6 mb-5 position-relative">
               <div className="border rounded mb-3 p-3 text-center position-relative">
@@ -428,7 +429,7 @@ const ProductDetail = ({ productId, isQuickView }) => {
             </div>
           )}
 
-          {/* Modal carousel chỉ hiện khi không phải quick view */}
+          {/* Ẩn modal carousel nếu là quick view hoặc hideExtraInfo */}
           {!isQuickView && (
             <Modal
               show={showModal}
@@ -585,7 +586,7 @@ const ProductDetail = ({ productId, isQuickView }) => {
               <button
                 onClick={addToShoppingCart}
                 className="btn-custom px-4"
-               disabled={selectedVariant?.stock === 0}
+                disabled={selectedVariant?.stock === 0}
               >
                 {t("products.addToCart")}
               </button>
@@ -593,7 +594,7 @@ const ProductDetail = ({ productId, isQuickView }) => {
           </div>
         </div>
 
-        {/* Chỉ render các tab, mô tả, sản phẩm liên quan khi không phải quick view */}
+        {/* Ẩn các tab, mô tả, sản phẩm liên quan nếu là quick view hoặc hideExtraInfo */}
         {!isQuickView && (
           <>
             <div
@@ -661,14 +662,16 @@ const ProductDetail = ({ productId, isQuickView }) => {
                 {activeTab === "reviews" && <Comment />}
               </div>
             </div>
-            <div style={{ marginTop: 30 }}>
-              <ListProductCard
-                title={t("home.relatedProducts")}
-                desc={t("home.goToShop")}
-                gotoShop={"/products"}
-                products={relatedProducts}
-              />
-            </div>
+            {!hideExtraInfo && (
+              <div style={{ marginTop: 30 }}>
+                <ListProductCard
+                  title={t("home.relatedProducts")}
+                  desc={t("home.goToShop")}
+                  gotoShop={"/products"}
+                  products={relatedProducts}
+                />
+              </div>
+            )}
           </>
         )}
       </div>

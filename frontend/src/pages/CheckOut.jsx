@@ -11,11 +11,15 @@ import numberFormat from "../../utils/numberFormat";
 import { fetchCODCheckout, fetchVnpayCheckout } from "../slices/checkOutSlice";
 import { toast } from "react-toastify";
 import { fetchCart } from "../slices/cartSlice";
+import ChangeAddressModal from "../components/ChangeAddressModal";
 
 const CheckOut = () => {
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
   const { profile, loading } = useSelector((state) => state.profile);
   const location = useLocation();
   const selectedItems = location.state?.selectedItems || [];
@@ -208,7 +212,7 @@ const CheckOut = () => {
                   </div>
                   <div className="checkout_change_address">
                     <Link
-                      to="/change-checkout"
+                      onClick={handleShow}
                       state={{ selectedItems }}
                       className="checkout_change_address_link"
                     >
@@ -379,6 +383,7 @@ const CheckOut = () => {
           </div>
         </section>
       </div>
+      <ChangeAddressModal show={show} handleClose={handleClose} />
     </>
   );
 };

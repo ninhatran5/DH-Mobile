@@ -13,11 +13,13 @@ import {
 } from "../slices/favoriteProductsSlice";
 import { fetchUpdateStatus } from "../slices/updateStatusSlice";
 import { addViewProducts } from "../slices/viewProductSlice";
+import ProductModal from "./ProductModal";
 
 const ProductCard = ({ discountPercent, product }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const [show, setShow] = useState(false);
   const { favoriteProducts: _ } = useSelector(
     (state) => state?.favoriteProduct
   );
@@ -53,46 +55,64 @@ const ProductCard = ({ discountPercent, product }) => {
 
   const addToShoppingCart = () => {
     if (checkLogin()) {
-      toast.success(t("products.addedToCart"));
-      navigate("/shopping-cart");
+      setShow(true);
     }
   };
 
   return (
-    <div className="product-item position-relative">
-      {discountPercent !== null && (
-        <span className="badge bg-success position-absolute mt-1 ms-1">
-          -{discountPercent}%
-        </span>
-      )}
+    <>
+      <div className="product-item position-relative">
+        {discountPercent !== null && (
+          <span className="badge bg-success position-absolute mt-1 ms-1">
+            -{discountPercent}%
+          </span>
+        )}
 
-      {!favorite ? (
-        <a
-          onClick={addToFavorites}
-          style={{ cursor: "pointer" }}
-          className="btn-wishlist"
-          title={t("products.addedToFavorites")}
-        >
-          <FaRegHeart style={{ fontSize: 20 }} />
-        </a>
-      ) : (
-        <a
-          onClick={handleUnFavorites}
-          style={{
-            cursor: "pointer",
-            background: "#e70303",
-            border: "1px solid #e70303",
-            color: "white",
-          }}
-          className="btn-wishlist"
-          title={t("products.removeFavorites")}
-        >
-          <FaRegHeart style={{ fontSize: 20 }} />
-        </a>
-      )}
+        {!favorite ? (
+          <a
+            onClick={addToFavorites}
+            style={{ cursor: "pointer" }}
+            className="btn-wishlist"
+            title={t("products.addedToFavorites")}
+          >
+            <FaRegHeart style={{ fontSize: 20 }} />
+          </a>
+        ) : (
+          <a
+            onClick={handleUnFavorites}
+            style={{
+              cursor: "pointer",
+              background: "#e70303",
+              border: "1px solid #e70303",
+              color: "white",
+            }}
+            className="btn-wishlist"
+            title={t("products.removeFavorites")}
+          >
+            <FaRegHeart style={{ fontSize: 20 }} />
+          </a>
+        )}
 
-      <figure>
-        <img
+        <figure>
+          <img
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              dispatch(
+                addViewProducts({
+                  productId: product?.product_id,
+                  userId,
+                })
+              );
+              navigate(`/product-detail/${product?.product_id}`);
+            }}
+            src={product?.image_url}
+            className="tab-image"
+            alt={product?.name}
+            title={product?.title || product?.name}
+          />
+        </figure>
+
+        <h3
           style={{ cursor: "pointer" }}
           onClick={() => {
             dispatch(
@@ -103,73 +123,61 @@ const ProductCard = ({ discountPercent, product }) => {
             );
             navigate(`/product-detail/${product?.product_id}`);
           }}
-          src={product?.image_url}
-          className="tab-image"
-          alt={product?.name}
-          title={product?.title || product?.name}
-        />
-      </figure>
+        >
+          {product?.title || product?.name}
+        </h3>
 
-      <h3
-        style={{ cursor: "pointer" }}
-        onClick={() => {
-          dispatch(
-            addViewProducts({
-              productId: product?.product_id,
-              userId,
-            })
-          );
-          navigate(`/product-detail/${product?.product_id}`);
-        }}
-      >
-        {product?.title || product?.name}
-      </h3>
-
-      <div
-        className="price_products_sale"
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 7,
-        }}
-      >
-        <span
-          className="price"
+        <div
+          className="price_products_sale"
           style={{
-            color: "#e70303",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 7,
           }}
         >
-          {numberFormat(product?.price)}
-        </span>
-        <span
-          className="price_original"
-          style={{
-            color: "#e70303",
-            fontSize: 13,
-            textDecoration: "line-through",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {numberFormat(product?.price_original)}
-        </span>
-      </div>
+          <span
+            className="price"
+            style={{
+              color: "#e70303",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {numberFormat(product?.price)}
+          </span>
+          <span
+            className="price_original"
+            style={{
+              color: "#e70303",
+              fontSize: 13,
+              textDecoration: "line-through",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {numberFormat(product?.price_original)}
+          </span>
+        </div>
 
-      <div className="d-flex align-items-center justify-content-between">
-        <a
-          onClick={addToShoppingCart}
-          style={{ cursor: "pointer" }}
-          className="nav-link"
-        >
-          {t("products.addToCart")}
-          <iconify-icon icon="uil:shopping-cart" />
-        </a>
+        <div className="d-flex align-items-center justify-content-between">
+          <a
+            onClick={addToShoppingCart}
+            style={{ cursor: "pointer" }}
+            className="nav-link"
+          >
+            {t("products.addToCart")}
+            <iconify-icon icon="uil:shopping-cart" />
+          </a>
+        </div>
       </div>
-    </div>
+      <ProductModal
+        show={show}
+        onHide={() => setShow(false)}
+        product={product}
+      />
+    </>
   );
 };
 

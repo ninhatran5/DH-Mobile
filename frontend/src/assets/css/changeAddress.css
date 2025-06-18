@@ -1,0 +1,216 @@
+.modal-backdrop.show {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.modal-content {
+  background: #fff !important;
+  color: #222;
+}
+
+.modal-header,
+.modal-footer {
+  background: #fff !important;
+  border: none;
+}
+
+.modal-header .btn-close {
+  filter: invert(1) grayscale(1) brightness(0.2);
+}
+
+.modal-header .btn-close {
+  background: none !important;
+}
+
+.modal-header .btn-close:before,
+.modal-header .btn-close:after {
+  background: #222 !important;
+}
+.modal_change_address_title {
+  font-size: 20px;
+}
+
+input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #4d4d4d;
+  border-radius: 50%;
+  background: #fff;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  margin-right: 10px; /* Tăng từ 8px lên 16px */
+  vertical-align: middle;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+input[type="radio"]:checked {
+  border-color: #ff8800;
+  background: #fff;
+}
+
+input[type="radio"]:checked::before {
+  content: "";
+  display: block;
+  width: 10px;
+  height: 10px;
+  background: #ff8800;
+  border-radius: 50%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+input[type="radio"]:focus {
+  box-shadow: 0 0 0 0px #007bff33;
+}
+.btn_save_address {
+  background: #ff8800 !important;
+}
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 0;
+}
+
+.form-check-label {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.name_address {
+  display: flex;
+  align-items: center;
+  gap: 4px; /* Giảm gap cho sát nhau */
+}
+
+.name_address_profile {
+  border-right: 1px solid #d9d9d9;
+  padding-right: 8px;
+  font-weight: 600;
+  color: #222;
+  font-size: 16px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  height: 21px;
+}
+
+.phone_address_profile {
+  color: #888;
+  font-size: 15px;
+  padding-left: 8px; /* Giảm padding cho sát tên */
+  margin: 0;
+  display: flex;
+  align-items: center;
+  height: 28px;
+  border-right: none;
+}
+
+.address_profile {
+  margin: 0;
+  color: #444;
+  font-size: 15px;
+  line-height: 1.5;
+  margin-top: 6px;
+  font-size: 15px;
+}
+.default_address_profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ff8800;
+  color: #ff8800;
+  min-width: 60px;
+  height: 28px;
+  padding: 0 7px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 6px;
+  margin-left: 0;
+  width: fit-content;
+  margin-top: 10px;
+}
+
+.default_address_profile p {
+  margin: 0;
+  font-size: 12px;
+  color: #ff8800;
+  font-weight: 500;
+}
+.address-divider {
+  border: none;
+  border-top: 1px solid #bbbbbb;
+  margin-top: 5px;
+}
+.address-header {
+  position: relative;
+}
+
+.edit-address-btn {
+  position: absolute;
+  top: -13px;
+  right: 0;
+  background: none;
+  border: none;
+  color: #888888;
+  font-size: 24px;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.2s;
+  font-weight: 500;
+}
+.delete-address-btn {
+  position: absolute;
+  right: 35px;
+  top: -7px;
+  background: none;
+  border: none;
+  color: red;
+  font-size: 18px;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.2s;
+  font-weight: 500;
+}
+.delete-address-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.edit-address-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.edit-address-btn:hover {
+  color: #db7500;
+  text-decoration: underline;
+}
+.add_address_new {
+  display: flex;
+  gap: 6px;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.icon_add_address {
+  color: #ff8800;
+  font-size: 20px;
+}
+.text_add_address {
+  font-size: 15px;
+  color: #ff8800;
+  font-weight: 500;
+}
