@@ -6,7 +6,7 @@ import "../assets/css/changeAddress.css";
 export default function AddAddressModal({ show, onHide, onAddAddress }) {
   const formRef = useRef();
 
-  const handleHoanThanh = () => {
+  const handleComplete = () => {
     if (formRef.current) {
       formRef.current.submit();
     }
@@ -21,7 +21,7 @@ export default function AddAddressModal({ show, onHide, onAddAddress }) {
         <ChangeCheckout ref={formRef} onSubmitExternal={onAddAddress} />
       </Modal.Body>
       <Modal.Footer>
-        <Button className="btn_save_address" onClick={handleHoanThanh}>
+        <Button className="btn_save_address" onClick={handleComplete}>
           Hoàn thành
         </Button>
       </Modal.Footer>
