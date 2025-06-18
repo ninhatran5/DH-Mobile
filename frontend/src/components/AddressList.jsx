@@ -34,6 +34,9 @@ export default function AddressList({ addresses }) {
             name={address?.recipient_name || ""}
             phone={address?.phone || ""}
             address={address?.address || ""}
+            ward={address?.ward || ""}
+            district={address?.district || ""}
+            city={address?.city || ""}
             isDefault={false}
             radioId={`radioDefault${idx + 2}`}
             handleDeleteAddress={() => handleDeleteAddress(address?.address_id)}
