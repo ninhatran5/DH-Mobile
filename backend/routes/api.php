@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\CartItemController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\AttributeController;
 use App\Http\Controllers\Api\ProductLikeController;
+use App\Http\Controllers\Api\UserAddressController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Controllers\Api\ProductsViewsController;
@@ -71,6 +72,13 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::put('/update-profile', [UserController::class, 'updateProfile']);
     Route::get('/profile', [UserController::class, 'profile']);
+
+    // User addresses
+    Route::get('/user-addresses', [UserAddressController::class, 'index']);
+    Route::post('/user-addresses', [UserAddressController::class, 'store']);
+    Route::put('/user-addresses/{id}', [UserAddressController::class, 'update']);
+    Route::delete('/user-addresses/{id}', [UserAddressController::class, 'destroy']);
+    Route::put('/user-addresses/set-default/{id}', [UserAddressController::class, 'setDefault']);
 });
 
 
@@ -260,7 +268,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('admin/notifications/read', [NotificationController::class, 'markAsRead']);
 });
 
-// quản lý đơn hàng dành cho admin 
+// quản lý đơn hàng dành cho admin
 Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(function () {
     Route::get('orders', [OrderController::class, 'adminIndex']); // Danh sách đơn hàng
     Route::get('orders/{id}', [OrderController::class, 'adminShow']); // Chi tiết đơn hàng
@@ -269,4 +277,7 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(f
 
     // Admin duyệt hoặc từ chối yêu cầu hoàn hàng của đơn hàng
     Route::post('/orders/{id}/handle-return', [OrderController::class, 'adminHandleReturnRequest']);
+
+
+
 });
