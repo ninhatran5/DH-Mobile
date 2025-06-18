@@ -11,28 +11,49 @@ import AddAddressModal from "./AddAddressModal";
 import { addAddresNew, fetchAddressNew } from "../slices/changeAddressSlice";
 import { FaTrash } from "react-icons/fa";
 import AddressList from "./AddressList";
-import { toast } from "react-toastify";
+
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+const MySwal = withReactContent(Swal);
+
 export default function ChangeAddressModal({ show, handleClose }) {
   const dispatch = useDispatch();
   const { profile, loading } = useSelector((state) => state.profile);
-  const { changeAddressNew: _ } = useSelector((state) => state.changeAddress);
   const { changeAddressNew } = useSelector((state) => state.changeAddress);
   const [showAddModal, setShowAddModal] = useState(false);
+
   useEffect(() => {
     dispatch(fetchProfile());
     dispatch(fetchAddressNew());
   }, [dispatch]);
 
+  const handleCloseWithConfirm = async () => {
+    const result = await MySwal.fire({
+      title: "Bạn có chắc chắn muốn đóng?",
+      text: "Các thay đổi chưa được lưu sẽ bị mất.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Đóng",
+      cancelButtonText: "Hủy",
+      reverseButtons: true,
+    });
+
+    if (result.isConfirmed) {
+      handleClose();
+    }
+  };
+
   const nagivateToAddAddress = () => {
     setShowAddModal(true);
     handleClose();
   };
+
   return (
     <>
       {loading && <Loading />}
       <Modal
         show={show}
-        onHide={handleClose}
+        onHide={handleCloseWithConfirm}
         backdrop="static"
         keyboard={false}
         size="xl"
@@ -100,7 +121,7 @@ export default function ChangeAddressModal({ show, handleClose }) {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="secondary" onClick={handleCloseWithConfirm}>
             Hủy
           </Button>
           <Button onClick={handleClose} className="btn_save_address">
@@ -108,24 +129,46 @@ export default function ChangeAddressModal({ show, handleClose }) {
           </Button>
         </Modal.Footer>
       </Modal>
+
       <AddAddressModal
         show={showAddModal}
         onHide={() => setShowAddModal(false)}
         onAddAddress={async (data) => {
-          await dispatch(
-            addAddresNew({
-              recipient_name: data.fullName,
-              phone: data.phone,
-              email: data.email,
-              address: data.addressDetail,
-              ward: data.ward,
-              district: data.district,
-              city: data.city,
-            })
-          );
-          await dispatch(fetchAddressNew());
-          setShowAddModal(false);
-          toast.success("Thêm địa chỉ thành công");
+          const result = await Swal.fire({
+            title: "Bạn có muốn lưu địa chỉ này?",
+            text: "Thông tin địa chỉ sẽ được thêm vào danh sách của bạn.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Lưu",
+            cancelButtonText: "Hủy",
+            reverseButtons: true, // "Hủy" nằm bên phải
+          });
+
+          if (result.isConfirmed) {
+            try {
+              await dispatch(
+                addAddresNew({
+                  recipient_name: data.fullName,
+                  phone: data.phone,
+                  email: data.email,
+                  address: data.addressDetail,
+                  ward: data.ward,
+                  district: data.district,
+                  city: data.city,
+                })
+              );
+              await dispatch(fetchAddressNew());
+              Swal.fire(
+                "Đã lưu!",
+                "Địa chỉ đã được thêm thành công.",
+                "success"
+              );
+              setShowAddModal(false);
+              // eslint-disable-next-line no-unused-vars
+            } catch (error) {
+              Swal.fire("Lỗi!", "Không thể thêm địa chỉ.", "error");
+            }
+          }
         }}
       />
     </>
