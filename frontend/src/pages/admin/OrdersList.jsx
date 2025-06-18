@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAdminOrders } from "../../slices/adminOrderSlice";
 import "../../assets/admin/OrdersList.css";
+import { FiEdit, FiEye } from "react-icons/fi";
 
 const OrdersList = () => {
   const dispatch = useDispatch();
@@ -34,6 +35,14 @@ const OrdersList = () => {
     if (pagination && page >= 1 && page <= pagination.last_page) {
       setCurrentPage(page);
     }
+  };
+
+  const handleEditOrder = (order) => {
+    console.log("Sửa đơn hàng:", order);
+  };
+
+  const handleViewOrder = (order) => {
+    console.log("Xem chi tiết đơn hàng:", order);
   };
 
   const current = pagination?.current_page || 1;
@@ -92,18 +101,37 @@ const OrdersList = () => {
                 <th>Phương thức</th>
                 <th>Trạng thái</th>
                 <th>Ngày tạo</th>
+                <th>Thao tác</th>
               </tr>
             </thead>
             <tbody>
               {filteredOrders.map((order) => (
                 <tr key={order.order_id}>
-                  <td>{order.order_code}</td>
-                  <td>{order.customer}</td>
-                  <td>{Number(order.total_amount).toLocaleString("vi-VN")} ₫</td>
-                  <td>{order.payment_status}</td>
-                  <td>{order.payment_method}</td>
-                  <td>{order.status}</td>
-                  <td>{order.created_at}</td>
+                  <td className="adminOrder-code">{order.order_code}</td>
+                  <td className="adminOrder-customer">{order.customer}</td>
+                  <td className="adminOrder-total">{Number(order.total_amount).toLocaleString("vi-VN")} ₫</td>
+                  <td className="adminOrder-payment-status">{order.payment_status}</td>
+                  <td className="adminOrder-method">{order.payment_method}</td>
+                  <td className={`adminOrder-status adminOrder-status-${order.status.toLowerCase().replace(/\s/g, "-")}`}>
+                    {order.status}
+                  </td>
+                  <td className="adminOrder-date">{order.created_at}</td>
+                  <td className="adminOrder-actions">
+                    <button
+                      className="adminOrder-icon-btn"
+                      onClick={() => handleEditOrder(order)}
+                      title="Sửa đơn hàng"
+                    >
+                      <FiEdit />
+                    </button>
+                    <button
+                      className="adminOrder-icon-btn"
+                      onClick={() => handleViewOrder(order)}
+                      title="Xem chi tiết"
+                    >
+                      <FiEye />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>

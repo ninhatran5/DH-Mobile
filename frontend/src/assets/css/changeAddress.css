@@ -14,17 +14,22 @@
 }
 
 .modal-header .btn-close {
-  filter: invert(1) grayscale(1) brightness(0.2);
+  filter: invert(54%) sepia(98%) saturate(749%) hue-rotate(359deg)
+    brightness(101%) contrast(104%);
 }
 
 .modal-header .btn-close {
-  background: none !important;
+  /* Màu đen */
+  --bs-btn-close-color: #000;
+  color: #000;
+  filter: none;
 }
 
-.modal-header .btn-close:before,
-.modal-header .btn-close:after {
-  background: #222 !important;
+.modal-header .btn-close svg {
+  color: #000;
+  fill: #000;
 }
+
 .modal_change_address_title {
   font-size: 20px;
 }
