@@ -15,7 +15,6 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);
             $table->decimal('price_original', 10, 2)->nullable();
-            // $table->boolean('status')->default(false );
             $table->string('image_url', 255)->nullable();
             $table->integer('view_count')->default(0);
             $table->dateTime('created_at')->useCurrent();

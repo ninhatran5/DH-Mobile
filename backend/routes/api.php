@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\VnpayController;
 use App\Http\Controllers\Api\BannerController;
+use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\VoucherController;
 use App\Http\Controllers\Api\CartItemController;
@@ -278,6 +279,9 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(f
     // Admin duyệt hoặc từ chối yêu cầu hoàn hàng của đơn hàng
     Route::post('/orders/{id}/handle-return', [OrderController::class, 'adminHandleReturnRequest']);
 
-
-
 });
+
+
+
+
+Route::middleware('auth:sanctum')->post('/comments', [CommentController::class, 'store']);

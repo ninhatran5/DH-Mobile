@@ -23,7 +23,7 @@ class UserSeeder extends Seeder
                 'full_name'   => ucfirst($role) . ' User',
                 'phone'       => '012345678' . $index,
                 'address'     => '123 ' . ucfirst($role) . ' Street',
-                'image_url'   => 'https://via.placeholder.com/150',
+                'image_url'   => 'https://www.shutterstock.com/image-vector/man-inscription-admin-icon-outline-600nw-1730974153.jpg',
                 'role'        => $role,
                 'created_at'  => now(),
                 'updated_at'  => now()
