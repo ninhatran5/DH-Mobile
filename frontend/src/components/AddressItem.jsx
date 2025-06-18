@@ -1,3 +1,4 @@
+import { FaTrash } from "react-icons/fa";
 import { TbEditCircle } from "react-icons/tb";
 
 export default function AddressItem({
@@ -8,6 +9,7 @@ export default function AddressItem({
   checked,
   onEdit,
   onChange,
+  handleDeleteAddress,
   radioName = "radioDefault",
   radioId,
 }) {
@@ -34,6 +36,13 @@ export default function AddressItem({
           </div>
           <button className="edit-address-btn" type="button" onClick={onEdit}>
             <TbEditCircle />
+          </button>
+          <button
+            className="delete-address-btn"
+            type="button"
+            onClick={handleDeleteAddress}
+          >
+            <FaTrash />
           </button>
         </div>
         <div className="full_address_profile">

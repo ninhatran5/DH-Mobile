@@ -169,6 +169,29 @@ input[type="radio"]:focus {
   transition: color 0.2s;
   font-weight: 500;
 }
+.delete-address-btn {
+  position: absolute;
+  right: 35px;
+  top: -7px;
+  background: none;
+  border: none;
+  color: red;
+  font-size: 18px;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.2s;
+  font-weight: 500;
+}
+.delete-address-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.edit-address-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 
 .edit-address-btn:hover {
   color: #db7500;

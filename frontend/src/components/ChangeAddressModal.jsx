@@ -9,8 +9,9 @@ import { MdAddCircleOutline } from "react-icons/md";
 import Loading from "./Loading";
 import AddAddressModal from "./AddAddressModal";
 import { addAddresNew, fetchAddressNew } from "../slices/changeAddressSlice";
+import { FaTrash } from "react-icons/fa";
 import AddressList from "./AddressList";
-
+import { toast } from "react-toastify";
 export default function ChangeAddressModal({ show, handleClose }) {
   const dispatch = useDispatch();
   const { profile, loading } = useSelector((state) => state.profile);
@@ -59,9 +60,22 @@ export default function ChangeAddressModal({ show, handleClose }) {
                       {profile?.user?.phone || ""}
                     </p>
                   </div>
-                  <button className="edit-address-btn" type="button">
-                    <TbEditCircle />
-                  </button>
+                  <div className="d-flex">
+                    <button
+                      disabled={true}
+                      className="edit-address-btn"
+                      type="button"
+                    >
+                      <TbEditCircle />
+                    </button>
+                    <button
+                      disabled={true}
+                      className="delete-address-btn"
+                      type="button"
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
                 </div>
                 <div className="full_address_profile">
                   <p className="address_profile">
@@ -105,10 +119,14 @@ export default function ChangeAddressModal({ show, handleClose }) {
               phone: data.phone,
               email: data.email,
               address: fullAddress,
+              ward: data.ward,
+              district: data.district,
+              city: data.city,
             })
           );
           await dispatch(fetchAddressNew());
           setShowAddModal(false);
+          toast.success("Thêm địa chỉ thành công");
         }}
       />
     </>
