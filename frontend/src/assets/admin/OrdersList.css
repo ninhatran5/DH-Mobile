@@ -1,35 +1,37 @@
-.adminOrder-container {
-  font-size: 13px; /* giảm font-size chung */
+.ordersList-container {
+  font-size: 13px;
   padding: 16px;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: #fff;
 }
 
-.adminOrder-title h1 {
+.ordersList-title h1 {
   font-size: 20px;
   margin-bottom: 4px;
   font-weight: 600;
 }
 
-.adminOrder-title p {
+.ordersList-title p {
   font-size: 12px;
   color: #666;
 }
 
-.adminOrder-top-row {
+.ordersList-top-row {
   margin: 10px 0 15px;
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.adminOrder-search-box {
+.ordersList-search-box {
   position: relative;
   max-width: 320px;
   flex: 1 1 320px;
 }
 
-.adminOrder-search-icon {
+.ordersList-search-icon {
   position: absolute;
   left: 10px;
   top: 50%;
@@ -38,7 +40,7 @@
   color: #0071e3;
 }
 
-.adminOrder-search-input {
+.ordersList-search-input {
   width: 100%;
   padding: 6px 12px 6px 32px;
   font-size: 13px;
@@ -46,7 +48,7 @@
   border-radius: 6px;
 }
 
-.adminOrder-filters select.adminOrder-filter-select {
+.ordersList-filters select.ordersList-filter-select {
   padding: 6px 10px;
   font-size: 13px;
   border-radius: 6px;
@@ -54,87 +56,120 @@
   min-width: 160px;
 }
 
-.adminOrder-loading,
-.adminOrder-error,
-.adminOrder-empty {
+.ordersList-loading,
+.ordersList-error,
+.ordersList-empty {
   font-size: 13px;
   margin-top: 20px;
   color: #333;
 }
 
-.adminOrder-scrollable {
+.ordersList-scrollable {
   overflow-x: auto;
   max-width: 100%;
 }
 
-.adminOrder-table {
+.ordersList-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
 }
 
-.adminOrder-table th,
-.adminOrder-table td {
+.ordersList-table th,
+.ordersList-table td {
   padding: 8px 12px;
   text-align: left;
   border-bottom: 1px solid #e0e0e0;
 }
 
-.adminOrder-table th {
+.ordersList-table th {
   font-weight: 600;
   background-color: #f9f9f9;
 }
 
-.adminOrder-code,
-.adminOrder-customer,
-.adminOrder-total,
-.adminOrder-payment-status,
-.adminOrder-method,
-.adminOrder-status,
-.adminOrder-date {
+.ordersList-code,
+.ordersList-customer,
+.ordersList-total,
+.ordersList-payment-status,
+.ordersList-method,
+.ordersList-status,
+.ordersList-date {
   font-size: 13px;
 }
 
-.adminOrder-status {
+/* Trạng thái đơn hàng - Cập nhật */
+.ordersList-status {
   padding: 4px 8px;
   border-radius: 10px;
   font-weight: 600;
   font-size: 12px;
   display: inline-block;
-  white-space: nowrap;
+  white-space: normal;
+  max-width: 120px;
+  line-height: 1.4;
+  text-align: center;
+  word-break: break-word;
 }
 
-.adminOrder-actions {
+/* Màu sắc + nền cho từng trạng thái */
+.ordersList-status.cho-xac-nhan {
+  color: #856404;
+  background-color: #fff3cd;
+}
+
+.ordersList-status.da-xac-nhan {
+  color: #004085;
+  background-color: #cce5ff;
+}
+
+.ordersList-status.dang-giao-hang {
+  color: #0c5460;
+  background-color: #d1ecf1;
+}
+
+.ordersList-status.da-giao-hang {
+  color: #155724;
+  background-color: #d4edda;
+}
+
+/* Action buttons */
+.ordersList-actions {
   display: flex;
-  gap: 6px;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
 }
 
-.adminOrder-icon-btn {
+.ordersList-icon-btn {
   border: none;
   background: transparent;
   cursor: pointer;
   font-size: 16px;
-  padding: 4px;
+  padding: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0420f5;
-  transition: color 0.2s ease;
-}
-
-.adminOrder-icon-btn:hover {
   color: #0071e3;
+  border-radius: 4px;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.adminOrder-pagination {
+.ordersList-icon-btn:hover {
+  background-color: #f0f8ff;
+  color: #004aad;
+}
+
+/* Phân trang */
+.ordersList-pagination {
   margin-top: 16px;
   display: flex;
+  justify-content: center;
   align-items: center;
   gap: 12px;
   font-size: 13px;
 }
 
-.adminOrder-page-btn {
+.ordersList-page-btn {
   padding: 6px 12px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -144,81 +179,68 @@
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-.adminOrder-page-btn:disabled {
+.ordersList-page-btn:disabled {
   cursor: not-allowed;
   color: #999;
   border-color: #ddd;
   background-color: #f7f7f7;
 }
 
-.adminOrder-page-btn:not(:disabled):hover {
+.ordersList-page-btn:not(:disabled):hover {
   background-color: #0071e3;
   color: #fff;
   border-color: #0071e3;
 }
 
-.adminOrder-page-info {
+.ordersList-page-info {
   font-weight: 500;
 }
-.adminOrder-top-row {
+
+/* Màu sắc dữ liệu trong bảng */
+.ordersList-code {
+  color: #1a73e8;
+}
+
+.ordersList-customer {
+  color: #e67e22;
+}
+
+.ordersList-total {
+  color: #27ae60;
+}
+
+.ordersList-payment-status {
+  color: #d20707;
+}
+
+.ordersList-method {
+  color: #0408e0;
+}
+.ordersList-actions {
   display: flex;
-  justify-content: space-between; 
   align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  height: 100%;
 }
 
-.adminOrder-search-box {
-  flex: 1 1 320px;
-  max-width: 320px;
-}
-
-.adminOrder-filters {
-  flex: 0 0 auto;
-}
-
-.adminOrder-pagination {
-  margin-top: 16px;
+.ordersList-icon-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 6px;
   display: flex;
-  justify-content: center; 
   align-items: center;
-  gap: 12px;
-  font-size: 13px;
+  justify-content: center;
+  color: #0071e3;
+  border-radius: 4px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  height: 60px;  /* đảm bảo không bị quá nhỏ */
+  width: 32px;
 }
 
-.adminOrder-code {
-  color: #1a73e8; /* xanh dương */
-}
-
-.adminOrder-customer {
-  color: #e67e22; /* cam */
-}
-
-.adminOrder-total {
-  color: #27ae60; /* xanh lá */
-}
-
-.adminOrder-payment-status {
-  color: #d20707; /* xám */
-}
-
-.adminOrder-method {
-  color: #0408e0; /* xám đậm */
-}
-
-/* Màu chữ theo trạng thái đơn hàng */
-.adminOrder-status.cho-xac-nhan {
-  color: #d39e00; /* vàng đậm */
-}
-
-.adminOrder-status.da-xac-nhan {
-  color: #004085; /* xanh dương đậm */
-}
-
-.adminOrder-status.dang-giao-hang {
-  color: #0c5460; /* xanh biển đậm */
-}
-
-.adminOrder-status.da-giao-hang {
-  color: #155724; /* xanh lá đậm */
+.ordersList-icon-btn:hover {
+  background-color: #f0f8ff;
+  color: #004aad;
 }
