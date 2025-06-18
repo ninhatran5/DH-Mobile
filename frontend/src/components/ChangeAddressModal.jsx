@@ -12,27 +12,50 @@ import { addAddresNew, fetchAddressNew } from "../slices/changeAddressSlice";
 import { FaTrash } from "react-icons/fa";
 import AddressList from "./AddressList";
 import { toast } from "react-toastify";
+
+// ✅ Thêm SweetAlert2
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+const MySwal = withReactContent(Swal);
+
 export default function ChangeAddressModal({ show, handleClose }) {
   const dispatch = useDispatch();
   const { profile, loading } = useSelector((state) => state.profile);
-  const { changeAddressNew: _ } = useSelector((state) => state.changeAddress);
   const { changeAddressNew } = useSelector((state) => state.changeAddress);
   const [showAddModal, setShowAddModal] = useState(false);
+
   useEffect(() => {
     dispatch(fetchProfile());
     dispatch(fetchAddressNew());
   }, [dispatch]);
 
+  const handleCloseWithConfirm = async () => {
+    const result = await MySwal.fire({
+      title: "Bạn có chắc chắn muốn đóng?",
+      text: "Các thay đổi chưa được lưu sẽ bị mất.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Đóng",
+      cancelButtonText: "Hủy",
+      reverseButtons: true,
+    });
+
+    if (result.isConfirmed) {
+      handleClose();
+    }
+  };
+
   const nagivateToAddAddress = () => {
     setShowAddModal(true);
     handleClose();
   };
+
   return (
     <>
       {loading && <Loading />}
       <Modal
         show={show}
-        onHide={handleClose}
+        onHide={handleCloseWithConfirm}
         backdrop="static"
         keyboard={false}
         size="xl"
@@ -100,7 +123,7 @@ export default function ChangeAddressModal({ show, handleClose }) {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="secondary" onClick={handleCloseWithConfirm}>
             Hủy
           </Button>
           <Button onClick={handleClose} className="btn_save_address">
@@ -108,6 +131,7 @@ export default function ChangeAddressModal({ show, handleClose }) {
           </Button>
         </Modal.Footer>
       </Modal>
+
       <AddAddressModal
         show={showAddModal}
         onHide={() => setShowAddModal(false)}
