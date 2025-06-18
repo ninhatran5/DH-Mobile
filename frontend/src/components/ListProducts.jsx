@@ -132,6 +132,7 @@ export default function ListProducts({
   productsVariant,
   showPagination = true,
 }) {
+  console.log("🚀 ~ productsVariant:", productsVariant);
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -232,30 +233,8 @@ export default function ListProducts({
     [productsVariant]
   );
 
-  const colorOptions = useMemo(
-    () =>
-      Array.from(
-        new Set(
-          (productsVariant || []).flatMap((variant) =>
-            (variant.attributes || [])
-              .filter(
-                (attr) =>
-                  attr.name &&
-                  attr.values &&
-                  ["color", "màu sắc"].includes(attr.name.toLowerCase())
-              )
-              .flatMap((attr) =>
-                attr.values.filter((val) => val.value).map((val) => val.value)
-              )
-          )
-        )
-      ),
-    [productsVariant]
-  );
-
-  // Filtered products
   const filteredProducts = useMemo(() => {
-    let filtered = Array.isArray(products) ? products : [];
+    let result = products;
     // Filter by variant
     if (memoryFilter || ramFilter || colorFilter) {
       const filteredVariants = filterVariants(
@@ -267,16 +246,14 @@ export default function ListProducts({
       const filteredProductIds = [
         ...new Set(filteredVariants.map((v) => v.product_id)),
       ];
-      filtered = filtered.filter((p) =>
-        filteredProductIds.includes(p.product_id)
-      );
+      result = result.filter((p) => filteredProductIds.includes(p.product_id));
     }
-    filtered = filterByCategory(filtered, selectedCategoryId);
-    filtered = filterByPrice(filtered, priceFilter, parsePrice);
-    filtered = filterByStock(filtered, readyStock, productsVariant);
-    filtered = filterBySearch(filtered, searchTerm);
-    filtered = sortProducts(filtered, sortOrder, parsePrice);
-    return filtered;
+    result = filterByCategory(result, selectedCategoryId);
+    result = filterByPrice(result, priceFilter, parsePrice);
+    result = filterByStock(result, readyStock, productsVariant);
+    result = filterBySearch(result, searchTerm);
+    result = sortProducts(result, sortOrder, parsePrice);
+    return result;
   }, [
     products,
     productsVariant,
@@ -289,6 +266,34 @@ export default function ListProducts({
     searchTerm,
     sortOrder,
   ]);
+
+  const colorOptions = useMemo(() => {
+    // Lấy product_id của filteredProducts
+    const filteredProductIds = new Set(
+      filteredProducts.map((p) => p.product_id)
+    );
+    // Lọc variant còn liên quan đến sản phẩm đang hiển thị
+    const filteredVariants = (productsVariant || []).filter((v) =>
+      filteredProductIds.has(v.product_id)
+    );
+    // Lấy các màu còn tồn tại trong filteredVariants
+    return Array.from(
+      new Set(
+        filteredVariants.flatMap((variant) =>
+          (variant.attributes || [])
+            .filter(
+              (attr) =>
+                attr.name &&
+                attr.values &&
+                ["color", "màu sắc"].includes(attr.name.toLowerCase())
+            )
+            .flatMap((attr) =>
+              attr.values.filter((val) => val.value).map((val) => val.value)
+            )
+        )
+      )
+    );
+  }, [productsVariant, filteredProducts]);
 
   // Limit products if needed
   const limitedProducts = useMemo(() => {
