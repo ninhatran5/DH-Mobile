@@ -8,12 +8,12 @@ const initialState = {
 };
 
 // CALL API GET PROFILE
-export const fetchProfile = createAsyncThunk(
-  "changeAddress/fetchProfile",
+export const fetchAddressNew = createAsyncThunk(
+  "changeAddress/fetchAddressNew",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosConfig.get("/profile");
-      return response.data;
+      const response = await axiosConfig.get("/user-addresses");
+      return response.data.data;
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.message || "Lỗi không xác định"
@@ -37,21 +37,35 @@ export const addAddresNew = createAsyncThunk(
   }
 );
 
+export const deleteAddressNew = createAsyncThunk(
+  "changeAddress/deleteAddressNew",
+  async (id, thunkAPI) => {
+    try {
+      const response = await axiosConfig.delete(`/user-addresses/${id}`);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Đã có lỗi xảy ra"
+      );
+    }
+  }
+);
+
 export const changeAddressSlice = createSlice({
   name: "changeAddress",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchProfile.pending, (state) => {
+      .addCase(fetchAddressNew.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchProfile.fulfilled, (state, action) => {
+      .addCase(fetchAddressNew.fulfilled, (state, action) => {
         state.loading = false;
-        state.profile = action.payload;
+        state.changeAddressNew = action.payload;
       })
-      .addCase(fetchProfile.rejected, (state, action) => {
+      .addCase(fetchAddressNew.rejected, (state, action) => {
         state.loading = false;
         state.error =
           action.payload || action.error?.message || "Đã có lỗi xảy ra";
@@ -63,9 +77,23 @@ export const changeAddressSlice = createSlice({
       })
       .addCase(addAddresNew.fulfilled, (state, action) => {
         state.loading = false;
-        state.profile = action.payload;
+        state.changeAddressNew = action.payload;
       })
       .addCase(addAddresNew.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.payload || action.error?.message || "Đã có lỗi xảy ra";
+      })
+
+      .addCase(deleteAddressNew.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteAddressNew.fulfilled, (state, action) => {
+        state.loading = false;
+        state.changeAddressNew = action.payload;
+      })
+      .addCase(deleteAddressNew.rejected, (state, action) => {
         state.loading = false;
         state.error =
           action.payload || action.error?.message || "Đã có lỗi xảy ra";

@@ -8,17 +8,19 @@ import { fetchProfile } from "../slices/profileSlice";
 import { MdAddCircleOutline } from "react-icons/md";
 import Loading from "./Loading";
 import AddAddressModal from "./AddAddressModal";
-import { addAddresNew } from "../slices/changeAddressSlice";
-
+import { addAddresNew, fetchAddressNew } from "../slices/changeAddressSlice";
+import { FaTrash } from "react-icons/fa";
+import AddressList from "./AddressList";
+import { toast } from "react-toastify";
 export default function ChangeAddressModal({ show, handleClose }) {
   const dispatch = useDispatch();
   const { profile, loading } = useSelector((state) => state.profile);
-  const { profilechangeAddressNew: _ } = useSelector(
-    (state) => state.changeAddress
-  );
+  const { changeAddressNew: _ } = useSelector((state) => state.changeAddress);
+  const { changeAddressNew } = useSelector((state) => state.changeAddress);
   const [showAddModal, setShowAddModal] = useState(false);
   useEffect(() => {
     dispatch(fetchProfile());
+    dispatch(fetchAddressNew());
   }, [dispatch]);
 
   const nagivateToAddAddress = () => {
@@ -46,6 +48,7 @@ export default function ChangeAddressModal({ show, handleClose }) {
                 type="radio"
                 name="radioDefault"
                 id="radioDefault1"
+                defaultChecked
               />
               <label className="form-check-label" htmlFor="radioDefault1">
                 <div className="address-header">
@@ -57,9 +60,22 @@ export default function ChangeAddressModal({ show, handleClose }) {
                       {profile?.user?.phone || ""}
                     </p>
                   </div>
-                  <button className="edit-address-btn" type="button">
-                    <TbEditCircle />
-                  </button>
+                  <div className="d-flex">
+                    <button
+                      disabled={true}
+                      className="edit-address-btn"
+                      type="button"
+                    >
+                      <TbEditCircle />
+                    </button>
+                    <button
+                      disabled={true}
+                      className="delete-address-btn"
+                      type="button"
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
                 </div>
                 <div className="full_address_profile">
                   <p className="address_profile">
@@ -72,6 +88,7 @@ export default function ChangeAddressModal({ show, handleClose }) {
               </label>
             </div>
             <hr className="address-divider" />
+            <AddressList addresses={changeAddressNew} />
             <div onClick={nagivateToAddAddress} className="add_address_new">
               <p className="icon_add_address">
                 <MdAddCircleOutline />
@@ -94,19 +111,22 @@ export default function ChangeAddressModal({ show, handleClose }) {
       <AddAddressModal
         show={showAddModal}
         onHide={() => setShowAddModal(false)}
-        onAddAddress={(data) => {
-          dispatch(
+        onAddAddress={async (data) => {
+          const fullAddress = `${data.addressDetail}, ${data.ward}, ${data.district}, ${data.city}`;
+          await dispatch(
             addAddresNew({
               recipient_name: data.fullName,
               phone: data.phone,
-              address: data.addressDetail,
-              city: data.city,
-              district: data.district,
-              ward: data.ward,
               email: data.email,
+              address: fullAddress,
+              ward: data.ward,
+              district: data.district,
+              city: data.city,
             })
           );
+          await dispatch(fetchAddressNew());
           setShowAddModal(false);
+          toast.success("Thêm địa chỉ thành công");
         }}
       />
     </>
