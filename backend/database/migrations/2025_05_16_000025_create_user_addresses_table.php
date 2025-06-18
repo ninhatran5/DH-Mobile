@@ -15,6 +15,9 @@ return new class extends Migration
             $table->string('phone', 15)->nullable();
             $table->string('email', 100)->nullable();
             $table->text('address')->nullable();
+            $table->string('ward', 100)->nullable();
+            $table->string('district', 100)->nullable();
+            $table->string('city', 100)->nullable();
             $table->boolean('is_default')->default(0);
             $table->timestamps();
 

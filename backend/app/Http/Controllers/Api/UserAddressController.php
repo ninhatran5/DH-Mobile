@@ -28,6 +28,9 @@ class UserAddressController extends Controller
             'phone' => 'required|string|max:15',
             'email' => 'nullable|email|max:100',
             'address' => 'required|string',
+            'ward' => 'required|string|max:100',
+            'district' => 'required|string|max:100',
+            'city' => 'required|string|max:100',
             'is_default' => 'boolean'
         ]);
 
@@ -46,6 +49,9 @@ class UserAddressController extends Controller
             'phone' => $request->phone,
             'email' => $request->email,
             'address' => $request->address,
+            'ward' => $request->ward,
+            'district' => $request->district,
+            'city' => $request->city,
             'is_default' => $is_default
         ]);
 
@@ -75,6 +81,9 @@ class UserAddressController extends Controller
             'phone' => 'string|max:15',
             'email' => 'nullable|email|max:100',
             'address' => 'string',
+            'ward' => 'string|max:100',
+            'district' => 'string|max:100',
+            'city' => 'string|max:100',
             'is_default' => 'boolean'
         ]);
 
@@ -93,6 +102,9 @@ class UserAddressController extends Controller
             'phone' => $request->phone ?? $address->phone,
             'email' => $request->email ?? $address->email,
             'address' => $request->address ?? $address->address,
+            'ward' => $request->ward ?? $address->ward,
+            'district' => $request->district ?? $address->district,
+            'city' => $request->city ?? $address->city,
             'is_default' => $is_default
         ]);
 
