@@ -25,7 +25,7 @@ class CommentController extends Controller
     $hasPurchased = DB::table('orders')
         ->join('order_items', 'orders.order_id', '=', 'order_items.order_id')
         ->where('orders.user_id', $user->user_id)
-        ->where('orders.status', 'completed')
+        ->where('orders.status', 'Hoàn thành')
         ->where('order_items.product_id', $productId)
         ->exists();
 
