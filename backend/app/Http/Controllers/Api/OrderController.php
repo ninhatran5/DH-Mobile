@@ -234,12 +234,15 @@ class OrderController extends Controller
 
         $currentStatus = $order->status;
         $nextStatus = $request->status;
-        // Định nghĩa thứ tự trạng thái hợp lệ
         $validTransitions = [
-            'Chờ xác nhận' => ['Chờ lấy hàng', 'Hủy'],
-            'Chờ lấy hàng' => ['Đang giao', 'Hủy'],
-            'Đang giao' => ['Đã giao'],
-            //'Đã giao' => ['Hoàn thành/Đã nhận hàng'], // Hoàn thành sẽ do client hoặc job tự động
+            'Chờ xác nhận' => ['Đã xác nhận', 'hủy'],
+            'Đã xác nhận' => ['Đang vận chuyển/ Đang giao hàng'],
+            'Đang vận chuyển/ Đang giao hàng' => ['Đã giao hàng'],
+            // 'Đã giao hàng' => ['Hoàn thành/ Giao hàng thành công'],
+            // 'Hoàn thành/ Giao hàng thành công' => [],
+            // 'Trả hàng/Hoàn tiền' => ['Đã hoàn tiền'],
+            // 'Đã hoàn tiền' => [],
+            // 'Đã hủy' => [],
         ];
 
         if (!isset($validTransitions[$currentStatus]) || !in_array($nextStatus, $validTransitions[$currentStatus])) {
@@ -250,8 +253,8 @@ class OrderController extends Controller
         }
 
         $order->status = $nextStatus;
-        // Nếu chuyển sang Đã giao và payment_status hiện tại là Chưa thanh toán thì tự động cập nhật
-        if ($nextStatus === 'Đã giao' && $order->payment_status === 'Chưa thanh toán') {
+        // Nếu chuyển sang Đã giao hàng và payment_status hiện tại là Chưa thanh toán thì tự động cập nhật
+        if ($nextStatus === 'Đã giao hàng' && $order->payment_status === 'Chưa thanh toán') {
             $order->payment_status = 'Đã thanh toán';
         } elseif ($request->has('payment_status')) {
             $order->payment_status = $request->payment_status;
@@ -264,7 +267,7 @@ class OrderController extends Controller
         ]);
     }
 
-    // Client xác nhận đã nhận hàng (chuyển Đã giao -> Hoàn thành)
+    // Client xác nhận đã nhận hàng (chuyển Đã giao hàng -> Hoàn thành/ Giao hàng thành công)
     public function clientConfirmReceived(Request $request, $id)
     {
         $order = Orders::find($id);
@@ -274,13 +277,13 @@ class OrderController extends Controller
                 'message' => 'Không tìm thấy đơn hàng'
             ], 404);
         }
-        if ($order->status !== 'Đã giao') {
+        if ($order->status !== 'Đã giao hàng') {
             return response()->json([
                 'status' => false,
-                'message' => 'Chỉ xác nhận khi đơn hàng ở trạng thái Đã giao'
+                'message' => 'Chỉ xác nhận khi đơn hàng ở trạng thái Đã giao hàng'
             ], 400);
         }
-        $order->status = 'Hoàn thành/Đã nhận hàng';
+        $order->status = 'Hoàn thành/ Giao hàng thành công';
         $order->save();
         return response()->json([
             'status' => true,
@@ -299,10 +302,10 @@ class OrderController extends Controller
                 'message' => 'Không tìm thấy đơn hàng'
             ], 404);
         }
-        if (!in_array($order->status, ['Đã giao', 'Hoàn thành/Đã nhận hàng'])) {
+        if (!in_array($order->status, ['Đã giao hàng', 'Hoàn thành/ Giao hàng thành công'])) {
             return response()->json([
                 'status' => false,
-                'message' => 'Chỉ được yêu cầu hoàn hàng khi đơn hàng ở trạng thái Đã giao hoặc Hoàn thành'
+                'message' => 'Chỉ được yêu cầu hoàn hàng khi đơn hàng ở trạng thái Đã giao hàng hoặc Hoàn thành/ Giao hàng thành công'
             ], 400);
         }
         $request->validate([
@@ -397,7 +400,7 @@ class OrderController extends Controller
         ]);
     }
 
-    // Client hủy đơn hàng khi đang ở trạng thái Chờ lấy hàng
+    // Client hủy đơn hàng khi đang ở trạng thái Chờ xác nhận
     public function clientCancelOrder(Request $request, $id)
     {
         $order = Orders::find($id);
@@ -407,10 +410,10 @@ class OrderController extends Controller
                 'message' => 'Không tìm thấy đơn hàng'
             ], 404);
         }
-        if ($order->status !== 'Chờ lấy hàng') {
+        if ($order->status !== 'Chờ xác nhận') {
             return response()->json([
                 'status' => false,
-                'message' => 'Chỉ được hủy đơn hàng khi ở trạng thái Chờ lấy hàng'
+                'message' => 'Chỉ được hủy đơn hàng khi ở trạng thái Chờ xác nhận'
             ], 400);
         }
         // Kiểm tra quyền: chỉ chủ đơn hàng mới được hủy
