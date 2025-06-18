@@ -416,7 +416,7 @@ const AddAccount = () => {
                       {imagePreview ? (
                         <img
                           src={imagePreview}
-                          alt="Preview"
+                          alt="adminavatar"
                           className="img-thumbnail admin-add-account-img-thumbnail"
                           style={{ maxHeight: '200px', width: 'auto' }}
                         />

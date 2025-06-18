@@ -64,6 +64,7 @@ import EditVoucher from "./pages/admin/EditVoucher";
 import EditVariant from "./pages/admin/UpdateVariant";
 import PaymentFailed from "./pages/PaymentFailed";
 import WaitingForPayment from "./pages/WaitingForPayment";
+import EditOrder from "./pages/admin/EditOrder";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -310,6 +311,10 @@ const routerConfig = [
         path: "variants/update/:variant_id",
         element: <EditVariant />,
       },
+      {
+        path: "editorder/:order_id",
+        element: <EditOrder/>
+      }
     ],
   },
   {

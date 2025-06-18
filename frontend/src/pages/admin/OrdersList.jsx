@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAdminOrders } from "../../slices/adminOrderSlice";
 import "../../assets/admin/OrdersList.css";
 import { FiEdit, FiEye } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 const OrdersList = () => {
   const dispatch = useDispatch();
@@ -13,10 +14,18 @@ const OrdersList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(fetchAdminOrders(currentPage));
   }, [dispatch, currentPage]);
+
+  const normalizeString = (str) =>
+    str
+      ?.toLowerCase()
+      .normalize("NFD") // tách dấu
+      .replace(/[\u0300-\u036f]/g, "") // bỏ dấu
+      .replace(/\s+/g, "-") || "";
 
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
@@ -25,7 +34,9 @@ const OrdersList = () => {
         order.customer.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchStatus =
-        statusFilter === "all" ? true : order.status === statusFilter;
+        statusFilter === "all"
+          ? true
+          : normalizeString(order.status) === normalizeString(statusFilter);
 
       return matchSearch && matchStatus;
     });
@@ -38,7 +49,7 @@ const OrdersList = () => {
   };
 
   const handleEditOrder = (order) => {
-    console.log("Sửa đơn hàng:", order);
+    navigate(`/admin/editorder/${order.order_id}`);
   };
 
   const handleViewOrder = (order) => {
@@ -49,28 +60,31 @@ const OrdersList = () => {
   const last = pagination?.last_page || 1;
 
   return (
-    <div className="adminOrder-container">
-      <div className="adminOrder-header">
-        <div className="adminOrder-title">
+    <div className="ordersList-container">
+      <div className="ordersList-header">
+        <div className="ordersList-title">
           <h1>Danh sách đơn hàng</h1>
           <p className="text-muted">Quản lý tất cả các đơn hàng trong hệ thống</p>
         </div>
       </div>
 
-      <div className="adminOrder-top-row">
-        <div className="adminOrder-search-box">
-          <i className="bi bi-search adminOrder-search-icon" style={{ color: '#0071e3' }}></i>
+      <div className="ordersList-top-row">
+        <div className="ordersList-search-box">
+          <i
+            className="bi bi-search ordersList-search-icon"
+            style={{ color: "#0071e3" }}
+          ></i>
           <input
             type="text"
             placeholder="Tìm kiếm mã đơn hoặc khách hàng..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="adminOrder-search-input"
+            className="ordersList-search-input"
           />
         </div>
-        <div className="adminOrder-filters">
+        <div className="ordersList-filters">
           <select
-            className="adminOrder-filter-select"
+            className="ordersList-filter-select"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
@@ -83,15 +97,15 @@ const OrdersList = () => {
         </div>
       </div>
 
-      {loading && <p className="adminOrder-loading">Đang tải dữ liệu...</p>}
-      {error && <p className="adminOrder-error">{error}</p>}
+      {loading && <p className="ordersList-loading">Đang tải dữ liệu...</p>}
+      {error && <p className="ordersList-error">{error}</p>}
       {!loading && filteredOrders.length === 0 && (
-        <p className="adminOrder-empty">Không có đơn hàng nào.</p>
+        <p className="ordersList-empty">Không có đơn hàng nào.</p>
       )}
 
       {filteredOrders.length > 0 && (
-        <div className="adminOrder-scrollable">
-          <table className="adminOrder-table">
+        <div className="ordersList-scrollable">
+          <table className="ordersList-table">
             <thead>
               <tr>
                 <th>Mã đơn</th>
@@ -100,59 +114,70 @@ const OrdersList = () => {
                 <th>Thanh toán</th>
                 <th>Phương thức</th>
                 <th>Trạng thái</th>
-                <th>Ngày tạo</th>
+                <th>Ngày đặt hàng</th>
                 <th>Thao tác</th>
               </tr>
             </thead>
             <tbody>
-              {filteredOrders.map((order) => (
-                <tr key={order.order_id}>
-                  <td className="adminOrder-code">{order.order_code}</td>
-                  <td className="adminOrder-customer">{order.customer}</td>
-                  <td className="adminOrder-total">{Number(order.total_amount).toLocaleString("vi-VN")} ₫</td>
-                  <td className="adminOrder-payment-status">{order.payment_status}</td>
-                  <td className="adminOrder-method">{order.payment_method}</td>
-                  <td className={`adminOrder-status adminOrder-status-${order.status.toLowerCase().replace(/\s/g, "-")}`}>
-                    {order.status}
-                  </td>
-                  <td className="adminOrder-date">{order.created_at}</td>
-                  <td className="adminOrder-actions">
-                    <button
-                      className="adminOrder-icon-btn"
-                      onClick={() => handleEditOrder(order)}
-                      title="Sửa đơn hàng"
+              {filteredOrders.map((order) => {
+                const statusClass = normalizeString(order.status);
+                return (
+                  <tr key={order.order_id}>
+                    <td className="ordersList-code">{order.order_code}</td>
+                    <td className="ordersList-customer">{order.customer}</td>
+                    <td className="ordersList-total">
+                      {Number(order.total_amount).toLocaleString("vi-VN")} ₫
+                    </td>
+                    <td className="ordersList-payment-status">
+                      {order.payment_status}
+                    </td>
+                    <td className="ordersList-method">{order.payment_method}</td>
+                    <td
+                      className={`ordersList-status ordersList-status-${statusClass}`}
                     >
-                      <FiEdit />
-                    </button>
-                    <button
-                      className="adminOrder-icon-btn"
-                      onClick={() => handleViewOrder(order)}
-                      title="Xem chi tiết"
-                    >
-                      <FiEye />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                      {order.status}
+                    </td>
+
+                    <td className="ordersList-date">{order.created_at}</td>
+                    <td className="ordersList-actions">
+                      <button
+                        className="ordersList-icon-btn"
+                        onClick={() => handleEditOrder(order)}
+                        title="Sửa đơn hàng"
+                      >
+                        <FiEdit />
+                      </button>
+                      <button
+                        className="ordersList-icon-btn"
+                        onClick={() => handleViewOrder(order)}
+                        title="Xem chi tiết"
+                      >
+                        <FiEye />
+                      </button>
+                    </td>
+                    
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       )}
 
       {filteredOrders.length > 0 && (
-        <div className="adminOrder-pagination">
+        <div className="ordersList-pagination">
           <button
-            className="adminOrder-page-btn"
+            className="ordersList-page-btn"
             onClick={() => handlePageChange(current - 1)}
             disabled={current === 1}
           >
             Trang trước
           </button>
-          <span className="adminOrder-page-info">
+          <span className="ordersList-page-info">
             {current} / {last}
           </span>
           <button
-            className="adminOrder-page-btn"
+            className="ordersList-page-btn"
             onClick={() => handlePageChange(current + 1)}
             disabled={current === last}
           >
