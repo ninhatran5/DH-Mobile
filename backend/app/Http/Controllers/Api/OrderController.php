@@ -13,7 +13,7 @@ class OrderController extends Controller
     {
         $user = $request->user();
         $orders = Orders::with(['user', 'paymentMethods'])
-            ->select('order_id', 'order_code', 'user_id', 'total_amount', 'status', 'payment_status', 'method_id')
+            ->select('order_id', 'order_code', 'user_id', 'total_amount', 'status', 'payment_status', 'method_id', 'cancel_reason')
             ->where('user_id', $user->user_id)
             ->orderByDesc('created_at')
             ->get();
@@ -31,7 +31,7 @@ class OrderController extends Controller
                 'payment_status' => $order->payment_status,
                 'payment_method' => $order->paymentMethods->name,
                 'status' => $order->status,
-
+                'cancel_reason' => $order->cancel_reason,
             ];
         });
 
@@ -101,6 +101,7 @@ class OrderController extends Controller
             ],
             'payment_status' => $order->payment_status,
             'status' => $order->status,
+            'cancel_reason' => $order->cancel_reason,
             'total_amount' => number_format($order->total_amount, 0, ".", ""),
             'products' => $orderItems
         ];
@@ -146,6 +147,7 @@ class OrderController extends Controller
                 'payment_status' => $order->payment_status,
                 'payment_method' => $order->paymentMethods ? $order->paymentMethods->name : null,
                 'status' => $order->status,
+                'cancel_reason' => $order->cancel_reason,
                 'created_at' => $order->created_at->format('d/m/Y H:i:s'),
             ];
         });
@@ -208,6 +210,7 @@ class OrderController extends Controller
             'payment_method' => $order->paymentMethods ? [$order->paymentMethods->name, $order->paymentMethods->description] : null,
             'payment_status' => $order->payment_status,
             'status' => $order->status,
+            'cancel_reason' => $order->cancel_reason,
             'total_amount' => number_format($order->total_amount, 0, '.', ''),
             'products' => $orderItems
         ];
@@ -235,16 +238,23 @@ class OrderController extends Controller
 
         $currentStatus = $order->status;
         $nextStatus = $request->status;
+        // Chỉ cho phép admin thao tác từ Chờ xác nhận đến Đã giao hàng
+        $allowedStatuses = ['Chờ xác nhận', 'Đã xác nhận', 'Chờ lấy hàng', 'Đang vận chuyển', 'Đang giao hàng', 'Đã giao hàng'];
         $validTransitions = [
-            'Chờ xác nhận' => ['Đã xác nhận', 'hủy'],
-            'Đã xác nhận' => ['Đang vận chuyển/ Đang giao hàng'],
-            'Đang vận chuyển/ Đang giao hàng' => ['Đã giao hàng'],
-            // 'Đã giao hàng' => ['Hoàn thành/ Giao hàng thành công'],
-            // 'Hoàn thành/ Giao hàng thành công' => [],
-            // 'Trả hàng/Hoàn tiền' => ['Đã hoàn tiền'],
-            // 'Đã hoàn tiền' => [],
-            // 'Đã hủy' => [],
+            'Chờ xác nhận' => ['Đã xác nhận'],
+            'Đã xác nhận' => ['Chờ lấy hàng'],
+            'Chờ lấy hàng' => ['Đang vận chuyển'],
+            'Đang vận chuyển' => ['Đang giao hàng'],
+            'Đang giao hàng' => ['Đã giao hàng'],
+            'Đã giao hàng' => [],
         ];
+
+        if (!in_array($currentStatus, $allowedStatuses) || !in_array($nextStatus, $allowedStatuses)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Admin chỉ được thao tác trạng thái từ Chờ xác nhận đến Đã giao hàng.'
+            ], 400);
+        }
 
         if (!isset($validTransitions[$currentStatus]) || !in_array($nextStatus, $validTransitions[$currentStatus])) {
             return response()->json([
@@ -284,7 +294,7 @@ class OrderController extends Controller
                 'message' => 'Chỉ xác nhận khi đơn hàng ở trạng thái Đã giao hàng'
             ], 400);
         }
-        $order->status = 'Hoàn thành/ Giao hàng thành công';
+        $order->status = 'Hoàn thành';
         $order->save();
         return response()->json([
             'status' => true,
@@ -303,10 +313,10 @@ class OrderController extends Controller
                 'message' => 'Không tìm thấy đơn hàng'
             ], 404);
         }
-        if (!in_array($order->status, ['Đã giao hàng', 'Hoàn thành/ Giao hàng thành công'])) {
+        if (!in_array($order->status, ['Đã giao hàng', 'Hoàn thành'])) {
             return response()->json([
                 'status' => false,
-                'message' => 'Chỉ được yêu cầu hoàn hàng khi đơn hàng ở trạng thái Đã giao hàng hoặc Hoàn thành/ Giao hàng thành công'
+                'message' => 'Chỉ được yêu cầu hoàn hàng khi đơn hàng ở trạng thái Đã giao hàng hoặc Hoàn thành'
             ], 400);
         }
         $request->validate([
@@ -412,10 +422,11 @@ class OrderController extends Controller
                 'message' => 'Không tìm thấy đơn hàng'
             ], 404);
         }
-        if ($order->status !== 'Chờ xác nhận') {
+        // Chỉ cho phép hủy khi trạng thái là Chờ xác nhận, Đã xác nhận hoặc Chờ lấy hàng
+        if (!in_array($order->status, ['Chờ xác nhận', 'Đã xác nhận', 'Chờ lấy hàng'])) {
             return response()->json([
                 'status' => false,
-                'message' => 'Chỉ được hủy đơn hàng khi ở trạng thái Chờ xác nhận'
+                'message' => 'Chỉ được hủy đơn hàng khi ở trạng thái Chờ xác nhận, Đã xác nhận hoặc Chờ lấy hàng'
             ], 400);
         }
         // Kiểm tra quyền: chỉ chủ đơn hàng mới được hủy
