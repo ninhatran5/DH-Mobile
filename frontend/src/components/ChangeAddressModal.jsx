@@ -112,13 +112,12 @@ export default function ChangeAddressModal({ show, handleClose }) {
         show={showAddModal}
         onHide={() => setShowAddModal(false)}
         onAddAddress={async (data) => {
-          const fullAddress = `${data.addressDetail}, ${data.ward}, ${data.district}, ${data.city}`;
           await dispatch(
             addAddresNew({
               recipient_name: data.fullName,
               phone: data.phone,
               email: data.email,
-              address: fullAddress,
+              address: data.addressDetail,
               ward: data.ward,
               district: data.district,
               city: data.city,
