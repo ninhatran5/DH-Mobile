@@ -1,0 +1,53 @@
+/* src/assets/admin/EditOrder.css */
+
+.edit-order-page {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.edit-order-title {
+  margin-bottom: 16px;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.edit-order-info p {
+  margin: 8px 0;
+}
+
+.edit-order-status-select {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.edit-order-status-select label {
+  font-weight: 600;
+  margin-right: 10px;
+}
+
+.edit-order-status-select select {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  min-width: 220px;
+}
+
+.edit-order-update-btn {
+  margin-left: 10px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.edit-order-update-btn:hover {
+  background-color: #0056b3;
+}
