@@ -384,16 +384,12 @@ const ProductDetail = ({
       )}
 
       <div
-        className={isQuickView  ? "" : "container-fluid"}
-        style={
-          isQuickView
-            ? { padding: 0, margin: 0 }
-            : { marginBottom: 80 }
-        }
+        className={isQuickView ? "" : "container-fluid"}
+        style={isQuickView ? { padding: 0, margin: 0 } : { marginBottom: 80 }}
       >
         <div className="row">
           {/* Ẩn ảnh trái nếu là quick view hoặc hideExtraInfo */}
-          {!isQuickView &&  (
+          {!isQuickView && (
             <div className="col-md-6 mb-5 position-relative">
               <div className="border rounded mb-3 p-3 text-center position-relative">
                 <img
@@ -438,7 +434,7 @@ const ProductDetail = ({
           )}
 
           {/* Ẩn modal carousel nếu là quick view hoặc hideExtraInfo */}
-          {!isQuickView &&  (
+          {!isQuickView && (
             <Modal
               show={showModal}
               onHide={handleCloseModal}
@@ -603,7 +599,7 @@ const ProductDetail = ({
         </div>
 
         {/* Ẩn các tab, mô tả, sản phẩm liên quan nếu là quick view hoặc hideExtraInfo */}
-        {!isQuickView && !hideExtraInfo && (
+        {!isQuickView && (
           <>
             <div
               className="card_introducde_product_detail"
@@ -670,14 +666,16 @@ const ProductDetail = ({
                 {activeTab === "reviews" && <Comment />}
               </div>
             </div>
-            <div style={{ marginTop: 30 }}>
-              <ListProductCard
-                title={t("home.relatedProducts")}
-                desc={t("home.goToShop")}
-                gotoShop={"/products"}
-                products={relatedProducts}
-              />
-            </div>
+            {!hideExtraInfo && (
+              <div style={{ marginTop: 30 }}>
+                <ListProductCard
+                  title={t("home.relatedProducts")}
+                  desc={t("home.goToShop")}
+                  gotoShop={"/products"}
+                  products={relatedProducts}
+                />
+              </div>
+            )}
           </>
         )}
       </div>
