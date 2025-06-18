@@ -86,6 +86,7 @@ const ChangeCheckout = () => {
           })
         ).unwrap();
         toast.success(t("toast.paymentSuccess"));
+        await dispatch(fetchCart());
         navigate("/thank-you");
       } catch (err) {
         toast.error(t("toast.paymentError"));

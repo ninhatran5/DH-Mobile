@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import numberFormat from "../../utils/numberFormat";
 
 const OrderProductRow = ({ product }) => {
-  console.log("🚀 ~ OrderProductRow ~ product:", product)
   const navigate = useNavigate();
   const handleNextProduct = () => {
     navigate(`/product-detail/${product.product_id}`);
