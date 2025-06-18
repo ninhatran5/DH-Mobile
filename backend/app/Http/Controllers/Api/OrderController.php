@@ -15,6 +15,7 @@ class OrderController extends Controller
         $orders = Orders::with(['user', 'paymentMethods'])
             ->select('order_id', 'order_code', 'user_id', 'total_amount', 'status', 'payment_status', 'method_id')
             ->where('user_id', $user->user_id)
+            ->orderByDesc('created_at')
             ->get();
 
         $formattedOrders = $orders->map(function ($order) {
