@@ -132,7 +132,6 @@ export default function ListProducts({
   productsVariant,
   showPagination = true,
 }) {
-  console.log("🚀 ~ productsVariant:", productsVariant);
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();

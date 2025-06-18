@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaRegHeart } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import numberFormat from "../../utils/numberFormat";
 import { toast } from "react-toastify";
 import checkLogin from "../../utils/checkLogin";
@@ -12,13 +12,14 @@ import {
   fetchListFavorite,
 } from "../slices/favoriteProductsSlice";
 import { fetchUpdateStatus } from "../slices/updateStatusSlice";
+import ProductModal from "./ProductModal";
 
 const Product = ({ product, discountPercent, onClick }) => {
   const dispatch = useDispatch();
   const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
   const { t } = useTranslation();
+  const [show, setShow] = useState(false);
   const [favorite, setFavorite] = useState(product.status);
-  const navigate = useNavigate();
   const handleUnFavorites = async () => {
     if (!checkLogin()) return;
     try {
@@ -46,9 +47,7 @@ const Product = ({ product, discountPercent, onClick }) => {
 
   const addToShoppingCart = () => {
     if (checkLogin()) {
-      console.log("added");
-      toast.success(t("products.addedToCart"));
-      navigate("/shopping-cart");
+      setShow(true);
     }
   };
   return (
@@ -148,6 +147,11 @@ const Product = ({ product, discountPercent, onClick }) => {
           </div>
         </div>
       </div>
+      <ProductModal
+        show={show}
+        onHide={() => setShow(false)}
+        product={product}
+      />
     </>
   );
 };
