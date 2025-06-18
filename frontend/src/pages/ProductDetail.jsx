@@ -97,11 +97,7 @@ function isValidCombination(variants, selectedOptions, currentAttrId, valueId) {
   });
 }
 
-const ProductDetail = ({
-  productId,
-  isQuickView,
-  hideExtraInfo = false, // thêm prop này
-}) => {
+const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
   const [activeTab, setActiveTab] = useState("description");
   const [selectedOptions, setSelectedOptions] = useState({});
   const { id: paramId } = useParams();
