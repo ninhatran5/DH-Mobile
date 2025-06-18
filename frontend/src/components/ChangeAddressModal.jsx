@@ -11,9 +11,7 @@ import AddAddressModal from "./AddAddressModal";
 import { addAddresNew, fetchAddressNew } from "../slices/changeAddressSlice";
 import { FaTrash } from "react-icons/fa";
 import AddressList from "./AddressList";
-import { toast } from "react-toastify";
 
-// ✅ Thêm SweetAlert2
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 const MySwal = withReactContent(Swal);
@@ -136,20 +134,41 @@ export default function ChangeAddressModal({ show, handleClose }) {
         show={showAddModal}
         onHide={() => setShowAddModal(false)}
         onAddAddress={async (data) => {
-          await dispatch(
-            addAddresNew({
-              recipient_name: data.fullName,
-              phone: data.phone,
-              email: data.email,
-              address: data.addressDetail,
-              ward: data.ward,
-              district: data.district,
-              city: data.city,
-            })
-          );
-          await dispatch(fetchAddressNew());
-          setShowAddModal(false);
-          toast.success("Thêm địa chỉ thành công");
+          const result = await Swal.fire({
+            title: "Bạn có muốn lưu địa chỉ này?",
+            text: "Thông tin địa chỉ sẽ được thêm vào danh sách của bạn.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Lưu",
+            cancelButtonText: "Hủy",
+            reverseButtons: true, // "Hủy" nằm bên phải
+          });
+
+          if (result.isConfirmed) {
+            try {
+              await dispatch(
+                addAddresNew({
+                  recipient_name: data.fullName,
+                  phone: data.phone,
+                  email: data.email,
+                  address: data.addressDetail,
+                  ward: data.ward,
+                  district: data.district,
+                  city: data.city,
+                })
+              );
+              await dispatch(fetchAddressNew());
+              Swal.fire(
+                "Đã lưu!",
+                "Địa chỉ đã được thêm thành công.",
+                "success"
+              );
+              setShowAddModal(false);
+              // eslint-disable-next-line no-unused-vars
+            } catch (error) {
+              Swal.fire("Lỗi!", "Không thể thêm địa chỉ.", "error");
+            }
+          }
         }}
       />
     </>
