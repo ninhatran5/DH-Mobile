@@ -32,8 +32,8 @@ import adminVoucherReducer from "../slices/AdminVoucher";
 import adminNewsReducer from "../slices/newsSlice";
 import viewProductReducer from "../slices/viewProductSlice";
 import paymentReducer from "../slices/checkOutSlice";
-import ordersReducer from "../slices/orderSlice";
-import changeAddressReducer from "../slices/changeAddressSlice";
+import adminOrderReducer from "../slices/adminOrderSlice";
+
 export const store = configureStore({
   reducer: {
     home: homeReducer,
@@ -71,5 +71,6 @@ export const store = configureStore({
     adminuser: adminuserReducer,
     adminVoucher: adminVoucherReducer,
     adminNews: adminNewsReducer,
+    adminOrder: adminOrderReducer,
   },
 });
