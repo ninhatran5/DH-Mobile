@@ -330,6 +330,7 @@ class OrderController extends Controller
             'user_id' => $request->user()->user_id,
             'reason' => $request->return_reason,
             'status' => 'đã yêu cầu',
+            'refund_amount' => $order->total_amount, // Lưu tổng tiền đã thanh toán vào refund_amount
             'created_at' => now(),
             'updated_at' => now(),
         ]);
