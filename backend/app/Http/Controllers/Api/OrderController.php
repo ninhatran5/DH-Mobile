@@ -425,7 +425,12 @@ class OrderController extends Controller
                 'message' => 'Bạn không có quyền hủy đơn hàng này'
             ], 403);
         }
+        // Validate lý do hủy
+        $request->validate([
+            'cancel_reason' => 'required|string|max:255'
+        ]);
         $order->status = 'Đã hủy';
+        $order->cancel_reason = $request->cancel_reason; // sử dụng trường có sẵn
         $order->save();
         return response()->json([
             'status' => true,

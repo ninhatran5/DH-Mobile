@@ -15,6 +15,7 @@ return new class extends Migration
             $table->unsignedBigInteger('method_id')->nullable();
 
             $table->decimal('total_amount', 11, 2)->nullable();
+            $table->string('cancel_reason')->nullable(); // cái này là lý do khách hàng báo hủy khi đang xác nhận
 
             $table->enum('status', [
                 'Chờ xác nhận',
