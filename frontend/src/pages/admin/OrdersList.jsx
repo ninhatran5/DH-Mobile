@@ -39,12 +39,10 @@ const OrdersList = () => {
 
   const handleEditOrder = (order) => {
     console.log("Sửa đơn hàng:", order);
-    // TODO: mở modal chỉnh sửa hoặc điều hướng đến trang sửa
   };
 
   const handleViewOrder = (order) => {
     console.log("Xem chi tiết đơn hàng:", order);
-    // TODO: mở modal hoặc chuyển hướng sang trang chi tiết đơn hàng
   };
 
   const current = pagination?.current_page || 1;
@@ -52,7 +50,6 @@ const OrdersList = () => {
 
   return (
     <div className="adminOrder-container">
-      {/* Header + Search + Filter */}
       <div className="adminOrder-header">
         <div className="adminOrder-title">
           <h1>Danh sách đơn hàng</h1>
@@ -86,14 +83,12 @@ const OrdersList = () => {
         </div>
       </div>
 
-      {/* Loading / Error / Empty */}
       {loading && <p className="adminOrder-loading">Đang tải dữ liệu...</p>}
       {error && <p className="adminOrder-error">{error}</p>}
       {!loading && filteredOrders.length === 0 && (
         <p className="adminOrder-empty">Không có đơn hàng nào.</p>
       )}
 
-      {/* Table */}
       {filteredOrders.length > 0 && (
         <div className="adminOrder-scrollable">
           <table className="adminOrder-table">
@@ -112,23 +107,25 @@ const OrdersList = () => {
             <tbody>
               {filteredOrders.map((order) => (
                 <tr key={order.order_id}>
-                  <td>{order.order_code}</td>
-                  <td>{order.customer}</td>
-                  <td>{Number(order.total_amount).toLocaleString("vi-VN")} ₫</td>
-                  <td>{order.payment_status}</td>
-                  <td>{order.payment_method}</td>
-                  <td>{order.status}</td>
-                  <td>{order.created_at}</td>
-                  <td>
+                  <td className="adminOrder-code">{order.order_code}</td>
+                  <td className="adminOrder-customer">{order.customer}</td>
+                  <td className="adminOrder-total">{Number(order.total_amount).toLocaleString("vi-VN")} ₫</td>
+                  <td className="adminOrder-payment-status">{order.payment_status}</td>
+                  <td className="adminOrder-method">{order.payment_method}</td>
+                  <td className={`adminOrder-status adminOrder-status-${order.status.toLowerCase().replace(/\s/g, "-")}`}>
+                    {order.status}
+                  </td>
+                  <td className="adminOrder-date">{order.created_at}</td>
+                  <td className="adminOrder-actions">
                     <button
-                      className="adminOrder-action-btn"
+                      className="adminOrder-icon-btn"
                       onClick={() => handleEditOrder(order)}
                       title="Sửa đơn hàng"
                     >
                       <FiEdit />
                     </button>
                     <button
-                      className="adminOrder-action-btn"
+                      className="adminOrder-icon-btn"
                       onClick={() => handleViewOrder(order)}
                       title="Xem chi tiết"
                     >
@@ -142,7 +139,6 @@ const OrdersList = () => {
         </div>
       )}
 
-      {/* Pagination */}
       {filteredOrders.length > 0 && (
         <div className="adminOrder-pagination">
           <button
