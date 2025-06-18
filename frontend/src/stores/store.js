@@ -33,7 +33,8 @@ import adminNewsReducer from "../slices/newsSlice";
 import viewProductReducer from "../slices/viewProductSlice";
 import paymentReducer from "../slices/checkOutSlice";
 import adminOrderReducer from "../slices/adminOrderSlice";
-
+import changeAddressReducer from "../slices/changeAddressSlice";
+import ordersReducer from "../slices/orderSlice"; 
 export const store = configureStore({
   reducer: {
     home: homeReducer,
