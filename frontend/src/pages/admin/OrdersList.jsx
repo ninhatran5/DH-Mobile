@@ -126,8 +126,11 @@ const OrdersList = () => {
                     <td className="ordersList-code">{order.order_code}</td>
                     <td className="ordersList-customer">{order.customer}</td>
                     <td className="ordersList-total">
-                      {Number(order.total_amount).toLocaleString("vi-VN")} ₫
-                    </td>
+  <span>
+    {Number(order.total_amount).toLocaleString("vi-VN")}₫
+  </span>
+</td>
+
                     <td className="ordersList-payment-status">
                       {order.payment_status}
                     </td>
