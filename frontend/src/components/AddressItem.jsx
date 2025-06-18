@@ -5,6 +5,9 @@ export default function AddressItem({
   name,
   phone,
   address,
+  ward,
+  district,
+  city,
   isDefault,
   checked,
   onEdit,
@@ -46,7 +49,12 @@ export default function AddressItem({
           </button>
         </div>
         <div className="full_address_profile">
-          <p className="address_profile">{address}</p>
+          <p className="address_profile">
+            {(address ? address + ", " : "") +
+              (ward ? ward + ", " : "") +
+              (district ? district + ", " : "") +
+              (city || "")}
+          </p>
         </div>
       </label>
     </div>
