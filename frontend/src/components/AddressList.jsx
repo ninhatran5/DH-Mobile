@@ -6,13 +6,28 @@ import {
 } from "../slices/changeAddressSlice";
 import { toast } from "react-toastify";
 
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+const MySwal = withReactContent(Swal);
+
 export default function AddressList({ addresses }) {
   const dispatch = useDispatch();
   const { changeAddressNew: _ } = useSelector((state) => state.address);
+
   if (!Array.isArray(addresses) || addresses.length === 0) return null;
-  const handleDeleteAddress = (addressId) => {
-    const confirmed = window.confirm("Bạn có chắc chắn muốn xóa địa chỉ này?");
-    if (confirmed) {
+
+  const handleDeleteAddress = async (addressId) => {
+    const result = await MySwal.fire({
+      title: "Bạn có chắc chắn muốn xóa?",
+      text: "Địa chỉ này sẽ bị xóa khỏi danh sách.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Xóa",
+      cancelButtonText: "Hủy",
+      reverseButtons: true,
+    });
+
+    if (result.isConfirmed) {
       dispatch(deleteAddressNew(addressId))
         .unwrap()
         .then(() => {
