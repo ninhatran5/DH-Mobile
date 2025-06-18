@@ -18,10 +18,10 @@ return new class extends Migration
 
             $table->enum('status', [
                 'Chờ xác nhận',
-                'Chờ lấy hàng',
-                'Đang giao',
-                'Đã giao',
-                'Hoàn thành/Đã nhận hàng',
+                'Đã xác nhận',
+                'Đang vận chuyển/ Đang giao hàng',
+                'Đã giao hàng',
+                'Hoàn thành/ Giao hàng thành công',
                 'Đã hủy',
                 'Trả hàng/Hoàn tiền',
                 'Đã hoàn tiền'
