@@ -1,0 +1,96 @@
+.adminorder-status-container {
+  position: relative;
+  width: 100%;
+  padding: 20px 0;
+}
+
+.adminorder-status-steps {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.adminorder-status-steps::before {
+  content: "";
+  position: absolute;
+  top: 24px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background-color: #e0e0e0;
+  z-index: 1;
+  border-radius: 2px;
+}
+
+.adminorder-status-steps::after {
+  content: "";
+  position: absolute;
+  top: 24px;
+  left: 0;
+  height: 4px;
+  background-color: #6400cf;
+  width: var(--progress, 0%);
+  transition: width 0.5s ease-in-out;
+  z-index: 2;
+  border-radius: 2px;
+}
+
+.adminorder-step {
+  position: relative;
+  text-align: center;
+  flex: 1;
+  z-index: 3;
+}
+
+.adminorder-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  margin: 0 auto;
+  position: relative;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: white;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.adminorder-step.active .adminorder-circle {
+  background-color: #6400cf;
+}
+
+.adminorder-step.current .adminorder-circle {
+  box-shadow: 0 0 0 4 #6400cf;
+}
+
+.adminorder-label {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #333;
+  max-width: 80px;
+  margin-left: auto;
+  margin-right: auto;
+
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(84, 2, 103);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgba(159, 97, 221, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.927);
+  }
+}
+
+.adminorder-step.current .adminorder-circle {
+  animation: pulse 1.5s infinite;
+}
