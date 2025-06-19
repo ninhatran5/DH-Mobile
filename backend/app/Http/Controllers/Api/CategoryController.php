@@ -301,6 +301,14 @@ class CategoryController extends Controller
                 'status' => 404,
             ], 404);
         }
+        // Kiểm tra số lượng sản phẩm thuộc danh mục này
+        $productCount = $category->products()->count();
+        if ($productCount > 0) {
+            return response()->json([
+                'message' => 'Không thể xóa vĩnh viễn danh mục vì còn sản phẩm bên trong. Vui lòng chuyển hoặc xóa sản phẩm trước.',
+                'status' => 400,
+            ], 400);
+        }
         $category->forceDelete();
         return response()->json([
             'message' => 'Xóa vĩnh viễn danh mục thành công',
