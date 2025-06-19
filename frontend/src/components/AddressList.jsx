@@ -9,7 +9,11 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 const MySwal = withReactContent(Swal);
 
-export default function AddressList({ addresses }) {
+export default function AddressList({
+  addresses,
+  selectedRadio,
+  setSelectedRadio,
+}) {
   const dispatch = useDispatch();
   const { changeAddressNew: _ } = useSelector((state) => state.address);
 
@@ -64,6 +68,8 @@ export default function AddressList({ addresses }) {
             isDefault={false}
             radioId={`radioDefault${idx + 2}`}
             handleDeleteAddress={() => handleDeleteAddress(address?.address_id)}
+            checked={selectedRadio === address.address_id}
+            onChange={() => setSelectedRadio(address.address_id)}
           />
           <hr className="address-divider" />
         </div>

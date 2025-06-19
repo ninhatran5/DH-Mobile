@@ -78,10 +78,10 @@ const ChangeCheckout = forwardRef(({ onSubmitExternal }, ref) => {
   }, [dispatch, navigate]);
   return (
     <div className="container-fluid">
-      <section className="checkout" style={{ marginTop: 60 }}>
+      <section className="checkout mt-3">
         <div className="checkout__form">
           <div className="row">
-            <div className="col-lg-12 col-md-6 mb-5">
+            <div className="col-lg-12 col-md-6">
               <div className="row">
                 <div className="col-lg-6">
                   <div className="checkout__input">
