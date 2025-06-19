@@ -16,6 +16,12 @@ return new class extends Migration
 
             $table->decimal('total_amount', 11, 2)->nullable();
             $table->string('cancel_reason')->nullable(); // cái này là lý do khách hàng báo hủy khi đang xác nhận
+            $table->string('address')->nullable();
+            $table->string('ward')->nullable();
+            $table->string('district')->nullable();
+            $table->string('city')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('email')->nullable();
 
             $table->enum('status', [
                 'Chờ xác nhận',
