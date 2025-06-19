@@ -88,12 +88,12 @@ class OrderController extends Controller
             'order_id' => $order->order_id,
             'order_code' => $order->order_code,
             'order_date' => $order->created_at->format('d/m/Y H:i:s'),
-            'customer' => $order->user->full_name,
-            'phone' => $order->user->phone,
-            'address' => $order->user->address . ', ' .
-                $order->user->ward . ', ' .
-                $order->user->district . ', ' .
-                $order->user->city,
+            'customer' => $order->customer,
+            'phone' => $order->phone,
+            'address' => $order->address . ', ' .
+                $order->ward . ', ' .
+                $order->district . ', ' .
+                $order->city,
             'payment_method' => [
                 $order->paymentMethods->name,
                 $order->paymentMethods->description
