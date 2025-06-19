@@ -12,7 +12,7 @@ class OrderController extends Controller
     public function getOrder(Request $request)
     {
         $user = $request->user();
-        $orders = Orders::with([ 'paymentMethods'])
+        $orders = Orders::with(['paymentMethods'])
             ->orderByDesc('created_at')
             ->where('user_id', $user->user_id)
             ->get();
@@ -270,10 +270,17 @@ class OrderController extends Controller
             $order->payment_status = $request->payment_status;
         }
         $order->save();
+
+        // Tải lại quan hệ user và paymentMethods sau khi cập nhật
+        $order->load(['user', 'paymentMethods']);
+        $orderArr = $order->toArray();
+        // Thay thế user_id và method_id bằng tên tương ứng
+        $orderArr['user_id'] = $order->user ? $order->user->full_name : null;
+        $orderArr['method_id'] = $order->paymentMethods ? $order->paymentMethods->name : null;
         return response()->json([
             'status' => true,
             'message' => 'Cập nhật trạng thái thành công',
-            'order' => $order
+            'order' => $orderArr
         ]);
     }
 
