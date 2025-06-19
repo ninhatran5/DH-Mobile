@@ -57,7 +57,9 @@ const OrdersList = () => {
   };
 
   const handleViewOrder = (order) => {
-    console.log("Xem chi tiết đơn hàng:", order);
+    navigate(`/admin/orderdetail/${order.order_id}`, {
+      state: { order },
+    });
   };
 
   const handleStatusUpdate = (orderId, newStatus) => {
