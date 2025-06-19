@@ -15,6 +15,7 @@ import ChangeAddressModal from "../components/ChangeAddressModal";
 
 const CheckOut = () => {
   const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [selectedAddress, setSelectedAddress] = useState(null);
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const [show, setShow] = useState(false);
@@ -42,24 +43,34 @@ const CheckOut = () => {
 
   const handleCheckout = async (e) => {
     e.preventDefault();
-    const { address, city, district, ward, phone } = profile.user || {};
+
+    const addressData = selectedAddress || profile.user || {};
+    const { address, city, district, ward, phone } = addressData;
+
     if (!address || !city || !district || !ward || !phone) {
       toast.error(t("toast.missingAddress"));
       return;
     }
+
+    const payloadBase = {
+      user_id: profile.user.id,
+      items: selectedItems.map((item) => ({
+        variant_id: Number(item.variant.variant_id),
+        quantity: Number(item.quantity),
+        price_snapshot: Number(item.price_snapshot),
+      })),
+      total_amount: Number(totalPrice),
+      address: addressData.address,
+      email: addressData.email,
+      city: addressData.city,
+      district: addressData.district,
+      ward: addressData.ward,
+      phone: addressData.phone,
+    };
+
     if (paymentMethod === "cod") {
       try {
-        await dispatch(
-          fetchCODCheckout({
-            user_id: profile.user.id,
-            items: selectedItems.map((item) => ({
-              variant_id: Number(item.variant.variant_id),
-              quantity: Number(item.quantity),
-              price_snapshot: Number(item.price_snapshot),
-            })),
-            total_amount: totalPrice,
-          })
-        ).unwrap();
+        await dispatch(fetchCODCheckout(payloadBase)).unwrap();
         await dispatch(fetchCart());
         navigate("/waiting-for-payment");
       } catch (error) {
@@ -70,18 +81,7 @@ const CheckOut = () => {
 
     if (paymentMethod === "vnpay") {
       try {
-        const actionResult = await dispatch(
-          fetchVnpayCheckout({
-            user_id: profile.user.id,
-            items: selectedItems.map((item) => ({
-              variant_id: Number(item.variant.variant_id),
-              quantity: Number(item.quantity),
-              price_snapshot: Number(item.price_snapshot),
-            })),
-            total_amount: Number(totalPrice),
-          })
-        );
-
+        const actionResult = await dispatch(fetchVnpayCheckout(payloadBase));
         const result = actionResult.payload;
         if (result && result.payment_url) {
           window.open(result.payment_url);
@@ -135,7 +135,11 @@ const CheckOut = () => {
                         </p>
                         <input
                           type="text"
-                          value={profile?.user?.full_name ?? "Chưa cập nhật"}
+                          value={
+                            selectedAddress?.recipient_name ||
+                            profile?.user?.full_name ||
+                            "Chưa cập nhật"
+                          }
                           disabled
                         />
                       </div>
@@ -149,7 +153,11 @@ const CheckOut = () => {
                         <input
                           type="text"
                           min={0}
-                          value={profile?.user?.phone ?? "Chưa cập nhật"}
+                          value={
+                            selectedAddress?.phone ||
+                            profile?.user?.phone ||
+                            "Chưa cập nhật"
+                          }
                           disabled
                         />
                       </div>
@@ -162,7 +170,11 @@ const CheckOut = () => {
                     </p>
                     <input
                       type="text"
-                      value={profile?.user?.email ?? "Chưa cập nhật"}
+                      value={
+                        selectedAddress?.email ||
+                        profile?.user?.email ||
+                        "Chưa cập nhật"
+                      }
                       disabled
                     />
                   </div>
@@ -173,7 +185,11 @@ const CheckOut = () => {
                     </p>
                     <input
                       type="text"
-                      value={profile?.user?.ward ?? "Chưa cập nhật"}
+                      value={
+                        selectedAddress?.ward ||
+                        profile?.user?.ward ||
+                        "Chưa cập nhật"
+                      }
                       disabled
                     />
                   </div>
@@ -184,7 +200,11 @@ const CheckOut = () => {
                     </p>
                     <input
                       type="text"
-                      value={profile?.user?.district ?? "Chưa cập nhật"}
+                      value={
+                        selectedAddress?.district ||
+                        profile?.user?.district ||
+                        "Chưa cập nhật"
+                      }
                       disabled
                     />
                   </div>
@@ -195,7 +215,11 @@ const CheckOut = () => {
                     </p>
                     <input
                       type="text"
-                      value={profile?.user?.city ?? "Chưa cập nhật"}
+                      value={
+                        selectedAddress?.city ||
+                        profile?.user?.city ||
+                        "Chưa cập nhật"
+                      }
                       disabled
                     />
                   </div>
@@ -207,7 +231,11 @@ const CheckOut = () => {
                     <input
                       type="text"
                       disabled
-                      value={profile?.user?.address ?? "Chưa cập nhật"}
+                      value={
+                        selectedAddress?.address ||
+                        profile?.user?.address ||
+                        "Chưa cập nhật"
+                      }
                     />
                   </div>
                   <div className="checkout_change_address">
@@ -383,7 +411,11 @@ const CheckOut = () => {
           </div>
         </section>
       </div>
-      <ChangeAddressModal show={show} handleClose={handleClose} />
+      <ChangeAddressModal
+        show={show}
+        handleClose={handleClose}
+        onSaveAddress={setSelectedAddress}
+      />
     </>
   );
 };
