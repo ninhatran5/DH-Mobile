@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->json('items');
             $table->decimal('total_amount', 15, 2);
+            $table->string('customer')->nullable();
             $table->string('address')->nullable();
             $table->string('ward')->nullable();
             $table->string('district')->nullable();

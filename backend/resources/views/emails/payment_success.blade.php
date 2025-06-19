@@ -34,19 +34,19 @@ use Carbon\Carbon;
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td style="padding:7px 0;width:30%;">Khách hàng:</td>
-                <td align="right" style="padding:7px 0;width:70%;">{{ $user->full_name ?? 'N/A' }}</td>
+                <td align="right" style="padding:7px 0;width:70%;">{{ $order->customer ?? 'N/A' }}</td>
               </tr>
               <tr>
                 <td style="padding:7px 0;width:30%;">Email:</td>
-                <td align="right" style="padding:7px 0;width:70%;">{{ $user->email ?? 'N/A' }}</td>
+                <td align="right" style="padding:7px 0;width:70%;">{{ $order->email ?? 'N/A' }}</td>
               </tr>
               <tr>
                 <td style="padding:7px 0;width:30%;">Địa chỉ nhận hàng:</td>
-                <td align="right" style="padding:7px 0;width:70%;">{{ $user->address ?? '' }}{{ !empty($user->ward) ? ', '.$user->ward : '' }}{{ !empty($user->district) ? ', '.$user->district : '' }}{{ !empty($user->city) ? ', '.$user->city : '' }}</td>
+                <td align="right" style="padding:7px 0;width:70%;">{{ $order->address ?? '' }}{{ !empty($order->ward) ? ', '.$order->ward : '' }}{{ !empty($order->district) ? ', '.$order->district : '' }}{{ !empty($order->city) ? ', '.$order->city : '' }}</td>
               </tr>
               <tr>
                 <td style="padding:7px 0;width:30%;">Số điện thoại:</td>
-                <td align="right" style="padding:7px 0 12px;width:70%;">{{ $user->phone ?? 'N/A' }}</td>
+                <td align="right" style="padding:7px 0 12px;width:70%;">{{ $order->phone ?? 'N/A' }}</td>
               </tr>
             </table>
           </td>

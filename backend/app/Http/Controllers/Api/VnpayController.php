@@ -57,6 +57,7 @@ class VnpayController extends Controller
             'user_id' => $user->user_id,
             'items' => json_encode($items),
             'total_amount' => $total,
+            'customer' => $request->customer,
             'address' => $request->address,
             'ward' => $request->ward,
             'district' => $request->district,
@@ -126,9 +127,6 @@ class VnpayController extends Controller
         if ($request->input('vnp_ResponseCode') === '00') {
             // Lấy thông tin từ URL parameters
 
-
-
-
             $orderCode = $request->query('order_code');
             $pending = DB::table('pending_orders')->where('order_code', $orderCode)->first();
 
@@ -162,6 +160,7 @@ class VnpayController extends Controller
                 'city' => $pending->city,
                 'phone' => $pending->phone,
                 'email' => $pending->email,
+                'customer' => $pending->customer,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -218,7 +217,7 @@ class VnpayController extends Controller
             // Gửi email và thông báo (giữ nguyên)
             $user = DB::table('users')->where('user_id', $user_id)->first();
             if ($user) {
-                Mail::to($user->email)->send(new PaymentSuccessMail($updatedOrder, $user));
+                Mail::to($updatedOrder->email)->send(new PaymentSuccessMail($updatedOrder, $user));
             }
 
             $admin = DB::table('users')->where('role', 'admin')->first();
