@@ -22,6 +22,7 @@ const CheckOut = () => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const { profile, loading } = useSelector((state) => state.profile);
+  console.log("🚀 ~ CheckOut ~ profile:", profile)
   const location = useLocation();
   const selectedItems = location.state?.selectedItems || [];
   const navigate = useNavigate();
@@ -51,7 +52,6 @@ const CheckOut = () => {
       toast.error(t("toast.missingAddress"));
       return;
     }
-
     const payloadBase = {
       user_id: profile.user.id,
       items: selectedItems.map((item) => ({
@@ -61,8 +61,8 @@ const CheckOut = () => {
       })),
       total_amount: Number(totalPrice),
       address: addressData.address,
-      customer: addressData.recipient_name,
-      email: addressData.email,
+      customer: addressData.recipient_name || profile.user.full_name || "",
+      email: addressData.email || profile.user.email || "",
       city: addressData.city,
       district: addressData.district,
       ward: addressData.ward,
