@@ -111,6 +111,8 @@ const OrdersList = () => {
             onChange={(e) => setStatusFilter(e.target.value)}
           >
             <option value="all">Tất cả trạng thái</option>
+             <option value="Chờ xác nhận">Chờ xác nhận</option>
+
              <option value="Đã xác nhận">Đã xác nhận</option>
                       <option value="Chờ lấy hàng">Chờ lấy hàng</option>
                       <option value="Đang vận chuyển">Đang vận chuyển</option>
