@@ -52,7 +52,7 @@ const Profile = () => {
     {
       id: 1,
       label: t("profile.statisticals.orders"),
-      value: orders?.orders?.length + ` ${t("profile.order")}`,
+      value: `${orders?.orders?.length ?? 0} ${t("profile.order")}`,
     },
     {
       id: 2,
@@ -62,7 +62,7 @@ const Profile = () => {
     {
       id: 3,
       label: t("profile.statisticals.likedProducts"),
-      value: listFavorite?.length + ` ${t("profile.product")}`,
+      value: `${listFavorite?.length ?? 0} ${t("profile.product")}`,
     },
   ];
 
@@ -130,6 +130,11 @@ const Profile = () => {
                           profile?.user?.image_url ||
                           "https://bootdey.com/img/Content/avatar/avatar1.png"
                         }
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src =
+                            "https://bootdey.com/img/Content/avatar/avatar1.png";
+                        }}
                         alt="avatar"
                         className="profile-img"
                       />

@@ -378,11 +378,12 @@ const EditProfile = () => {
                       <div className="text-center">
                         <div className="square-custom position-relative display-2 mb-3">
                           <img
-                            src={
-                              previewImage ||
-                              profile?.user?.image_url ||
-                              "https://bootdey.com/img/Content/avatar/avatar1.png"
-                            }
+                            src={previewImage || profile?.user?.image_url}
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src =
+                                "https://bootdey.com/img/Content/avatar/avatar1.png";
+                            }}
                             alt="avatar"
                           />
                         </div>
