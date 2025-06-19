@@ -61,6 +61,7 @@ const CheckOut = () => {
       })),
       total_amount: Number(totalPrice),
       address: addressData.address,
+      customer: addressData.recipient_name,
       email: addressData.email,
       city: addressData.city,
       district: addressData.district,
