@@ -12,14 +12,28 @@ class ChatbotController extends Controller
     public function handle(Request $request)
     {
         $request->validate([
-            'message' => 'required|string'
+            'message' => 'required|string',
+            'user_id' => 'nullable|integer'
         ]);
 
         $message = $request->input('message');
+        $userId = $request->input('user_id');
         $intent = $this->analyzeIntent($message);
 
         try {
-            $response = $this->handleIntent($intent, $message);
+            $response = $this->handleIntent($intent, $message, $userId);
+
+            // Log conversation
+            if ($userId) {
+                DB::table('chatbot_logs')->insert([
+                    'user_id' => $userId,
+                    'message' => $message,
+                    'response' => is_array($response) ? json_encode($response) : $response,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
+
             return response()->json([
                 'success' => true,
                 'response' => $response
@@ -36,20 +50,24 @@ class ChatbotController extends Controller
     {
         $message = Str::lower($message);
 
-        if (Str::contains($message, ['sản phẩm', 'mua', 'hàng'])) {
+        if (Str::contains($message, ['sản phẩm', 'điện thoại', 'máy'])) {
             return 'product_query';
         } elseif (Str::contains($message, ['giá', 'bao nhiêu', 'tiền'])) {
             return 'price_query';
         } elseif (Str::contains($message, ['danh mục', 'loại', 'category'])) {
             return 'category_query';
-        } elseif (Str::contains($message, ['câu hỏi', 'faq', 'hỏi đáp'])) {
-            return 'faq_query';
+        } elseif (Str::contains($message, ['khuyến mãi', 'voucher', 'giảm giá'])) {
+            return 'voucher_query';
+        } elseif (Str::contains($message, ['đơn hàng', 'trạng thái', 'giao hàng'])) {
+            return 'order_query';
+        } elseif (Str::contains($message, ['thông số', 'kỹ thuật', 'spec'])) {
+            return 'spec_query';
         } else {
             return 'general_query';
         }
     }
 
-    protected function handleIntent($intent, $message)
+    protected function handleIntent($intent, $message, $userId = null)
     {
         switch ($intent) {
             case 'product_query':
@@ -58,8 +76,12 @@ class ChatbotController extends Controller
                 return $this->handlePriceQuery($message);
             case 'category_query':
                 return $this->handleCategoryQuery($message);
-            case 'faq_query':
-                return $this->handleFAQQuery($message);
+            case 'voucher_query':
+                return $this->handleVoucherQuery($message);
+            case 'order_query':
+                return $this->handleOrderQuery($message, $userId);
+            case 'spec_query':
+                return $this->handleSpecQuery($message);
             default:
                 return $this->handleGeneralQuery($message);
         }
@@ -68,16 +90,26 @@ class ChatbotController extends Controller
     protected function handleProductQuery($message)
     {
         $products = DB::table('products')
-            ->where('name', 'like', "%{$message}%")
-            ->orWhere('description', 'like', "%{$message}%")
+            ->whereNull('deleted_at')
+            ->where(function($query) use ($message) {
+                $query->where('name', 'like', "%{$message}%")
+                      ->orWhere('description', 'like', "%{$message}%");
+            })
+            ->join('categories', 'products.category_id', '=', 'categories.category_id')
+            ->select('products.*', 'categories.name as category_name')
+            ->limit(5)
             ->get();
 
         if ($products->isEmpty()) {
             return 'Xin lỗi, chúng tôi không tìm thấy sản phẩm phù hợp với yêu cầu của bạn.';
         }
 
-        return 'Chúng tôi có các sản phẩm sau phù hợp: ' .
-               $products->pluck('name')->implode(', ');
+        $response = "Chúng tôi tìm thấy các sản phẩm sau:\n";
+        foreach ($products as $product) {
+            $response .= "- {$product->name} (Danh mục: {$product->category_name}, Giá: " . number_format($product->price, 0, ',', '.') . " VNĐ)\n";
+        }
+
+        return $response;
     }
 
     protected function handlePriceQuery($message)
@@ -85,6 +117,7 @@ class ChatbotController extends Controller
         $productName = $this->extractProductName($message);
 
         $product = DB::table('products')
+            ->whereNull('deleted_at')
             ->where('name', 'like', "%{$productName}%")
             ->first();
 
@@ -92,15 +125,29 @@ class ChatbotController extends Controller
             return 'Xin lỗi, chúng tôi không tìm thấy thông tin giá cho sản phẩm này.';
         }
 
-        return "Giá của sản phẩm {$product->name} là " . number_format($product->price, 0, ',', '.') . ' VNĐ';
+        $discount = $product->price_original > 0
+            ? round(($product->price_original - $product->price) / $product->price_original * 100)
+            : 0;
+
+        $response = "Thông tin giá sản phẩm:\n";
+        $response .= "- Tên sản phẩm: {$product->name}\n";
+        $response .= "- Giá hiện tại: " . number_format($product->price, 0, ',', '.') . " VNĐ\n";
+
+        if ($discount > 0) {
+            $response .= "- Giá gốc: " . number_format($product->price_original, 0, ',', '.') . " VNĐ\n";
+            $response .= "- Tiết kiệm: {$discount}%\n";
+        }
+
+        return $response;
     }
 
     protected function handleCategoryQuery($message)
     {
         $categories = DB::table('categories')
-            ->leftJoin('products', 'categories.id', '=', 'products.category_id')
-            ->select('categories.name', DB::raw('count(products.id) as product_count'))
-            ->groupBy('categories.id')
+            ->whereNull('deleted_at')
+            ->leftJoin('products', 'categories.category_id', '=', 'products.category_id')
+            ->select('categories.name', DB::raw('count(products.product_id) as product_count'))
+            ->groupBy('categories.category_id')
             ->get();
 
         return 'Chúng tôi có các danh mục sản phẩm sau: ' .
@@ -109,64 +156,122 @@ class ChatbotController extends Controller
                })->implode(', ');
     }
 
-    protected function handleFAQQuery($message)
+    protected function handleVoucherQuery($message)
     {
-        $faq = DB::table('faqs')
-            ->where('question', 'like', "%{$message}%")
-            ->orWhere('answer', 'like', "%{$message}%")
-            ->first();
+        $vouchers = DB::table('vouchers')
+            ->whereNull('deleted_at')
+            ->where('expiry_date', '>=', now())
+            ->where('quantity', '>', 0)
+            ->orderBy('discount', 'desc')
+            ->limit(3)
+            ->get();
 
-        if (!$faq) {
-            return 'Xin lỗi, chúng tôi không tìm thấy câu trả lời cho câu hỏi của bạn.';
+        if ($vouchers->isEmpty()) {
+            return 'Hiện không có chương trình khuyến mãi nào. Vui lòng quay lại sau!';
         }
 
-        return "Câu hỏi: {$faq->question}\nTrả lời: {$faq->answer}";
+        $response = "Các chương trình khuyến mãi hiện có:\n";
+        foreach ($vouchers as $voucher) {
+            $expiryDate = date('d/m/Y', strtotime($voucher->expiry_date));
+            $response .= "- Mã: {$voucher->code}, Giảm " . number_format($voucher->discount, 0, ',', '.') . " VNĐ";
+
+            if ($voucher->min_order_amount > 0) {
+                $response .= " (Áp dụng cho đơn từ " . number_format($voucher->min_order_amount, 0, ',', '.') . " VNĐ)";
+            }
+
+            $response .= ", HSD: {$expiryDate}\n";
+        }
+
+        return $response;
+    }
+
+    protected function handleOrderQuery($message, $userId = null)
+    {
+        if (!$userId) {
+            return 'Vui lòng đăng nhập để kiểm tra trạng thái đơn hàng.';
+        }
+
+        $orders = DB::table('orders')
+            ->where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->limit(3)
+            ->get();
+
+        if ($orders->isEmpty()) {
+            return 'Bạn chưa có đơn hàng nào.';
+        }
+
+        $response = "Thông tin đơn hàng gần đây:\n";
+        foreach ($orders as $order) {
+            $createdAt = date('d/m/Y H:i', strtotime($order->created_at));
+            $response .= "- Mã đơn: {$order->order_code}, Tổng tiền: " . number_format($order->total_amount, 0, ',', '.') . " VNĐ, Trạng thái: {$order->status}, Ngày đặt: {$createdAt}\n";
+        }
+
+        return $response;
+    }
+
+    protected function handleSpecQuery($message)
+    {
+        $productName = $this->extractProductName($message);
+
+        $product = DB::table('products')
+            ->whereNull('deleted_at')
+            ->where('name', 'like', "%{$productName}%")
+            ->first();
+
+        if (!$product) {
+            return 'Xin lỗi, không tìm thấy sản phẩm phù hợp.';
+        }
+
+        $specs = DB::table('product_specifications')
+            ->where('product_id', $product->product_id)
+            ->get();
+
+        if ($specs->isEmpty()) {
+            return 'Sản phẩm này chưa có thông số kỹ thuật chi tiết.';
+        }
+
+        $response = "Thông số kỹ thuật {$product->name}:\n";
+        foreach ($specs as $spec) {
+            $response .= "- {$spec->spec_name}: {$spec->spec_value}\n";
+        }
+
+        return $response;
     }
 
     protected function handleGeneralQuery($message)
     {
-        $tables = ['products', 'categories', 'faqs', 'customers'];
-        $results = collect();
+        // Tìm trong FAQs
+        $faqs = DB::table('news')
+            ->whereNull('deleted_at')
+            ->where(function($query) use ($message) {
+                $query->where('title', 'like', "%{$message}%")
+                      ->orWhere('content', 'like', "%{$message}%");
+            })
+            ->limit(3)
+            ->get();
 
-        foreach ($tables as $table) {
-            $columns = $this->getTableColumns($table);
-            $query = DB::table($table);
-
-            foreach ($columns as $column) {
-                $query->orWhere($column, 'like', "%{$message}%");
+        if (!$faqs->isEmpty()) {
+            $response = "Chúng tôi tìm thấy một số thông tin liên quan:\n";
+            foreach ($faqs as $faq) {
+                $response .= "- {$faq->title}\n";
             }
-
-            $data = $query->get();
-
-            if (!$data->isEmpty()) {
-                $results->push([
-                    'table' => $table,
-                    'data' => $data
-                ]);
-            }
+            return $response;
         }
 
-        if ($results->isEmpty()) {
-            return 'Xin lỗi, chúng tôi không tìm thấy thông tin liên quan đến yêu cầu của bạn.';
-        }
-
-        return 'Chúng tôi tìm thấy một số thông tin liên quan: ' .
-               $results->toJson(JSON_PRETTY_PRINT);
+        // Tìm trong sản phẩm nếu không thấy trong FAQs
+        return $this->handleProductQuery($message);
     }
 
     protected function extractProductName($message)
     {
-        return trim(str_replace(['giá', 'bao nhiêu', 'là'], '', Str::lower($message)));
-    }
+        $stopWords = ['giá', 'bao nhiêu', 'là', 'của', 'có', 'về', 'cho', 'hỏi'];
+        $message = Str::lower($message);
 
-    protected function getTableColumns($table)
-    {
-        return DB::getSchemaBuilder()->getColumnListing($table);
+        foreach ($stopWords as $word) {
+            $message = str_replace($word, '', $message);
+        }
+
+        return trim(preg_replace('/\s+/', ' ', $message));
     }
 }
-
-
-
-
-
-
