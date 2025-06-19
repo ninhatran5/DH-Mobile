@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { fetchorderdetails } from "../../slices/adminOrderSlice"; 
+import { fetchorderdetails } from "../../slices/adminOrderSlice";
+import "../../assets/admin/OrderDetail.css";
 
 const OrderDetails = () => {
   const { orderId } = useParams();
@@ -15,52 +16,96 @@ const OrderDetails = () => {
     }
   }, [dispatch, orderId]);
 
-  if (error) return <p className="text-red-500">{error}</p>;
+  if (error) return <p className="adminorderdetail-error">{error}</p>;
   if (!order) return null;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow">
-      <h2 className="text-2xl font-bold mb-4">Chi tiết đơn hàng</h2>
+    <div className="adminorderdetail-container">
+      <h2 className="adminorderdetail-title">Thông tin đặt hàng</h2>
+      <table className="adminorderdetail-table">
+        <tbody>
+          <tr>
+            <td>Người nhận</td>
+            <td>{order.customer}</td>
+          </tr>
+          <tr>
+            <td>Số điện thoại</td>
+            <td>{order.phone || "Chưa cập nhật"}</td>
+          </tr>
+          <tr>
+            <td>Địa chỉ</td>
+            <td>{order.address || ", , ,"}</td>
+          </tr>
+          <tr>
+            <td>Phương thức thanh toán</td>
+            <td>{order.payment_method.join(" - ")}</td>
+          </tr>
+          <tr>
+            <td>Trạng thái thanh toán</td>
+            <td>{order.payment_status}</td>
+          </tr>
+          <tr>
+            <td>Trạng thái đơn hàng</td>
+            <td>{order.status}</td>
+          </tr>
+          {order.cancel_reason && (
+            <tr>
+              <td>Lý do huỷ</td>
+              <td>{order.cancel_reason}</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
 
-      <div className="mb-6">
-        <p><strong>Mã đơn hàng:</strong> {order.order_code}</p>
-        <p><strong>Ngày đặt:</strong> {order.order_date}</p>
-        <p><strong>Khách hàng:</strong> {order.customer}</p>
-        <p><strong>SĐT:</strong> {order.phone}</p>
-        <p><strong>Địa chỉ:</strong> {order.address}</p>
-        <p><strong>Trạng thái:</strong> {order.status}</p>
-        <p><strong>Thanh toán:</strong> {order.payment_status}</p>
-        <p><strong>Phương thức:</strong> {order.payment_method.join(" - ")}</p>
-        <p><strong>Tổng tiền:</strong> {Number(order.total_amount).toLocaleString()}₫</p>
-        {order.cancel_reason && (
-          <p><strong>Lý do huỷ:</strong> {order.cancel_reason}</p>
-        )}
-      </div>
-
-      <h3 className="text-xl font-semibold mb-2">Sản phẩm</h3>
-      {order.products.map((product, index) => (
-        <div
-          key={index}
-          className="flex items-start gap-4 p-4 border rounded-lg mb-4"
-        >
-          <img
-            src={product.product_image}
-            alt={product.product_name}
-            className="w-24 h-24 object-cover rounded"
-          />
-          <div>
-            <p className="font-medium">{product.product_name}</p>
-            <p>Số lượng: {product.quantity}</p>
-            <p>Giá: {Number(product.price).toLocaleString()}₫</p>
-            <p>Tạm tính: {Number(product.subtotal).toLocaleString()}₫</p>
-            {product.variant_attributes.map((attr, i) => (
-              <p key={i}>
-                {attr.attribute_name}: {attr.attribute_value}
-              </p>
-            ))}
-          </div>
-        </div>
-      ))}
+      <h3 className="adminorderdetail-subtitle">Chi tiết sản phẩm</h3>
+      <table className="adminorderdetail-table product">
+        <thead>
+          <tr>
+            <th>Hình ảnh</th>
+            <th>Tên sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Màu sắc</th>
+            <th>Phiên bản</th>
+            <th>Đơn giá</th>
+            <th>Tạm tính</th>
+          </tr>
+        </thead>
+        <tbody>
+          {order.products.map((product, index) => {
+            const colorAttr = product.variant_attributes.find(attr =>
+              attr.attribute_name.toLowerCase().includes("Màu sắc")
+            );
+            const versionAttr = product.variant_attributes.find(attr =>
+              attr.attribute_name.toLowerCase().includes("Bộ nhớ")
+            );
+            return (
+              <tr key={index}>
+                <td>
+                  <img
+                    src={product.product_image}
+                    alt={product.product_name}
+                    className="adminorderdetail-thumb"
+                  />
+                </td>
+                <td>{product.product_name}</td>
+                <td>{product.quantity}</td>
+                <td>{colorAttr?.attribute_value || "-"}</td>
+                <td>{versionAttr?.attribute_value || "không có"}</td>
+                <td>{Number(product.price).toLocaleString()}₫</td>
+                <td>{Number(product.subtotal).toLocaleString()}₫</td>
+              </tr>
+            );
+          })}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colSpan="6" className="text-right font-semibold">Tổng cộng:</td>
+            <td className="adminorderdetail-total">
+              {Number(order.total_amount).toLocaleString()}₫
+            </td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
   );
 };
