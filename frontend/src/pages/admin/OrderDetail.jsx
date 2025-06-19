@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { fetchorderdetails } from "../../slices/adminOrderSlice";
 import "../../assets/admin/OrderDetail.css";
-
+import OrderStatusSteps from "../../components/AdminOrderDetail";
 const OrderDetails = () => {
   const { orderId } = useParams();
   const dispatch = useDispatch();
@@ -44,10 +44,7 @@ const OrderDetails = () => {
             <td>Trạng thái thanh toán</td>
             <td>{order.payment_status}</td>
           </tr>
-          <tr>
-            <td>Trạng thái đơn hàng</td>
-            <td>{order.status}</td>
-          </tr>
+          
           {order.cancel_reason && (
             <tr>
               <td>Lý do huỷ</td>
@@ -57,6 +54,8 @@ const OrderDetails = () => {
         </tbody>
       </table>
 
+             <OrderStatusSteps status={order.status} />
+        
       <h3 className="adminorderdetail-subtitle">Chi tiết sản phẩm</h3>
       <table className="adminorderdetail-table product">
         <thead>
