@@ -19,6 +19,12 @@ class Orders extends Model
         'method_id',
         'return_reason',
         'return_status',
+        'address',
+        'ward',
+        'district',
+        'city',
+        'phone',
+        'email',
         'created_at',
         'updated_at',
     ];

@@ -52,12 +52,27 @@ class VnpayController extends Controller
             }
         }
 
-        // Thay đổi return URL để truyền thêm thông tin
-        $returnUrl = config('vnpay.vnp_ReturnUrl') . '?' . http_build_query([
+        DB::table('pending_orders')->insert([
+            'order_code' => $orderCode,
             'user_id' => $user->user_id,
             'items' => json_encode($items),
+            'total_amount' => $total,
+            'address' => $request->address,
+            'ward' => $request->ward,
+            'district' => $request->district,
+            'city' => $request->city,
+            'phone' => $request->phone,
+            'email' => $request->email,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+
+        // Thay đổi return URL để truyền thêm thông tin
+        $returnUrl = config('vnpay.vnp_ReturnUrl') . '?' . http_build_query([
+
             'order_code' => $orderCode,
-            'total_amount' => $total
+
         ]);
 
         // Tạo URL thanh toán VNPAY (giữ nguyên)
@@ -110,10 +125,20 @@ class VnpayController extends Controller
         // Thay đổi chính: Chỉ xử lý khi thanh toán thành công
         if ($request->input('vnp_ResponseCode') === '00') {
             // Lấy thông tin từ URL parameters
-            $user_id = $request->query('user_id');
-            $items = json_decode($request->query('items'), true);
+
+
+
+
             $orderCode = $request->query('order_code');
-            $totalAmount = $request->query('total_amount');
+            $pending = DB::table('pending_orders')->where('order_code', $orderCode)->first();
+
+            if (!$pending) {
+                return redirect()->away("http://localhost:5173/payment-failed?status=missing_order_data");
+            }
+
+            $user_id = $pending->user_id;
+            $items = json_decode($pending->items, true);
+            $totalAmount = $pending->total_amount;
 
             // Kiểm tra xem đơn hàng với mã này đã tồn tại chưa
             $existingOrder = DB::table('orders')->where('order_code', $orderCode)->first();
@@ -131,9 +156,16 @@ class VnpayController extends Controller
                 'status' => 'Chờ xác nhận',
                 'payment_status' => 'Đã thanh toán',
                 'voucher_id' => null,
+                'address' => $pending->address,
+                'ward' => $pending->ward,
+                'district' => $pending->district,
+                'city' => $pending->city,
+                'phone' => $pending->phone,
+                'email' => $pending->email,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
 
             // Thêm order items và trừ tồn kho
             foreach ($items as $item) {
@@ -169,6 +201,8 @@ class VnpayController extends Controller
                     ->whereIn('variant_id', $paidVariantIds)
                     ->delete();
             }
+            DB::table('pending_orders')->where('order_code', $orderCode)->delete();
+
 
             // Sửa: Đảm bảo lấy đầy đủ thông tin đơn hàng với payment_status đã cập nhật
             $updatedOrder = DB::table('orders')
