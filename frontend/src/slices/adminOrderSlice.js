@@ -20,6 +20,7 @@ export const fetchAdminOrders = createAsyncThunk(
   }
 );
 
+// Cập nhật trạng thái đơn hàng
 export const updateOrderStatus = createAsyncThunk(
   "adminOrder/updateOrderStatus",
   async ({ orderId, status }, { rejectWithValue }) => {
@@ -43,10 +44,36 @@ export const updateOrderStatus = createAsyncThunk(
   }
 );
 
+// Lấy chi tiết đơn hàng
+export const fetchorderdetails = createAsyncThunk(
+  "adminOrder/fetchorderdetails",
+  async (orderId, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      const res = await axiosConfig.get(`/admin/orders/${orderId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!res.data?.order) throw new Error("Không có dữ liệu đơn hàng");
+
+      return res.data.order;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || err.message || "Không thể lấy chi tiết đơn hàng"
+      );
+    }
+  }
+);
+
+
+// Slice
 const adminOrderSlice = createSlice({
   name: "adminOrder",
   initialState: {
     orders: [],
+    order: null, 
     pagination: {},
     loading: false,
     error: null,
@@ -54,6 +81,7 @@ const adminOrderSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Lấy danh sách đơn hàng
       .addCase(fetchAdminOrders.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -68,7 +96,7 @@ const adminOrderSlice = createSlice({
         state.error = action.payload || "Lỗi không xác định";
       })
 
-      //  Xử lý cập nhật trạng thái đơn hàng
+      // Cập nhật trạng thái đơn hàng
       .addCase(updateOrderStatus.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -76,7 +104,9 @@ const adminOrderSlice = createSlice({
       .addCase(updateOrderStatus.fulfilled, (state, action) => {
         state.loading = false;
         const updatedOrder = action.payload;
-        const index = state.orders.findIndex(o => o.order_id === updatedOrder.order_id);
+        if (!updatedOrder || !updatedOrder.order_id) return;
+
+        const index = state.orders.findIndex(o => o?.order_id === updatedOrder.order_id);
         if (index !== -1) {
           state.orders[index] = updatedOrder;
         }
@@ -84,6 +114,36 @@ const adminOrderSlice = createSlice({
       .addCase(updateOrderStatus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Lỗi khi cập nhật trạng thái đơn hàng";
+      })
+
+      // Lấy chi tiết đơn hàng
+      .addCase(fetchorderdetails.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.order = null;
+      })
+      .addCase(fetchorderdetails.fulfilled, (state, action) => {
+        state.loading = false;
+        const orderDetails = action.payload;
+
+        if (!orderDetails || !orderDetails.order_id) {
+          console.warn("Dữ liệu đơn hàng không hợp lệ:", orderDetails);
+          return;
+        }
+
+        const index = state.orders.findIndex(o => o?.order_id === orderDetails.order_id);
+        if (index !== -1) {
+          state.orders[index] = orderDetails;
+        } else {
+          state.orders.push(orderDetails); // Nếu chưa có thì thêm vào
+        }
+
+        state.order = orderDetails; // Gán vào state.order cho trang chi tiết
+      })
+      .addCase(fetchorderdetails.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Lỗi khi lấy chi tiết đơn hàng";
+        state.order = null;
       });
   },
 });
