@@ -12,9 +12,7 @@ class OrderController extends Controller
     public function getOrder(Request $request)
     {
         $user = $request->user();
-        $orders = Orders::with(['user', 'paymentMethods'])
-            ->select('order_id', 'order_code', 'user_id', 'total_amount', 'status', 'payment_status', 'method_id', 'cancel_reason')
-            ->where('user_id', $user->user_id)
+        $orders = Orders::with([ 'paymentMethods'])
             ->orderByDesc('created_at')
             ->get();
 
@@ -22,12 +20,12 @@ class OrderController extends Controller
             return [
                 'order_id' => $order->order_id,
                 'order_code' => $order->order_code,
-                'customer' => $order->user->full_name,
+                'customer' => $order->customer,
                 'total_amount' => number_format($order->total_amount, 0, ".", ""),
-                'address' => $order->user->address . ', ' .
-                    $order->user->ward . ', ' .
-                    $order->user->district . ', ' .
-                    $order->user->city,
+                'address' => $order->address . ', ' .
+                    $order->ward . ', ' .
+                    $order->district . ', ' .
+                    $order->city,
                 'payment_status' => $order->payment_status,
                 'payment_method' => $order->paymentMethods->name,
                 'status' => $order->status,
