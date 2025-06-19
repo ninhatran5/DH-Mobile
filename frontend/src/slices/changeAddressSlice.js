@@ -37,6 +37,23 @@ export const addAddresNew = createAsyncThunk(
   }
 );
 
+export const updateAddresNew = createAsyncThunk(
+  "changeAddress/updateAddresNew",
+  async ({ id, data }, thunkAPI) => {
+    try {
+      const response = await axiosConfig.post(`/user-addresses/${id}`, {
+        ...data,
+        _method: "PUT",
+      });
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Đã có lỗi xảy ra"
+      );
+    }
+  }
+);
+
 export const deleteAddressNew = createAsyncThunk(
   "changeAddress/deleteAddressNew",
   async (id, thunkAPI) => {
@@ -94,6 +111,20 @@ export const changeAddressSlice = createSlice({
         state.changeAddressNew = action.payload;
       })
       .addCase(deleteAddressNew.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.payload || action.error?.message || "Đã có lỗi xảy ra";
+      })
+
+      .addCase(updateAddresNew.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateAddresNew.fulfilled, (state, action) => {
+        state.loading = false;
+        state.changeAddressNew = action.payload;
+      })
+      .addCase(updateAddresNew.rejected, (state, action) => {
         state.loading = false;
         state.error =
           action.payload || action.error?.message || "Đã có lỗi xảy ra";

@@ -16,11 +16,16 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 const MySwal = withReactContent(Swal);
 
-export default function ChangeAddressModal({ show, handleClose }) {
+export default function ChangeAddressModal({
+  show,
+  handleClose,
+  onSaveAddress,
+}) {
   const dispatch = useDispatch();
   const { profile, loading } = useSelector((state) => state.profile);
   const { changeAddressNew } = useSelector((state) => state.changeAddress);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedRadio, setSelectedRadio] = useState("profile"); // "profile" hoặc address_id
 
   useEffect(() => {
     dispatch(fetchProfile());
@@ -69,7 +74,8 @@ export default function ChangeAddressModal({ show, handleClose }) {
                 type="radio"
                 name="radioDefault"
                 id="radioDefault1"
-                defaultChecked
+                checked={selectedRadio === "profile"}
+                onChange={() => setSelectedRadio("profile")}
               />
               <label className="form-check-label" htmlFor="radioDefault1">
                 <div className="address-header">
@@ -100,7 +106,13 @@ export default function ChangeAddressModal({ show, handleClose }) {
                 </div>
                 <div className="full_address_profile">
                   <p className="address_profile">
-                    {profile?.user?.address || ""}
+                    {`${profile?.user?.address || ""}${
+                      profile?.user?.ward ? ", " + profile.user.ward : ""
+                    }${
+                      profile?.user?.district
+                        ? ", " + profile.user.district
+                        : ""
+                    }${profile?.user?.city ? ", " + profile.user.city : ""}`}
                   </p>
                 </div>
                 <div className="default_address_profile">
@@ -109,7 +121,11 @@ export default function ChangeAddressModal({ show, handleClose }) {
               </label>
             </div>
             <hr className="address-divider" />
-            <AddressList addresses={changeAddressNew} />
+            <AddressList
+              addresses={changeAddressNew}
+              selectedRadio={selectedRadio}
+              setSelectedRadio={setSelectedRadio}
+            />
             <div onClick={nagivateToAddAddress} className="add_address_new">
               <p className="icon_add_address">
                 <MdAddCircleOutline />
@@ -124,7 +140,22 @@ export default function ChangeAddressModal({ show, handleClose }) {
           <Button variant="secondary" onClick={handleCloseWithConfirm}>
             Hủy
           </Button>
-          <Button onClick={handleClose} className="btn_save_address">
+          <Button
+            onClick={async () => {
+              if (selectedRadio === "profile") {
+                await onSaveAddress(null);
+              } else {
+                const address = changeAddressNew.find(
+                  (a) => a.address_id === selectedRadio
+                );
+                if (address) {
+                  await onSaveAddress(address);
+                }
+              }
+              handleClose();
+            }}
+            className="btn_save_address"
+          >
             Lưu
           </Button>
         </Modal.Footer>
