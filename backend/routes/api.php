@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\VnpayController;
 use App\Http\Controllers\Api\BannerController;
+use App\Http\Controllers\Api\ChatbotController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\VoucherController;
@@ -283,5 +284,9 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(f
 
 
 
-
+// comment
 Route::middleware('auth:sanctum')->post('/comments', [CommentController::class, 'store']);
+
+
+// chatbot
+Route::post('/public/chatbot', [ChatbotController::class, 'handle']);
