@@ -12,22 +12,21 @@ class OrderController extends Controller
     public function getOrder(Request $request)
     {
         $user = $request->user();
-        $orders = Orders::with(['user', 'paymentMethods'])
-            ->select('order_id', 'order_code', 'user_id', 'total_amount', 'status', 'payment_status', 'method_id', 'cancel_reason')
-            ->where('user_id', $user->user_id)
+        $orders = Orders::with(['paymentMethods'])
             ->orderByDesc('created_at')
+            ->where('user_id', $user->user_id)
             ->get();
 
         $formattedOrders = $orders->map(function ($order) {
             return [
                 'order_id' => $order->order_id,
                 'order_code' => $order->order_code,
-                'customer' => $order->user->full_name,
+                'customer' => $order->customer,
                 'total_amount' => number_format($order->total_amount, 0, ".", ""),
-                'address' => $order->user->address . ', ' .
-                    $order->user->ward . ', ' .
-                    $order->user->district . ', ' .
-                    $order->user->city,
+                'address' => $order->address . ', ' .
+                    $order->ward . ', ' .
+                    $order->district . ', ' .
+                    $order->city,
                 'payment_status' => $order->payment_status,
                 'payment_method' => $order->paymentMethods->name,
                 'status' => $order->status,
@@ -89,12 +88,12 @@ class OrderController extends Controller
             'order_id' => $order->order_id,
             'order_code' => $order->order_code,
             'order_date' => $order->created_at->format('d/m/Y H:i:s'),
-            'customer' => $order->user->full_name,
-            'phone' => $order->user->phone,
-            'address' => $order->user->address . ', ' .
-                $order->user->ward . ', ' .
-                $order->user->district . ', ' .
-                $order->user->city,
+            'customer' => $order->customer,
+            'phone' => $order->phone,
+            'address' => $order->address . ', ' .
+                $order->ward . ', ' .
+                $order->district . ', ' .
+                $order->city,
             'payment_method' => [
                 $order->paymentMethods->name,
                 $order->paymentMethods->description
@@ -271,10 +270,17 @@ class OrderController extends Controller
             $order->payment_status = $request->payment_status;
         }
         $order->save();
+
+        // Tải lại quan hệ user và paymentMethods sau khi cập nhật
+        $order->load(['user', 'paymentMethods']);
+        $orderArr = $order->toArray();
+        // Thay thế user_id và method_id bằng tên tương ứng
+        $orderArr['user_id'] = $order->user ? $order->user->full_name : null;
+        $orderArr['method_id'] = $order->paymentMethods ? $order->paymentMethods->name : null;
         return response()->json([
             'status' => true,
             'message' => 'Cập nhật trạng thái thành công',
-            'order' => $order
+            'order' => $orderArr
         ]);
     }
 

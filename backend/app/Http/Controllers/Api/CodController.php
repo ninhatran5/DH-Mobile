@@ -16,6 +16,17 @@ class CodController extends Controller
     {
         $user = Auth::user();
 
+           // Validate địa chỉ
+    $request->validate([
+        'address' => 'required|string',
+        'ward' => 'required|string',
+        'district' => 'required|string',
+        'city' => 'required|string',
+        'phone' => 'required|string',
+        'email' => 'required|email',
+        'customer' => 'required|string',
+    ]);
+
         // Kiểm tra người dùng đã có giỏ hàng chưa
         $cart = DB::table('carts')->where('user_id', $user->user_id)->first();
         if (!$cart) {
@@ -39,6 +50,13 @@ class CodController extends Controller
                 'total_amount' => 0,
                 'status' => 'Chờ xác nhận',
                 'payment_status' => 'Chưa thanh toán',
+                'address' => $request->address,
+                'ward' => $request->ward,
+                'district' => $request->district,
+                'city' => $request->city,
+                'phone' => $request->phone,
+                'email' => $request->email,
+                'customer' => $request->customer,
                 'voucher_id' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -92,7 +110,7 @@ class CodController extends Controller
             // Gửi email
             $order = DB::table('orders')->where('order_id', $orderId)->first();
             $userData = DB::table('users')->where('user_id', $user->user_id)->first();
-            Mail::to($userData->email)->send(new PaymentSuccessMail($order, $userData));
+            Mail::to($order->email)->send(new PaymentSuccessMail($order, $userData));
 
             DB::commit();
 
