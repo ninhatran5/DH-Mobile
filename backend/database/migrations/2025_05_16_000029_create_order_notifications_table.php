@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('type', 50)->nullable();
             $table->text('message')->nullable();
             $table->boolean('is_read')->default(0);
-            $table->dateTime('created_at')->useCurrent();
+            $table->timestamps();
             $table->foreign('order_id')->references('order_id')->on('orders');
             $table->foreign('user_id')->references('user_id')->on('users');
         });

@@ -25,9 +25,9 @@ class NotificationController extends Controller
     // Đánh dấu đã đọc
     public function markAsRead(Request $request)
     {
-        $ids = $request->input('ids', []); // mảng notification_id
+        $id = $request->input('id', []); // mảng notification_id
 
-        OrderNotification::whereIn('notification_id', $ids)->update(['is_read' => true]);
+        OrderNotification::whereIn('notification_id', $id)->update(['is_read' => true]);
 
         return response()->json([
             'status' => true,
