@@ -912,7 +912,24 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  transition: font-weight 0.3s ease, color 0.3s ease;
 }
+
+.admin_dh-notification-item.unread p.mb-0 {
+  font-weight: 700;
+  color: #333;
+}
+
+.admin_dh-notification-item:not(.unread) p.mb-0 {
+  font-weight: 400;
+  color: #555;
+}
+
+.admin_dh-notification-item:not(.unread) small.text-muted {
+  color: #999 !important;
+}
+
 
 .admin_dh-notification-item small.text-muted {
   font-size: 13px;
@@ -942,6 +959,7 @@ body {
   font-size: 13px;
   color: #888 !important;
   text-align: center;
+
 }
 
 .admin_dh-bell-ring {
@@ -1869,3 +1887,20 @@ html {
 .admin-dh-custom-mark-read-btn:hover {
   background-color: #f7d58c; /* màu nhạt hơn khi hover */
 }
+
+.admin_dh-notification-item.unread .admin_dh-notification-icon {
+  position: relative;
+}
+
+.admin_dh-notification-item.unread .admin_dh-notification-icon:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  background-color: #ff3b30;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
