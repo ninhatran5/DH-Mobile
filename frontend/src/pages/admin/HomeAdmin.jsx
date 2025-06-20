@@ -560,30 +560,43 @@ const Homeadmin = () => {
                     </a>
                     <div className="dropdown-menu dropdown-menu-end admin_dh-notification-dropdown">
                       <div className="dropdown-header d-flex justify-content-between align-items-center">
-                        <h6 className="mb-0">Thông báo</h6>
+                        <h5 className="mb-0" style={{ fontSize: '18px', fontWeight: '600' }}>Thông báo</h5>
                         {notifications.length > 0 && (
-                          <button
-                            className="btn btn-sm btn-link text-decoration-none"
-                            onClick={handleMarkAsRead}
-                          >
-                            Đánh dấu đã đọc
-                          </button>
+                            <button
+                              className=" text-decoration-none admin-dh-custom-mark-read-btn"
+                              onClick={handleMarkAsRead}
+                            >
+                              <i className="bi bi-check-all me-1"></i>
+                              Đánh dấu đã đọc
+                            </button>
                         )}
                       </div>
                       {notifications.length === 0 ? (
                         <div className="dropdown-item text-muted">Không có thông báo mới</div>
                       ) : (
                         notifications.map((noti, idx) => (
-                          <div key={noti.id || idx} className="dropdown-item admin_dh-notification-item" onClick={() => dispatch(markNotificationRead(noti.id))} style={{ cursor: 'pointer', background: noti.is_read ? '#f8f9fa' : '#fff' }}>
-                            <div className="d-flex">
-                              <div className="admin_dh-notification-icon admin_dh-bg-primary-soft">
-                                <i className="bi bi-bell"></i>
-                              </div>
-                              <div className="flex-grow-1 ms-3">
-                                <p className="mb-0">{noti.title || noti.message}</p>
-                                <small className="text-muted">{noti.created_at || ""}</small>
-                              </div>
+                          <div 
+                            key={noti.id || idx} 
+                            className={`dropdown-item admin_dh-notification-item d-flex align-items-start ${noti.is_read ? '' : 'unread'}`}
+                            onClick={() => dispatch(markNotificationRead(noti.id))} 
+                            style={{ cursor: 'pointer' }}
+                          >
+                            <div className="admin_dh-notification-icon admin_dh-bg-primary-soft">
+                              <i className="bi bi-bell"></i>
                             </div>
+                                                          <div className="flex-grow-1 ms-3">
+                                <p className="mb-0">{noti.title || noti.message}</p>
+                                <small className="text-muted">
+                                  <i className="bi bi-clock me-1"></i>
+                                  {noti.created_at ? new Date(noti.created_at).toLocaleDateString('vi-VN', {
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  }) : ""}
+                                </small>
+                              </div>
                           </div>
                         ))
                       )}
