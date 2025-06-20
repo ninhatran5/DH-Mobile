@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 const MySwal = withReactContent(Swal);
-
+import DefaultImage from "../../assets/images/adminacccount.jpg";
 const OrdersList = () => {
   const dispatch = useDispatch();
   const { orders, pagination, loading, error } = useSelector(
@@ -190,7 +190,7 @@ const OrdersList = () => {
                     <tr key={order.order_id}>
                       <td>
                         <div className="admin_order-avatar">
-                          <img src={order.user?.image_url || '/default-avatar.png'} alt={order.customer} />
+                          <img src={order.user?.image_url || DefaultImage } alt={order.customer} />
                         </div>
                       </td>
                       <td>
