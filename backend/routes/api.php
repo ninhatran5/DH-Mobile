@@ -27,6 +27,9 @@ use App\Http\Controllers\Api\AttributevalueController;
 use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
 use App\Http\Controllers\Api\VariantAttributeValuesController;
+use App\Http\Controllers\Api\SupportChatController;
+
+
 
 
 
@@ -292,3 +295,22 @@ Route::middleware('auth:sanctum')->post('/comments', [CommentController::class, 
 
 // chatbot
 Route::post('/public/chatbot', [ChatbotController::class, 'handle']);
+
+// chatlive
+
+
+// Tất cả route yêu cầu đăng nhập (auth:sanctum)
+Route::middleware('auth:sanctum')->prefix('support-chat')->group(function () {
+    
+    // Gửi tin nhắn mới (có thể kèm file)
+    Route::post('/send', [SupportChatController::class, 'sendMessage']);
+
+    // Lấy lịch sử chat giữa người dùng hiện tại và user khác
+    Route::get('/history/{user_id}', [SupportChatController::class, 'getChatHistory']);
+
+    // Đếm số tin nhắn chưa đọc (dựa trên bảng support_chat_notifications)
+    Route::get('/unread-count', [SupportChatController::class, 'getUnreadCount']);
+
+    // Đánh dấu 1 tin nhắn là đã đọc
+    Route::patch('/mark-As-Read/{chat_id}', [SupportChatController::class, 'markAsRead']);
+}); 
