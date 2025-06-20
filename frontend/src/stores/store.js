@@ -35,6 +35,7 @@ import paymentReducer from "../slices/checkOutSlice";
 import adminOrderReducer from "../slices/adminOrderSlice";
 import changeAddressReducer from "../slices/changeAddressSlice";
 import ordersReducer from "../slices/orderSlice"; 
+import adminNotificationReducer from "../slices/NotificationSlice";
 export const store = configureStore({
   reducer: {
     home: homeReducer,
@@ -73,5 +74,6 @@ export const store = configureStore({
     adminVoucher: adminVoucherReducer,
     adminNews: adminNewsReducer,
     adminOrder: adminOrderReducer,
+    adminNotification: adminNotificationReducer,
   },
 });
