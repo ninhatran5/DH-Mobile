@@ -577,6 +577,7 @@ const Homeadmin = () => {
                         notifications.map((noti, idx) => (
                           <div 
                             key={noti.id || idx} 
+
                             className={`dropdown-item admin_dh-notification-item d-flex align-items-start ${noti.is_read === 1 ? '' : 'unread'}`}
                             onClick={(e) => {
                               if (!noti.is_read) {
@@ -588,13 +589,16 @@ const Homeadmin = () => {
                                 dispatch(markNotificationRead(noti.id));
                               }
                             }} 
+
                             style={{ cursor: 'pointer' }}
                           >
                             <div className="admin_dh-notification-icon admin_dh-bg-primary-soft">
                               <i className="bi bi-bell"></i>
                             </div>
                                                           <div className="flex-grow-1 ms-3">
+
                                 <p className="mb-0" title={noti.title || noti.message}>{noti.title || noti.message}</p>
+
                                 <small className="text-muted">
                                   <i className="bi bi-clock me-1"></i>
                                   {noti.created_at ? new Date(noti.created_at).toLocaleDateString('vi-VN', {

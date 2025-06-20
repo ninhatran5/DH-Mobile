@@ -912,6 +912,7 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
   transition: font-weight 0.3s ease, color 0.3s ease;
 }
 
@@ -928,6 +929,7 @@ body {
 .admin_dh-notification-item:not(.unread) small.text-muted {
   color: #999 !important;
 }
+
 
 .admin_dh-notification-item small.text-muted {
   font-size: 13px;
@@ -957,6 +959,7 @@ body {
   font-size: 13px;
   color: #888 !important;
   text-align: center;
+
 }
 
 .admin_dh-bell-ring {
@@ -1900,3 +1903,4 @@ html {
   border-radius: 50%;
   border: 2px solid #fff;
 }
+
