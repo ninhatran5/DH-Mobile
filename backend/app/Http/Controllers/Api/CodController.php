@@ -112,6 +112,18 @@ class CodController extends Controller
             $userData = DB::table('users')->where('user_id', $user->user_id)->first();
             Mail::to($order->email)->send(new PaymentSuccessMail($order, $userData));
 
+            $admin = DB::table('users')->where('role', 'admin')->first();
+            if ($admin) {
+                DB::table('order_notifications')->insert([
+                    'order_id' => $orderId,
+                    'user_id' => $admin->user_id,
+                    'type' => 'new_order',
+                    'message' => 'Đơn hàng mới #' . $orderCode . ' vừa được tạo.',
+                    'is_read' => 0,
+                    'created_at' => now()
+                ]);
+            }
+
             DB::commit();
 
             return response()->json([
