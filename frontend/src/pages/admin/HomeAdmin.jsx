@@ -6,6 +6,9 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import logo from "../../assets/images/logo2.png";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchNotifications, addNotification } from "../../slices/NotificationSlice";
+import { io } from "socket.io-client";
 
 const sidebarCollapsedStyles = {
   submenu: {
@@ -34,6 +37,12 @@ const Homeadmin =()=>{
   const location = useLocation();
   const sidebarCollapseRef = useRef(null);
   const sidebarOpenRef = useRef(null);
+  const dispatch = useDispatch();
+  const { notifications } = useSelector(state => state.adminNotification);
+  const socketRef = useRef(null);
+
+  // Số lượng thông báo chưa đọc
+  const unreadCount = notifications.filter(n => n.is_read === 0).length;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -98,6 +107,24 @@ const Homeadmin =()=>{
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
+
+  useEffect(() => {
+    dispatch(fetchNotifications());
+    socketRef.current = io("https://dhmobile-website-production-1e30.up.railway.app", {
+      transports: ["polling"],
+      auth: {
+        token: localStorage.getItem("adminToken"),
+      },
+    });
+    socketRef.current.on("admin-notification", (data) => {
+      dispatch(addNotification(data));
+    });
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
+    };
+  }, [dispatch]);
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -171,12 +198,10 @@ const Homeadmin =()=>{
 
   const handleNotificationClick = (e) => {
     e.preventDefault();
+    setShowNotificationDot(false);
     const notificationBell = e.currentTarget.querySelector('.bi-bell');
     if (notificationBell) {
-      notificationBell.classList.add('admin_dh-bell-ring');
-      setTimeout(() => {
-        notificationBell.classList.remove('admin_dh-bell-ring');
-      }, 1000);
+      notificationBell.classList.remove('admin_dh-bell-ring');
     }
   };
 
@@ -510,17 +535,17 @@ const Homeadmin =()=>{
                       aria-expanded="false"
                       onClick={handleNotificationClick}
                     >
-                      <i className="bi bi-bell" />
-                      {showNotificationDot && (
+                      <i className={`bi bi-bell${unreadCount > 0 && showNotificationDot ? ' admin_dh-bell-ring' : ''}`} />
+                      {unreadCount > 0 && showNotificationDot && (
                         <span className="position-absolute admin_dh-notification-badge rounded-pill">
-                          {notificationCount}
+                          {unreadCount}
                         </span>
                       )}
                     </a>
                     <div className="dropdown-menu dropdown-menu-end admin_dh-notification-dropdown">
                       <div className="dropdown-header d-flex justify-content-between align-items-center">
                         <h6 className="mb-0">Notifications</h6>
-                        {notificationCount > 0 && (
+                        {notifications.length > 0 && (
                           <button 
                             className="btn btn-sm btn-link text-decoration-none" 
                             onClick={clearNotifications}
@@ -529,41 +554,23 @@ const Homeadmin =()=>{
                           </button>
                         )}
                       </div>
-                      <a className="dropdown-item admin_dh-notification-item" href="#">
-                        <div className="d-flex">
-                          <div className="admin_dh-notification-icon admin_dh-bg-success-soft">
-                            <i className="bi bi-person-plus"></i>
+                      {notifications.length === 0 ? (
+                        <div className="dropdown-item text-muted">Không có thông báo mới</div>
+                      ) : (
+                        notifications.map((noti, idx) => (
+                          <div key={noti.id || idx} className="dropdown-item admin_dh-notification-item">
+                            <div className="d-flex">
+                              <div className="admin_dh-notification-icon admin_dh-bg-primary-soft">
+                                <i className="bi bi-bell"></i>
+                              </div>
+                              <div className="flex-grow-1 ms-3">
+                                <p className="mb-0">{noti.title || noti.message}</p>
+                                <small className="text-muted">{noti.created_at || ""}</small>
+                              </div>
+                            </div>
                           </div>
-                          <div className="flex-grow-1 ms-3">
-                            <p className="mb-0">Người dùng mới đăng ký</p>
-                            <small className="text-muted">5 phút trước</small>
-                          </div>
-                        </div>
-                      </a>
-                      <a className="dropdown-item admin_dh-notification-item" href="#">
-                        <div className="d-flex">
-                          <div className="admin_dh-notification-icon admin_dh-bg-primary-soft">
-                            <i className="bi bi-cart-check"></i>
-                          </div>
-                          <div className="flex-grow-1 ms-3">
-                            <p className="mb-0">Đơn hàng mới</p>
-                            <small className="text-muted">15 phút trước</small>
-                          </div>
-                        </div>
-                      </a>
-                      <a className="dropdown-item admin_dh-notification-item" href="#">
-                        <div className="d-flex">
-                          <div className="admin_dh-notification-icon admin_dh-bg-warning-soft">
-                            <i className="bi bi-exclamation-circle"></i>
-                          </div>
-                          <div className="flex-grow-1 ms-3">
-                            <p className="mb-0">Cảnh báo hệ thống</p>
-                            <small className="text-muted">30 phút trước</small>
-                          </div>
-                        </div>
-                      </a>
-                      <div className="dropdown-divider" />
-                      <a className="dropdown-item text-center small text-muted" href="#">View all notifications</a>
+                        ))
+                      )}
                     </div>
                   </div>
                 </div>
