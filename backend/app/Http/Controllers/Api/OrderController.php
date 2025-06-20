@@ -114,7 +114,7 @@ class OrderController extends Controller
     // quản lý đơn hàng admin
     public function adminIndex(Request $request)
     {
-        $query = Orders::with(['user', 'paymentMethods']);
+        $query = Orders::with(['user', 'paymentMethods','orderItems']);
 
         // Lọc theo trạng thái đơn hàng
         if ($request->has('status') && $request->status !== null) {
@@ -141,13 +141,15 @@ class OrderController extends Controller
             return [
                 'order_id' => $order->order_id,
                 'order_code' => $order->order_code,
-                'customer' => $order->user ? $order->user->full_name : null,
+                'customer' =>  $order->customer,
+                "image_url" => $order->user->image_url,
                 'total_amount' => number_format($order->total_amount, 0, '.', ''),
                 'payment_status' => $order->payment_status,
                 'payment_method' => $order->paymentMethods ? $order->paymentMethods->name : null,
                 'status' => $order->status,
                 'cancel_reason' => $order->cancel_reason,
                 'created_at' => $order->created_at->format('d/m/Y H:i:s'),
+              'totalProduct' => $order->orderItems->sum('quantity'), // Tính tổng số lượng sản phẩm
             ];
         });
 
@@ -203,9 +205,9 @@ class OrderController extends Controller
             'order_id' => $order->order_id,
             'order_code' => $order->order_code,
             'order_date' => $order->created_at->format('d/m/Y H:i:s'),
-            'customer' => $order->user ? $order->user->full_name : null,
-            'phone' => $order->user ? $order->user->phone : null,
-            'address' => $order->user ? ($order->user->address . ', ' . $order->user->ward . ', ' . $order->user->district . ', ' . $order->user->city) : null,
+            'customer' => $order->customer,
+            'phone' => $order->phone,
+            'address' => $order ? ($order->address . ', ' . $order->ward . ', ' . $order->district . ', ' . $order->city) : null,
             'payment_method' => $order->paymentMethods ? [$order->paymentMethods->name, $order->paymentMethods->description] : null,
             'payment_status' => $order->payment_status,
             'status' => $order->status,
