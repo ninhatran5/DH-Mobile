@@ -240,7 +240,7 @@ class OrderController extends Controller
         $currentStatus = $order->status;
         $nextStatus = $request->status;
         // Chỉ cho phép admin thao tác từ Chờ xác nhận đến Đã giao hàng
-        $allowedStatuses = ['Chờ xác nhận', 'Đã xác nhận', 'Chờ lấy hàng', 'Đang vận chuyển', 'Đang giao hàng', 'Đã giao hàng'];
+        $allowedStatuses = ['Chờ xác nhận', 'Đã xác nhận', 'Chờ lấy hàng', 'Đang vận chuyển', 'Đang giao hàng', 'Đã giao hàng','Hoàn thành'];
         $validTransitions = [
             'Chờ xác nhận' => ['Đã xác nhận'],
             'Đã xác nhận' => ['Chờ lấy hàng'],
