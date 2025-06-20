@@ -1,15 +1,16 @@
 import React, { useEffect, useRef } from "react";
 import "../assets/admin/OrderStatusSteps.css";
+import { FiCheckCircle, FiPackage, FiTruck, FiSend, FiAward, FiClock } from "react-icons/fi";
 
 const OrderStatusSteps = ({ status }) => {
   const statusOrder = [
-    { key: "Chờ xác nhận", label: "Chờ xác nhận" },
-    { key: "Đã xác nhận", label: "Đã xác nhận" },
-    { key: "Chờ lấy hàng", label: "Chờ lấy hàng" },
-    { key: "Đang vận chuyển", label: "Đang vận chuyển" },
-    { key: "Đang giao hàng", label: "Đang giao hàng" },
-    { key: "Đã Giao hàng", label: "Đã Giao hàng" },
-    { key: "Hoàn thành", label: "Hoàn thành" },
+    { key: "Chờ xác nhận", label: "Chờ xác nhận", icon: <FiClock /> },
+    { key: "Đã xác nhận", label: "Đã xác nhận", icon: <FiCheckCircle /> },
+    { key: "Chờ lấy hàng", label: "Chờ lấy hàng", icon: <FiPackage /> },
+    { key: "Đang vận chuyển", label: "Đang vận chuyển", icon: <FiTruck /> },
+    { key: "Đang giao hàng", label: "Đang giao hàng", icon: <FiSend /> },
+    { key: "Đã giao hàng", label: "Đã giao hàng", icon: <FiAward /> },
+    { key: "Hoàn thành", label: "Hoàn thành", icon: <FiAward /> },
   ];
 
   const currentIndex = statusOrder.findIndex(
@@ -36,7 +37,7 @@ const OrderStatusSteps = ({ status }) => {
             }`}
           >
             <div className="adminorder-circle">
-              {index <= currentIndex ? <span>&#10003;</span> : <span />}
+              {step.icon}
             </div>
             <p className="adminorder-label">{step.label}</p>
           </li>

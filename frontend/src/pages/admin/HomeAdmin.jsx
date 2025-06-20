@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchNotifications, addNotification } from "../../slices/NotificationSlice";
-import { io } from "socket.io-client";
 
 const sidebarCollapsedStyles = {
   submenu: {
@@ -39,7 +38,7 @@ const Homeadmin =()=>{
   const sidebarOpenRef = useRef(null);
   const dispatch = useDispatch();
   const { notifications } = useSelector(state => state.adminNotification);
-  const socketRef = useRef(null);
+  const prevUnreadCount = useRef(0);
 
   // Số lượng thông báo chưa đọc
   const unreadCount = notifications.filter(n => n.is_read === 0).length;
@@ -110,20 +109,26 @@ const Homeadmin =()=>{
 
   useEffect(() => {
     dispatch(fetchNotifications());
-    socketRef.current = io("https://dhmobile-website-production-1e30.up.railway.app", {
-      transports: ["polling"],
-      auth: {
-        token: localStorage.getItem("adminToken"),
-      },
-    });
-    socketRef.current.on("admin-notification", (data) => {
-      dispatch(addNotification(data));
-    });
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-      }
-    };
+    prevUnreadCount.current = notifications.filter(n => n.is_read === 0).length;
+    const interval = setInterval(() => {
+      dispatch(fetchNotifications()).then((action) => {
+        if (action.payload && Array.isArray(action.payload)) {
+          const newUnread = action.payload.filter(n => n.is_read === 0).length;
+          // Cập nhật badge và hiệu ứng chuông
+          if (newUnread > 0) {
+            setShowNotificationDot(true);
+          } else {
+            setShowNotificationDot(false);
+          }
+          if (newUnread > prevUnreadCount.current) {
+            toast.info("Bạn có đơn hàng mới!", { position: "top-right", autoClose: 4000 });
+          }
+          prevUnreadCount.current = newUnread;
+        }
+      });
+    }, 2000);
+    return () => clearInterval(interval);
+  // eslint-disable-next-line
   }, [dispatch]);
 
   const scrollToTop = () => {
