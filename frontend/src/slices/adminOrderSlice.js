@@ -26,7 +26,7 @@ export const updateOrderStatus = createAsyncThunk(
   async ({ orderId, status }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const res = await axiosConfig.put(
+      const response = await axiosConfig.put(
         `/admin/orders/${orderId}/status`,
         { status },
         {
@@ -35,7 +35,13 @@ export const updateOrderStatus = createAsyncThunk(
           },
         }
       );
-      return res.data.data;
+      
+      // API trả về { order: { ... } }
+      if (response.data && response.data.order) {
+        return response.data.order;
+      } else {
+        return rejectWithValue("Không nhận được dữ liệu đơn hàng từ server");
+      }
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.message || "Lỗi khi cập nhật trạng thái đơn hàng"
@@ -104,16 +110,23 @@ const adminOrderSlice = createSlice({
       .addCase(updateOrderStatus.fulfilled, (state, action) => {
         state.loading = false;
         const updatedOrder = action.payload;
-        if (!updatedOrder || !updatedOrder.order_id) return;
+        
+        // Cập nhật trong danh sách orders
+        state.orders = state.orders.map(order => 
+          order?.order_id === updatedOrder.order_id 
+            ? { ...order, ...updatedOrder }  // Cập nhật toàn bộ thông tin đơn hàng
+            : order
+        );
 
-        const index = state.orders.findIndex(o => o?.order_id === updatedOrder.order_id);
-        if (index !== -1) {
-          state.orders[index] = updatedOrder;
+        // Cập nhật trong order detail nếu đang xem chi tiết
+        if (state.order && state.order.order_id === updatedOrder.order_id) {
+          state.order = { ...state.order, ...updatedOrder };
         }
       })
       .addCase(updateOrderStatus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Lỗi khi cập nhật trạng thái đơn hàng";
+        console.error('Lỗi khi cập nhật trạng thái:', action.payload);
       })
 
       // Lấy chi tiết đơn hàng

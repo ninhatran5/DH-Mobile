@@ -81,9 +81,13 @@ const OrdersList = () => {
       cancelButtonColor: "#d33",
     }).then((result) => {
       if (result.isConfirmed) {
-        dispatch(updateOrderStatus({ orderId, status: newStatus }));
-        setSelectedOrder(null);
-        Swal.fire("Thành công", "Trạng thái đơn hàng đã được cập nhật.", "success");
+        dispatch(updateOrderStatus({ orderId, status: newStatus }))
+          .then(() => {
+            setSelectedOrder(null);
+            Swal.fire("Thành công", "Trạng thái đơn hàng đã được cập nhật.", "success");
+            // Fetch lại danh sách đơn hàng để cập nhật UI
+            dispatch(fetchAdminOrders(currentPage));
+          });
       }
     });
   };
@@ -190,7 +194,7 @@ const OrdersList = () => {
                     <tr key={order.order_id}>
                       <td>
                         <div className="admin_order-avatar">
-                          <img src={order.user?.image_url || DefaultImage } alt={order.customer} />
+                          <img src={order.image_url || DefaultImage} alt={order.customer} />
                         </div>
                       </td>
                       <td>
@@ -202,7 +206,7 @@ const OrdersList = () => {
                       </td>
                       <td className="admin_order-hide-sm">
                         <div className="admin_order-amount">{formatCurrency(order.total_amount)}</div>
-                        <div className="admin_order-items">{order.items_count || 0} sản phẩm</div>
+                        <div className="admin_order-items">{order.totalProduct || 0} sản phẩm</div>
                       </td>
                       <td>
                         <span className="admin_order-payment">{order.payment_method}</span>
@@ -213,11 +217,18 @@ const OrdersList = () => {
                         </span>
                       </td>
                       <td>
-                        <div className="adminorder-action-group">
+                        <div className="adminorder-action-group" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
                           <button
                             className="adminorder-icon-btn"
                             onClick={() => setSelectedOrder(order)}
                             title="Sửa trạng thái"
+                            style={{ 
+                              background: 'none',
+                              border: 'none',
+                              cursor: 'pointer',
+                              color: '#007aff',
+                              padding: '5px'
+                            }}
                           >
                             <FiEdit size={24} />
                           </button>
@@ -225,6 +236,13 @@ const OrdersList = () => {
                             className="adminorder-icon-btn"
                             onClick={() => handleViewOrder(order)}
                             title="Xem chi tiết"
+                            style={{ 
+                              background: 'none',
+                              border: 'none',
+                              cursor: 'pointer',
+                              color: '#007aff',
+                              padding: '5px'
+                            }}
                           >
                             <FiEye size={24} />
                           </button>
@@ -275,32 +293,13 @@ const OrdersList = () => {
         <div className="adminorder-modal-backdrop">
           <div className="adminorder-modal">
             <h2>Chi tiết đơn hàng</h2>
-            {/* Thông tin khách hàng */}
-            {selectedOrder.user && (
-              <div className="adminorder-customer-box">
-                <div className="adminorder-customer-avatar">
-                  <img src={selectedOrder.user.image_url} alt={selectedOrder.user.full_name} />
-                </div>
-                <div className="adminorder-customer-info">
-                  <div><strong>Họ tên:</strong> {selectedOrder.user.full_name}</div>
-                  <div><strong>Username:</strong> {selectedOrder.user.username}</div>
-                  <div><strong>Email:</strong> {selectedOrder.user.email}</div>
-                  <div><strong>SĐT:</strong> {selectedOrder.user.phone}</div>
-                  <div><strong>Địa chỉ:</strong> {selectedOrder.user.address}
-                    {selectedOrder.user.ward ? `, ${selectedOrder.user.ward}` : ''}
-                    {selectedOrder.user.district ? `, ${selectedOrder.user.district}` : ''}
-                    {selectedOrder.user.city ? `, ${selectedOrder.user.city}` : ''}
-                  </div>
-                  <div><strong>Vai trò:</strong> {selectedOrder.user.role}</div>
-                </div>
-              </div>
-            )}
+            
             <table className="adminorder-details-table">
               <tbody>
                 <tr><td><strong>Mã đơn:</strong></td><td>{selectedOrder.order_code}</td></tr>
-                <tr><td><strong>Khách hàng :</strong></td><td>{selectedOrder.customer}</td></tr>
+                <tr><td><strong>Khách hàng:</strong></td><td>{selectedOrder.customer}</td></tr>
                 <tr><td><strong>Phương thức:</strong></td><td>{selectedOrder.payment_method}</td></tr>
-                <tr><td><strong>Tổng tiền:</strong></td><td>{Number(selectedOrder.total_amount).toLocaleString("vi-VN")}₫</td></tr>
+                <tr><td><strong>Tổng tiền:</strong></td><td>{formatCurrency(selectedOrder.total_amount)}</td></tr>
                 <tr>
                   <td><strong>Trạng thái:</strong></td>
                   <td>
@@ -320,9 +319,12 @@ const OrdersList = () => {
                     </select>
                   </td>
                 </tr>
-                <tr><td><strong>Thanh toán:</strong></td><td>{selectedOrder.payment_status}</td></tr>
-                <tr><td><strong>Voucher:</strong></td><td>{selectedOrder.voucher_id || "Không có"}</td></tr>
+                <tr><td><strong>Trạng thái thanh toán:</strong></td><td>{selectedOrder.payment_status}</td></tr>
+                <tr><td><strong>Số lượng sản phẩm:</strong></td><td>{selectedOrder.totalProduct} sản phẩm</td></tr>
                 <tr><td><strong>Ngày tạo:</strong></td><td>{selectedOrder.created_at}</td></tr>
+                {selectedOrder.cancel_reason && (
+                  <tr><td><strong>Lý do hủy:</strong></td><td>{selectedOrder.cancel_reason}</td></tr>
+                )}
               </tbody>
             </table>
 
