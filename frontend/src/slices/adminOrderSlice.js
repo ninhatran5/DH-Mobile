@@ -111,10 +111,9 @@ const adminOrderSlice = createSlice({
         state.loading = false;
         const updatedOrder = action.payload;
         
-        // Cập nhật trong danh sách orders
         state.orders = state.orders.map(order => 
           order?.order_id === updatedOrder.order_id 
-            ? { ...order, ...updatedOrder }  // Cập nhật toàn bộ thông tin đơn hàng
+            ? { ...order, ...updatedOrder }  
             : order
         );
 
@@ -151,7 +150,7 @@ const adminOrderSlice = createSlice({
           state.orders.push(orderDetails); // Nếu chưa có thì thêm vào
         }
 
-        state.order = orderDetails; // Gán vào state.order cho trang chi tiết
+        state.order = orderDetails; 
       })
       .addCase(fetchorderdetails.rejected, (state, action) => {
         state.loading = false;
