@@ -796,60 +796,99 @@ body {
 }
 
 .admin_dh-notification-badge {
-  background-color: var(--admin_dh-danger);
-  color: white;
-  font-size: 0.7rem;
-  padding: 0.1rem 0.4rem;
-  top: 0;
-  right: 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  animation: admin_dh-notification-pulse 2s infinite;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.admin_dh-notification-dropdown {
-  width: 320px;
-  padding: 0;
-  border-radius: var(--admin_dh-radius);
-  border: 1px solid var(--admin_dh-border);
-  background-color: var(--admin_dh-card-bg);
-  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
-}
-
-.dark-mode .admin_dh-notification-dropdown {
-  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
-}
-
-.admin_dh-notification-dropdown .dropdown-header {
-  padding: 0.75rem 1rem;
+  top: -4px !important;
+  right: -4px !important;
+  background: #ff3b30;
+  color: #fff;
+  font-size: 11px;
   font-weight: 600;
-  border-bottom: 1px solid var(--admin_dh-border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.admin_dh-notification-item {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--admin_dh-border);
-  transition: var(--admin_dh-transition);
-}
-
-.admin_dh-notification-item:hover {
-  background-color: rgba(0, 0, 0, 0.02);
-}
-
-.dark-mode .admin_dh-notification-item:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
-.admin_dh-notification-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+  padding: 0 5px;
+  border-radius: 12px;
+  min-width: 18px;
+  min-height: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 8px rgba(255,59,48,0.15);
+  z-index: 2;
+  position: absolute;
+  border: 2px solid #fff;
+  animation: admin_dh-badge-pop 0.3s;
+}
+
+@keyframes admin_dh-badge-pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.admin_dh-notification-dropdown {
+  min-width: 340px;
+  max-width: 480px;
+  font-size: 15px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  padding: 0.5rem 0;
+  overflow: auto;
+  z-index: 1002;
+  max-height: 500px;
+}
+
+.admin_dh-notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 14px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  background: none;
+  transition: background 0.18s;
+  cursor: pointer;
+}
+.admin_dh-notification-item:last-child {
+  border-bottom: none;
+}
+.admin_dh-notification-item:hover {
+  background: #f5faff;
+}
+
+.admin_dh-notification-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #e3f2fd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #2196f3;
+}
+
+.admin_dh-notification-item p.mb-0 {
+  font-weight: 500;
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+.admin_dh-notification-item small.text-muted {
+  font-size: 13px;
+  color: #888 !important;
+}
+
+@media (max-width: 600px) {
+  .admin_dh-notification-dropdown {
+    min-width: 220px;
+    max-width: 98vw;
+    font-size: 14px;
+  }
+  .admin_dh-notification-item {
+    padding: 10px 8px;
+    gap: 8px;
+  }
+  .admin_dh-notification-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+  }
 }
 
 .admin_dh-bg-success-soft {
@@ -1619,9 +1658,22 @@ html {
 }
 
 .admin_dh-bell-ring {
-  animation: admin_dh-bell-ring 0.8s ease-in-out;
-  transform-origin: top center;
-  color: var(--admin_dh-primary) !important;
+  animation: admin_dh-bell-shake 1s cubic-bezier(.36,.07,.19,.97) both infinite;
+  transform-origin: 50% 0;
+}
+
+@keyframes admin_dh-bell-shake {
+  0% { transform: rotate(0); }
+  10% { transform: rotate(-18deg); }
+  20% { transform: rotate(16deg); }
+  30% { transform: rotate(-12deg); }
+  40% { transform: rotate(10deg); }
+  50% { transform: rotate(-6deg); }
+  60% { transform: rotate(4deg); }
+  70% { transform: rotate(-2deg); }
+  80% { transform: rotate(1deg); }
+  90% { transform: rotate(-1deg); }
+  100% { transform: rotate(0); }
 }
 
 /* Cải thiện dropdown header thông báo */
