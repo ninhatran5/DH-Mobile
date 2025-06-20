@@ -18,6 +18,23 @@ export const fetchNotifications = createAsyncThunk(
   }
 );
 
+export const markNotificationsRead = createAsyncThunk(
+  'notifications/markNotificationsRead',
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      const response = await axiosConfig.post('/admin/notifications/read', {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Lỗi khi cập nhật trạng thái đọc thông báo');
+    }
+  }
+);
+
 const notificationSlice = createSlice({
   name: 'notifications',
   initialState: {
@@ -44,6 +61,9 @@ const notificationSlice = createSlice({
       .addCase(fetchNotifications.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(markNotificationsRead.fulfilled, (state) => {
+        state.notifications = state.notifications.map(n => ({ ...n, is_read: 1 }));
       });
   },
 });

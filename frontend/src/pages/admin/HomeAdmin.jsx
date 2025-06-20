@@ -7,8 +7,8 @@ import logo from "../../assets/images/logo2.png";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchNotifications, addNotification } from "../../slices/NotificationSlice";
-
+import { fetchNotifications, markNotificationsRead } from "../../slices/NotificationSlice";
+import Thongbao from "../../assets/sound/thongbaomuahang.mp3"
 const sidebarCollapsedStyles = {
   submenu: {
     position: 'absolute',
@@ -24,7 +24,7 @@ const sidebarCollapsedStyles = {
   }
 };
 
-const Homeadmin =()=>{
+const Homeadmin = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSidebarActive, setIsSidebarActive] = useState(false);
@@ -39,6 +39,7 @@ const Homeadmin =()=>{
   const dispatch = useDispatch();
   const { notifications } = useSelector(state => state.adminNotification);
   const prevUnreadCount = useRef(0);
+  const audioRef = useRef(null);
 
   // Số lượng thông báo chưa đọc
   const unreadCount = notifications.filter(n => n.is_read === 0).length;
@@ -102,7 +103,7 @@ const Homeadmin =()=>{
     const handleChange = (e) => {
       setIsDarkMode(e.matches);
     };
-    
+
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
@@ -122,13 +123,17 @@ const Homeadmin =()=>{
           }
           if (newUnread > prevUnreadCount.current) {
             toast.info("Bạn có đơn hàng mới!", { position: "top-right", autoClose: 4000 });
+            if (audioRef.current) {
+              audioRef.current.currentTime = 0;
+              audioRef.current.play();
+            }
           }
           prevUnreadCount.current = newUnread;
         }
       });
     }, 2000);
     return () => clearInterval(interval);
-  // eslint-disable-next-line
+    // eslint-disable-next-line
   }, [dispatch]);
 
   const scrollToTop = () => {
@@ -141,12 +146,12 @@ const Homeadmin =()=>{
   const toggleSidebar = () => {
     const newState = !isSidebarCollapsed;
     setIsSidebarCollapsed(newState);
-    
+
     // Đồng bộ trạng thái với mobile sidebar
     if (window.innerWidth > 768) {
       setIsSidebarActive(!newState);
     }
-    
+
     // Thêm hiệu ứng khi click vào nút
     if (sidebarCollapseRef.current) {
       sidebarCollapseRef.current.classList.add('admin_dh-active');
@@ -161,12 +166,12 @@ const Homeadmin =()=>{
   const toggleMobileSidebar = () => {
     const newState = !isSidebarActive;
     setIsSidebarActive(newState);
-    
+
     // Đồng bộ trạng thái với desktop sidebar
     if (window.innerWidth <= 768) {
       setIsSidebarCollapsed(!newState);
     }
-    
+
     // Thêm hiệu ứng khi click vào nút
     if (sidebarOpenRef.current) {
       sidebarOpenRef.current.classList.add('admin_dh-active');
@@ -224,7 +229,13 @@ const Homeadmin =()=>{
       }
     }
   };
-  return(
+
+  const handleMarkAsRead = () => {
+    dispatch(markNotificationsRead());
+    setShowNotificationDot(false);
+  };
+
+  return (
     <>
       <div className={`admin_dh-wrapper ${isDarkMode ? 'dark-mode' : ''}`}>
         <nav id="admin_dh-sidebar" className={`${isSidebarCollapsed ? 'admin_dh-sidebar-collapsed' : ''} ${isSidebarActive ? 'admin_dh-sidebar-active' : ''}`}>
@@ -236,14 +247,14 @@ const Homeadmin =()=>{
                 </div>
               </Link>
             </div>
-            
-            <button 
-              type="button" 
-              className="admin_dh-sidebar-toggle d-md-none" 
+
+            <button
+              type="button"
+              className="admin_dh-sidebar-toggle d-md-none"
               onClick={toggleMobileSidebar}
               aria-label="Close menu"
-              style={{ 
-                backgroundColor: 'rgba(255, 69, 58, 0.15)', 
+              style={{
+                backgroundColor: 'rgba(255, 69, 58, 0.15)',
                 color: 'var(--admin_dh-danger)',
                 boxShadow: '0 2px 10px rgba(255, 69, 58, 0.2)',
                 width: '40px',
@@ -282,13 +293,13 @@ const Homeadmin =()=>{
                       toggleDropdown('categories');
                     }}
                     data-title="Categories"
-                    style={isSidebarCollapsed ? {position: 'relative'} : {}}
+                    style={isSidebarCollapsed ? { position: 'relative' } : {}}
                   >
-                    <i className="bi bi-ui-checks-grid" style={{ color: '#28cd41' }} /> 
+                    <i className="bi bi-ui-checks-grid" style={{ color: '#28cd41' }} />
                     <span>Danh mục</span>
                     <i className={`bi bi-caret-${isDropdownActive('categories') ? 'down' : 'right'}-fill`} style={{ marginLeft: '8px' }}></i>
                   </a>
-                  <div 
+                  <div
                     className={`admin_dh-submenu ${isDropdownActive('categories') ? 'show' : ''}`}
                     style={isSidebarCollapsed && isDropdownActive('categories') ? sidebarCollapsedStyles.submenu : {}}
                   >
@@ -307,7 +318,7 @@ const Homeadmin =()=>{
                     }}
                     data-title="Products"
                   >
-                    <i className="bi bi-box-seam" style={{ color: '#5ac8fa' }} /> 
+                    <i className="bi bi-box-seam" style={{ color: '#5ac8fa' }} />
                     <span>Sản phẩm</span>
                     <i className={`bi bi-caret-${isDropdownActive('products') ? 'down' : 'right'}-fill`} style={{ marginLeft: '8px' }}></i>
                   </a>
@@ -332,13 +343,13 @@ const Homeadmin =()=>{
                       toggleDropdown('accounts');
                     }}
                     data-title="Tài khoản"
-                    style={isSidebarCollapsed ? {position: 'relative'} : {}}
+                    style={isSidebarCollapsed ? { position: 'relative' } : {}}
                   >
                     <i className="bi bi-person-lines-fill" style={{ color: '#bf5af2' }} />
                     <span>Tài khoản</span>
                     <i className={`bi bi-caret-${isDropdownActive('accounts') ? 'down' : 'right'}-fill`} style={{ marginLeft: '8px' }}></i>
                   </a>
-                  <div 
+                  <div
                     className={`admin_dh-submenu ${isDropdownActive('accounts') ? 'show' : ''}`}
                     style={isSidebarCollapsed && isDropdownActive('accounts') ? sidebarCollapsedStyles.submenu : {}}
                   >
@@ -352,8 +363,8 @@ const Homeadmin =()=>{
             <div className="admin_dh-nav-section">
               <div className="admin_dh-nav-section-title">Quản lí bán hàng</div>
               <div className="admin_dh-components">
-               
-                
+
+
                 <div className={location.pathname.includes('/admin/orders') ? 'active' : ''}>
                   <a
                     href="#"
@@ -363,13 +374,13 @@ const Homeadmin =()=>{
                       toggleDropdown('orders');
                     }}
                     data-title="Đơn hàng"
-                    style={isSidebarCollapsed ? {position: 'relative'} : {}}
+                    style={isSidebarCollapsed ? { position: 'relative' } : {}}
                   >
                     <i className="bi bi-bag-check" style={{ color: '#28cd41' }} />
                     <span>Đơn hàng</span>
                     <i className={`bi bi-caret-${isDropdownActive('orders') ? 'down' : 'right'}-fill`} style={{ marginLeft: '8px' }}></i>
                   </a>
-                  <div 
+                  <div
                     className={`admin_dh-submenu ${isDropdownActive('orders') ? 'show' : ''}`}
                     style={isSidebarCollapsed && isDropdownActive('orders') ? sidebarCollapsedStyles.submenu : {}}
                   >
@@ -380,30 +391,30 @@ const Homeadmin =()=>{
                 </div>
 
                 <div className={location.pathname.includes('/admin/vouchers') ? 'active' : ''}>
-  <a
-    href="#"
-    className={`admin_dh-dropdown-toggle d-flex align-items-center justify-content-between ${isDropdownActive('vouchers') ? 'show' : ''}`}
-    onClick={(e) => {
-      e.preventDefault();
-      toggleDropdown('vouchers');
-    }}
-    data-title="Voucher"
-    style={isSidebarCollapsed ? { position: 'relative' } : {}}
-  >
-    <div className="d-flex align-items-center">
-      <i className="bi bi-ticket-perforated" style={{ color: '#ff9f0a' }} />
-      <span className="ms-2">Mã giảm giá</span>
-    </div>
-    <i className={`bi bi-caret-${isDropdownActive('vouchers') ? 'down' : 'right'}-fill`} />
-  </a>
-  <div
-    className={`admin_dh-submenu ${isDropdownActive('vouchers') ? 'show' : ''}`}
-    style={isSidebarCollapsed && isDropdownActive('vouchers') ? sidebarCollapsedStyles.submenu : {}}
-  >
-    <div><Link to="/admin/vouchers">Danh sách mã giảm giá</Link></div>
-    <div><Link to="/admin/addvoucher">Thêm mã giảm giá</Link></div>
-  </div>
-</div>
+                  <a
+                    href="#"
+                    className={`admin_dh-dropdown-toggle d-flex align-items-center justify-content-between ${isDropdownActive('vouchers') ? 'show' : ''}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toggleDropdown('vouchers');
+                    }}
+                    data-title="Voucher"
+                    style={isSidebarCollapsed ? { position: 'relative' } : {}}
+                  >
+                    <div className="d-flex align-items-center">
+                      <i className="bi bi-ticket-perforated" style={{ color: '#ff9f0a' }} />
+                      <span className="ms-2">Mã giảm giá</span>
+                    </div>
+                    <i className={`bi bi-caret-${isDropdownActive('vouchers') ? 'down' : 'right'}-fill`} />
+                  </a>
+                  <div
+                    className={`admin_dh-submenu ${isDropdownActive('vouchers') ? 'show' : ''}`}
+                    style={isSidebarCollapsed && isDropdownActive('vouchers') ? sidebarCollapsedStyles.submenu : {}}
+                  >
+                    <div><Link to="/admin/vouchers">Danh sách mã giảm giá</Link></div>
+                    <div><Link to="/admin/addvoucher">Thêm mã giảm giá</Link></div>
+                  </div>
+                </div>
 
               </div>
             </div>
@@ -431,25 +442,25 @@ const Homeadmin =()=>{
                 </div>
 
                 <div className={location.pathname.includes('/admin/chatbot') ? 'active' : ''}>
-  <a
-    href="#"
-    className={`admin_dh-dropdown-toggle d-flex align-items-center justify-content-between ${isDropdownActive('chatbot') ? 'show' : ''}`}
-    onClick={(e) => {
-      e.preventDefault();
-      toggleDropdown('chatbot');
-    }}
-    data-title="Chatbot"
-  >
-    <div className="d-flex align-items-center">
-      <i className="bi bi-robot" style={{ color: '#0071e3' }} />
-      <span className="ms-2">Hỗ trợ </span>
-    </div>
-    <i className={`bi bi-caret-${isDropdownActive('chatbot') ? 'down' : 'right'}-fill`} />
-  </a>
-  <div className={`admin_dh-submenu ${isDropdownActive('chatbot') ? 'show' : ''}`}>
-    <div><Link to="/admin/chatbot">Tin nhắn</Link></div>
-  </div>
-</div>
+                  <a
+                    href="#"
+                    className={`admin_dh-dropdown-toggle d-flex align-items-center justify-content-between ${isDropdownActive('chatbot') ? 'show' : ''}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toggleDropdown('chatbot');
+                    }}
+                    data-title="Chatbot"
+                  >
+                    <div className="d-flex align-items-center">
+                      <i className="bi bi-robot" style={{ color: '#0071e3' }} />
+                      <span className="ms-2">Hỗ trợ </span>
+                    </div>
+                    <i className={`bi bi-caret-${isDropdownActive('chatbot') ? 'down' : 'right'}-fill`} />
+                  </a>
+                  <div className={`admin_dh-submenu ${isDropdownActive('chatbot') ? 'show' : ''}`}>
+                    <div><Link to="/admin/chatbot">Tin nhắn</Link></div>
+                  </div>
+                </div>
 
                 <div className={location.pathname.includes('/admin/comments') ? 'active' : ''}>
                   <a
@@ -475,14 +486,14 @@ const Homeadmin =()=>{
           </div>
 
           <div style={{ height: '20px' }}></div>
-          
+
           {/* Extra space for mobile view */}
           <div className="d-md-none" style={{ height: '60px' }}></div>
-          
+
         </nav>
         {/* Page Content */}
-        <div 
-          id="admin_dh-content" 
+        <div
+          id="admin_dh-content"
           className={`${isSidebarCollapsed ? 'admin_dh-content-expanded' : ''} ${isSidebarActive ? 'admin_dh-content-dimmed admin_dh-content-active' : ''}`}
           onClick={handleContentClick}
         >
@@ -491,9 +502,9 @@ const Homeadmin =()=>{
             <div className="container-fluid">
               <div className="admin_dh-navbar-left" style={{ gap: 10, alignItems: 'center' }}>
                 {/* Nút menu cho desktop - giống với mobile */}
-                <button 
-                  type="button" 
-                  id="admin_dh-sidebarCollapse" 
+                <button
+                  type="button"
+                  id="admin_dh-sidebarCollapse"
                   className="btn admin_dh-btn d-none d-md-flex"
                   onClick={toggleSidebar}
                   ref={sidebarCollapseRef}
@@ -501,9 +512,9 @@ const Homeadmin =()=>{
                   style={{ backgroundColor: 'var(--admin_dh-primary)', color: 'white' }}
                 ><i className="bi bi-layout-sidebar" /></button>
                 {/* Nút menu cho mobile */}
-                <button 
-                  type="button" 
-                  id="admin_dh-sidebarOpen" 
+                <button
+                  type="button"
+                  id="admin_dh-sidebarOpen"
                   className="btn admin_dh-btn d-md-none"
                   onClick={toggleMobileSidebar}
                   ref={sidebarOpenRef}
@@ -511,10 +522,10 @@ const Homeadmin =()=>{
                 ><i className="bi bi-layout-sidebar" /></button>
                 <div className={`admin_dh-search-bar ${isSearchFocused ? 'focused' : ''}`}>
                   <i className="bi bi-search admin_dh-search-icon"></i>
-                  <input 
-                    type="text" 
-                    className="form-control" 
-                    placeholder="Search..." 
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Search..."
                     onFocus={() => setIsSearchFocused(true)}
                     onBlur={() => setIsSearchFocused(false)}
                   />
@@ -522,21 +533,21 @@ const Homeadmin =()=>{
               </div>
 
               <div className="admin_dh-navbar-right">
-                <button 
-                  className="btn admin_dh-btn admin_dh-theme-toggle" 
+                <button
+                  className="btn admin_dh-btn admin_dh-theme-toggle"
                   onClick={toggleDarkMode}
                   title={isDarkMode ? "Light mode" : "Dark mode"}
                 >
                   <i className={`bi ${isDarkMode ? 'bi-sun' : 'bi-moon'}`}></i>
                 </button>
-                
+
                 <div className="admin_dh-notifications-nav">
                   <div className="dropdown">
-                    <a 
-                      className="nav-link position-relative" 
-                      href="#" 
-                      role="button" 
-                      data-bs-toggle="dropdown" 
+                    <a
+                      className="nav-link position-relative"
+                      href="#"
+                      role="button"
+                      data-bs-toggle="dropdown"
                       aria-expanded="false"
                       onClick={handleNotificationClick}
                     >
@@ -549,13 +560,13 @@ const Homeadmin =()=>{
                     </a>
                     <div className="dropdown-menu dropdown-menu-end admin_dh-notification-dropdown">
                       <div className="dropdown-header d-flex justify-content-between align-items-center">
-                        <h6 className="mb-0">Notifications</h6>
+                        <h6 className="mb-0">Thông báo</h6>
                         {notifications.length > 0 && (
-                          <button 
-                            className="btn btn-sm btn-link text-decoration-none" 
-                            onClick={clearNotifications}
+                          <button
+                            className="btn btn-sm btn-link text-decoration-none"
+                            onClick={handleMarkAsRead}
                           >
-                            Mark as read
+                            Đánh dấu đã đọc
                           </button>
                         )}
                       </div>
@@ -591,15 +602,15 @@ const Homeadmin =()=>{
                     <li><a className="dropdown-item" href="#"><i className="bi bi-gear me-2"></i>Cài đặt</a></li>
                     <li><hr className="dropdown-divider" /></li>
                     <li>
- <button
-    className="dropdown-item"
-    onClick={handleLogout}
-    style={{ textAlign: "left", width: "100%" }}
-  >
-    <i className="bi bi-box-arrow-right me-2"></i>
-    Đăng xuất
-  </button>
-</li>
+                      <button
+                        className="dropdown-item"
+                        onClick={handleLogout}
+                        style={{ textAlign: "left", width: "100%" }}
+                      >
+                        <i className="bi bi-box-arrow-right me-2"></i>
+                        Đăng xuất
+                      </button>
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -607,22 +618,23 @@ const Homeadmin =()=>{
           </nav>
           {/* Main Content */}
           <div className="admin_dh-main-content">
-            <Outlet/>
+            <Outlet />
             <div className="admin_dh-footer-space"></div>
           </div>
         </div>
-        
+
         {/* Scroll to top button */}
         {showScrollTop && (
-          <button 
-            className="admin_dh-scroll-to-top" 
-            onClick={scrollToTop} 
+          <button
+            className="admin_dh-scroll-to-top"
+            onClick={scrollToTop}
             aria-label="Cuộn lên đầu trang"
           >
             <i className="bi bi-arrow-up"></i>
           </button>
         )}
       </div>
+      <audio ref={audioRef} src={Thongbao} preload="auto" style={{ display: 'none' }} />
     </>
   )
 }
