@@ -23,15 +23,32 @@ class NotificationController extends Controller
     }
 
     // Đánh dấu đã đọc
-    public function markAsRead(Request $request)
+    public function markAsRead($notification_id)
     {
-        $id = $request->input('id', []); // mảng notification_id
-
-        OrderNotification::whereIn('notification_id', $id)->update(['is_read' => true]);
+        $notification = OrderNotification::find($notification_id);
+        if (!$notification) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Không tìm thấy thông báo',
+            ], 404);
+        }
+        $notification->is_read = 1;
+        $notification->save();
 
         return response()->json([
             'status' => true,
-            'message' => 'Đã đánh dấu đã đọc'
+            'message' => 'Đã đánh dấu đã đọc',
+            'notification' =>  $notification
+        ]);
+    }
+
+    public function markAsReadAll(Request $request)
+    {
+        $affected = OrderNotification::where('is_read', 0)->update(['is_read' => 1]);
+        return response()->json([
+            'status' => true,
+            'message' => 'Đã đánh dấu tất cả thông báo là đã đọc',
+            'affected' => $affected
         ]);
     }
 }
