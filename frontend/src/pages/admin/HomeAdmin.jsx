@@ -7,7 +7,7 @@ import logo from "../../assets/images/logo2.png";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchNotifications, markNotificationsRead } from "../../slices/NotificationSlice";
+import { fetchNotifications, markNotificationsRead, markNotificationRead } from "../../slices/NotificationSlice";
 import Thongbao from "../../assets/sound/thongbaomuahang.mp3"
 const sidebarCollapsedStyles = {
   submenu: {
@@ -574,7 +574,7 @@ const Homeadmin = () => {
                         <div className="dropdown-item text-muted">Không có thông báo mới</div>
                       ) : (
                         notifications.map((noti, idx) => (
-                          <div key={noti.id || idx} className="dropdown-item admin_dh-notification-item">
+                          <div key={noti.id || idx} className="dropdown-item admin_dh-notification-item" onClick={() => dispatch(markNotificationRead(noti.id))} style={{ cursor: 'pointer', background: noti.is_read ? '#f8f9fa' : '#fff' }}>
                             <div className="d-flex">
                               <div className="admin_dh-notification-icon admin_dh-bg-primary-soft">
                                 <i className="bi bi-bell"></i>
