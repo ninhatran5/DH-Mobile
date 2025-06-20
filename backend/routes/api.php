@@ -312,5 +312,5 @@ Route::middleware('auth:sanctum')->prefix('support-chat')->group(function () {
     Route::get('/unread-count', [SupportChatController::class, 'getUnreadCount']);
 
     // Đánh dấu 1 tin nhắn là đã đọc
-    Route::patch('/mark-As-Read/{chat_id}', [SupportChatController::class, 'markAsRead']);
+    Route::patch('/mark-as-read/{chat_id}', [SupportChatController::class, 'markAsRead']);
 }); 
