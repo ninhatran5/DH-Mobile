@@ -344,7 +344,17 @@
     "status": "Trạng thái",
     "detail": "Chi tiết",
     "viewDetail": "Xem chi tiết",
-    "payment_status": "Trạng thái thanh toán"
+    "payment_status": "Trạng thái thanh toán",
+    "cancel": "Hủy đơn hàng",
+    "return": "Trả hàng",
+    "cancelOrder": "Huỷ đơn hàng",
+    "enterCancelReason": "Vui lòng nhập lý do huỷ:",
+    "reasonPlaceholder": "Nhập lý do...",
+    "confirm": "Xác nhận",
+    "close": "Đóng",
+    "emptyReasonError": "Bạn phải nhập lý do!",
+    "cancelSuccess": "Đã huỷ đơn hàng thành công!",
+    "cancelFailed": "Huỷ đơn hàng thất bại!"
   },
   "breadcrumbOrder": {
     "breadcrumbHeader": "Lịch Sử Mua Hàng"
@@ -469,5 +479,15 @@
     "updateQuantityError": "Sản phẩm đã vượt quá số lượng của kho hàng, vui lòng cập nhật lại số lượng",
     "missingAddress": "Vui lòng cập nhật đầy đủ địa chỉ trước khi thanh toán!",
     "pending_update": "Chưa cập nhật"
+  },
+  "order_status": {
+    "pending": "Chờ xác nhận",
+    "confirmed": "Đã xác nhận",
+    "waiting_pickup": "Chờ lấy hàng",
+    "shipping": "Đang vận chuyển",
+    "delivering": "Đang giao hàng",
+    "shipped": "Đã giao hàng",
+    "delivered": "Hoàn thành",
+    "canceled": "Đã huỷ"
   }
 }

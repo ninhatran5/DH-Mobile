@@ -3,13 +3,44 @@ import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { fetchOrder } from "../slices/orderSlice";
+import { cancelOrder, fetchOrder } from "../slices/orderSlice";
 import Loading from "./Loading";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 const OrderTable = () => {
+  const MySwal = withReactContent(Swal);
   const dispatch = useDispatch();
   const { orders, loading } = useSelector((state) => state.order);
   const { t } = useTranslation();
+
+  const handleCancelOrder = async (orderId) => {
+    const result = await MySwal.fire({
+      title: t("orderHistory.cancelOrder"),
+      text: t("orderHistory.enterCancelReason"),
+      input: "text",
+      inputPlaceholder: t("orderHistory.reasonPlaceholder"),
+      showCancelButton: true,
+      reverseButtons: true,
+      confirmButtonText: t("orderHistory.confirm"),
+      cancelButtonText: t("orderHistory.close"),
+      inputValidator: (value) => {
+        if (!value) return t("orderHistory.emptyReasonError");
+      },
+    });
+
+    if (result.isConfirmed) {
+      const reason = result.value;
+      try {
+        await dispatch(cancelOrder({ id: orderId, reason })).unwrap();
+        toast.success(t("orderHistory.cancelSuccess"));
+        dispatch(fetchOrder());
+      } catch (error) {
+        toast.error(error || t("orderHistory.cancelFailed"));
+      }
+    }
+  };
 
   useEffect(() => {
     dispatch(fetchOrder());
@@ -50,7 +81,11 @@ const OrderTable = () => {
               </tr>
             </thead>
             {orders?.orders?.map((order) => (
-              <OrderHistory key={order.order_id} order={order} />
+              <OrderHistory
+                key={order.order_id}
+                handleCancelOrder={handleCancelOrder}
+                order={order}
+              />
             ))}
           </table>
         </div>

@@ -10,41 +10,67 @@ import Loading from "./Loading";
 import numberFormat from "../../utils/numberFormat";
 import OrderProductRow from "./OrderProductRow";
 
+const removeVietnameseTones = (str) => {
+  return String(str)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase()
+    .trim();
+};
+
 const OrderDetail = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { id } = useParams();
 
   const { orders, loading } = useSelector((state) => state.order);
-  console.log("🚀 ~ OrderDetail ~ orders:", orders);
 
   useEffect(() => {
-    if (id) {
+    if (!id) return;
+    dispatch(fetchOrderDetail(id));
+
+    const interval = setInterval(() => {
       dispatch(fetchOrderDetail(id));
-    }
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, [id, dispatch]);
 
-  const statusOrder = [
-    "pending",
-    "confirmed",
-    "shipping",
-    "shipped",
-    "delivered",
-  ];
-
+  // Map status không dấu sang key chuẩn
   const statusMap = {
-    "chờ xác nhận": "pending",
-    "đã xác nhận": "confirmed",
-    "đang giao": "shipping",
-    "đã giao hàng": "shipped",
-    "hoàn thành": "delivered",
+    "cho xac nhan": "pending",
+    "da xac nhan": "confirmed",
+    "cho lay hang": "waiting_pickup",
+    "dang van chuyen": "shipping",
+    "dang giao hang": "delivering",
+    "da giao hang": "shipped",
+    "hoan thanh": "delivered",
+    "da huy": "canceled",
   };
 
-  const currentStatusKey = statusMap[orders.status] || "pending";
+  const normalizedStatus = removeVietnameseTones(orders?.status || "");
+  const currentStatusKey = statusMap[normalizedStatus] || "pending";
+
+  const isCanceled = currentStatusKey === "canceled";
+
+  const statusOrder = isCanceled
+    ? ["pending", "confirmed", "canceled"]
+    : [
+        "pending",
+        "confirmed",
+        "waiting_pickup",
+        "shipping",
+        "delivering",
+        "shipped",
+        "delivered",
+      ];
+
   const currentStatusIndex = statusOrder.indexOf(currentStatusKey);
 
   const statusSteps = statusOrder.map((key, idx) => ({
-    label: t(`orderDetail.order_status.${key}`),
+    label: t(`order_status.${key}`),
     active: idx <= currentStatusIndex,
   }));
 
@@ -91,10 +117,7 @@ const OrderDetail = () => {
           <div className="d-flex">
             <h5>
               {t("orderDetail.order")}:
-              <span
-                className="text-primary font-weight-bold"
-                style={{ marginLeft: 8 }}
-              >
+              <span className="text-primary font-weight-bold ms-2">
                 #{orders?.order_code || t("toast.pending_update")}
               </span>
             </h5>
@@ -113,9 +136,11 @@ const OrderDetail = () => {
               {statusSteps.map((step, index) => (
                 <li
                   key={index}
-                  className={`step0 ${step.active ? "active" : ""} ${
-                    index === currentStatusIndex ? "current" : ""
-                  }`}
+                  className={`step0 
+    ${step.active ? "active" : ""} 
+    ${index === currentStatusIndex ? "current" : ""} 
+    ${currentStatusKey === "canceled" ? "canceled" : ""}
+  `}
                 >
                   <span className="step-label">{step.label}</span>
                 </li>
@@ -162,8 +187,8 @@ const OrderDetail = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {(orders?.products || []).map((order) => (
-                      <OrderProductRow key={orders.order_id} product={order} />
+                    {(orders?.products || []).map((order, index) => (
+                      <OrderProductRow key={index} product={order} />
                     ))}
                   </tbody>
                   <tfoot className="bg-light">
@@ -181,7 +206,7 @@ const OrderDetail = () => {
 
                 <Link to={"/order-history"} className="btn btn-secondary mt-3">
                   <RiArrowGoBackFill />
-                  <span style={{ marginLeft: 5 }}>{t("orderDetail.back")}</span>
+                  <span className="ms-2">{t("orderDetail.back")}</span>
                 </Link>
               </div>
             </div>
