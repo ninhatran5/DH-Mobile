@@ -11,7 +11,14 @@ export const fetchNotifications = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
-      return response.data.data || [];
+      // Transform the response to ensure we have order_id
+      const notifications = (response.data.data || []).map(notification => ({
+        ...notification,
+        order_id: notification.order_id || notification.data?.order_id,
+        title: notification.title || notification.data?.message,
+        message: notification.message || notification.data?.message
+      }));
+      return notifications;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Lỗi khi lấy thông báo');
     }
@@ -37,15 +44,24 @@ export const markNotificationsRead = createAsyncThunk(
 
 export const markNotificationRead = createAsyncThunk(
   'notifications/markNotificationRead',
-  async (id, { rejectWithValue }) => {
+  async (notification_id, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await axiosConfig.post(`/admin/notifications/read/${id}`, {}, {
+      const response = await axiosConfig.post(`/admin/notifications/read/${notification_id}`, {}, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      return { id, ...response.data };
+      
+      if (response.data.success) {
+        return {
+          id: notification_id,
+          is_read: 1,
+          ...response.data
+        };
+      } else {
+        return rejectWithValue('Không thể đánh dấu đã đọc thông báo');
+      }
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Lỗi khi cập nhật trạng thái đọc thông báo');
     }
@@ -82,10 +98,21 @@ const notificationSlice = createSlice({
       .addCase(markNotificationsRead.fulfilled, (state) => {
         state.notifications = state.notifications.map(n => ({ ...n, is_read: 1 }));
       })
+      .addCase(markNotificationRead.pending, (state, action) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(markNotificationRead.fulfilled, (state, action) => {
-        state.notifications = state.notifications.map(n =>
-          n.id === action.payload.id ? { ...n, is_read: 1 } : n
+        state.loading = false;
+        state.notifications = state.notifications.map(notification =>
+          notification.id === action.payload.id
+            ? { ...notification, is_read: 1 }
+            : notification
         );
+      })
+      .addCase(markNotificationRead.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

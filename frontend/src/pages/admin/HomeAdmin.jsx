@@ -577,19 +577,29 @@ const Homeadmin = () => {
                         notifications.map((noti, idx) => (
                           <div 
                             key={noti.id || idx} 
-
                             className={`dropdown-item admin_dh-notification-item d-flex align-items-start ${noti.is_read === 1 ? '' : 'unread'}`}
                             onClick={(e) => {
-                              if (!noti.is_read) {
-                                e.currentTarget.classList.add('read-transition');
-                                setTimeout(() => {
-                                  dispatch(markNotificationRead(noti.id));
-                                }, 300);
+                              e.preventDefault();
+                              
+                              // Đánh dấu đã đọc thông báo nếu chưa đọc
+                              if (noti.id && !noti.is_read) {
+                                dispatch(markNotificationRead(noti.id))
+                                  .then(() => {
+                                    // Chuyển hướng sau khi đánh dấu đã đọc
+                                    if (noti.order_id) {
+                                      navigate(`/admin/orderdetail/${noti.order_id}`);
+                                    }
+                                  })
+                                  .catch((error) => {
+                                    console.error("Error marking notification as read:", error);
+                                  });
                               } else {
-                                dispatch(markNotificationRead(noti.id));
+                                // Nếu đã đọc rồi thì chỉ chuyển hướng
+                                if (noti.order_id) {
+                                  navigate(`/admin/orderdetail/${noti.order_id}`);
+                                }
                               }
-                            }} 
-
+                            }}
                             style={{ cursor: 'pointer' }}
                           >
                             <div className="admin_dh-notification-icon admin_dh-bg-primary-soft">
