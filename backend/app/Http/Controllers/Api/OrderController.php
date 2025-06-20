@@ -247,7 +247,8 @@ class OrderController extends Controller
             'Chờ lấy hàng' => ['Đang vận chuyển'],
             'Đang vận chuyển' => ['Đang giao hàng'],
             'Đang giao hàng' => ['Đã giao hàng'],
-            'Đã giao hàng' => [],
+            'Đã giao hàng' => ['Hoàn thành'],
+            'Hoàn thành' => []
         ];
 
         if (!in_array($currentStatus, $allowedStatuses) || !in_array($nextStatus, $allowedStatuses)) {
