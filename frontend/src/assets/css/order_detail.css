@@ -164,3 +164,19 @@ body {
 .step0.current::before {
   animation: pulse 1.2s infinite;
 }
+
+#progressbar li.canceled::before {
+  content: "\f00d";
+  font-family: FontAwesome;
+  background-color: #f44336 !important; 
+  color: white;
+}
+
+#progressbar li.canceled.active::after {
+  background-color: #f44336 !important;
+}
+
+#progressbar li.canceled .step-label {
+  color: #f44336;
+  font-weight: 500;
+}

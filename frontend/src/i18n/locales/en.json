@@ -348,7 +348,17 @@
     "status": "Status",
     "detail": "Detail",
     "viewDetail": "View Details",
-    "payment_status": "Payment Status"
+    "payment_status": "Payment Status",
+    "cancel": "Cancel order",
+    "return": "Return item",
+    "cancelOrder": "Cancel Order",
+    "enterCancelReason": "Please enter a cancellation reason:",
+    "reasonPlaceholder": "Enter reason...",
+    "confirm": "Confirm",
+    "close": "Close",
+    "emptyReasonError": "You must enter a reason!",
+    "cancelSuccess": "Order cancelled successfully!",
+    "cancelFailed": "Failed to cancel the order!"
   },
   "breadcrumbOrder": {
     "breadcrumbHeader": "Purchase History"
@@ -473,5 +483,15 @@
     "maxOnlineAmount": "The maximum amount allowed for online payment is 100 million VND",
     "updateQuantityError": "Please update your full address before making the payment!",
     "pending_update": "Pending update"
+  },
+  "order_status": {
+    "pending": "Pending Confirmation",
+    "confirmed": "Confirmed",
+    "waiting_pickup": "Waiting for Pickup",
+    "shipping": "Shipping",
+    "delivering": "Out for Delivery",
+    "shipped": "Delivered to Carrier",
+    "delivered": "Completed",
+    "canceled": "Canceled"
   }
 }
