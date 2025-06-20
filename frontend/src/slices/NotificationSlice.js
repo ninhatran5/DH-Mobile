@@ -23,12 +23,29 @@ export const markNotificationsRead = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await axiosConfig.post('/admin/notifications/read', {}, {
+      const response = await axiosConfig.post('/admin/notifications/readAll', {}, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Lỗi khi cập nhật trạng thái đọc thông báo');
+    }
+  }
+);
+
+export const markNotificationRead = createAsyncThunk(
+  'notifications/markNotificationRead',
+  async (id, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      const response = await axiosConfig.post(`/admin/notifications/read/${id}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return { id, ...response.data };
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Lỗi khi cập nhật trạng thái đọc thông báo');
     }
@@ -64,9 +81,15 @@ const notificationSlice = createSlice({
       })
       .addCase(markNotificationsRead.fulfilled, (state) => {
         state.notifications = state.notifications.map(n => ({ ...n, is_read: 1 }));
+      })
+      .addCase(markNotificationRead.fulfilled, (state, action) => {
+        state.notifications = state.notifications.map(n =>
+          n.id === action.payload.id ? { ...n, is_read: 1 } : n
+        );
       });
   },
 });
 
 export const { addNotification } = notificationSlice.actions;
+export { markNotificationRead };
 export default notificationSlice.reducer;
