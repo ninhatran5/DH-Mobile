@@ -151,7 +151,7 @@ const OrdersList = () => {
                       <option value="Chờ lấy hàng">Chờ lấy hàng</option>
                       <option value="Đang vận chuyển">Đang vận chuyển</option>
                       <option value="Đang giao hàng">Đang giao hàng</option>
-                      <option value="Đã Giao hàng">Đã Giao hàng</option>
+                      <option value="Đã giao hàng">Đã Giao hàng</option>
                     </select>
                   </div>
                 </div>
@@ -316,7 +316,7 @@ const OrdersList = () => {
                       <option value="Chờ lấy hàng">Chờ lấy hàng</option>
                       <option value="Đang vận chuyển">Đang vận chuyển</option>
                       <option value="Đang giao hàng">Đang giao hàng</option>
-                      <option value="Đã Giao hàng">Đã Giao hàng</option>
+                      <option value="Đã giao hàng">Đã giao hàng</option>
                     </select>
                   </td>
                 </tr>

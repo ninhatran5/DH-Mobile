@@ -17,8 +17,8 @@
   content: "";
   position: absolute;
   top: 24px;
-  left: 0;
-  right: 0;
+  left: 50px;
+  right: 50px;
   height: 4px;
   background-color: #e0e0e0;
   z-index: 1;
@@ -29,13 +29,53 @@
   content: "";
   position: absolute;
   top: 24px;
-  left: 0;
+  left: 50px;
   height: 4px;
   background-color: #6400cf;
-  width: var(--progress, 0%);
+  width: calc(var(--progress, 0%) - 50px);
   transition: width 0.5s ease-in-out;
   z-index: 2;
   border-radius: 2px;
+}
+
+/* Xoá các line giữa từng bước nếu còn */
+.adminorder-step::before,
+.adminorder-step::after {
+  display: none !important;
+}
+
+.adminorder-step:not(:first-child)::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 50%;
+  height: 4px;
+  background: #e0e0e0;
+  z-index: 1;
+  transform: translateY(-50%);
+  border-radius: 2px;
+}
+
+.adminorder-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 50%;
+  height: 4px;
+  background: #e0e0e0;
+  z-index: 1;
+  transform: translateY(-50%);
+  border-radius: 2px;
+}
+
+.adminorder-step.active:not(:first-child)::before {
+  background: #6400cf;
+}
+
+.adminorder-step.active:not(:last-child)::after {
+  background: #6400cf;
 }
 
 .adminorder-step {
