@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories, deleteCategory, restoreCategory, forceDeleteCategory, fetchTrashedCategories } from "../../slices/adminCategories";
+import { fetchAdminProducts } from "../../slices/adminproductsSlice";
 import "../../assets/admin/Categories.css";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -11,14 +12,24 @@ const CategoryList = () => {
   const { adminproducts } = useSelector((state) => state.adminproduct);
   const [searchTerm, setSearchTerm] = useState("");
   const [showTrash, setShowTrash] = useState(false);
+  const [productCounts, setProductCounts] = useState({});
 
   useEffect(() => {
     dispatch(fetchCategories());
     dispatch(fetchTrashedCategories());
+    dispatch(fetchAdminProducts());
   }, [dispatch]);
 
+  useEffect(() => {
+    const counts = {};
+    adminproducts.forEach(product => {
+      counts[product.category_id] = (counts[product.category_id] || 0) + 1;
+    });
+    setProductCounts(counts);
+  }, [adminproducts]);
+
   const getProductCount = (categoryId) => {
-    return adminproducts.filter(product => product.category_id === categoryId).length;
+    return productCounts[categoryId] || 0;
   };
 
   const handleSearchChange = (e) => {
