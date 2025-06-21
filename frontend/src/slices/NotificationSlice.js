@@ -53,12 +53,8 @@ export const markNotificationRead = createAsyncThunk(
         },
       });
       
-      if (response.data.success) {
-        return {
-          id: notification_id,
-          is_read: 1,
-          ...response.data
-        };
+      if (response.data.notification) {
+        return response.data.notification;
       } else {
         return rejectWithValue('Không thể đánh dấu đã đọc thông báo');
       }
@@ -105,8 +101,14 @@ const notificationSlice = createSlice({
       .addCase(markNotificationRead.fulfilled, (state, action) => {
         state.loading = false;
         state.notifications = state.notifications.map(notification =>
-          notification.id === action.payload.id
-            ? { ...notification, is_read: 1 }
+          notification.notification_id === action.payload.notification_id
+            ? { 
+                ...notification,
+                is_read: action.payload.is_read,
+                message: action.payload.message,
+                order_id: action.payload.order_id,
+                updated_at: action.payload.updated_at
+              }
             : notification
         );
       })
