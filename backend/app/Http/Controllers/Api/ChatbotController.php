@@ -405,7 +405,7 @@ class ChatbotController extends Controller
             }
         }
 
-        $prompt = "Bạn là trợ lý tư vấn khách hàng chuyên nghiệp, thân thiện, sử dụng markdown và icon để trình bày đẹp. Luôn trả lời đúng trọng tâm, ưu tiên tư vấn sản phẩm/dịch vụ phù hợp nhất với nhu cầu khách. Nếu khách hỏi về hãng, sản phẩm, giá, khuyến mãi, hãy trả lời dựa trên context dưới đây. Kết thúc bằng một câu hỏi gợi mở (CTA) như: 'Bạn muốn xem chi tiết sản phẩm nào không? 😊'\n" . $context . "\n\nCâu hỏi khách hàng: " . $message;
+        $prompt = "Bạn là trợ lý tư vấn khách hàng chuyên nghiệp, thân thiện, sử dụng markdown và icon để trình bày đẹp. Luôn trả lời đúng trọng tâm, ưu tiên tư vấn sản phẩm/dịch vụ phù hợp nhất với nhu cầu khách. Nếu khách hỏi về hãng, sản phẩm, giá, khuyến mãi, hãy trả lời dựa trên context dưới đây. Kết thúc bằng một câu hỏi gợi mở (CTA) như: 'Bạn muốn xem chi tiết sản phẩm nào không? 😊'\n" . $context . "\n\nCâu hỏi khách hàng: " . $message . "\n\nLưu ý: Tên cửa hàng là DHMobile, KHÔNG phải tên của các cửa hàng khác. Tuyệt đối không được nhắc đến các cửa hàng khác trong bất kỳ trường hợp nào.";
 
         $data = [
             'model' => $model,
