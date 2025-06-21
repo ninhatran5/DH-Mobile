@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Models\Orders;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Mail\OrderStatusUpdatedMail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -278,6 +280,16 @@ class OrderController extends Controller
         $orderArr = $order->toArray();
         $orderArr['user_id'] = $order->user ? $order->user->full_name : null;
         $orderArr['method_id'] = $order->paymentMethods ? $order->paymentMethods->name : null;
+
+        // Gửi email thông báo trạng thái đơn hàng cho khách hàng
+        if ($order->user && $order->user->email) {
+            try {
+                Mail::to($order->user->email)->send(new OrderStatusUpdatedMail($order, $nextStatus));
+            } catch (\Exception $e) {
+                // Có thể log lỗi gửi mail nếu cần
+            }
+        }
+
         return response()->json([
             'status' => true,
             'message' => 'Cập nhật trạng thái thành công',
