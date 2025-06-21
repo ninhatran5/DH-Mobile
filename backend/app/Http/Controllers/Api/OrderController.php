@@ -505,8 +505,19 @@ class OrderController extends Controller
     public function getReturnOrdersByStatus(Request $request)
     {
         $status = $request->input('status'); // 'Đã hoàn lại', 'Đã từ chối', hoặc null
-        $query = DB::table('return_requests')
-            ->join('orders', 'return_requests.order_id', '=', 'orders.order_id')
+        // Subquery lấy return_request mới nhất theo created_at cho mỗi order_id (không dùng LIMIT trong IN)
+        $latestReturnRequestSub = DB::table('return_requests as rr1')
+            ->select('rr1.order_id', DB::raw('MAX(rr1.created_at) as max_created_at'))
+            ->groupBy('rr1.order_id');
+
+        $query = DB::table('orders')
+            ->joinSub($latestReturnRequestSub, 'latest_return', function ($join) {
+                $join->on('orders.order_id', '=', 'latest_return.order_id');
+            })
+            ->join('return_requests', function ($join) {
+                $join->on('orders.order_id', '=', 'return_requests.order_id')
+                    ->on('return_requests.created_at', '=', 'latest_return.max_created_at');
+            })
             ->leftJoin('users', 'orders.user_id', '=', 'users.user_id')
             ->leftJoin('payment_methods', 'orders.method_id', '=', 'payment_methods.method_id')
             ->select(
@@ -529,12 +540,9 @@ class OrderController extends Controller
         } else {
             $query->whereIn('return_requests.status', ['Đã hoàn lại', 'Đã từ chối']);
         }
-        // Chỉ lấy yêu cầu hoàn trả gần nhất cho mỗi đơn hàng
         $results = $query
-            ->orderBy('orders.order_id')
-            ->orderByDesc('return_requests.created_at')
-            ->get()
-            ->unique('order_id');
+            ->orderByDesc('orders.created_at')
+            ->get();
 
         $formatted = $results->map(function ($row) {
             return [

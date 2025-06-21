@@ -282,9 +282,9 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(f
 
 
     // Admin duyệt hoặc từ chối yêu cầu hoàn hàng của đơn hàng
-    Route::post('/orders/{id}/handle-return', [OrderController::class, 'adminHandleReturnRequest']);
+    Route::put('/orders/{id}/handle-return', [OrderController::class, 'adminHandleReturnRequest']);
     // danh sách hoàn hàng 
-    Route::get('orders/return-orders', [OrderController::class, 'getReturnOrdersByStatus']);
+    Route::get('return-orders', [OrderController::class, 'getReturnOrdersByStatus']);
     // chi tiết hoàn hàng 
     Route::get('orders/return-orders/{order_id}', [OrderController::class, 'getReturnOrderDetail']);
     // lấy danh sách lịch sử cập nhật đơn hàng (theo order_id)
