@@ -243,7 +243,8 @@ class UserController extends Controller
     }
 
 
-    public function forceDeleteuser($id) {
+    public function forceDeleteuser($id)
+    {
         $user = User::onlyTrashed()->find($id);
         if (!$user) {
             return response()->json([

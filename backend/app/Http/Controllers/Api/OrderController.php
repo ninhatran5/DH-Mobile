@@ -469,7 +469,7 @@ class OrderController extends Controller
         ]);
     }
 
-    // Danh sách yêu cầu hoàn trả kèm thông tin đơn hàng (admin)
+    // Danh sách yêu cầu hoàn trả kèm thông tin đơn hàng (admin) - tối ưu, chỉ trả về thông tin cơ bản và trạng thái yêu cầu hoàn trả gần nhất
     public function getReturnOrdersByStatus(Request $request)
     {
         $status = $request->input('status'); // 'Đã hoàn lại', 'Đã từ chối', hoặc null
@@ -489,9 +489,7 @@ class OrderController extends Controller
                 'orders.cancel_reason',
                 'orders.created_at as order_created_at',
                 'return_requests.return_id',
-                'return_requests.reason as return_reason',
                 'return_requests.status as return_status',
-                'return_requests.refund_amount',
                 'return_requests.created_at as return_created_at'
             );
         if ($status) {
@@ -499,7 +497,12 @@ class OrderController extends Controller
         } else {
             $query->whereIn('return_requests.status', ['Đã hoàn lại', 'Đã từ chối']);
         }
-        $results = $query->orderByDesc('return_requests.created_at')->get();
+        // Chỉ lấy yêu cầu hoàn trả gần nhất cho mỗi đơn hàng
+        $results = $query
+            ->orderBy('orders.order_id')
+            ->orderByDesc('return_requests.created_at')
+            ->get()
+            ->unique('order_id');
 
         $formatted = $results->map(function ($row) {
             return [
@@ -513,11 +516,9 @@ class OrderController extends Controller
                 'payment_method' => $row->payment_method,
                 'cancel_reason' => $row->cancel_reason,
                 'order_created_at' => $row->order_created_at ? date('d/m/Y H:i:s', strtotime($row->order_created_at)) : null,
-                'return_request' => [
+                'latest_return_request' => [
                     'return_id' => $row->return_id,
-                    'reason' => $row->return_reason,
                     'status' => $row->return_status,
-                    'refund_amount' => number_format($row->refund_amount, 0, '.', ''),
                     'created_at' => $row->return_created_at ? date('d/m/Y H:i:s', strtotime($row->return_created_at)) : null,
                 ]
             ];
@@ -579,6 +580,79 @@ class OrderController extends Controller
         return response()->json([
             'status' => true,
             'orders' => $formatted
+        ]);
+    }
+
+    // Chi tiết đơn hàng hoàn trả (admin)
+    public function getReturnOrderDetail($order_id)
+    {
+        // Lấy thông tin đơn hàng
+        $order = Orders::with(['user', 'paymentMethods', 'orderItems.product', 'orderItems.variant.variantAttributeValues.value.attribute'])
+            ->where('order_id', $order_id)
+            ->first();
+        if (!$order) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Không tìm thấy đơn hàng'
+            ], 404);
+        }
+        // Lấy các yêu cầu hoàn trả của đơn hàng này
+        $returnRequests = DB::table('return_requests')
+            ->where('order_id', $order_id)
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Định dạng chi tiết sản phẩm
+        $orderItems = $order->orderItems->map(function ($item) {
+            $variantAttributes = [];
+            if ($item->variant) {
+                $variantAttributes = $item->variant->variantAttributeValues->map(function ($attrValue) {
+                    return [
+                        'attribute_name' => $attrValue->value->attribute->name,
+                        'attribute_value' => $attrValue->value->value
+                    ];
+                });
+            }
+            return [
+                'product_id' => $item->product_id,
+                'product_name' => $item->product->name,
+                'product_image' => $item->variant ? $item->variant->image_url : $item->product->image_url,
+                'quantity' => $item->quantity,
+                'price' => number_format($item->price, 0, '.', ''),
+                'subtotal' => number_format($item->price * $item->quantity, 0, '.', ''),
+                'variant_attributes' => $variantAttributes
+            ];
+        });
+
+        // Định dạng các yêu cầu hoàn trả
+        $returnRequestsFormatted = $returnRequests->map(function ($r) {
+            return [
+                'return_id' => $r->return_id,
+                'reason' => $r->reason,
+                'status' => $r->status,
+                'refund_amount' => number_format($r->refund_amount, 0, '.', ''),
+                'created_at' => $r->created_at ? date('d/m/Y H:i:s', strtotime($r->created_at)) : null,
+            ];
+        });
+
+        $formattedOrder = [
+            'order_id' => $order->order_id,
+            'order_code' => $order->order_code,
+            'customer' => $order->customer,
+            'email' => $order->user ? $order->user->email : null,
+            'total_amount' => number_format($order->total_amount, 0, '.', ''),
+            'order_status' => $order->status,
+            'payment_status' => $order->payment_status,
+            'payment_method' => $order->paymentMethods ? $order->paymentMethods->name : null,
+            'cancel_reason' => $order->cancel_reason,
+            'order_created_at' => $order->created_at ? $order->created_at->format('d/m/Y H:i:s') : null,
+            'products' => $orderItems,
+            'return_requests' => $returnRequestsFormatted
+        ];
+
+        return response()->json([
+            'status' => true,
+            'order' => $formattedOrder
         ]);
     }
 }

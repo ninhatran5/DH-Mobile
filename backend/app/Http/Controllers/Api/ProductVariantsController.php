@@ -20,11 +20,11 @@ class ProductVariantsController extends Controller
      */    public function index()
     {
         $variants = ProductVariant::with(['product', 'variantAttributeValues.value.attribute'])->get();
-        
+
         // Biến đổi dữ liệu để nhóm theo attribute
         $variants = $variants->map(function ($variant) {
             $attributes = [];
-            
+
             // Nhóm các giá trị theo attribute_id - mỗi variant chỉ có một giá trị cho mỗi thuộc tính
             foreach ($variant->variantAttributeValues as $item) {
                 $value = $item->value;
@@ -45,7 +45,7 @@ class ProductVariantsController extends Controller
                     'image_url' => $variant->image_url,
                     'price' => $variant->price,
                     'price_original' => $variant->price_original,
-                     'stock' => $variant->stock
+                    'stock' => $variant->stock
                 ]];
             }
 
@@ -58,13 +58,13 @@ class ProductVariantsController extends Controller
                 'price_original' => number_format((float)$variant->price_original, 0, '', ''),
                 'stock' => $variant->stock
             ];
-            
+
             // Chuyển attributes từ array thành collection và sắp xếp theo thứ tự
             $variant->attributes = array_values($attributes);
-            
+
             // Chỉ giữ lại các thông tin cần thiết của variant
             $variant->makeHidden(['variantAttributeValues', 'created_at', 'updated_at', 'deleted_at', 'is_active']);
-            
+
             // Format lại giá cho variant
             $variant->price = number_format((float)$variant->price, 0, '', '');
             $variant->price_original = number_format((float)$variant->price_original, 0, '', '');
@@ -155,7 +155,7 @@ class ProductVariantsController extends Controller
      */
     public function show(string $id)
     {
-        $variants = ProductVariant::with([ 'variantAttributeValues.value.attribute'])
+        $variants = ProductVariant::with(['variantAttributeValues.value.attribute'])
             ->where('product_id', $id)
             ->get();
 

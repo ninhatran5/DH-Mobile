@@ -22,8 +22,7 @@ class VoucherController extends Controller
     public function index()
     {
         $voucher = Voucher::where('is_active', 1)
-       ->orderBy('created_at', 'desc')->
-       paginate(10);
+            ->orderBy('created_at', 'desc')->paginate(10);
 
         // Định dạng discount_amount
         $formattedVouchers = collect($voucher->items())->map(function ($item) {
@@ -31,16 +30,16 @@ class VoucherController extends Controller
             return $item;
         });
 
-    return response()->json([
-        'message' => 'lấy danh sách voucher thành công',
-        'data' => $formattedVouchers, // sử dụng dữ liệu đã định dạng
-        'meta' => [
-            'current_page' =>  $voucher->currentPage(),
-            'last_page' =>  $voucher->lastPage(),
-            'per_page' =>  $voucher->perPage(),
-            'total' =>  $voucher->total(),
-        ],
-        'status' => 200
+        return response()->json([
+            'message' => 'lấy danh sách voucher thành công',
+            'data' => $formattedVouchers, // sử dụng dữ liệu đã định dạng
+            'meta' => [
+                'current_page' =>  $voucher->currentPage(),
+                'last_page' =>  $voucher->lastPage(),
+                'per_page' =>  $voucher->perPage(),
+                'total' =>  $voucher->total(),
+            ],
+            'status' => 200
 
         ])->setStatusCode(200, 'OK',);
     }

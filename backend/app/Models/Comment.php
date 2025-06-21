@@ -10,7 +10,11 @@ class Comment extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'user_id', 'product_id', 'rating', 'content', 'created_at'
+        'user_id',
+        'product_id',
+        'rating',
+        'content',
+        'created_at'
     ];
 
     protected static function booted()
@@ -20,4 +24,3 @@ class Comment extends Model
         });
     }
 }
-
