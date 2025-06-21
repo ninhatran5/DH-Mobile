@@ -272,7 +272,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('admin/notifications', [NotificationController::class, 'index']);
     Route::post('admin/notifications/read/{id}', [NotificationController::class, 'markAsRead']);
     Route::post('admin/notifications/readAll', [NotificationController::class, 'markAsReadAll']);
-
 });
 
 // quản lý đơn hàng dành cho admin
@@ -284,7 +283,8 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(f
 
     // Admin duyệt hoặc từ chối yêu cầu hoàn hàng của đơn hàng
     Route::post('/orders/{id}/handle-return', [OrderController::class, 'adminHandleReturnRequest']);
-
+    // danh sách hoàn hàng 
+    Route::get('/return-orders', [OrderController::class, 'getReturnOrdersByStatus']);
 });
 
 
@@ -301,7 +301,7 @@ Route::post('/public/chatbot', [ChatbotController::class, 'handle']);
 
 // Tất cả route yêu cầu đăng nhập (auth:sanctum)
 Route::middleware('auth:sanctum')->prefix('support-chat')->group(function () {
-    
+
     // Gửi tin nhắn mới (có thể kèm file)
     Route::post('/send', [SupportChatController::class, 'sendMessage']);
 
@@ -313,4 +313,4 @@ Route::middleware('auth:sanctum')->prefix('support-chat')->group(function () {
 
     // Đánh dấu 1 tin nhắn là đã đọc
     Route::patch('/mark-as-read/{chat_id}', [SupportChatController::class, 'markAsRead']);
-}); 
+});

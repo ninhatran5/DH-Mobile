@@ -468,4 +468,117 @@ class OrderController extends Controller
             'order' => $order
         ]);
     }
+
+    // Danh sách yêu cầu hoàn trả kèm thông tin đơn hàng (admin)
+    public function getReturnOrdersByStatus(Request $request)
+    {
+        $status = $request->input('status'); // 'Đã hoàn lại', 'Đã từ chối', hoặc null
+        $query = DB::table('return_requests')
+            ->join('orders', 'return_requests.order_id', '=', 'orders.order_id')
+            ->leftJoin('users', 'orders.user_id', '=', 'users.user_id')
+            ->leftJoin('payment_methods', 'orders.method_id', '=', 'payment_methods.method_id')
+            ->select(
+                'orders.order_id',
+                'orders.order_code',
+                'orders.customer',
+                'users.email',
+                'orders.total_amount',
+                'orders.status as order_status',
+                'orders.payment_status',
+                'payment_methods.name as payment_method',
+                'orders.cancel_reason',
+                'orders.created_at as order_created_at',
+                'return_requests.return_id',
+                'return_requests.reason as return_reason',
+                'return_requests.status as return_status',
+                'return_requests.refund_amount',
+                'return_requests.created_at as return_created_at'
+            );
+        if ($status) {
+            $query->where('return_requests.status', $status);
+        } else {
+            $query->whereIn('return_requests.status', ['Đã hoàn lại', 'Đã từ chối']);
+        }
+        $results = $query->orderByDesc('return_requests.created_at')->get();
+
+        $formatted = $results->map(function ($row) {
+            return [
+                'order_id' => $row->order_id,
+                'order_code' => $row->order_code,
+                'customer' => $row->customer,
+                'email' => $row->email,
+                'total_amount' => number_format($row->total_amount, 0, '.', ''),
+                'order_status' => $row->order_status,
+                'payment_status' => $row->payment_status,
+                'payment_method' => $row->payment_method,
+                'cancel_reason' => $row->cancel_reason,
+                'order_created_at' => $row->order_created_at ? date('d/m/Y H:i:s', strtotime($row->order_created_at)) : null,
+                'return_request' => [
+                    'return_id' => $row->return_id,
+                    'reason' => $row->return_reason,
+                    'status' => $row->return_status,
+                    'refund_amount' => number_format($row->refund_amount, 0, '.', ''),
+                    'created_at' => $row->return_created_at ? date('d/m/Y H:i:s', strtotime($row->return_created_at)) : null,
+                ]
+            ];
+        });
+
+        return response()->json([
+            'status' => true,
+            'orders' => $formatted
+        ]);
+    }
+
+    // Danh sách hoàn hàng (admin) - chỉ trả về các đơn hàng có ít nhất 1 yêu cầu hoàn trả
+    public function getReturnOrdersList(Request $request)
+    {
+        $status = $request->input('status'); // 'Đã hoàn lại', 'Đã từ chối', hoặc null
+        $query = DB::table('orders')
+            ->join('return_requests', 'orders.order_id', '=', 'return_requests.order_id')
+            ->leftJoin('users', 'orders.user_id', '=', 'users.user_id')
+            ->leftJoin('payment_methods', 'orders.method_id', '=', 'payment_methods.method_id')
+            ->select(
+                'orders.order_id',
+                'orders.order_code',
+                'orders.customer',
+                'users.email',
+                'orders.total_amount',
+                'orders.status as order_status',
+                'orders.payment_status',
+                'payment_methods.name as payment_method',
+                'orders.cancel_reason',
+                'orders.created_at as order_created_at',
+                DB::raw('GROUP_CONCAT(return_requests.status) as return_statuses'),
+                DB::raw('GROUP_CONCAT(return_requests.return_id) as return_ids')
+            );
+        if ($status) {
+            $query->where('return_requests.status', $status);
+        } else {
+            $query->whereIn('return_requests.status', ['Đã hoàn lại', 'Đã từ chối']);
+        }
+        $query->groupBy('orders.order_id');
+        $results = $query->orderByDesc('orders.created_at')->get();
+
+        $formatted = $results->map(function ($row) {
+            return [
+                'order_id' => $row->order_id,
+                'order_code' => $row->order_code,
+                'customer' => $row->customer,
+                'email' => $row->email,
+                'total_amount' => number_format($row->total_amount, 0, '.', ''),
+                'order_status' => $row->order_status,
+                'payment_status' => $row->payment_status,
+                'payment_method' => $row->payment_method,
+                'cancel_reason' => $row->cancel_reason,
+                'order_created_at' => $row->order_created_at ? date('d/m/Y H:i:s', strtotime($row->order_created_at)) : null,
+                'return_request_statuses' => explode(',', $row->return_statuses),
+                'return_request_ids' => explode(',', $row->return_ids),
+            ];
+        });
+
+        return response()->json([
+            'status' => true,
+            'orders' => $formatted
+        ]);
+    }
 }
