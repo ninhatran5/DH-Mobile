@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\OrderStatusUpdatedMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use App\Models\OrderStatusHistory; // Thêm dòng này để sử dụng model OrderStatusHistory
 
 class OrderController extends Controller
 {
@@ -275,6 +276,20 @@ class OrderController extends Controller
         }
         $order->save();
 
+        // start lưu lại lịch sử đơn hàng
+
+
+        // Ghi lại lịch sử thay đổi trạng thái đơn hàng
+        // Đoạn này giúp bạn lưu lại mỗi lần trạng thái đơn hàng thay đổi để tra cứu lịch sử sau này
+        OrderStatusHistory::create([
+            'order_id' => $order->order_id, // ID đơn hàng
+            'old_status' => $currentStatus, // Trạng thái cũ
+            'new_status' => $nextStatus,    // Trạng thái mới
+            'changed_by' => $request->user() ? $request->user()->user_id : null, // ID người thay đổi (admin), có thể null nếu không đăng nhập
+        ]);
+
+        // end lưu lại lịch sử đơn hàng
+
         // Tải lại quan hệ user và paymentMethods sau khi cập nhật
         $order->load(['user', 'paymentMethods']);
         $orderArr = $order->toArray();
@@ -376,11 +391,11 @@ class OrderController extends Controller
     public function adminHandleReturnRequest(Request $request, $id)
     {
         // Danh sách trạng thái hợp lệ
-        $allowedStatuses = ['Đã yêu cầu','Đã chấp thuận','Đã từ chối','Đang xử lý','Đã hoàn lại','Đã hủy'];
+        $allowedStatuses = ['Đã yêu cầu', 'Đã chấp thuận', 'Đã từ chối', 'Đang xử lý', 'Đã hoàn lại', 'Đã hủy'];
         // Các chuyển đổi trạng thái hợp lệ
         $validTransitions = [
             'Đã yêu cầu'   => ['Đã chấp thuận', 'Đã từ chối'],
-            'Đã chấp thuận'=> ['Đang xử lý', 'Đã từ chối'],
+            'Đã chấp thuận' => ['Đang xử lý', 'Đã từ chối'],
             'Đang xử lý'   => ['Đã hoàn lại', 'Đã từ chối'],
             'Đã hoàn lại'  => [],
             'Đã từ chối'   => [],
@@ -670,6 +685,51 @@ class OrderController extends Controller
         return response()->json([
             'status' => true,
             'order' => $formattedOrder
+        ]);
+    }
+
+
+
+
+
+
+    // phần này là lấy danh sách lịch sử trạng thái đã cập nhật
+
+
+
+
+    // Lấy lịch sử thay đổi trạng thái của đơn hàng
+    // API này giúp bạn lấy toàn bộ lịch sử thay đổi trạng thái của một đơn hàng để hiển thị cho admin hoặc khách hàng
+    public function getOrderStatusHistory($orderId)
+    {
+        // Join với bảng users để lấy tên người thay đổi
+        $history = DB::table('order_status_histories')
+            ->leftJoin('users', 'order_status_histories.changed_by', '=', 'users.user_id')
+            ->where('order_status_histories.order_id', $orderId)
+            ->orderBy('order_status_histories.created_at', 'asc')
+            ->select(
+                'order_status_histories.old_status',
+                'order_status_histories.new_status',
+                'order_status_histories.changed_by',
+                'users.full_name as changed_by_name',
+                'order_status_histories.created_at'
+            )
+            ->get();
+
+        // Định dạng dữ liệu trả về
+        $formatted = $history->map(function ($item) {
+            return [
+                'old_status' => $item->old_status,
+                'new_status' => $item->new_status,
+                'changed_by' => $item->changed_by,
+                'changed_by_name' => $item->changed_by_name, // Tên người thay đổi
+                'changed_at' => $item->created_at ? date('d/m/Y H:i:s', strtotime($item->created_at)) : null,
+            ];
+        });
+
+        return response()->json([
+            'status' => true,
+            'history' => $formatted
         ]);
     }
 }
