@@ -581,4 +581,77 @@ class OrderController extends Controller
             'orders' => $formatted
         ]);
     }
+
+    // Chi tiết đơn hàng hoàn trả (admin)
+    public function getReturnOrderDetail($order_id)
+    {
+        // Lấy thông tin đơn hàng
+        $order = Orders::with(['user', 'paymentMethods', 'orderItems.product', 'orderItems.variant.variantAttributeValues.value.attribute'])
+            ->where('order_id', $order_id)
+            ->first();
+        if (!$order) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Không tìm thấy đơn hàng'
+            ], 404);
+        }
+        // Lấy các yêu cầu hoàn trả của đơn hàng này
+        $returnRequests = DB::table('return_requests')
+            ->where('order_id', $order_id)
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Định dạng chi tiết sản phẩm
+        $orderItems = $order->orderItems->map(function ($item) {
+            $variantAttributes = [];
+            if ($item->variant) {
+                $variantAttributes = $item->variant->variantAttributeValues->map(function ($attrValue) {
+                    return [
+                        'attribute_name' => $attrValue->value->attribute->name,
+                        'attribute_value' => $attrValue->value->value
+                    ];
+                });
+            }
+            return [
+                'product_id' => $item->product_id,
+                'product_name' => $item->product->name,
+                'product_image' => $item->variant ? $item->variant->image_url : $item->product->image_url,
+                'quantity' => $item->quantity,
+                'price' => number_format($item->price, 0, '.', ''),
+                'subtotal' => number_format($item->price * $item->quantity, 0, '.', ''),
+                'variant_attributes' => $variantAttributes
+            ];
+        });
+
+        // Định dạng các yêu cầu hoàn trả
+        $returnRequestsFormatted = $returnRequests->map(function ($r) {
+            return [
+                'return_id' => $r->return_id,
+                'reason' => $r->reason,
+                'status' => $r->status,
+                'refund_amount' => number_format($r->refund_amount, 0, '.', ''),
+                'created_at' => $r->created_at ? date('d/m/Y H:i:s', strtotime($r->created_at)) : null,
+            ];
+        });
+
+        $formattedOrder = [
+            'order_id' => $order->order_id,
+            'order_code' => $order->order_code,
+            'customer' => $order->customer,
+            'email' => $order->user ? $order->user->email : null,
+            'total_amount' => number_format($order->total_amount, 0, '.', ''),
+            'order_status' => $order->status,
+            'payment_status' => $order->payment_status,
+            'payment_method' => $order->paymentMethods ? $order->paymentMethods->name : null,
+            'cancel_reason' => $order->cancel_reason,
+            'order_created_at' => $order->created_at ? $order->created_at->format('d/m/Y H:i:s') : null,
+            'products' => $orderItems,
+            'return_requests' => $returnRequestsFormatted
+        ];
+
+        return response()->json([
+            'status' => true,
+            'order' => $formattedOrder
+        ]);
+    }
 }

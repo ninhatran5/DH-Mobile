@@ -285,6 +285,8 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(f
     Route::post('/orders/{id}/handle-return', [OrderController::class, 'adminHandleReturnRequest']);
     // danh sách hoàn hàng 
     Route::get('/return-orders', [OrderController::class, 'getReturnOrdersByStatus']);
+    // chi tiết hoàn hàng 
+    Route::get('/return-orders/{order_id}', [OrderController::class, 'getReturnOrderDetail']);
 });
 
 
