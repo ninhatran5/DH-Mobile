@@ -114,7 +114,7 @@ class OrderController extends Controller
     // quản lý đơn hàng admin
     public function adminIndex(Request $request)
     {
-        $query = Orders::with(['user', 'paymentMethods','orderItems']);
+        $query = Orders::with(['user', 'paymentMethods', 'orderItems']);
 
         // Lọc theo trạng thái đơn hàng
         if ($request->has('status') && $request->status !== null) {
@@ -149,7 +149,7 @@ class OrderController extends Controller
                 'status' => $order->status,
                 'cancel_reason' => $order->cancel_reason,
                 'created_at' => $order->created_at->format('d/m/Y H:i:s'),
-              'totalProduct' => $order->orderItems->sum('quantity'), // Tính tổng số lượng sản phẩm
+                'totalProduct' => $order->orderItems->sum('quantity'), // Tính tổng số lượng sản phẩm
             ];
         });
 
@@ -240,7 +240,7 @@ class OrderController extends Controller
         $currentStatus = $order->status;
         $nextStatus = $request->status;
         // Chỉ cho phép admin thao tác từ Chờ xác nhận đến Đã giao hàng
-        $allowedStatuses = ['Chờ xác nhận', 'Đã xác nhận', 'Chờ lấy hàng', 'Đang vận chuyển', 'Đang giao hàng', 'Đã giao hàng','Hoàn thành'];
+        $allowedStatuses = ['Chờ xác nhận', 'Đã xác nhận', 'Chờ lấy hàng', 'Đang vận chuyển', 'Đang giao hàng', 'Đã giao hàng', 'Hoàn thành'];
         $validTransitions = [
             'Chờ xác nhận' => ['Đã xác nhận'],
             'Đã xác nhận' => ['Chờ lấy hàng'],
@@ -266,7 +266,6 @@ class OrderController extends Controller
         }
 
         $order->status = $nextStatus;
-        // Nếu chuyển sang Đã giao hàng và payment_status hiện tại là Chưa thanh toán thì tự động cập nhật
         if ($nextStatus === 'Đã giao hàng' && $order->payment_status === 'Chưa thanh toán') {
             $order->payment_status = 'Đã thanh toán';
         } elseif ($request->has('payment_status')) {
@@ -277,7 +276,6 @@ class OrderController extends Controller
         // Tải lại quan hệ user và paymentMethods sau khi cập nhật
         $order->load(['user', 'paymentMethods']);
         $orderArr = $order->toArray();
-        // Thay thế user_id và method_id bằng tên tương ứng
         $orderArr['user_id'] = $order->user ? $order->user->full_name : null;
         $orderArr['method_id'] = $order->paymentMethods ? $order->paymentMethods->name : null;
         return response()->json([
