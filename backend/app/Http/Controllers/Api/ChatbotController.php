@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\ChatbotLog;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -55,7 +56,7 @@ class ChatbotController extends Controller
     protected function analyzeIntent($message)
     {
         $message = Str::lower($message);
-        
+
         // Mảng từ khóa và intent tương ứng
         $intents = [
             'product_query' => ['sản phẩm', 'điện thoại', 'máy', 'mua', 'model', 'tư vấn'],
@@ -67,7 +68,7 @@ class ChatbotController extends Controller
             'support_query' => ['bảo hành', 'sửa chữa', 'hỗ trợ', 'đổi trả', 'lỗi', 'hư hỏng'],
             'comparison_query' => ['so sánh', 'khác nhau', 'khác biệt', 'tốt hơn', 'đánh giá']
         ];
-        
+
         // Chấm điểm cho mỗi intent dựa trên số từ khóa match
         $scores = [];
         foreach ($intents as $intent => $keywords) {
@@ -79,13 +80,13 @@ class ChatbotController extends Controller
             }
             $scores[$intent] = $score;
         }
-        
+
         // Lấy intent có điểm cao nhất
         $maxScore = max($scores);
         if ($maxScore > 0) {
             return array_search($maxScore, $scores);
         }
-        
+
         return 'general_query';
     }
 
@@ -93,8 +94,9 @@ class ChatbotController extends Controller
     {
         // Nếu là hỏi về đơn hàng hoặc giỏ hàng mà chưa đăng nhập, yêu cầu đăng nhập/đăng ký
         if ((in_array($intent, ['order_query', 'cart_query', 'voucher_query']) ||
-            preg_match('/(giỏ hàng|đơn hàng|voucher|mã giảm|mã khuyến mãi|lịch sử mua|mua hàng|đặt hàng|của tôi|cá nhân|tài khoản)/iu', $message))
-            && empty($userId)) {
+                preg_match('/(giỏ hàng|đơn hàng|voucher|mã giảm|mã khuyến mãi|lịch sử mua|mua hàng|đặt hàng|của tôi|cá nhân|tài khoản)/iu', $message))
+            && empty($userId)
+        ) {
             return 'Bạn cần đăng nhập hoặc đăng ký tài khoản để sử dụng chức năng này và xem thông tin cá nhân, đơn hàng, giỏ hàng, voucher. Vui lòng đăng nhập để tiếp tục nhé!';
         }
         // Nếu là hỏi về voucher cá nhân (tạm thời chỉ lấy từ bảng vouchers, bỏ user_vouchers)
@@ -304,7 +306,7 @@ class ChatbotController extends Controller
         // Sản phẩm liên quan
         $products = DB::table('products')
             ->whereNull('deleted_at')
-            ->where(function($query) use ($keywords) {
+            ->where(function ($query) use ($keywords) {
                 foreach ($keywords as $kw) {
                     $query->orWhere('name', 'like', "%{$kw}%")
                         ->orWhere('description', 'like', "%{$kw}%");
@@ -320,7 +322,7 @@ class ChatbotController extends Controller
         // Danh mục liên quan
         $categories = DB::table('categories')
             ->whereNull('deleted_at')
-            ->where(function($query) use ($keywords) {
+            ->where(function ($query) use ($keywords) {
                 foreach ($keywords as $kw) {
                     $query->orWhere('name', 'like', "%{$kw}%")
                         ->orWhere('description', 'like', "%{$kw}%");
@@ -335,7 +337,7 @@ class ChatbotController extends Controller
         // Voucher liên quan
         $vouchers = DB::table('vouchers')
             ->whereNull('deleted_at')
-            ->where(function($query) use ($keywords) {
+            ->where(function ($query) use ($keywords) {
                 foreach ($keywords as $kw) {
                     $query->orWhere('code', 'like', "%{$kw}%")
                         ->orWhere('title', 'like', "%{$kw}%");
@@ -350,7 +352,7 @@ class ChatbotController extends Controller
         // Lấy danh sách hãng (category) có sản phẩm
         $brands = DB::table('categories')
             ->whereNull('deleted_at')
-            ->whereIn('category_id', function($query) {
+            ->whereIn('category_id', function ($query) {
                 $query->select('category_id')->from('products')->whereNull('deleted_at');
             })
             ->pluck('name')->unique()->values();
@@ -441,5 +443,26 @@ class ChatbotController extends Controller
             return $json['choices'][0]['message']['content'];
         }
         return 'Xin lỗi, mình chưa có thông tin phù hợp cho câu hỏi này. Bạn có thể hỏi lại chi tiết hơn hoặc liên hệ nhân viên để được hỗ trợ nhé! 😊';
+    }
+
+    // Lấy lịch sử hội thoại của user (nếu có user_id)
+    public function getConversation(Request $request)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn cần đăng nhập để xem lịch sử hội thoại cá nhân.'
+            ], 401);
+        }
+        // Sử dụng Eloquent ORM, lấy đúng theo user_id (vì User model dùng primaryKey là user_id)
+        $logs = ChatbotLog::where('user_id', $user->user_id)
+            ->orderByDesc('created_at')
+            ->limit(30)
+            ->get(['message', 'response', 'created_at']);
+        return response()->json([
+            'success' => true,
+            'conversation' => $logs
+        ]);
     }
 }
