@@ -19,7 +19,8 @@ return new class extends Migration
             $table->unsignedBigInteger('changed_by')->nullable(); // id user thay đổi, nếu có
             $table->timestamps();
 
-            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
+            // Sửa lại foreign key đúng cột order_id của bảng orders
+            $table->foreign('order_id')->references('order_id')->on('orders')->onDelete('cascade');
             // Nếu có bảng users thì thêm foreign cho changed_by
         });
     }
