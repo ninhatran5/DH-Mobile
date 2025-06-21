@@ -6,7 +6,7 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import logo from "../../assets/images/logo2.png";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from 'react-redux';
 import { fetchNotifications, markNotificationsRead, markNotificationRead } from "../../slices/NotificationSlice";
 import Thongbao from "../../assets/sound/thongbaomuahang.mp3"
 const sidebarCollapsedStyles = {
@@ -233,6 +233,15 @@ const Homeadmin = () => {
   const handleMarkAsRead = () => {
     dispatch(markNotificationsRead());
     setShowNotificationDot(false);
+  };
+
+  const handleNotificationItemClick = (noti) => {
+    if (noti.is_read !== 1 && noti.id) {
+      dispatch(markNotificationRead(noti.id));
+    }
+    if (noti.order_id) {
+      navigate(`/admin/orderdetail/${noti.order_id}`);
+    }
   };
 
   return (
@@ -578,48 +587,25 @@ const Homeadmin = () => {
                           <div 
                             key={noti.id || idx} 
                             className={`dropdown-item admin_dh-notification-item d-flex align-items-start ${noti.is_read === 1 ? '' : 'unread'}`}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              
-                              // Đánh dấu đã đọc thông báo nếu chưa đọc
-                              if (noti.id && !noti.is_read) {
-                                dispatch(markNotificationRead(noti.id))
-                                  .then(() => {
-                                    // Chuyển hướng sau khi đánh dấu đã đọc
-                                    if (noti.order_id) {
-                                      navigate(`/admin/orderdetail/${noti.order_id}`);
-                                    }
-                                  })
-                                  .catch((error) => {
-                                    console.error("Error marking notification as read:", error);
-                                  });
-                              } else {
-                                // Nếu đã đọc rồi thì chỉ chuyển hướng
-                                if (noti.order_id) {
-                                  navigate(`/admin/orderdetail/${noti.order_id}`);
-                                }
-                              }
-                            }}
+                            onClick={() => handleNotificationItemClick(noti)}
                             style={{ cursor: 'pointer' }}
                           >
                             <div className="admin_dh-notification-icon admin_dh-bg-primary-soft">
                               <i className="bi bi-bell"></i>
                             </div>
-                                                          <div className="flex-grow-1 ms-3">
-
-                                <p className="mb-0" title={noti.title || noti.message}>{noti.title || noti.message}</p>
-
-                                <small className="text-muted">
-                                  <i className="bi bi-clock me-1"></i>
-                                  {noti.created_at ? new Date(noti.created_at).toLocaleDateString('vi-VN', {
-                                    year: 'numeric',
-                                    month: '2-digit',
-                                    day: '2-digit',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                  }) : ""}
-                                </small>
-                              </div>
+                            <div className="flex-grow-1 ms-3">
+                              <p className="mb-0" title={noti.title || noti.message}>{noti.title || noti.message}</p>
+                              <small className="text-muted">
+                                <i className="bi bi-clock me-1"></i>
+                                {noti.created_at ? new Date(noti.created_at).toLocaleDateString('vi-VN', {
+                                  year: 'numeric',
+                                  month: '2-digit',
+                                  day: '2-digit',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                }) : ""}
+                              </small>
+                            </div>
                           </div>
                         ))
                       )}
