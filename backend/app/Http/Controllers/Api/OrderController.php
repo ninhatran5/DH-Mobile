@@ -375,19 +375,30 @@ class OrderController extends Controller
     // Admin duyệt hoặc từ chối hoàn hàng (sử dụng bảng return_requests)
     public function adminHandleReturnRequest(Request $request, $id)
     {
-        // Chấp nhận cả '1', '0', true, false từ form-data
-        $approve = filter_var($request->input('approve'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-        if (!is_bool($approve)) {
+        // Danh sách trạng thái hợp lệ
+        $allowedStatuses = ['Đã yêu cầu','Đã chấp thuận','Đã từ chối','Đang xử lý','Đã hoàn lại','Đã hủy'];
+        // Các chuyển đổi trạng thái hợp lệ
+        $validTransitions = [
+            'Đã yêu cầu'   => ['Đã chấp thuận', 'Đã từ chối'],
+            'Đã chấp thuận'=> ['Đang xử lý', 'Đã từ chối'],
+            'Đang xử lý'   => ['Đã hoàn lại', 'Đã từ chối'],
+            'Đã hoàn lại'  => [],
+            'Đã từ chối'   => [],
+            'Đã hủy'       => [],
+        ];
+
+        $newStatus = $request->input('status');
+        if (!in_array($newStatus, $allowedStatuses)) {
             return response()->json([
                 'status' => false,
-                'message' => 'Trường approve phải là true/false hoặc 1/0.'
+                'message' => 'Trạng thái không hợp lệ.'
             ], 422);
         }
 
-        // Tìm yêu cầu hoàn hàng theo return_id (nếu truyền return_id) hoặc theo order_id
+        // Tìm yêu cầu hoàn hàng đang chờ xử lý
         $returnRequest = DB::table('return_requests')
             ->where('order_id', $id)
-            ->whereIn('status', ['Đã yêu cầu', 'Đang xử lý'])
+            ->whereIn('status', array_keys($validTransitions))
             ->first();
         if (!$returnRequest) {
             return response()->json([
@@ -396,11 +407,19 @@ class OrderController extends Controller
             ], 404);
         }
 
+        $currentStatus = $returnRequest->status;
+        // Kiểm tra chuyển đổi trạng thái hợp lệ
+        if (!isset($validTransitions[$currentStatus]) || !in_array($newStatus, $validTransitions[$currentStatus])) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Chuyển trạng thái không hợp lệ!'
+            ], 400);
+        }
+
         // Lấy số tiền hoàn trả từ return_requests
         $refundAmount = $returnRequest->refund_amount;
 
         // Cập nhật trạng thái yêu cầu hoàn hàng
-        $newStatus = $approve ? 'Đã hoàn lại' : 'Đã từ chối';
         DB::table('return_requests')
             ->where('return_id', $returnRequest->return_id)
             ->update([
@@ -409,25 +428,23 @@ class OrderController extends Controller
             ]);
 
         // Nếu duyệt hoàn tiền thì cập nhật trạng thái đơn hàng và trả tiền về refund_amount
-        if ($approve) {
-            $order = Orders::find($id);
-            if ($order) {
-                $order->status = 'Đã hoàn tiền';
-                $order->payment_status = 'Đã hoàn tiền';
-                // Nếu bảng orders có trường refund_amount thì cập nhật, nếu không thì chỉ trả về trong response
-                if (isset($order->refund_amount)) {
-                    $order->refund_amount = $refundAmount;
-                }
-                $order->save();
+        $order = Orders::find($id);
+        if ($newStatus === 'Đã hoàn lại' && $order) {
+            $order->status = 'Đã hoàn tiền';
+            $order->payment_status = 'Đã hoàn tiền';
+            if (isset($order->refund_amount)) {
+                $order->refund_amount = $refundAmount;
             }
+            $order->save();
         }
+        // Nếu từ chối thì không cập nhật trạng thái đơn hàng và không hoàn tiền
 
         return response()->json([
             'status' => true,
-            'message' => $approve ? 'Đã duyệt hoàn tiền' : 'Đã từ chối hoàn hàng',
+            'message' => $newStatus === 'Đã hoàn lại' ? 'Đã duyệt hoàn tiền' : ($newStatus === 'Đã từ chối' ? 'Đã từ chối hoàn hàng' : 'Cập nhật trạng thái yêu cầu hoàn hàng thành công'),
             'return_request_id' => $returnRequest->return_id,
             'return_request_status' => $newStatus,
-            'refund_amount' => $approve ? $refundAmount : null
+            'refund_amount' => $newStatus === 'Đã hoàn lại' ? $refundAmount : null
         ]);
     }
 
