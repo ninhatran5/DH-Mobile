@@ -4,61 +4,26 @@ import { vi } from 'date-fns/locale';
 import '../../assets/admin/HomeAdmin.css';
 import '../../assets/admin/order.css';
 import { Modal, Button } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchReturnOrders } from '../../slices/adminOrderSlice';
+import { Link } from 'react-router-dom';
 
 const OrdersCancelled = () => {
+  const dispatch = useDispatch();
+  const { returnOrders, loading, error } = useSelector((state) => state.adminOrder);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterReason, setFilterReason] = useState('');
   const [filterPayment, setFilterPayment] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [currentOrderId, setCurrentOrderId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedStatus, setSelectedStatus] = useState('Tất cả');
 
-  // Mock data for demo
+  const statusTabs = ['Tất cả', 'Đã yêu cầu', 'Đã chấp thuận', 'Đang xử lý', 'Đã hoàn lại', 'Đã từ chối'];
+
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      // Generate more mock data for scrolling
-      const mockOrders = [];
-      
-      // Generate orders for demo purposes
-      for (let i = 1; i <= 30; i++) {
-        // All orders are cancelled
-        const paymentOptions = ['COD', 'Banking', 'Momo', 'ZaloPay', 'VNPay'];
-        const reasonOptions = [
-          'customer_request', 
-          'out_of_stock', 
-          'incorrect_shipping_info', 
-          'duplicate_order', 
-          'other'
-        ];
-        
-        // Create a random date within the last 90 days
-        const date = new Date();
-        date.setDate(date.getDate() - Math.floor(Math.random() * 90));
-        date.setHours(Math.floor(Math.random() * 24), Math.floor(Math.random() * 60));
-        
-        mockOrders.push({
-          id: i,
-          orderCode: `DH-2023-${i.toString().padStart(4, '0')}`,
-          customerName: `Khách hàng ${i}`,
-          avatar: `https://randomuser.me/api/portraits/${i % 2 === 0 ? 'men' : 'women'}/${i + 30}.jpg`,
-          email: `customer${i}@example.com`,
-          phone: `09${Math.floor(10000000 + Math.random() * 90000000)}`,
-          totalAmount: Math.floor(1000000 + Math.random() * 15000000),
-          status: 'cancelled',
-          cancelReason: reasonOptions[Math.floor(Math.random() * reasonOptions.length)],
-          paymentMethod: paymentOptions[Math.floor(Math.random() * paymentOptions.length)],
-          items: Math.floor(1 + Math.random() * 5),
-          date: date
-        });
-      }
-      
-      setOrders(mockOrders);
-      setLoading(false);
-    }, 800);
-  }, []);
+    dispatch(fetchReturnOrders(currentPage));
+  }, [dispatch, currentPage]);
 
   const handleFilterToggle = () => {
     setShowFilters(!showFilters);
@@ -70,13 +35,7 @@ const OrdersCancelled = () => {
   };
 
   const handleDeleteOrder = () => {
-    // In a real application, you would call an API to delete the order
-    console.log(`Deleting order ${currentOrderId}`);
-    
-    // Update the UI by removing the order
-    setOrders(orders.filter(order => order.id !== currentOrderId));
-    
-    // Close the modal
+    // Implement delete functionality here
     setShowDeleteModal(false);
   };
 
@@ -88,41 +47,34 @@ const OrdersCancelled = () => {
     }).format(amount);
   };
 
-  // Get reason label in Vietnamese
-  const getReasonLabel = (reason) => {
-    switch (reason) {
-      case 'customer_request':
-        return 'Khách hàng yêu cầu hủy';
-      case 'out_of_stock':
-        return 'Sản phẩm hết hàng';
-      case 'incorrect_shipping_info':
-        return 'Thông tin giao hàng không chính xác';
-      case 'duplicate_order':
-        return 'Đơn hàng trùng lặp';
-      case 'other':
-        return 'Lý do khác';
-      default:
-        return 'Không xác định';
-    }
+  const getStatusColor = (status) => {
+    const statusColors = {
+      'Đã yêu cầu': 'pending',
+      'Đã chấp thuận': 'approved',
+      'Đã từ chối': 'rejected',
+      'Đang xử lý': 'processing',
+      'Đã hoàn lại': 'refunded',
+      'Đã hủy': 'cancelled'
+    };
+    return statusColors[status] || 'default';
   };
 
-  const filteredOrders = orders.filter(order => {
+  const filteredOrders = returnOrders.filter(order => {
     // Apply search filter
     if (searchTerm && 
-        !order.orderCode.toLowerCase().includes(searchTerm.toLowerCase()) && 
-        !order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        !order.phone.includes(searchTerm) &&
+        !order.order_code.toLowerCase().includes(searchTerm.toLowerCase()) && 
+        !order.customer.toLowerCase().includes(searchTerm.toLowerCase()) &&
         !order.email.toLowerCase().includes(searchTerm.toLowerCase())) {
       return false;
     }
     
-    // Apply reason filter
-    if (filterReason && order.cancelReason !== filterReason) {
+    // Apply payment filter
+    if (filterPayment && order.payment_method !== filterPayment) {
       return false;
     }
-    
-    // Apply payment filter
-    if (filterPayment && order.paymentMethod !== filterPayment) {
+
+    // Apply status filter
+    if (selectedStatus !== 'Tất cả' && order.return_status !== selectedStatus) {
       return false;
     }
     
@@ -134,9 +86,27 @@ const OrdersCancelled = () => {
       {/* Header Section */}
       <div className="admin_order-header">
         <div className="admin_order-title">
-          <h1>Đơn hàng đã hủy</h1>
-          <p className="text-muted">Danh sách đơn hàng đã hủy</p>
+          <h1>Đơn hàng hoàn trả</h1>
+          <p className="text-muted">Danh sách đơn hàng đã hoàn trả</p>
         </div>
+      </div>
+
+      {/* Status Tabs */}
+      <div className="admin_order-status-tabs">
+        {statusTabs.map((status) => (
+          <button
+            key={status}
+            className={`admin_order-status-tab ${selectedStatus === status ? 'active' : ''}`}
+            onClick={() => setSelectedStatus(status)}
+          >
+            {status}
+            {status !== 'Tất cả' && (
+              <span className="admin_order-status-count">
+                {returnOrders.filter(order => order.return_status === status).length}
+              </span>
+            )}
+          </button>
+        ))}
       </div>
 
       {/* Filter Section */}
@@ -146,7 +116,7 @@ const OrdersCancelled = () => {
           <input
             type="text"
             className="admin_order-search-input"
-            placeholder="Tìm kiếm theo mã đơn, tên khách hàng, SĐT..."
+            placeholder="Tìm kiếm theo mã đơn, tên khách hàng, email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -158,9 +128,6 @@ const OrdersCancelled = () => {
           >
             <i className="bi bi-funnel" style={{ color: '#5ac8fa' }}></i> Bộ lọc
           </button>
-          <button className="admin_order-btn admin_order-btn-outline">
-            <i className="bi bi-sort-down" style={{ color: '#5ac8fa' }}></i> Sắp xếp
-          </button>
         </div>
       </div>
 
@@ -168,23 +135,6 @@ const OrdersCancelled = () => {
       {showFilters && (
         <div className="admin_order-filter-panel">
           <div className="admin_order-filter-row">
-            <div className="admin_order-filter-column">
-              <div className="admin_order-filter-group">
-                <label className="admin_order-filter-label">Lý do hủy đơn</label>
-                <select 
-                  className="admin_order-filter-select" 
-                  value={filterReason}
-                  onChange={(e) => setFilterReason(e.target.value)}
-                >
-                  <option value="">Tất cả</option>
-                  <option value="customer_request">Khách hàng yêu cầu hủy</option>
-                  <option value="out_of_stock">Sản phẩm hết hàng</option>
-                  <option value="incorrect_shipping_info">Thông tin giao hàng không chính xác</option>
-                  <option value="duplicate_order">Đơn hàng trùng lặp</option>
-                  <option value="other">Lý do khác</option>
-                </select>
-              </div>
-            </div>
             <div className="admin_order-filter-column">
               <div className="admin_order-filter-group">
                 <label className="admin_order-filter-label">Phương thức thanh toán</label>
@@ -218,63 +168,55 @@ const OrdersCancelled = () => {
           <table className="admin_order-table">
             <thead>
               <tr>
-                <th style={{ width: '40px' }}></th>
                 <th style={{ width: '20%' }}>Mã đơn / Khách hàng</th>
-                <th style={{ width: '15%' }}>Ngày hủy</th>
+                <th style={{ width: '15%' }}>Ngày hoàn trả</th>
                 <th className="admin_order-hide-sm" style={{ width: '20%' }}>Tổng tiền</th>
-                <th style={{ width: '15%' }}>Lý do hủy</th>
-                <th style={{ width: '15%' }}>Trạng thái</th>
+                <th style={{ width: '15%' }}>Trạng thái hoàn trả</th>
+                <th style={{ width: '15%' }}>Trạng thái hoàn tiền</th>
                 <th style={{ width: '100px' }}>Thao tác</th>
               </tr>
             </thead>
             <tbody>
               {filteredOrders.length > 0 ? (
                 filteredOrders.map(order => (
-                  <tr key={order.id}>
+                  <tr key={order.order_id}>
                     <td>
-                      <div className="admin_order-avatar">
-                        <img src={order.avatar} alt={order.customerName} />
-                      </div>
+                      <div className="admin_order-code">{order.order_code}</div>
+                      <div className="admin_order-customer">{order.customer}</div>
+                      <div className="admin_order-email">{order.email}</div>
                     </td>
                     <td>
-                      <div className="admin_order-code">{order.orderCode}</div>
-                      <div className="admin_order-customer">{order.customerName}</div>
-                    </td>
-                    <td>
-                      <div>{format(order.date, 'dd/MM/yyyy', { locale: vi })}</div>
-                      <div className="admin_order-time">{format(order.date, 'HH:mm')}</div>
+                      <div>{order.latest_return_request?.created_at}</div>
                     </td>
                     <td className="admin_order-hide-sm">
-                      <div className="admin_order-amount">{formatCurrency(order.totalAmount)}</div>
-                      <div className="admin_order-items">{order.items} sản phẩm</div>
+                      <div className="admin_order-amount">{formatCurrency(order.total_amount)}</div>
                     </td>
                     <td>
-                      <span className="admin_order-reason">{getReasonLabel(order.cancelReason)}</span>
+                      <span className={`admin_order-status admin_order-status-${getStatusColor(order.return_status)}`}>
+                        {order.return_status}
+                      </span>
                     </td>
                     <td>
-                      <span className="admin_order-status admin_order-status-cancelled">
-                        Đã hủy
+                      <span className={`admin_order-status admin_order-status-${order.payment_status === 'Đã hoàn tiền' ? 'refunded' : 'processing'}`}>
+                        {order.payment_status}
                       </span>
                     </td>
                     <td>
                       <div className="admin_order-actions-col">
-                        <button className="admin_order-action-btn" title="Xem chi tiết">
-                          <i className="bi bi-eye" style={{ color: '#5ac8fa' }}></i>
-                        </button>
-                        <button 
-                          className="admin_order-action-btn admin_order-delete-btn" 
-                          title="Xóa đơn hàng"
-                          onClick={() => handleShowDeleteModal(order.id)}
+                        <Link 
+                          to={`/admin/orderdetail/${order.order_id}`} 
+                          className="admin_order-action-btn" 
+                          title="Xem chi tiết"
                         >
-                          <i className="bi bi-trash" style={{ color: '#ff3b30' }}></i>
-                        </button>
+                          <i className="bi bi-eye" style={{ color: '#5ac8fa' }}></i>
+                        </Link>
                       </div>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="admin_order-empty">
+                  <td colSpan="6" className="admin_order-empty">
                     <div>
                       <i className="bi bi-inbox" style={{ fontSize: '2rem', opacity: 0.5 }}></i>
                       <p>Không tìm thấy đơn hàng nào</p>
@@ -289,7 +231,7 @@ const OrdersCancelled = () => {
 
       {/* Order count */}
       <div className="admin_order-count">
-        Hiển thị {filteredOrders.length} trong tổng số {orders.length} đơn hàng đã hủy
+        Hiển thị {filteredOrders.length} đơn hàng hoàn trả
       </div>
 
       {/* Delete Order Modal */}

@@ -73,13 +73,34 @@ export const fetchorderdetails = createAsyncThunk(
   }
 );
 
+// Lấy danh sách đơn hoàn hàng
+export const fetchReturnOrders = createAsyncThunk(
+  "adminOrder/fetchReturnOrders",
+  async (page = 1, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      const response = await axiosConfig.get(`/admin/return-orders?page=${page}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Lỗi khi lấy danh sách đơn hoàn hàng"
+      );
+    }
+  }
+);
 
 // Slice
 const adminOrderSlice = createSlice({
   name: "adminOrder",
   initialState: {
     orders: [],
-    order: null, 
+    order: null,
+    returnOrders: [], // Thêm state cho đơn hoàn hàng
+    returnOrdersPagination: {}, // Thêm pagination cho đơn hoàn hàng
     pagination: {},
     loading: false,
     error: null,
@@ -156,6 +177,21 @@ const adminOrderSlice = createSlice({
         state.loading = false;
         state.error = action.payload || "Lỗi khi lấy chi tiết đơn hàng";
         state.order = null;
+      })
+
+      // Xử lý fetch đơn hoàn hàng
+      .addCase(fetchReturnOrders.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchReturnOrders.fulfilled, (state, action) => {
+        state.returnOrders = action.payload.orders || [];
+        state.returnOrdersPagination = action.payload.pagination || {};
+        state.loading = false;
+      })
+      .addCase(fetchReturnOrders.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Lỗi khi lấy danh sách đơn hoàn hàng";
       });
   },
 });
