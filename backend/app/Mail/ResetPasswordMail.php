@@ -25,6 +25,6 @@ class ResetPasswordMail extends Mailable
     public function build()
     {
         return $this->subject('Đặt lại mật khẩu')
-                    ->view('emails.reset-password');
+            ->view('emails.reset-password');
     }
 }

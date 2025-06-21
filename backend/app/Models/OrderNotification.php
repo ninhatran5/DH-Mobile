@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Orders;
+
 class OrderNotification extends Model
 {
     protected $primaryKey = 'notification_id';
@@ -22,4 +23,3 @@ class OrderNotification extends Model
         return $this->belongsTo(Orders::class, 'order_id');
     }
 }
-

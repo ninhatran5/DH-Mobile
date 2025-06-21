@@ -33,4 +33,3 @@ class SupportChatSent implements ShouldBroadcast
         return 'SupportChatSent';
     }
 }
-
