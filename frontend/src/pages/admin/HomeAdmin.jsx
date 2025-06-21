@@ -236,8 +236,8 @@ const Homeadmin = () => {
   };
 
   const handleNotificationItemClick = (noti) => {
-    if (noti.is_read !== 1 && noti.id) {
-      dispatch(markNotificationRead(noti.id));
+    if (noti.is_read !== 1 && noti.notification_id) {
+      dispatch(markNotificationRead(noti.notification_id));
     }
     if (noti.order_id) {
       navigate(`/admin/orderdetail/${noti.order_id}`);
@@ -585,7 +585,7 @@ const Homeadmin = () => {
                       ) : (
                         notifications.map((noti, idx) => (
                           <div 
-                            key={noti.id || idx} 
+                            key={noti.notification_id || idx} 
                             className={`dropdown-item admin_dh-notification-item d-flex align-items-start ${noti.is_read === 1 ? '' : 'unread'}`}
                             onClick={() => handleNotificationItemClick(noti)}
                             style={{ cursor: 'pointer' }}
@@ -594,7 +594,7 @@ const Homeadmin = () => {
                               <i className="bi bi-bell"></i>
                             </div>
                             <div className="flex-grow-1 ms-3">
-                              <p className="mb-0" title={noti.title || noti.message}>{noti.title || noti.message}</p>
+                              <p className="mb-0" title={noti.message}>{noti.message}</p>
                               <small className="text-muted">
                                 <i className="bi bi-clock me-1"></i>
                                 {noti.created_at ? new Date(noti.created_at).toLocaleDateString('vi-VN', {
