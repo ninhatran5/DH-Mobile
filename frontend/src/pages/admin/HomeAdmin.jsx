@@ -33,6 +33,7 @@ const Homeadmin = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [notificationCount, setNotificationCount] = useState(3);
   const [showNotificationDot, setShowNotificationDot] = useState(true);
+  const [isSoundEnabled, setSoundEnabled] = useState(true);
   const location = useLocation();
   const sidebarCollapseRef = useRef(null);
   const sidebarOpenRef = useRef(null);
@@ -98,6 +99,12 @@ const Homeadmin = () => {
     const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
     setIsDarkMode(prefersDarkMode);
 
+    // Get saved sound preference
+    const savedSoundPreference = localStorage.getItem('notificationSound');
+    if (savedSoundPreference !== null) {
+      setSoundEnabled(savedSoundPreference === 'true');
+    }
+
     // Listen for changes in dark mode preference
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = (e) => {
@@ -123,7 +130,7 @@ const Homeadmin = () => {
           }
           if (newUnread > prevUnreadCount.current) {
             toast.info("Bạn có đơn hàng mới!", { position: "top-right", autoClose: 4000 });
-            if (audioRef.current) {
+            if (audioRef.current && isSoundEnabled) {
               audioRef.current.currentTime = 0;
               audioRef.current.play();
             }
@@ -134,7 +141,7 @@ const Homeadmin = () => {
     }, 2000);
     return () => clearInterval(interval);
     // eslint-disable-next-line
-  }, [dispatch]);
+  }, [dispatch, isSoundEnabled]);
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -242,6 +249,12 @@ const Homeadmin = () => {
     if (noti.order_id) {
       navigate(`/admin/orderdetail/${noti.order_id}`);
     }
+  };
+
+  const toggleSound = () => {
+    const newSoundState = !isSoundEnabled;
+    setSoundEnabled(newSoundState);
+    localStorage.setItem('notificationSound', newSoundState);
   };
 
   return (
@@ -548,6 +561,15 @@ const Homeadmin = () => {
                   title={isDarkMode ? "Light mode" : "Dark mode"}
                 >
                   <i className={`bi ${isDarkMode ? 'bi-sun' : 'bi-moon'}`}></i>
+                </button>
+
+                <button
+                  className="btn admin_dh-btn admin_dh-sound-toggle"
+                  onClick={toggleSound}
+                  title={isSoundEnabled ? "Tắt âm thanh thông báo" : "Bật âm thanh thông báo"}
+                  style={{ marginRight: '10px' }}
+                >
+                  <i className={`bi ${isSoundEnabled ? 'bi-volume-up' : 'bi-volume-mute'}`}></i>
                 </button>
 
                 <div className="admin_dh-notifications-nav">
