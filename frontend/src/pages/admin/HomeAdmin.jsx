@@ -473,12 +473,12 @@ const Homeadmin = () => {
                     data-title="Bình luận"
                   >
                     <i className="bi bi-chat-dots" style={{ color: '#ff9f0a' }} />
-                    <span>Bình luận</span>
+                    <span>Quản lsi lí bài viết </span>
                     <i className={`bi bi-caret-${isDropdownActive('comments') ? 'down' : 'right'}-fill`} style={{ marginLeft: '8px' }}></i>
                   </a>
                   <div className={`admin_dh-submenu ${isDropdownActive('comments') ? 'show' : ''}`}>
-                    <div><Link to="/admin/comments">Tất cả bình luận</Link></div>
-                    <div><Link to="/admin/comments/pending">Chờ duyệt</Link></div>
+                    <div><Link to="/admin/comments">Tất cả bài viết </Link></div>
+                    <div><Link to="/admin/comments/pending">Thêm bài viết</Link></div>
                   </div>
                 </div>
               </div>

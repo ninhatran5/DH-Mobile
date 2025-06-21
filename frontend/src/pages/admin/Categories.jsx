@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories, deleteCategory, restoreCategory, forceDeleteCategory, fetchTrashedCategories } from "../../slices/adminCategories";
 import "../../assets/admin/Categories.css";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const CategoryList = () => {
   const dispatch = useDispatch();
@@ -25,6 +26,12 @@ const CategoryList = () => {
   };
 
   const handleDelete = (id) => {
+    const productCount = getProductCount(id);
+    if (productCount > 0) {
+      toast.error(`Không thể xóa danh mục này vì còn ${productCount} sản phẩm thuộc danh mục này. Vui lòng xóa hoặc chuyển các sản phẩm sang danh mục khác trước.`);
+      return;
+    }
+    
     if (window.confirm("Bạn có chắc muốn xóa danh mục này không? Danh mục sẽ được chuyển vào thùng rác.")) {
       dispatch(deleteCategory(id)).then(() => {
         dispatch(fetchCategories());
@@ -43,6 +50,12 @@ const CategoryList = () => {
   };
 
   const handleForceDelete = (id) => {
+    const productCount = getProductCount(id);
+    if (productCount > 0) {
+      toast.error(`Không thể xóa vĩnh viễn danh mục này vì còn ${productCount} sản phẩm thuộc danh mục này. Vui lòng xóa hoặc chuyển các sản phẩm sang danh mục khác trước.`);
+      return;
+    }
+
     if (window.confirm("Bạn có chắc muốn xóa vĩnh viễn danh mục này không? Hành động này không thể hoàn tác!")) {
       dispatch(forceDeleteCategory(id)).then(() => {
         dispatch(fetchTrashedCategories());
