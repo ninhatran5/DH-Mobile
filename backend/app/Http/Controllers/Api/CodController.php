@@ -16,16 +16,16 @@ class CodController extends Controller
     {
         $user = Auth::user();
 
-           // Validate địa chỉ
-    $request->validate([
-        'address' => 'required|string',
-        'ward' => 'required|string',
-        'district' => 'required|string',
-        'city' => 'required|string',
-        'phone' => 'required|string',
-        'email' => 'required|email',
-        'customer' => 'required|string',
-    ]);
+        // Validate địa chỉ
+        $request->validate([
+            'address' => 'required|string',
+            'ward' => 'required|string',
+            'district' => 'required|string',
+            'city' => 'required|string',
+            'phone' => 'required|string',
+            'email' => 'required|email',
+            'customer' => 'required|string',
+        ]);
 
         // Kiểm tra người dùng đã có giỏ hàng chưa
         $cart = DB::table('carts')->where('user_id', $user->user_id)->first();

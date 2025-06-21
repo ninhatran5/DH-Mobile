@@ -91,9 +91,9 @@ class ChatbotController extends Controller
     {
         $products = DB::table('products')
             ->whereNull('deleted_at')
-            ->where(function($query) use ($message) {
+            ->where(function ($query) use ($message) {
                 $query->where('name', 'like', "%{$message}%")
-                      ->orWhere('description', 'like', "%{$message}%");
+                    ->orWhere('description', 'like', "%{$message}%");
             })
             ->join('categories', 'products.category_id', '=', 'categories.category_id')
             ->select('products.*', 'categories.name as category_name')
@@ -151,9 +151,9 @@ class ChatbotController extends Controller
             ->get();
 
         return 'Chúng tôi có các danh mục sản phẩm sau: ' .
-               $categories->map(function($category) {
-                   return "{$category->name} ({$category->product_count} sản phẩm)";
-               })->implode(', ');
+            $categories->map(function ($category) {
+                return "{$category->name} ({$category->product_count} sản phẩm)";
+            })->implode(', ');
     }
 
     protected function handleVoucherQuery($message)
@@ -244,9 +244,9 @@ class ChatbotController extends Controller
         // Tìm trong FAQs
         $faqs = DB::table('news')
             ->whereNull('deleted_at')
-            ->where(function($query) use ($message) {
+            ->where(function ($query) use ($message) {
                 $query->where('title', 'like', "%{$message}%")
-                      ->orWhere('content', 'like', "%{$message}%");
+                    ->orWhere('content', 'like', "%{$message}%");
             })
             ->limit(3)
             ->get();
