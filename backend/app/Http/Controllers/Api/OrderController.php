@@ -740,4 +740,38 @@ class OrderController extends Controller
             'history' => $formatted
         ]);
     }
+
+    // Lấy tất cả lịch sử thay đổi trạng thái của mọi đơn hàng (admin)
+    public function getAllOrderStatusHistories()
+    {
+        $history = DB::table('order_status_histories')
+            ->leftJoin('users', 'order_status_histories.changed_by', '=', 'users.user_id')
+            ->orderBy('order_status_histories.order_id')
+            ->orderBy('order_status_histories.created_at', 'asc')
+            ->select(
+                'order_status_histories.order_id',
+                'order_status_histories.old_status',
+                'order_status_histories.new_status',
+                'order_status_histories.changed_by',
+                'users.full_name as changed_by_name',
+                'order_status_histories.created_at'
+            )
+            ->get();
+
+        $formatted = $history->map(function ($item) {
+            return [
+                'order_id' => $item->order_id,
+                'old_status' => $item->old_status,
+                'new_status' => $item->new_status,
+                'changed_by' => $item->changed_by,
+                'changed_by_name' => $item->changed_by_name,
+                'changed_at' => $item->created_at ? date('d/m/Y H:i:s', strtotime($item->created_at)) : null,
+            ];
+        });
+
+        return response()->json([
+            'status' => true,
+            'history' => $formatted
+        ]);
+    }
 }

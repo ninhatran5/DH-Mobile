@@ -289,7 +289,10 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(f
     Route::get('orders/return-orders/{order_id}', [OrderController::class, 'getReturnOrderDetail']);
     // lấy danh sách lịch sử cập nhật đơn hàng (theo order_id)
     Route::get('orders/{order_id}/status-history', [OrderController::class, 'getOrderStatusHistory']);
+    // Lấy tất cả lịch sử thay đổi trạng thái của mọi đơn hàng (admin)
+    Route::get('/status-histories', [OrderController::class, 'getAllOrderStatusHistories']);
 });
+
 
 
 
