@@ -469,7 +469,7 @@ class OrderController extends Controller
         ]);
     }
 
-    // Danh sách yêu cầu hoàn trả kèm thông tin đơn hàng (admin)
+    // Danh sách yêu cầu hoàn trả kèm thông tin đơn hàng (admin) - tối ưu, chỉ trả về thông tin cơ bản và trạng thái yêu cầu hoàn trả gần nhất
     public function getReturnOrdersByStatus(Request $request)
     {
         $status = $request->input('status'); // 'Đã hoàn lại', 'Đã từ chối', hoặc null
@@ -489,9 +489,7 @@ class OrderController extends Controller
                 'orders.cancel_reason',
                 'orders.created_at as order_created_at',
                 'return_requests.return_id',
-                'return_requests.reason as return_reason',
                 'return_requests.status as return_status',
-                'return_requests.refund_amount',
                 'return_requests.created_at as return_created_at'
             );
         if ($status) {
@@ -499,7 +497,12 @@ class OrderController extends Controller
         } else {
             $query->whereIn('return_requests.status', ['Đã hoàn lại', 'Đã từ chối']);
         }
-        $results = $query->orderByDesc('return_requests.created_at')->get();
+        // Chỉ lấy yêu cầu hoàn trả gần nhất cho mỗi đơn hàng
+        $results = $query
+            ->orderBy('orders.order_id')
+            ->orderByDesc('return_requests.created_at')
+            ->get()
+            ->unique('order_id');
 
         $formatted = $results->map(function ($row) {
             return [
@@ -513,11 +516,9 @@ class OrderController extends Controller
                 'payment_method' => $row->payment_method,
                 'cancel_reason' => $row->cancel_reason,
                 'order_created_at' => $row->order_created_at ? date('d/m/Y H:i:s', strtotime($row->order_created_at)) : null,
-                'return_request' => [
+                'latest_return_request' => [
                     'return_id' => $row->return_id,
-                    'reason' => $row->return_reason,
                     'status' => $row->return_status,
-                    'refund_amount' => number_format($row->refund_amount, 0, '.', ''),
                     'created_at' => $row->return_created_at ? date('d/m/Y H:i:s', strtotime($row->return_created_at)) : null,
                 ]
             ];
