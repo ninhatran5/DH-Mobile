@@ -52,6 +52,22 @@ export const cancelOrder = createAsyncThunk(
   }
 );
 
+export const refundOrder = createAsyncThunk(
+  "order/refundOrder",
+  async ({ id, reason }, thunkAPI) => {
+    try {
+      const response = await axiosConfig.post(`/orders/${id}/request-return`, {
+        return_reason: reason,
+      });
+      return response.data.order;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Đã có lỗi xảy ra"
+      );
+    }
+  }
+);
+
 export const ordersSlice = createSlice({
   name: "order",
   initialState,
@@ -91,6 +107,18 @@ export const ordersSlice = createSlice({
         state.orders = action.payload;
       })
       .addCase(cancelOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Đã có lỗi xảy ra";
+      })
+      .addCase(refundOrder.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(refundOrder.fulfilled, (state) => {
+        state.loading = false;
+        state.refundSuccess = true; // nếu bạn cần đánh dấu thành công
+      })
+      .addCase(refundOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
       });

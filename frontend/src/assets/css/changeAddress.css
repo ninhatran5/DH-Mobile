@@ -277,14 +277,26 @@ input[type="radio"]:focus {
 }
 .desc_return_product{
   font-size: 12px;
+  flex: 1;
+  text-align: left;
+  margin: 0;
+  margin-top: -10px;
+  padding-right: 8px;
 }
 .color_return_product{
+  display: flex;
   justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 .quantity_return_product{
-  display: flex;
   font-size: 12px;
-  justify-content: end;
+  text-align: right;
+  margin: 0;
+  min-width: 32px;
+  padding-left: 8px;
+  margin-top: 5px;
+  font-weight: 400;
 }
 .price_return_product{
   font-size: 12px;
@@ -293,7 +305,7 @@ input[type="radio"]:focus {
 .return-label,
 .return-select,
 .return-textarea {
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .return-reason-group {
@@ -317,4 +329,9 @@ input[type="radio"]:focus {
 }
 .email_address_return{
   margin-left: 20px;
+}
+
+.return-textarea::placeholder {
+  font-size: 14px;
+  color: #bbbbbb;
 }
