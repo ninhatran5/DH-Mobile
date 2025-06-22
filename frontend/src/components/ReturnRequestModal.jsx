@@ -3,56 +3,60 @@ import { useEffect, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchOrderDetail } from "../slices/orderSlice";
+import { fetchOrderDetail, refundOrder } from "../slices/orderSlice";
 import numberFormat from "../../utils/numberFormat";
 import Swal from "sweetalert2";
 
 const ReturnRequestModal = ({ show, handleClose, orderId }) => {
-  const [reason, setReason] = useState("");
+//   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
+  const maxChars = 2000;
+
 
   const dispatch = useDispatch();
   const { orderDetail } = useSelector((state) => state.order);
 
+//   const returnReasons = [
+//     { value: "", label: "Chọn lý do" },
+//     { value: "thieu_hang", label: "Thiếu hàng" },
+//     { value: "sai_hang", label: "Người bán gửi sai hàng" },
+//     { value: "hang_be_vo", label: "Hàng bể vỡ" },
+//     { value: "hang_loi", label: "Hàng lỗi, không hoạt động" },
+//     { value: "hang_gia", label: "Hàng giả, nhái" },
+//     { value: "khac_mo_ta", label: "Hàng khác với mô tả" },
+//     { value: "da_su_dung", label: "Hàng đã qua sử dụng" },
+//     { value: "ly_do_khac", label: "Lý do khác" },
+//   ];
+  
+
   useEffect(() => {
     if (!orderId) return;
     dispatch(fetchOrderDetail(orderId));
-
-    const interval = setInterval(() => {
-      dispatch(fetchOrderDetail(orderId));
-    }, 5000);
-
-    return () => clearInterval(interval);
   }, [orderId, dispatch]);
 
-  const handleSubmit = () => {
-    const data = {
-      orderId,
-      product: orderDetail?.products?.[0]?.product_name,
-      color:
-        orderDetail?.products?.[0]?.variant_attributes?.find(
-          (attr) => attr.attribute_name.toLowerCase() === "màu sắc"
-        )?.attribute_value || "Không rõ",
-      quantity: orderDetail?.products?.[0]?.quantity || 0,
-      price: numberFormat(orderDetail?.products?.[0]?.price || 0),
-      refund: numberFormat(orderDetail?.total_amount || 0),
-      reason,
-      description,
-      email: "Tunglnph49038@Gmail.com",
-    };
+  const handleSubmit = async () => {
+    try {
+      await dispatch(
+        refundOrder({ id: orderId, reason: description })
+      ).unwrap();
 
-    console.log("Yêu cầu trả hàng:", data);
+      Swal.fire({
+        icon: "success",
+        title: "Đã gửi yêu cầu",
+        text: "Chúng tôi sẽ xử lý trong thời gian sớm nhất.",
+        confirmButtonText: "Đóng",
+      });
 
-    Swal.fire({
-      icon: "success",
-      title: "Đã gửi yêu cầu",
-      text: "Chúng tôi sẽ xử lý trong thời gian sớm nhất.",
-      confirmButtonText: "Đóng",
-    });
-
-    handleClose(); // đóng modal sau khi gửi
-    setReason(""); // reset form
-    setDescription("");
+      handleClose();
+    //   setReason("");
+      setDescription("");
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi",
+        text: error || "Gửi yêu cầu thất bại",
+      });
+    }
   };
 
   return (
@@ -66,35 +70,33 @@ const ReturnRequestModal = ({ show, handleClose, orderId }) => {
       </Modal.Header>
       <Modal.Body>
         <div className="container-fluid">
-          <div className="d-flex mt-3">
-            <div className="border_image_return">
-              <img
-                className="image_return"
-                src={orderDetail?.products?.[0]?.product_image || ""}
-                alt=""
-              />
-            </div>
-            <div>
-              <p className="title_return_product">
-                {orderDetail?.products?.[0]?.product_name || ""}
-              </p>
-              <div className="d-flex color_return_product">
-                <p className="desc_return_product">
-                  {orderDetail?.products?.[0]?.variant_attributes?.find(
-                    (attr) => attr.attribute_name.toLowerCase() === "màu sắc"
-                  )?.attribute_value || "Không rõ"}
-                </p>
-                <p className="quantity_return_product">
-                  x{orderDetail?.products?.[0]?.quantity || ""}
+          {orderDetail?.products?.map((product, index) => (
+            <div className="d-flex mt-3" key={index}>
+              <div className="border_image_return">
+                <img
+                  className="image_return"
+                  src={product.product_image || ""}
+                  alt={product.product_name}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <p className="title_return_product">{product.product_name}</p>
+                <div className="color_return_product">
+                  <p className="desc_return_product">
+                    {product.variant_attributes?.find(
+                      (attr) => attr.attribute_name.toLowerCase() === "màu sắc"
+                    )?.attribute_value || "Không rõ"}
+                  </p>
+                  <p className="quantity_return_product">x{product.quantity}</p>
+                </div>
+                <p className="price_return_product">
+                  {numberFormat(product.price || 0)}
                 </p>
               </div>
-              <p className="price_return_product">
-                {numberFormat(orderDetail?.products?.[0]?.price || 0)}
-              </p>
             </div>
-          </div>
+          ))}
 
-          <hr className="hr_return" />
+          {/* <hr className="hr_return" />
           <div className="return-reason-group d-flex align-items-center mb-3">
             <label
               htmlFor="reasonSelect"
@@ -108,16 +110,17 @@ const ReturnRequestModal = ({ show, handleClose, orderId }) => {
                 id="reasonSelect"
                 className="return-select form-select w-100"
                 value={reason}
+                style={{ fontSize: "14px" }}
                 onChange={(e) => setReason(e.target.value)}
               >
-                <option value="">-- Chọn lý do --</option>
-                <option value="damaged">Sản phẩm bị hư hỏng</option>
-                <option value="wrongItem">Sản phẩm sai mẫu</option>
-                <option value="missingItem">Thiếu sản phẩm</option>
-                <option value="other">Lý do khác</option>
+                {returnReasons.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
               </select>
             </div>
-          </div>
+          </div> */}
 
           <hr className="hr_return" />
           <div>
@@ -135,16 +138,23 @@ const ReturnRequestModal = ({ show, handleClose, orderId }) => {
             <textarea
               id="additionalInfo"
               className="return-textarea form-control"
-              rows="3"
-              placeholder="Vui lòng cung cấp thêm thông tin về sự cố."
+              rows="4"
+              placeholder="Ghi chú thêm..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              maxLength={maxChars}
             ></textarea>
+            <p
+              className="text-end text-muted mt-1"
+              style={{ fontSize: "13px" }}
+            >
+              {description.length}/{maxChars} ký tự
+            </p>
           </div>
 
           <div className="d-flex justify-content-between align-items-center mb-3">
             <p className="email_return">Email</p>
-            <p className="email_address_return">Tunglnph49038@Gmail.com</p>
+            <p className="email_address_return">{orderDetail?.email || ""}</p>
           </div>
         </div>
       </Modal.Body>
@@ -153,9 +163,9 @@ const ReturnRequestModal = ({ show, handleClose, orderId }) => {
           Đóng
         </Button>
         <Button
-          variant="primary"
+         className="btn_save_address"
           onClick={handleSubmit}
-          disabled={!reason || !description}
+          disabled={ !description}
         >
           Gửi yêu cầu
         </Button>
