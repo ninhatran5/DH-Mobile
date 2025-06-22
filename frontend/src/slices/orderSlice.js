@@ -3,6 +3,7 @@ import { axiosConfig } from "../../utils/axiosConfig";
 
 const initialState = {
   orders: [],
+  orderDetail: null, // Thêm dòng này
   loading: false,
   error: null,
 };
@@ -57,17 +58,14 @@ export const ordersSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // pending(đang call)
       .addCase(fetchOrder.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      // call thành công
       .addCase(fetchOrder.fulfilled, (state, action) => {
         state.loading = false;
         state.orders = action.payload;
       })
-      // call lỗi
       .addCase(fetchOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
@@ -76,12 +74,10 @@ export const ordersSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      // call thành công
       .addCase(fetchOrderDetail.fulfilled, (state, action) => {
         state.loading = false;
-        state.orders = action.payload;
+        state.orderDetail = action.payload; // Sửa lại dòng này
       })
-      // call lỗi
       .addCase(fetchOrderDetail.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
@@ -90,12 +86,10 @@ export const ordersSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      // call thành công
       .addCase(cancelOrder.fulfilled, (state, action) => {
         state.loading = false;
         state.orders = action.payload;
       })
-      // call lỗi
       .addCase(cancelOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";

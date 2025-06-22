@@ -25,7 +25,7 @@ const OrderDetail = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
 
-  const { orders, loading } = useSelector((state) => state.order);
+  const { orderDetail, loading } = useSelector((state) => state.order);
 
   useEffect(() => {
     if (!id) return;
@@ -50,7 +50,7 @@ const OrderDetail = () => {
     "da huy": "canceled",
   };
 
-  const normalizedStatus = removeVietnameseTones(orders?.status || "");
+  const normalizedStatus = removeVietnameseTones(orderDetail?.status || "");
   const currentStatusKey = statusMap[normalizedStatus] || "pending";
 
   const isCanceled = currentStatusKey === "canceled";
@@ -77,27 +77,27 @@ const OrderDetail = () => {
   const orderInfo = [
     {
       label: t("orderDetail.receiver"),
-      value: orders?.customer || t("toast.pending_update"),
+      value: orderDetail?.customer || t("toast.pending_update"),
     },
     {
       label: t("orderDetail.phone"),
-      value: orders?.phone || t("toast.pending_update"),
+      value: orderDetail?.phone || t("toast.pending_update"),
     },
     {
       label: t("orderDetail.address"),
-      value: orders?.address || t("toast.pending_update"),
+      value: orderDetail?.address || t("toast.pending_update"),
     },
     {
       label: t("orderDetail.paymentMethod"),
-      value: orders?.payment_method?.[1] || t("toast.pending_update"),
+      value: orderDetail?.payment_method?.[1] || t("toast.pending_update"),
     },
     {
       label: t("orderDetail.payment_status_note"),
-      value: orders?.payment_status || t("toast.pending_update"),
+      value: orderDetail?.payment_status || t("toast.pending_update"),
     },
     {
       label: t("orderDetail.order_status_note"),
-      value: orders?.status || t("toast.pending_update"),
+      value: orderDetail?.status || t("toast.pending_update"),
     },
   ];
 
@@ -118,14 +118,14 @@ const OrderDetail = () => {
             <h5>
               {t("orderDetail.order")}:
               <span className="text-primary font-weight-bold ms-2">
-                #{orders?.order_code || t("toast.pending_update")}
+                #{orderDetail?.order_code || t("toast.pending_update")}
               </span>
             </h5>
           </div>
           <div className="d-flex flex-column text-sm-right">
             <p className="mb-0">
               {t("orderDetail.orderDate")}:{" "}
-              <span>{orders?.order_date || t("toast.pending_update")}</span>
+              <span>{orderDetail?.order_date || t("toast.pending_update")}</span>
             </p>
           </div>
         </div>
@@ -187,7 +187,7 @@ const OrderDetail = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {(orders?.products || []).map((order, index) => (
+                    {(orderDetail?.products || []).map((order, index) => (
                       <OrderProductRow key={index} product={order} />
                     ))}
                   </tbody>
@@ -197,8 +197,7 @@ const OrderDetail = () => {
                         {t("orderDetail.total")}
                       </td>
                       <td className="fw-bold text-primary">
-                        {numberFormat(orders?.total_amount) ||
-                          t("toast.pending_update")}
+                        {numberFormat(orderDetail?.total_amount) || t("toast.pending_update")}
                       </td>
                     </tr>
                   </tfoot>
