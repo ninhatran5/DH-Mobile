@@ -65,6 +65,7 @@ import EditVariant from "./pages/admin/UpdateVariant";
 import PaymentFailed from "./pages/PaymentFailed";
 import WaitingForPayment from "./pages/WaitingForPayment";
 import AdminOrderDetail from "./pages/admin/OrderDetail";
+import ChatLiveAdmin from "./pages/admin/ChatLive";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -225,6 +226,10 @@ const routerConfig = [
       {
         path: "chatbot",
         element: <ChatBotAdmin />,
+      },
+      {
+        path: "chatlive",
+        element: <ChatLiveAdmin />,
       },
       {
         path: "accounts",
