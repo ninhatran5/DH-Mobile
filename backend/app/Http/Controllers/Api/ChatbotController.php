@@ -12,6 +12,44 @@ use App\Http\Controllers\Controller;
 
 class ChatbotController extends Controller
 {
+
+    public function index()
+    {
+        $chatbots = DB::table('chatbots')
+            ->select('chatbot_id', 'name', 'description', 'is_active')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'chatbots' => $chatbots
+        ]);
+    }
+
+    public function toggle($id)
+    {
+        $chatbot = DB::table('chatbots')->where('chatbot_id', $id)->first();
+
+        if (!$chatbot) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Chatbot không tồn tại.'
+            ], 404);
+        }
+
+        $chatbot->is_active = !$chatbot->is_active;
+        $chatbot->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cập nhật trạng thái chatbot thành công.',
+            'data' => [
+                'chatbot_id' => $chatbot->chatbot_id,
+                'is_active' => $chatbot->is_active
+            ]
+        ]);
+    }
+
+
     public function handle(Request $request)
     {
         $request->validate([
@@ -21,7 +59,24 @@ class ChatbotController extends Controller
 
         $message = $request->input('message');
         $userId = $request->input('user_id');
+
+
+        $bot = DB::table('chatbots')
+            ->where('name', 'Hướng dẫn mua hàng')
+            ->where('is_active', true)
+            ->first();
+
+        if (!$bot) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Chatbot đang tạm thời không hoạt động. Vui lòng thử lại sau.'
+            ]);
+        }
+
+        // Phân tích ý định của người dùng từ message
+        // Sử dụng hàm analyzeIntent để xác định intent dựa trên từ khóa
         $intent = $this->analyzeIntent($message);
+
 
         try {
             $response = $this->handleIntent($intent, $message, $userId);
@@ -407,7 +462,7 @@ class ChatbotController extends Controller
             }
         }
 
-        $prompt = "Bạn là trợ lý tư vấn khách hàng chuyên nghiệp, thân thiện, sử dụng markdown và icon để trình bày đẹp. Luôn trả lời đúng trọng tâm, ưu tiên tư vấn sản phẩm/dịch vụ phù hợp nhất với nhu cầu khách. Nếu khách hỏi về hãng, sản phẩm, giá, khuyến mãi, hãy trả lời dựa trên context dưới đây. Kết thúc bằng một câu hỏi gợi mở (CTA) như: 'Bạn muốn xem chi tiết sản phẩm nào không? 😊'\n" . $context . "\n\nCâu hỏi khách hàng: " . $message . "\n\nLưu ý: Tên cửa hàng là DHMobile, KHÔNG phải tên của các cửa hàng khác. Tuyệt đối không được nhắc đến các cửa hàng khác trong bất kỳ trường hợp nào.";
+        $prompt = "Bạn là trợ lý tư vấn khách hàng chuyên nghiệp, thân thiện, luôn xưng hô bạn là em còn khách hàng là anh/chị sử dụng markdown và icon để trình bày đẹp. Luôn trả lời đúng trọng tâm, ưu tiên tư vấn sản phẩm/dịch vụ phù hợp nhất với nhu cầu khách. Nếu khách hỏi về hãng, sản phẩm, giá, khuyến mãi, hãy trả lời dựa trên context dưới đây. Kết thúc bằng một câu hỏi gợi mở (CTA) như: 'Bạn muốn xem chi tiết sản phẩm nào không? 😊'\n" . $context . "\n\nCâu hỏi khách hàng: " . $message . "\n\nLưu ý: Tên cửa hàng là DHMobile, KHÔNG phải tên của các cửa hàng khác. Tuyệt đối không được nhắc đến các cửa hàng khác trong bất kỳ trường hợp nào.";
 
         $data = [
             'model' => $model,
@@ -455,7 +510,7 @@ class ChatbotController extends Controller
                 'message' => 'Bạn cần đăng nhập để xem lịch sử hội thoại cá nhân.'
             ], 401);
         }
-        // Sử dụng Eloquent ORM, lấy đúng theo user_id (vì User model dùng primaryKey là user_id)
+
         $logs = ChatbotLog::where('user_id', $user->user_id)
             ->orderByDesc('created_at')
             ->limit(30)
