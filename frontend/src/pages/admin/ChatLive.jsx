@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import '../../assets/admin/ChatbotAdmin.css';
+import '../../assets/admin/ChatLiveAdmin.css';
 
 const ChatBotAdmin = () => {
     const [message, setMessage] = useState('');

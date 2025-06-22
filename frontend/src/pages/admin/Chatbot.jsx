@@ -13,7 +13,7 @@ const ChatBotAdmin = () => {
 
     if (loading) {
         return (
-            <div className="container py-5">
+            <div className="admin-chatbot-container">
                 <div className="text-center">
                     <div className="spinner-border text-primary" role="status">
                         <span className="visually-hidden">Đang tải...</span>
@@ -26,7 +26,7 @@ const ChatBotAdmin = () => {
 
     if (error) {
         return (
-            <div className="container py-5">
+            <div className="admin-chatbot-container">
                 <div className="alert alert-danger" role="alert">
                     <h4 className="alert-heading">Có lỗi xảy ra!</h4>
                     <p>{error}</p>
@@ -37,7 +37,7 @@ const ChatBotAdmin = () => {
 
     if (!chatbots || chatbots.length === 0) {
         return (
-            <div className="container py-5">
+            <div className="admin-chatbot-container">
                 <div className="alert alert-info" role="alert">
                     Chưa có chatbot nào được tạo.
                 </div>
@@ -46,22 +46,27 @@ const ChatBotAdmin = () => {
     }
 
     return (
-        <div className="container py-5">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2>Quản lý Chatbot</h2>
-            </div>
-
+        <div className="admin-chatbot-container">
+            <h2 className="admin-chatbot-heading">Quản lý Chatbot</h2>
             <div className="row">
                 {chatbots.map((chatbot) => (
                     <div key={chatbot.chatbot_id} className="col-12 mb-4">
-                        <div className="card">
-                            <div className="card-body d-flex justify-content-between align-items-start">
+                        <div className="admin-chatbot-card">
+                            <div className="admin-chatbot-card-body d-flex justify-content-between align-items-center">
                                 <div>
-                                    <h4 className="card-title mb-3">{chatbot.name}</h4>
-                                    <p className="card-text text-muted mb-3">{chatbot.description}</p>
-                                    <span 
-                                        className={`badge ${chatbot.is_active === 1 ? 'bg-success' : 'bg-secondary'}`}
-                                    >
+                                    <h4 className="admin-chatbot-title">{chatbot.name}</h4>
+                                    <p className="admin-chatbot-text">{chatbot.description}</p>
+                                </div>
+                                <div className="admin-chatbot-toggle-container">
+                                    <label className="admin-chatbot-toggle-switch">
+                                        <input
+                                            type="checkbox"
+                                            checked={chatbot.is_active === 1}
+                                            readOnly
+                                        />
+                                        <span className="admin-chatbot-toggle-slider"></span>
+                                    </label>
+                                    <span className={`admin-chatbot-status-label ${chatbot.is_active === 1 ? 'active' : ''}`}>
                                         {chatbot.is_active === 1 ? 'Đang hoạt động' : 'Không hoạt động'}
                                     </span>
                                 </div>
