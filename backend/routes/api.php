@@ -303,6 +303,12 @@ Route::middleware('auth:sanctum')->post('/comments', [CommentController::class, 
 // chatbot
 Route::post('/public/chatbot', [ChatbotController::class, 'handle']);
 Route::middleware('auth:sanctum')->get('/public/chatbot/conversation', [ChatbotController::class, 'getConversation']);
+Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(function () {
+    Route::get('/chatbots', [ChatbotController::class, 'index']);
+
+    Route::patch('/chatbots/toggle/{id}', [ChatbotController::class, 'toggle']);
+});
+
 
 
 // chatlive
