@@ -302,10 +302,10 @@ Route::middleware('auth:sanctum')->post('/comments', [CommentController::class, 
 
 // chatbot
 Route::post('/public/chatbot', [ChatbotController::class, 'handle']);
+Route::middleware('auth:sanctum')->get('/public/chatbot/conversation', [ChatbotController::class, 'getConversation']);
+
 
 // chatlive
-
-
 // Tất cả route yêu cầu đăng nhập (auth:sanctum)
 Route::middleware('auth:sanctum')->prefix('support-chat')->group(function () {
 
