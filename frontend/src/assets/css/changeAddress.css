@@ -335,3 +335,13 @@ input[type="radio"]:focus {
   font-size: 14px;
   color: #bbbbbb;
 }
+.textarea_review::placeholder {
+  font-size: 14px;
+  color: #bbbbbb;
+}
+.start_rating {
+  display: flex;
+  margin-top: -10px;
+  align-items: center;
+  gap: 5px;
+}
