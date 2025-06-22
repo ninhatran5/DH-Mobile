@@ -25,6 +25,7 @@ class OrderController extends Controller
                 'order_id' => $order->order_id,
                 'order_code' => $order->order_code,
                 'customer' => $order->customer,
+                'email' => $order->email,
                 'total_amount' => number_format($order->total_amount, 0, ".", ""),
                 'address' => $order->address . ', ' .
                     $order->ward . ', ' .
@@ -92,6 +93,7 @@ class OrderController extends Controller
             'order_code' => $order->order_code,
             'order_date' => $order->created_at->format('d/m/Y H:i:s'),
             'customer' => $order->customer,
+            'email' => $order->email,
             'phone' => $order->phone,
             'address' => $order->address . ', ' .
                 $order->ward . ', ' .
