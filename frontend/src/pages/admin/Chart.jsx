@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from "react";
 import '../../assets/admin/Chart.css';
+import { useSelector, useDispatch } from "react-redux";
+import { fetchUsers } from "../../slices/adminuserSlice";
+import { fetchAdminProducts } from "../../slices/adminproductsSlice";
 
 const Chart = () => {
+    const dispatch = useDispatch();
+    const { users } = useSelector((state) => state.adminuser);
+    const { adminproducts } = useSelector((state) => state.adminproduct);
     const [activeTab, setActiveTab] = useState('day');
     const [currentPage, setCurrentPage] = useState(1);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [isLoading, setIsLoading] = useState(false);
+    
+    // Fetch data when component mounts
+    useEffect(() => {
+        dispatch(fetchUsers());
+        dispatch(fetchAdminProducts());
+    }, [dispatch]);
     
     // Filter states
     const [showFilters, setShowFilters] = useState(false);
@@ -394,7 +406,7 @@ const Chart = () => {
                         </div>
                         <div className="admin_thongke-card-content">
                             <h5>Tổng người dùng</h5>
-                            <div className="admin_thongke-stat-value">1,234</div>
+                            <div className="admin_thongke-stat-value">{users?.length || 0}</div>
                             <div className="admin_thongke-stat-change admin_thongke-positive">
                                 <i className="bi bi-arrow-up-right"></i>
                                 <span>12.5% so với tuần trước</span>
@@ -439,7 +451,7 @@ const Chart = () => {
                         </div>
                         <div className="admin_thongke-card-content">
                             <h5>Sản phẩm</h5>
-                            <div className="admin_thongke-stat-value">890</div>
+                            <div className="admin_thongke-stat-value">{adminproducts?.length || 0}</div>
                             <div className="admin_thongke-stat-change admin_thongke-positive">
                                 <i className="bi bi-arrow-up-right"></i>
                                 <span>5.7% so với tuần trước</span>
