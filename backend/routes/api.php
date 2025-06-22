@@ -306,7 +306,7 @@ Route::middleware('auth:sanctum')->get('/public/chatbot/conversation', [ChatbotC
 Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(function () {
     Route::get('/chatbots', [ChatbotController::class, 'index']);
 
-    Route::patch('/chatbots/toggle/{id}', [ChatbotController::class, 'toggle']);
+    Route::post('/chatbots/toggle/{id}', [ChatbotController::class, 'toggle']);
 });
 
 

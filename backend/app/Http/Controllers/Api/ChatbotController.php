@@ -36,8 +36,7 @@ class ChatbotController extends Controller
             ], 404);
         }
 
-        $chatbot->is_active = !$chatbot->is_active;
-        $chatbot->save();
+        DB::table('chatbots')->where('chatbot_id', $id)->update(['is_active' => !$chatbot->is_active]);
 
         return response()->json([
             'success' => true,
