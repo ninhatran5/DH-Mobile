@@ -61,8 +61,8 @@ class ChatbotController extends Controller
 
 
         $bot = DB::table('chatbots')
-            ->where('name', 'Hướng dẫn mua hàng')
-            ->where('is_active', true)
+            ->where('name', 'Bot Tư Vấn Khách Hàng')
+            ->where('is_active', 1)
             ->first();
 
         if (!$bot) {
