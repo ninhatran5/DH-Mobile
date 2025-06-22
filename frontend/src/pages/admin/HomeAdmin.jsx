@@ -480,7 +480,8 @@ const Homeadmin = () => {
                     <i className={`bi bi-caret-${isDropdownActive('chatbot') ? 'down' : 'right'}-fill`} />
                   </a>
                   <div className={`admin_dh-submenu ${isDropdownActive('chatbot') ? 'show' : ''}`}>
-                    <div><Link to="/admin/chatbot">Tin nhắn</Link></div>
+                    <div><Link to="/admin/chatlive">Tin nhắn khách hàng</Link></div>
+                    <div><Link to="/admin/chatbot">Chatbot</Link></div>
                   </div>
                 </div>
 
@@ -495,7 +496,7 @@ const Homeadmin = () => {
                     data-title="Bình luận"
                   >
                     <i className="bi bi-chat-dots" style={{ color: '#ff9f0a' }} />
-                    <span>Quản lsi lí bài viết </span>
+                    <span>Bài viết </span>
                     <i className={`bi bi-caret-${isDropdownActive('comments') ? 'down' : 'right'}-fill`} style={{ marginLeft: '8px' }}></i>
                   </a>
                   <div className={`admin_dh-submenu ${isDropdownActive('comments') ? 'show' : ''}`}>
