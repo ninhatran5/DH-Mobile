@@ -9,7 +9,20 @@ use App\Http\Controllers\Controller;
 
 class CommentController extends Controller
 {
-    //
+    public function index($id)
+    {
+        $comments = Comment::with(['user', 'product'])
+            ->where('product_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Danh sách đánh giá sản phẩm',
+            'data' => $comments
+        ]);
+    }
+    
     public function store(Request $request)
     {
         $request->validate([

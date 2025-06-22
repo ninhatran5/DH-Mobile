@@ -298,6 +298,7 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(f
 
 // comment
 Route::middleware('auth:sanctum')->post('/comments', [CommentController::class, 'store']);
+Route::get('/comments/{id}', [CommentController::class, 'index']);
 
 
 // chatbot
