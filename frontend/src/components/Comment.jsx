@@ -3,7 +3,6 @@ import "../assets/css/comment.css";
 import dayjs from "dayjs";
 
 const Comment = ({ reviews }) => {
-  console.log("🚀 ~ Comment ~ reviews:", reviews);
   return (
     <section>
       <div className="container-fluid">
