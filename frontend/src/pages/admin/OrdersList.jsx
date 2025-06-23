@@ -105,6 +105,12 @@ const OrdersList = () => {
     setShowFilters(!showFilters);
   };
 
+  // Get color class for status
+  const getStatusColorClass = (status) => {
+    const normalized = normalizeString(status);
+    return `admin_order-status-${normalized}`;
+  };
+
   return (
     <div className="admin_order-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       {/* Header Section */}
@@ -156,6 +162,7 @@ const OrdersList = () => {
                       <option value="Đang vận chuyển">Đang vận chuyển</option>
                       <option value="Đang giao hàng">Đang giao hàng</option>
                       <option value="Đã giao hàng">Đã Giao hàng</option>
+                      <option value="Hoàn thành">Hoàn thành</option>
                     </select>
                   </div>
                 </div>
@@ -303,23 +310,34 @@ const OrdersList = () => {
                 <tr>
                   <td><strong>Trạng thái:</strong></td>
                   <td>
-                    <select
-                      value={selectedOrder.status}
-                      onChange={(e) =>
-                        setSelectedOrder({ ...selectedOrder, status: e.target.value })
-                      }
-                      className="adminorder-status-select"
-                    >
-                      <option value="Chờ xác nhận">Chờ xác nhận</option>
-                      <option value="Đã xác nhận">Đã xác nhận</option>
-                      <option value="Chờ lấy hàng">Chờ lấy hàng</option>
-                      <option value="Đang vận chuyển">Đang vận chuyển</option>
-                      <option value="Đang giao hàng">Đang giao hàng</option>
-                      <option value="Đã giao hàng">Đã giao hàng</option>
-                    </select>
+                    <div className="adminorder-status-wrapper">
+                      <div className="adminorder-current-status mb-2">
+                        <span className={`admin_order-status ${getStatusColorClass(selectedOrder.status)}`}>
+                          {selectedOrder.status}
+                        </span>
+                      </div>
+                      <select
+                        value={selectedOrder.status}
+                        onChange={(e) =>
+                          setSelectedOrder({ ...selectedOrder, status: e.target.value })
+                        }
+                        className="adminorder-status-select"
+                      >
+                        <option value="Chờ xác nhận">Chờ xác nhận</option>
+                        <option value="Đã xác nhận">Đã xác nhận</option>
+                        <option value="Chờ lấy hàng">Chờ lấy hàng</option>
+                        <option value="Đang vận chuyển">Đang vận chuyển</option>
+                        <option value="Đang giao hàng">Đang giao hàng</option>
+                        <option value="Đã giao hàng">Đã giao hàng</option>
+                        <option value="Hoàn thành">Hoàn thành</option>
+                      </select>
+                    </div>
                   </td>
                 </tr>
-                <tr><td><strong>Trạng thái thanh toán:</strong></td><td>{selectedOrder.payment_status}</td></tr>
+                <tr>
+                  <td><strong>Trạng thái thanh toán:</strong></td>
+                  <td><span className="admin_order-payment">{selectedOrder.payment_status}</span></td>
+                </tr>
                 <tr><td><strong>Số lượng sản phẩm:</strong></td><td>{selectedOrder.totalProduct} sản phẩm</td></tr>
                 <tr><td><strong>Ngày tạo:</strong></td><td>{selectedOrder.created_at}</td></tr>
                 {selectedOrder.cancel_reason && (

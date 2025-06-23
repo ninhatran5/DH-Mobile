@@ -29,10 +29,10 @@
   content: "";
   position: absolute;
   top: 24px;
-  left: 60px;
+  left: 50px;
   height: 4px;
   background-color: #6400cf;
-  width: calc(var(--progress, 0%) - 26px);
+  width: calc(var(--progress, 0%) - 100px);
   transition: width 0.5s ease-in-out;
   z-index: 2;
   border-radius: 2px;
