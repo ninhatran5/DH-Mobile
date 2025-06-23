@@ -282,6 +282,44 @@
   font-weight: 500;
 }
 
+/* Status colors - existing */
+.admin_order-status-cho-xac-nhan {
+  background-color: #fff7e6;
+  color: #d46b08;
+}
+
+.admin_order-status-da-xac-nhan {
+  background-color: #e6f4ff;
+  color: #0958d9;
+}
+
+.admin_order-status-cho-lay-hang {
+  background-color: #f0f7ff;
+  color: #1677ff;
+}
+
+.admin_order-status-dang-van-chuyen {
+  background-color: #e6fffb;
+  color: #08979c;
+}
+
+.admin_order-status-dang-giao-hang {
+  background-color: #e6f7ff;
+  color: #096dd9;
+}
+
+.admin_order-status-da-giao-hang {
+  background-color: #f6ffed;
+  color: #389e0d;
+}
+
+.admin_order-status-hoan-thanh {
+  background-color: #e6fff2;
+  color: #10b981;
+  font-weight: 600;
+}
+
+/* Status colors - additional */
 .admin_order-status-pending {
   background-color: #fff7e6;
   color: #d46b08;

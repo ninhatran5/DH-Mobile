@@ -48,14 +48,21 @@ export const fetchReturnOrderDetails = createAsyncThunk(
 // Cập nhật trạng thái đơn hoàn hàng
 export const updateReturnOrderStatus = createAsyncThunk(
   "adminReturnOrder/updateReturnOrderStatus",
-  async ({ returnId, status }, { rejectWithValue, dispatch }) => {
+  async ({ orderId, status }, { rejectWithValue, dispatch }) => {
     try {
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
+      let isApproved;
+      if (typeof status === 'boolean') {
+        isApproved = status;
+      } else {
+        isApproved = status === 'Đã chấp thuận';
+      }
+
       const response = await axiosConfig.put(
-        `/admin/return-requests/${returnId}/status`,
-        { status },
+        `/admin/orders/${orderId}/handle-return`,
+        { status: isApproved },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -63,9 +70,6 @@ export const updateReturnOrderStatus = createAsyncThunk(
         }
       );
 
-      // Sau khi cập nhật thành công, fetch lại danh sách
-      dispatch(fetchReturnOrders());
-      
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -146,15 +150,27 @@ const adminReturnOrderSlice = createSlice({
       .addCase(updateReturnOrderStatus.fulfilled, (state, action) => {
         state.updateLoading = false;
         
+        const returnRequestId = action.payload.return_request_id;
+        const newStatus = action.payload.return_request_status;
+        const refundAmount = action.payload.refund_amount;
+        
         // Update current return order if matches
-        if (state.currentReturnOrder?.return_id === action.payload.return_request.return_id) {
-          state.currentReturnOrder = action.payload.return_request;
+        if (state.currentReturnOrder?.return_id === returnRequestId) {
+          state.currentReturnOrder = {
+            ...state.currentReturnOrder,
+            status: newStatus,
+            refund_amount: refundAmount || state.currentReturnOrder.refund_amount
+          };
         }
         
         // Update in list if exists
         state.returnOrders = state.returnOrders.map(order =>
-          order.return_id === action.payload.return_request.return_id
-            ? action.payload.return_request
+          order.return_id === returnRequestId
+            ? {
+                ...order,
+                status: newStatus,
+                refund_amount: refundAmount || order.refund_amount
+              }
             : order
         );
       })
