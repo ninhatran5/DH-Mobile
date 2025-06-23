@@ -39,6 +39,7 @@ import adminNotificationReducer from "../slices/NotificationSlice";
 import adminChatReducer from "../slices/AdminChatSlice";
 import reviewReducer from "../slices/reviewSlice";
 import adminReturnOrderReducer from "../slices/AdminReturnOrderSlice";
+import chatBotReducer from "../slices/chatBotSlice";
 export const store = configureStore({
   reducer: {
     home: homeReducer,
@@ -65,6 +66,7 @@ export const store = configureStore({
     favoriteProduct: favoriteProductReducer,
     viewProduct: viewProductReducer,
     voucher: voucherReducer,
+    chatBot: chatBotReducer,
     category: categoryReducer,
     payment: paymentReducer,
     attribute: attributeReducer,
