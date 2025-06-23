@@ -38,6 +38,7 @@ import ordersReducer from "../slices/orderSlice";
 import adminNotificationReducer from "../slices/NotificationSlice";
 import adminChatReducer from "../slices/AdminChatSlice";
 import reviewReducer from "../slices/reviewSlice";
+import adminReturnOrderReducer from "../slices/AdminReturnOrderSlice";
 export const store = configureStore({
   reducer: {
     home: homeReducer,
@@ -79,5 +80,6 @@ export const store = configureStore({
     adminOrder: adminOrderReducer,
     adminNotification: adminNotificationReducer,
     adminChat: adminChatReducer,
+    adminReturnOrder: adminReturnOrderReducer,
   },
 });
