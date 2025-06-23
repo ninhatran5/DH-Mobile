@@ -303,6 +303,7 @@ Route::middleware('auth:sanctum')->post('/comments', [CommentController::class, 
 Route::get('/comments/{id}', [CommentController::class, 'index']);
 Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(function () {
     Route::get('/comments', [CommentController::class, 'getAllComments']);
+    Route::post('/comments/rely/{id}', [CommentController::class, 'relyComments']);
 });
 
 // chatbot

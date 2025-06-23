@@ -81,4 +81,39 @@ class CommentController extends Controller
         ]);
     }
 
+    public function relyComments(Request $request, $id)
+    {
+        $request->validate([
+            'reply' => 'required|string|max:1000',
+        ]);
+
+        $comment = Comment::find($id);
+        if (!$comment) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Bình luận không tồn tại.',
+            ], 404);
+        }
+
+        // Nếu đã có reply thì không cho trả lời nữa
+        if ($comment->reply) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Bình luận này đã được trả lời, không thể trả lời thêm.',
+            ], 400);
+        }
+
+        // Lấy thông tin admin trả lời (giả sử đã đăng nhập)
+        $admin = $request->user();
+        $comment->reply = $request->reply;
+        $comment->replied_by = $admin ? $admin->user_id : null;
+        $comment->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Trả lời bình luận thành công.',
+            'data' => $comment
+        ]);
+    }
+
 }
