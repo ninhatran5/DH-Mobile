@@ -355,9 +355,39 @@ class OrderController extends Controller
                 'message' => 'Chỉ được yêu cầu hoàn hàng khi đơn hàng ở trạng thái Đã giao hàng hoặc Hoàn thành'
             ], 400);
         }
+
+        $reasons = [
+            'Thiếu hàng',
+            'Người bán gửi sai hàng',
+            'Hàng bị vỡ',
+            'Hàng lỗi, không hoạt động',
+            'Hàng giả, nhái',
+            'Hàng khác với mô tả',
+            'Hàng đã qua sử dụng',
+            'Lý do khác'
+        ];
+
         $request->validate([
             'return_reason' => 'required|string',
+            'return_reason_other' => 'nullable|string|max:255',
         ]);
+
+        $reason = $request->return_reason;
+        if (!in_array($reason, $reasons)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Lý do hoàn hàng không hợp lệ.'
+            ], 400);
+        }
+        if ($reason === 'Lý do khác') {
+            if (empty($request->return_reason_other)) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Vui lòng nhập lý do hoàn hàng cụ thể.'
+                ], 400);
+            }
+            $reason = $reason . ': ' . $request->return_reason_other;
+        }
 
         // Kiểm tra đã có yêu cầu hoàn hàng cho đơn này chưa
         $existingRequest = DB::table('return_requests')
@@ -375,7 +405,7 @@ class OrderController extends Controller
         $returnId = DB::table('return_requests')->insertGetId([
             'order_id' => $order->order_id,
             'user_id' => $request->user()->user_id,
-            'reason' => $request->return_reason,
+            'reason' => $reason,
             'status' => 'đã yêu cầu',
             'refund_amount' => $order->total_amount, // Lưu tổng tiền đã thanh toán vào refund_amount
             'created_at' => now(),
@@ -777,7 +807,7 @@ class OrderController extends Controller
         ]);
     }
 
-    
+
     // Danh sách tất cả yêu cầu hoàn hàng (admin)
     public function getReturnRequestList(Request $request)
     {
