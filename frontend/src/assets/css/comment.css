@@ -1,10 +1,76 @@
 .star-filled {
-  color: #f5c518; /* vàng kiểu IMDb */
+  color: #f5c518;
 }
 
 .star-empty {
-  color: #ccc; /* xám nhạt */
+  color: #ccc;
 }
 .hr_comment {
-  border-bottom: 1px solid rgb(235, 235, 235) !important;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  margin-bottom: 28px;
+  padding: 22px 28px 18px 22px;
+  transition: box-shadow 0.2s;
+}
+
+.hr_comment:hover {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.13);
+}
+
+.hr_comment .d-flex.flex-start {
+  align-items: flex-start;
+}
+
+.hr_comment img.rounded-circle {
+  object-fit: cover;
+  border: 2px solid #e40303;
+  box-shadow: 0 1px 6px rgba(228, 3, 3, 0.08);
+  width: 60px;
+  height: 60px;
+  margin-right: 18px;
+}
+
+.hr_comment .fw-bold {
+  color: #e40303;
+  font-size: 1.08rem;
+  margin-bottom: 2px;
+}
+
+.hr_comment p {
+  margin-bottom: 7px;
+  color: #444;
+}
+
+.hr_comment .mb-2 {
+  margin-bottom: 8px !important;
+}
+
+.hr_comment .star-filled,
+.hr_comment .star-empty {
+  font-size: 1.1rem;
+  margin-right: 2px;
+}
+
+.hr_comment .star-filled {
+  color: #f0a600;
+}
+
+.hr_comment .star-empty {
+  color: #ccc;
+}
+
+@media (max-width: 576px) {
+  .hr_comment {
+    padding: 12px 8px 10px 10px;
+    margin-bottom: 18px;
+  }
+  .hr_comment img.rounded-circle {
+    width: 44px;
+    height: 44px;
+    margin-right: 10px;
+  }
+  .hr_comment .d-flex.flex-start {
+    gap: 10px;
+  }
 }

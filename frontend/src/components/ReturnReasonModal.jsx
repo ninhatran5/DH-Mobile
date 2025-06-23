@@ -16,7 +16,7 @@ const ReturnReasonModal = ({ show, handleClose, handleOpenSubModal }) => {
         <div className="container-fluid">
           <div
             className="d-flex justify-content-between align-items-center"
-            onClick={handleOpenSubModal}
+            onClick={() => handleOpenSubModal(1)}
             style={{ cursor: "pointer" }}
           >
             <div className="icon_return">
@@ -36,7 +36,7 @@ const ReturnReasonModal = ({ show, handleClose, handleOpenSubModal }) => {
           <hr className="hr_return" />
           <div
             className="d-flex justify-content-between align-items-center"
-            onClick={handleOpenSubModal}
+            onClick={() => handleOpenSubModal(2)}
             style={{ cursor: "pointer" }}
           >
             <div className="icon_return_2">

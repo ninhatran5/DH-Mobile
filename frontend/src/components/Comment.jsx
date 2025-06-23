@@ -1,34 +1,16 @@
 import { FaStar, FaRegStar } from "react-icons/fa";
 import "../assets/css/comment.css";
+import dayjs from "dayjs";
 
-const Comment = () => {
-  const comments = [
-    {
-      name: "Maggie Marsh",
-      avatar: "https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(23).webp",
-      rating: 3,
-      maxStars: 5,
-      description:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
-    },
-    {
-      name: "John Doe",
-      avatar: "https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(24).webp",
-      rating: 4,
-      maxStars: 5,
-      description:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
-    },
-    // Thêm các người dùng khác tại đây
-  ];
-
+const Comment = ({ reviews }) => {
+  console.log("🚀 ~ Comment ~ reviews:", reviews);
   return (
     <section>
       <div className="container-fluid">
         <div className="row d-flex justify-content-center">
           <div className="col-md-12 col-lg-10">
             <div className="text-body">
-              {comments.map((item, index) => {
+              {reviews.map((item, index) => {
                 const filledStars = Array.from(
                   { length: item.rating },
                   (_, i) => (
@@ -53,18 +35,29 @@ const Comment = () => {
                     <div className="d-flex flex-start">
                       <img
                         className="rounded-circle shadow-1-strong me-3"
-                        src={item.avatar}
+                        src={
+                          item?.user?.image_url ||
+                          "https://bootdey.com/img/Content/avatar/avatar1.png"
+                        }
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src =
+                            "https://bootdey.com/img/Content/avatar/avatar1.png";
+                        }}
                         alt="avatar"
                         width={60}
                         height={60}
                       />
                       <div>
-                        <h6 className="fw-bold mb-1">{item.name}</h6>
-                        <div className="mb-2 d-flex">
+                        <h6 className="fw-bold">{item?.user?.full_name}</h6>
+                        <p style={{ fontSize: 12 }}>
+                          {dayjs(item?.created_at).format("HH:mm / DD-MM-YYYY")}
+                        </p>
+                        <div className="d-flex">
                           {filledStars}
                           {emptyStars}
                         </div>
-                        <p className="mb-0">{item.description}</p>
+                        <p className="mt-2">{item?.content}</p>
                       </div>
                     </div>
                   </div>

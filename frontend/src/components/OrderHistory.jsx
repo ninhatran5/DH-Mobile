@@ -24,6 +24,7 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [caseType, setCaseType] = useState(1);
 
   const handleNextPageOrderDetail = (id) => {
     navigate(`/order-detail/${id}`);
@@ -38,8 +39,9 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
     setShowReasonModal(false);
   };
 
-  const handleOpenRequestModal = () => {
+  const handleOpenRequestModal = (type) => {
     setShowReasonModal(false);
+    setCaseType(type);
     setShowRequestModal(true);
   };
 
@@ -110,7 +112,7 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
                 <FaDiagramSuccessor
                   onClick={handleOpenReviewAlert}
                   style={{ cursor: "pointer" }}
-                  title="Đánh giá đơn hàng"
+                  title="Xác nhận đã nhận hàng"
                 />
               </>
             )}
@@ -141,6 +143,7 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
           show={true}
           handleClose={handleCloseRequestModal}
           orderId={selectedOrderId}
+          caseType={caseType}
         />
       )}
 

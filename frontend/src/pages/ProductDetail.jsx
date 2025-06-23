@@ -23,8 +23,8 @@ import { fetchAddToCart, fetchCart } from "../slices/cartSlice";
 import { fetchSpecification } from "../slices/specificationsSlice";
 import ListProductCard from "../components/ListProductCard";
 import { useDispatch, useSelector } from "react-redux";
+import { fetchComments } from "../slices/reviewSlice";
 
-// Hàm tổng hợp tất cả thuộc tính từ variants
 function getAllAttributes(variants) {
   const attrMap = {};
   variants.forEach((variant) => {
@@ -54,7 +54,6 @@ function getAllAttributes(variants) {
   return Object.values(attrMap);
 }
 
-// Hàm tìm variant_id phù hợp với lựa chọn
 function findVariantId(variants, selectedOptions) {
   return (
     variants.find((variant) =>
@@ -109,6 +108,7 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
   const { productVariationDetails } = useSelector(
     (state) => state.productVariationDetail
   );
+  const { reviews } = useSelector((state) => state.review);
   const { specifications } = useSelector((state) => state.specification);
   const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
   const { products = [] } = useSelector((state) => state.product);
@@ -121,7 +121,6 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
   const variantId = findVariantId(variants, selectedOptions);
   const selectedVariant = variants.find((v) => v.variant_id === variantId);
 
-  // Lấy image_url từ value vừa chọn (ưu tiên Color, rồi Storage, rồi RAM)
   function getSelectedValueImage() {
     for (let attr of allAttributes) {
       const selectedValueId = selectedOptions[attr.attribute_id];
@@ -285,6 +284,7 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
       dispatch(fetchProductDetail(id));
       dispatch(fetchProductVariationDetail(id));
       dispatch(fetchSpecification(id));
+      dispatch(fetchComments(id));
     }
   }, [dispatch, id]);
 
@@ -659,7 +659,7 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
                     </ul>
                   </div>
                 )}
-                {activeTab === "reviews" && <Comment />}
+                {activeTab === "reviews" && <Comment reviews={reviews} />}
               </div>
             </div>
             {!hideExtraInfo && (

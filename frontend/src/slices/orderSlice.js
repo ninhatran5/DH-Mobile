@@ -3,7 +3,7 @@ import { axiosConfig } from "../../utils/axiosConfig";
 
 const initialState = {
   orders: [],
-  orderDetail: null, 
+  orderDetail: null,
   loading: false,
   error: null,
 };
@@ -54,10 +54,11 @@ export const cancelOrder = createAsyncThunk(
 
 export const refundOrder = createAsyncThunk(
   "order/refundOrder",
-  async ({ id, reason }, thunkAPI) => {
+  async ({ id, reason, reasonOther }, thunkAPI) => {
     try {
       const response = await axiosConfig.post(`/orders/${id}/request-return`, {
         return_reason: reason,
+        return_reason_other: reasonOther,
       });
       return response.data.order;
     } catch (error) {
