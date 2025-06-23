@@ -117,7 +117,10 @@ const OrderDetail = () => {
           <div className="d-flex">
             <h5>
               {t("orderDetail.order")}:
-              <span className="text-primary font-weight-bold ms-2">
+              <span
+                style={{ color: "#ff8800" }}
+                className="font-weight-bold ms-2"
+              >
                 #{orderDetail?.order_code || t("toast.pending_update")}
               </span>
             </h5>
@@ -125,7 +128,9 @@ const OrderDetail = () => {
           <div className="d-flex flex-column text-sm-right">
             <p className="mb-0">
               {t("orderDetail.orderDate")}:{" "}
-              <span>{orderDetail?.order_date || t("toast.pending_update")}</span>
+              <span>
+                {orderDetail?.order_date || t("toast.pending_update")}
+              </span>
             </p>
           </div>
         </div>
@@ -196,16 +201,17 @@ const OrderDetail = () => {
                       <td colSpan="6" className="text-end fw-bold">
                         {t("orderDetail.total")}
                       </td>
-                      <td className="fw-bold text-primary">
-                        {numberFormat(orderDetail?.total_amount) || t("toast.pending_update")}
+                      <td className="fw-bold" style={{ color: "#ff8800" }}>
+                        {numberFormat(orderDetail?.total_amount) ||
+                          t("toast.pending_update")}
                       </td>
                     </tr>
                   </tfoot>
                 </table>
 
-                <Link to={"/order-history"} className="btn btn-secondary mt-3">
+                <Link to="/order-history" className="btn-back">
                   <RiArrowGoBackFill />
-                  <span className="ms-2">{t("orderDetail.back")}</span>
+                  <span>{t("orderDetail.back")}</span>
                 </Link>
               </div>
             </div>
