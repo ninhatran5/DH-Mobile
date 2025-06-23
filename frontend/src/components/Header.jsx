@@ -224,7 +224,7 @@ export default function Header() {
             searchResults.length > 0 ? { top: 0, left: 0, zIndex: 1000 } : {}
           }
         >
-          <div className="container-fluid">
+          <div className="container">
             <div className="row py-3 border-bottom">
               <div className="col-sm-4 col-lg-3 text-center text-sm-start">
                 <div className="main-logo">
@@ -356,7 +356,7 @@ export default function Header() {
               </div>
             </div>
           </div>
-          <div className="container-fluid">
+          <div className="container">
             <div className="row py-3">
               <div className="d-flex  justify-content-center justify-content-sm-between align-items-center">
                 <nav className="main-menu d-flex navbar navbar-expand-lg">
@@ -573,7 +573,7 @@ export default function Header() {
             zIndex: 999,
           }}
         >
-          <div className="container-fluid">
+          <div className="container">
             <div className="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
               {searchResults.map((product) => {
                 // Tìm variant phù hợp với product
@@ -614,7 +614,7 @@ export default function Header() {
             zIndex: 999,
           }}
         >
-          <div className="container-fluid">
+          <div className="container">
             <div className="text-center mt-5">
               <img
                 src="https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/assets/a60759ad1dabe909c46a817ecbf71878.png"

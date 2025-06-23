@@ -67,7 +67,7 @@ const SliderLogoBrand = () => {
 
   return (
     <>
-      <div className="container-fluid">
+      <div className="container">
         <div className="partner-page">
           <div className="slide-partner">
             <div className="partner">

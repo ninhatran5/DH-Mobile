@@ -112,7 +112,7 @@ const OrderDetail = () => {
         linkMainItem={"/"}
         linkMainItem2={"/order-history"}
       />
-      <div className="card_order_detail container-fluid px-1 px-md-4 py-5 mx-auto">
+      <div className="card_order_detail container px-1 px-md-4 py-5 mx-auto">
         <div className="row d-flex justify-content-between px-3">
           <div className="d-flex">
             <h5>

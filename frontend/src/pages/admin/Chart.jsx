@@ -367,7 +367,7 @@ const Chart = () => {
     const displayedTransactions = getCurrentTransactions();
     
     return(
-        <div className="container-fluid admin_thongke-dashboard">
+        <div className="container admin_thongke-dashboard">
             <div className="admin_thongke-dashboard-header">
                 <h4>Tổng quan hệ thống</h4>
                 <div className="admin_thongke-chart-period-selector">

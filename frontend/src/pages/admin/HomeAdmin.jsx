@@ -522,7 +522,7 @@ const Homeadmin = () => {
         >
           {/* Top Navigation */}
           <nav className="admin_dh-navbar navbar-expand-lg">
-            <div className="container-fluid">
+            <div className="container">
               <div className="admin_dh-navbar-left" style={{ gap: 10, alignItems: 'center' }}>
                 {/* Nút menu cho desktop - giống với mobile */}
                 <button

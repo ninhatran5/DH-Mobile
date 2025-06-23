@@ -11,7 +11,7 @@ const Breadcrumb = ({
 }) => {
   return (
     <section className="breadcrumb-option mb-5">
-      <div className="container-fluid">
+      <div className="container">
         <div className="row">
           <div className="col-lg-12">
             <div className="breadcrumb__text">

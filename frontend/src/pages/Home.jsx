@@ -163,7 +163,7 @@ const Home = () => {
           backgroundSize: "cover",
         }}
       >
-        <div className="container-fluid">
+        <div className="container">
           <div className="row">
             <div className="col-md-12">
               <div className="banner-blocks">
@@ -196,7 +196,7 @@ const Home = () => {
       </section>
 
       <section className="py-5 overflow-hidden">
-        <div className="container-fluid">
+        <div className="container">
           <div className="row">
             <div className="col-md-12">
               <div className="section-header d-flex flex-wrap justify-content-between mb-5">
@@ -290,7 +290,7 @@ const Home = () => {
       </section>
       {listFavorite && listFavorite.length > 0 && (
         <section className="py-5 overflow-hidden">
-          <div className="container-fluid">
+          <div className="container">
             <div className="d-flex justify-content-between flex-wrap mb-4">
               <h3 className="section-title cursor-pointer">
                 {t("home.productsYouLiked")}
@@ -353,10 +353,10 @@ const Home = () => {
       )}
 
       <section>
-        <div className="container-fluid">
+        <div className="container">
           <h3 className="my-5">{t("home.ourServices")}</h3>
         </div>
-        <div className="container-fluid">
+        <div className="container">
           <div className="row row-cols-1 row-cols-sm-4 row-cols-lg-4 pt-2 pb-3">
             {services.map((service) => (
               <div className="col" key={service.id}>
@@ -407,7 +407,7 @@ const Home = () => {
       />
 
       <section className="py-2 mt-4">
-        <div className="container-fluid">
+        <div className="container">
           <div className="row">
             {smallBanner.map((banner) => {
               return (
@@ -440,7 +440,7 @@ const Home = () => {
       />
 
       <section className="py-5" style={{ marginTop: 100, marginBottom: 70 }}>
-        <div className="container-fluid">
+        <div className="container">
           <div
             className="bg-warning py-5 rounded-5"
             style={{
