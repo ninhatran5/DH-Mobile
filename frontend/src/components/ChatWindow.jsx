@@ -7,48 +7,59 @@ import { Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { fetchProfile } from "../slices/profileSlice";
-
-const messagesData = [
-  { sender: "user", text: "Xin chào", time: "10:00 AM" },
-  { sender: "user", text: "Bạn khỏe không ?", time: "10:01 AM" },
-  { sender: "user", text: "Hmmmmm", time: "10:02 AM" },
-  {
-    sender: "user",
-    text: "Bạn còn tiền không? cho tôi vay 5 triệu?",
-    time: "10:02 AM",
-  },
-  { sender: "bot", text: "Xin chào, tôi khỏe.", time: "10:03 AM" },
-  { sender: "bot", text: "Cút mẹ m đi", time: "10:04 AM" },
-  {
-    sender: "user",
-    text: "Đây là một hình ảnh tôi muốn chia sẻ:",
-    time: "10:05 AM",
-  },
-  {
-    sender: "user",
-    image:
-      "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg",
-    time: "10:05 AM",
-  },
-  {
-    sender: "bot",
-    image: "https://picsum.photos/201",
-    time: "10:15 AM",
-  },
-];
+import { chatBotPost, fetchChatBot } from "../slices/chatBotSlice";
+import dayjs from "dayjs";
 
 export default function ChatWindow() {
   const dispatch = useDispatch();
   const { profile } = useSelector((state) => state.profile);
+  const { response } = useSelector((state) => state.chatBot);
   const [show, setShow] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [visible, setVisible] = useState(true);
   const { t } = useTranslation();
+  const [message, setMessage] = useState("");
+
+  const handleSendMessage = async () => {
+    if (message.trim() === "") return;
+    await dispatch(
+      chatBotPost({
+        user_id: profile?.user?.id,
+        message,
+      })
+    );
+    await dispatch(fetchChatBot());
+    setMessage("");
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  const flatMessages = [];
+  if (Array.isArray(response)) {
+    response.forEach((item) => {
+      flatMessages.push({
+        sender: "user",
+        message: item.message,
+        created_at: item.created_at,
+      });
+      flatMessages.push({
+        sender: "bot",
+        message: item.response,
+        created_at: item.created_at,
+      });
+    });
+  }
 
   useEffect(() => {
     dispatch(fetchProfile());
+    dispatch(fetchChatBot());
   }, [dispatch]);
 
   return (
@@ -69,8 +80,18 @@ export default function ChatWindow() {
           </div>
 
           <div className="messages">
-            {messagesData.map((msg, index) => (
-              <div className={`message ${msg.sender}`} key={index}>
+            {flatMessages.map((msg, index) => (
+              <div
+                className={`message ${msg.sender}`}
+                key={index}
+                style={{
+                  display: "flex",
+                  flexDirection: msg.sender === "user" ? "row-reverse" : "row",
+                  alignItems: "flex-end",
+                  marginBottom: 10,
+                }}
+              >
+                {/* Avatar */}
                 <div className="avatar_chat">
                   <img
                     src={
@@ -83,26 +104,26 @@ export default function ChatWindow() {
                     className="avatar"
                   />
                 </div>
-                <div className="bubble">
-                  {msg.text && <div>{msg.text}</div>}
-                  {msg.image && (
-                    <img
-                      src={msg.image}
-                      alt="message"
-                      className="message-image"
-                      onClick={() => {
-                        setSelectedImage(msg.image);
-                        handleShow();
-                      }}
-                      style={{ cursor: "pointer" }}
-                    />
-                  )}
-                  <div className="timestamp">{msg.time}</div>
+
+                {/* Bubble + Time */}
+                <div
+                  className="bubble"
+                  style={{
+                    backgroundColor:
+                      msg.sender === "user" ? "#54b4d3" : "#f1f0f0",
+                    textAlign: msg.sender === "user" ? "right" : "left",
+                  }}
+                >
+                  <div>{msg.message}</div>
+                  <div className="timestamp">
+                    {dayjs(msg.created_at).format("HH:mm")}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
 
+          {/* Modal preview ảnh */}
           <Modal show={show} onHide={handleClose} centered size="lg">
             <Modal.Body style={{ padding: 0, position: "relative" }}>
               <button
@@ -138,12 +159,18 @@ export default function ChatWindow() {
           </Modal>
 
           <div className="input-container">
-            <input type="text" placeholder={t("chatBot.message")} />
+            <input
+              type="text"
+              placeholder={t("chatBot.message")}
+              value={message}
+              onKeyDown={handleKeyDown}
+              onChange={(e) => setMessage(e.target.value)}
+            />
             <input
               type="file"
               id="file-input"
               className="file-input"
-              onChange={(e) => console.log(e.target.files)}
+              // onChange={(e) => console.log("File được chọn:", e.target.files)}
             />
             <label
               htmlFor="file-input"
@@ -152,7 +179,7 @@ export default function ChatWindow() {
             >
               <GoPaperclip />
             </label>
-            <button className="btn_message">
+            <button className="btn_message" onClick={handleSendMessage}>
               <FaPaperPlane />
             </button>
           </div>
