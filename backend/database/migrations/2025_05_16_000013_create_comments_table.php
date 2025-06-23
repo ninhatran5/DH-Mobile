@@ -14,6 +14,8 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id')->nullable();
             $table->text('content')->nullable();
             $table->integer('rating')->nullable();
+            $table->text('reply')->nullable();
+            $table->boolean('is_visible')->default(true);
             $table->dateTime('created_at')->useCurrent();
 
             $table->foreign('user_id')->references('user_id')->on('users');

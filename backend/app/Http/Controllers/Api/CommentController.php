@@ -61,4 +61,24 @@ class CommentController extends Controller
             'data' => $comment
         ]);
     }
+
+
+    public function getAllComments()
+    {
+        $comments = Comment::with(['user', 'product'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        if ($comments->isEmpty()) {
+            return response()->json([
+                'message' => 'Chưa có đánh giá nào',
+            ]);
+        }
+        return response()->json([
+            'status' => true,
+            'message' => 'Danh sách tất cả đánh giá',
+            'data' => $comments
+        ]);
+    }
+
 }
