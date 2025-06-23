@@ -358,7 +358,22 @@
     "close": "Close",
     "emptyReasonError": "You must enter a reason!",
     "cancelSuccess": "Order cancelled successfully!",
-    "cancelFailed": "Failed to cancel the order!"
+    "cancelFailed": "Failed to cancel the order!",
+    "all": "All",
+    "waitingConfirm": "Waiting for confirmation",
+    "confirmed": "Confirmed",
+    "waitingPickup": "Waiting for pickup",
+    "shipping": "Shipping",
+    "delivering": "Delivering",
+    "delivered": "Delivered",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "refunded": "Refunded",
+    "paid": "Paid",
+    "unpaid": "Unpaid",
+    "filter": "Filter",
+    "statusTitle": "Status",
+    "noOrder": "No orders found."
   },
   "breadcrumbOrder": {
     "breadcrumbHeader": "Purchase History"

@@ -47,3 +47,62 @@
     margin-right: 2px;
   }
 }
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Popup filter trạng thái đơn hàng - độc nhất */
+.order-table-filter-popup {
+  position: absolute;
+  right: 100px;
+  top: -170%;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 32px rgba(0, 0, 0, 0.13);
+  padding: 22px 28px 18px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  z-index: 100;
+  min-width: 260px;
+  border: 1px solid #eee;
+  animation: fadeIn 0.18s;
+  transition: opacity 0.18s;
+}
+
+.order-table-filter-title {
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #e40303;
+  font-size: 17px;
+}
+
+.order-table-filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.order-table-filter-btn {
+  padding: 7px 16px; /* Giảm padding */
+  border-radius: 6px; /* Giảm border-radius */
+  border: 1.5px solid #e40303;
+  background: #fff;
+  color: #e40303;
+  font-weight: 600;
+  font-size: 14px; /* Giảm font-size */
+  cursor: pointer;
+  transition: all 0.18s;
+  min-width: 80px; /* Giảm min-width */
+}
+.order-table-filter-btn.active {
+  background: #e40303;
+  color: #fff;
+}

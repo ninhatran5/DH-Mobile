@@ -354,7 +354,22 @@
     "close": "Đóng",
     "emptyReasonError": "Bạn phải nhập lý do!",
     "cancelSuccess": "Đã huỷ đơn hàng thành công!",
-    "cancelFailed": "Huỷ đơn hàng thất bại!"
+    "cancelFailed": "Huỷ đơn hàng thất bại!",
+    "all": "Tất cả",
+    "waitingConfirm": "Chờ xác nhận",
+    "confirmed": "Đã xác nhận",
+    "waitingPickup": "Chờ lấy hàng",
+    "shipping": "Đang vận chuyển",
+    "delivering": "Đang giao hàng",
+    "delivered": "Đã giao hàng",
+    "completed": "Hoàn thành",
+    "cancelled": "Đã hủy",
+    "refunded": "Trả hàng",
+    "paid": "Đã thanh toán",
+    "unpaid": "Chưa thanh toán",
+    "filter": "Lọc",
+    "statusTitle": "Trạng thái",
+    "noOrder": "Không có đơn hàng nào."
   },
   "breadcrumbOrder": {
     "breadcrumbHeader": "Lịch Sử Mua Hàng"
