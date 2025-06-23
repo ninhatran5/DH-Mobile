@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories, deleteCategory, restoreCategory, forceDeleteCategory, fetchTrashedCategories } from "../../slices/adminCategories";
+import { fetchAdminProducts } from "../../slices/adminproductsSlice";
 import "../../assets/admin/Categories.css";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const CategoryList = () => {
   const dispatch = useDispatch();
@@ -10,14 +12,24 @@ const CategoryList = () => {
   const { adminproducts } = useSelector((state) => state.adminproduct);
   const [searchTerm, setSearchTerm] = useState("");
   const [showTrash, setShowTrash] = useState(false);
+  const [productCounts, setProductCounts] = useState({});
 
   useEffect(() => {
     dispatch(fetchCategories());
     dispatch(fetchTrashedCategories());
+    dispatch(fetchAdminProducts());
   }, [dispatch]);
 
+  useEffect(() => {
+    const counts = {};
+    adminproducts.forEach(product => {
+      counts[product.category_id] = (counts[product.category_id] || 0) + 1;
+    });
+    setProductCounts(counts);
+  }, [adminproducts]);
+
   const getProductCount = (categoryId) => {
-    return adminproducts.filter(product => product.category_id === categoryId).length;
+    return productCounts[categoryId] || 0;
   };
 
   const handleSearchChange = (e) => {
@@ -25,6 +37,12 @@ const CategoryList = () => {
   };
 
   const handleDelete = (id) => {
+    const productCount = getProductCount(id);
+    if (productCount > 0) {
+      toast.error(`Không thể xóa danh mục này vì còn ${productCount} sản phẩm thuộc danh mục này. Vui lòng xóa hoặc chuyển các sản phẩm sang danh mục khác trước.`);
+      return;
+    }
+    
     if (window.confirm("Bạn có chắc muốn xóa danh mục này không? Danh mục sẽ được chuyển vào thùng rác.")) {
       dispatch(deleteCategory(id)).then(() => {
         dispatch(fetchCategories());
@@ -43,6 +61,12 @@ const CategoryList = () => {
   };
 
   const handleForceDelete = (id) => {
+    const productCount = getProductCount(id);
+    if (productCount > 0) {
+      toast.error(`Không thể xóa vĩnh viễn danh mục này vì còn ${productCount} sản phẩm thuộc danh mục này. Vui lòng xóa hoặc chuyển các sản phẩm sang danh mục khác trước.`);
+      return;
+    }
+
     if (window.confirm("Bạn có chắc muốn xóa vĩnh viễn danh mục này không? Hành động này không thể hoàn tác!")) {
       dispatch(forceDeleteCategory(id)).then(() => {
         dispatch(fetchTrashedCategories());

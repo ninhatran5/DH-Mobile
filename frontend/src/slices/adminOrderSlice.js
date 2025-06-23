@@ -26,7 +26,7 @@ export const updateOrderStatus = createAsyncThunk(
   async ({ orderId, status }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const res = await axiosConfig.put(
+      const response = await axiosConfig.put(
         `/admin/orders/${orderId}/status`,
         { status },
         {
@@ -35,7 +35,13 @@ export const updateOrderStatus = createAsyncThunk(
           },
         }
       );
-      return res.data.data;
+      
+      // API trả về { order: { ... } }
+      if (response.data && response.data.order) {
+        return response.data.order;
+      } else {
+        return rejectWithValue("Không nhận được dữ liệu đơn hàng từ server");
+      }
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.message || "Lỗi khi cập nhật trạng thái đơn hàng"
@@ -67,13 +73,34 @@ export const fetchorderdetails = createAsyncThunk(
   }
 );
 
+// Lấy danh sách đơn hoàn hàng
+export const fetchReturnOrders = createAsyncThunk(
+  "adminOrder/fetchReturnOrders",
+  async (page = 1, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      const response = await axiosConfig.get(`/admin/return-orders?page=${page}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Lỗi khi lấy danh sách đơn hoàn hàng"
+      );
+    }
+  }
+);
 
 // Slice
 const adminOrderSlice = createSlice({
   name: "adminOrder",
   initialState: {
     orders: [],
-    order: null, 
+    order: null,
+    returnOrders: [], // Thêm state cho đơn hoàn hàng
+    returnOrdersPagination: {}, // Thêm pagination cho đơn hoàn hàng
     pagination: {},
     loading: false,
     error: null,
@@ -104,16 +131,22 @@ const adminOrderSlice = createSlice({
       .addCase(updateOrderStatus.fulfilled, (state, action) => {
         state.loading = false;
         const updatedOrder = action.payload;
-        if (!updatedOrder || !updatedOrder.order_id) return;
+        
+        state.orders = state.orders.map(order => 
+          order?.order_id === updatedOrder.order_id 
+            ? { ...order, ...updatedOrder }  
+            : order
+        );
 
-        const index = state.orders.findIndex(o => o?.order_id === updatedOrder.order_id);
-        if (index !== -1) {
-          state.orders[index] = updatedOrder;
+        // Cập nhật trong order detail nếu đang xem chi tiết
+        if (state.order && state.order.order_id === updatedOrder.order_id) {
+          state.order = { ...state.order, ...updatedOrder };
         }
       })
       .addCase(updateOrderStatus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Lỗi khi cập nhật trạng thái đơn hàng";
+        console.error('Lỗi khi cập nhật trạng thái:', action.payload);
       })
 
       // Lấy chi tiết đơn hàng
@@ -138,12 +171,27 @@ const adminOrderSlice = createSlice({
           state.orders.push(orderDetails); // Nếu chưa có thì thêm vào
         }
 
-        state.order = orderDetails; // Gán vào state.order cho trang chi tiết
+        state.order = orderDetails; 
       })
       .addCase(fetchorderdetails.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Lỗi khi lấy chi tiết đơn hàng";
         state.order = null;
+      })
+
+      // Xử lý fetch đơn hoàn hàng
+      .addCase(fetchReturnOrders.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchReturnOrders.fulfilled, (state, action) => {
+        state.returnOrders = action.payload.orders || [];
+        state.returnOrdersPagination = action.payload.pagination || {};
+        state.loading = false;
+      })
+      .addCase(fetchReturnOrders.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Lỗi khi lấy danh sách đơn hoàn hàng";
       });
   },
 });

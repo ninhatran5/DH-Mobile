@@ -6,7 +6,7 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import logo from "../../assets/images/logo2.png";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from 'react-redux';
 import { fetchNotifications, markNotificationsRead, markNotificationRead } from "../../slices/NotificationSlice";
 import Thongbao from "../../assets/sound/thongbaomuahang.mp3"
 const sidebarCollapsedStyles = {
@@ -33,6 +33,7 @@ const Homeadmin = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [notificationCount, setNotificationCount] = useState(3);
   const [showNotificationDot, setShowNotificationDot] = useState(true);
+  const [isSoundEnabled, setSoundEnabled] = useState(true);
   const location = useLocation();
   const sidebarCollapseRef = useRef(null);
   const sidebarOpenRef = useRef(null);
@@ -98,6 +99,12 @@ const Homeadmin = () => {
     const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
     setIsDarkMode(prefersDarkMode);
 
+    // Get saved sound preference
+    const savedSoundPreference = localStorage.getItem('notificationSound');
+    if (savedSoundPreference !== null) {
+      setSoundEnabled(savedSoundPreference === 'true');
+    }
+
     // Listen for changes in dark mode preference
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = (e) => {
@@ -123,7 +130,7 @@ const Homeadmin = () => {
           }
           if (newUnread > prevUnreadCount.current) {
             toast.info("Bạn có đơn hàng mới!", { position: "top-right", autoClose: 4000 });
-            if (audioRef.current) {
+            if (audioRef.current && isSoundEnabled) {
               audioRef.current.currentTime = 0;
               audioRef.current.play();
             }
@@ -134,7 +141,7 @@ const Homeadmin = () => {
     }, 2000);
     return () => clearInterval(interval);
     // eslint-disable-next-line
-  }, [dispatch]);
+  }, [dispatch, isSoundEnabled]);
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -233,6 +240,21 @@ const Homeadmin = () => {
   const handleMarkAsRead = () => {
     dispatch(markNotificationsRead());
     setShowNotificationDot(false);
+  };
+
+  const handleNotificationItemClick = (noti) => {
+    if (noti.is_read !== 1 && noti.notification_id) {
+      dispatch(markNotificationRead(noti.notification_id));
+    }
+    if (noti.order_id) {
+      navigate(`/admin/orderdetail/${noti.order_id}`);
+    }
+  };
+
+  const toggleSound = () => {
+    const newSoundState = !isSoundEnabled;
+    setSoundEnabled(newSoundState);
+    localStorage.setItem('notificationSound', newSoundState);
   };
 
   return (
@@ -458,7 +480,8 @@ const Homeadmin = () => {
                     <i className={`bi bi-caret-${isDropdownActive('chatbot') ? 'down' : 'right'}-fill`} />
                   </a>
                   <div className={`admin_dh-submenu ${isDropdownActive('chatbot') ? 'show' : ''}`}>
-                    <div><Link to="/admin/chatbot">Tin nhắn</Link></div>
+                    <div><Link to="/admin/chatlive">Tin nhắn khách hàng</Link></div>
+                    <div><Link to="/admin/chatbot">Chatbot</Link></div>
                   </div>
                 </div>
 
@@ -473,12 +496,12 @@ const Homeadmin = () => {
                     data-title="Bình luận"
                   >
                     <i className="bi bi-chat-dots" style={{ color: '#ff9f0a' }} />
-                    <span>Bình luận</span>
+                    <span>Bài viết </span>
                     <i className={`bi bi-caret-${isDropdownActive('comments') ? 'down' : 'right'}-fill`} style={{ marginLeft: '8px' }}></i>
                   </a>
                   <div className={`admin_dh-submenu ${isDropdownActive('comments') ? 'show' : ''}`}>
-                    <div><Link to="/admin/comments">Tất cả bình luận</Link></div>
-                    <div><Link to="/admin/comments/pending">Chờ duyệt</Link></div>
+                    <div><Link to="/admin/comments">Tất cả bài viết </Link></div>
+                    <div><Link to="/admin/comments/pending">Thêm bài viết</Link></div>
                   </div>
                 </div>
               </div>
@@ -541,6 +564,15 @@ const Homeadmin = () => {
                   <i className={`bi ${isDarkMode ? 'bi-sun' : 'bi-moon'}`}></i>
                 </button>
 
+                <button
+                  className="btn admin_dh-btn admin_dh-sound-toggle"
+                  onClick={toggleSound}
+                  title={isSoundEnabled ? "Tắt âm thanh thông báo" : "Bật âm thanh thông báo"}
+                  style={{ marginRight: '10px' }}
+                >
+                  <i className={`bi ${isSoundEnabled ? 'bi-volume-up' : 'bi-volume-mute'}`}></i>
+                </button>
+
                 <div className="admin_dh-notifications-nav">
                   <div className="dropdown">
                     <a
@@ -576,40 +608,27 @@ const Homeadmin = () => {
                       ) : (
                         notifications.map((noti, idx) => (
                           <div 
-                            key={noti.id || idx} 
-
+                            key={noti.notification_id || idx} 
                             className={`dropdown-item admin_dh-notification-item d-flex align-items-start ${noti.is_read === 1 ? '' : 'unread'}`}
-                            onClick={(e) => {
-                              if (!noti.is_read) {
-                                e.currentTarget.classList.add('read-transition');
-                                setTimeout(() => {
-                                  dispatch(markNotificationRead(noti.id));
-                                }, 300);
-                              } else {
-                                dispatch(markNotificationRead(noti.id));
-                              }
-                            }} 
-
+                            onClick={() => handleNotificationItemClick(noti)}
                             style={{ cursor: 'pointer' }}
                           >
                             <div className="admin_dh-notification-icon admin_dh-bg-primary-soft">
                               <i className="bi bi-bell"></i>
                             </div>
-                                                          <div className="flex-grow-1 ms-3">
-
-                                <p className="mb-0" title={noti.title || noti.message}>{noti.title || noti.message}</p>
-
-                                <small className="text-muted">
-                                  <i className="bi bi-clock me-1"></i>
-                                  {noti.created_at ? new Date(noti.created_at).toLocaleDateString('vi-VN', {
-                                    year: 'numeric',
-                                    month: '2-digit',
-                                    day: '2-digit',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                  }) : ""}
-                                </small>
-                              </div>
+                            <div className="flex-grow-1 ms-3">
+                              <p className="mb-0" title={noti.message}>{noti.message}</p>
+                              <small className="text-muted">
+                                <i className="bi bi-clock me-1"></i>
+                                {noti.created_at ? new Date(noti.created_at).toLocaleDateString('vi-VN', {
+                                  year: 'numeric',
+                                  month: '2-digit',
+                                  day: '2-digit',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                }) : ""}
+                              </small>
+                            </div>
                           </div>
                         ))
                       )}

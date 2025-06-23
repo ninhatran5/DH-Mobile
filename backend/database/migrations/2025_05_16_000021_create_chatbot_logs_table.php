@@ -13,7 +13,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->text('message')->nullable();
             $table->text('response')->nullable();
-            $table->dateTime('created_at')->useCurrent();
+            $table->timestamps();
+
 
             $table->foreign('user_id')->references('user_id')->on('users');
         });

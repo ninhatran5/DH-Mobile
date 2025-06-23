@@ -10,7 +10,11 @@ class Comment extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'user_id', 'product_id', 'rating', 'content', 'created_at'
+        'user_id',
+        'product_id',
+        'rating',
+        'content',
+        'created_at'
     ];
 
     protected static function booted()
@@ -19,5 +23,12 @@ class Comment extends Model
             $comment->created_at = now();
         });
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
+    }
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id', 'product_id');
+    }
 }
-

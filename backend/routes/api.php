@@ -27,6 +27,9 @@ use App\Http\Controllers\Api\AttributevalueController;
 use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
 use App\Http\Controllers\Api\VariantAttributeValuesController;
+use App\Http\Controllers\Api\SupportChatController;
+
+
 
 
 
@@ -269,7 +272,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('admin/notifications', [NotificationController::class, 'index']);
     Route::post('admin/notifications/read/{id}', [NotificationController::class, 'markAsRead']);
     Route::post('admin/notifications/readAll', [NotificationController::class, 'markAsReadAll']);
-
 });
 
 // quản lý đơn hàng dành cho admin
@@ -280,15 +282,53 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(f
 
 
     // Admin duyệt hoặc từ chối yêu cầu hoàn hàng của đơn hàng
-    Route::post('/orders/{id}/handle-return', [OrderController::class, 'adminHandleReturnRequest']);
-
+    Route::put('/orders/{id}/handle-return', [OrderController::class, 'adminHandleReturnRequest']);
+    // danh sách hoàn hàng 
+    Route::get('return-orders', [OrderController::class, 'getReturnOrdersByStatus']);
+    // chi tiết hoàn hàng 
+    Route::get('orders/return-orders/{order_id}', [OrderController::class, 'getReturnOrderDetail']);
+    // lấy danh sách lịch sử cập nhật đơn hàng (theo order_id)
+    Route::get('orders/{order_id}/status-history', [OrderController::class, 'getOrderStatusHistory']);
+    // Lấy tất cả lịch sử thay đổi trạng thái của mọi đơn hàng (admin)
+    Route::get('/status-histories', [OrderController::class, 'getAllOrderStatusHistories']);
+    // Danh sách tất cả yêu cầu hoàn hàng (admin)
+    Route::get('/return-requests', [OrderController::class, 'getReturnRequestList']);
 });
+
 
 
 
 // comment
 Route::middleware('auth:sanctum')->post('/comments', [CommentController::class, 'store']);
-
+Route::get('/comments/{id}', [CommentController::class, 'index']);
+Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(function () {
+    Route::get('/comments', [CommentController::class, 'getAllComments']);
+});
 
 // chatbot
 Route::post('/public/chatbot', [ChatbotController::class, 'handle']);
+Route::middleware('auth:sanctum')->get('/public/chatbot/conversation', [ChatbotController::class, 'getConversation']);
+Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(function () {
+    Route::get('/chatbots', [ChatbotController::class, 'index']);
+
+    Route::post('/chatbots/toggle/{id}', [ChatbotController::class, 'toggle']);
+});
+
+
+
+// chatlive
+// Tất cả route yêu cầu đăng nhập (auth:sanctum)
+Route::middleware('auth:sanctum')->prefix('support-chat')->group(function () {
+
+    // Gửi tin nhắn mới (có thể kèm file)
+    Route::post('/send', [SupportChatController::class, 'sendMessage']);
+
+    // Lấy lịch sử chat giữa người dùng hiện tại và user khác
+    Route::get('/history/{user_id}', [SupportChatController::class, 'getChatHistory']);
+
+    // Đếm số tin nhắn chưa đọc (dựa trên bảng support_chat_notifications)
+    Route::get('/unread-count', [SupportChatController::class, 'getUnreadCount']);
+
+    // Đánh dấu 1 tin nhắn là đã đọc
+    Route::patch('/mark-as-read/{chat_id}', [SupportChatController::class, 'markAsRead']);
+});

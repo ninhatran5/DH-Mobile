@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
@@ -35,4 +34,9 @@ return [
         ],
     ],
 
+    'openrouter' => [
+        'api_key' => env('OPENROUTER_API_KEY'),
+        'endpoint' => 'https://openrouter.ai/api/v1/chat/completions',
+        'model' => 'deepseek/deepseek-r1-0528:free',
+    ],
 ];

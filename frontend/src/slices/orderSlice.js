@@ -3,6 +3,7 @@ import { axiosConfig } from "../../utils/axiosConfig";
 
 const initialState = {
   orders: [],
+  orderDetail: null,
   loading: false,
   error: null,
 };
@@ -51,23 +52,51 @@ export const cancelOrder = createAsyncThunk(
   }
 );
 
+export const refundOrder = createAsyncThunk(
+  "order/refundOrder",
+  async ({ id, reason, reasonOther }, thunkAPI) => {
+    try {
+      const response = await axiosConfig.post(`/orders/${id}/request-return`, {
+        return_reason: reason,
+        return_reason_other: reasonOther,
+      });
+      return response.data.order;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Đã có lỗi xảy ra"
+      );
+    }
+  }
+);
+
+export const receivedOrder = createAsyncThunk(
+  "order/receivedOrder",
+  async ({ id }, thunkAPI) => {
+    try {
+      const response = await axiosConfig.post(`/orders/${id}/confirm-received`);
+      return response.data.order;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Đã có lỗi xảy ra"
+      );
+    }
+  }
+);
+
 export const ordersSlice = createSlice({
   name: "order",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // pending(đang call)
       .addCase(fetchOrder.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      // call thành công
       .addCase(fetchOrder.fulfilled, (state, action) => {
         state.loading = false;
         state.orders = action.payload;
       })
-      // call lỗi
       .addCase(fetchOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
@@ -76,12 +105,10 @@ export const ordersSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      // call thành công
       .addCase(fetchOrderDetail.fulfilled, (state, action) => {
         state.loading = false;
-        state.orders = action.payload;
+        state.orderDetail = action.payload;
       })
-      // call lỗi
       .addCase(fetchOrderDetail.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
@@ -90,13 +117,35 @@ export const ordersSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      // call thành công
       .addCase(cancelOrder.fulfilled, (state, action) => {
         state.loading = false;
         state.orders = action.payload;
       })
-      // call lỗi
       .addCase(cancelOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Đã có lỗi xảy ra";
+      })
+      .addCase(refundOrder.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(refundOrder.fulfilled, (state) => {
+        state.loading = false;
+        state.refundSuccess = true;
+      })
+      .addCase(refundOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Đã có lỗi xảy ra";
+      })
+      .addCase(receivedOrder.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(receivedOrder.fulfilled, (state, action) => {
+        state.loading = false;
+        state.orders = action.payload;
+      })
+      .addCase(receivedOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
       });

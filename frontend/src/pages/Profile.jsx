@@ -258,7 +258,7 @@ const Profile = () => {
                       <th>{t("orderHistory.detail")}</th>
                     </tr>
                   </thead>
-                  {orders?.orders?.slice(0, 5).map((order) => (
+                  {orders?.orders?.slice(0, 2).map((order) => (
                     <OrderHistory key={order?.order_id} order={order} />
                   ))}
                 </table>

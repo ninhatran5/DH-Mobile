@@ -4,10 +4,10 @@ import { useParams } from "react-router-dom";
 import { fetchorderdetails } from "../../slices/adminOrderSlice";
 import "../../assets/admin/OrderDetail.css";
 import OrderStatusSteps from "../../components/AdminOrderDetail";
+
 const OrderDetails = () => {
   const { orderId } = useParams();
   const dispatch = useDispatch();
-
   const { order, loading, error } = useSelector((state) => state.adminOrder);
 
   useEffect(() => {
@@ -19,11 +19,27 @@ const OrderDetails = () => {
   if (error) return <p className="adminorderdetail-error">{error}</p>;
   if (!order) return null;
 
+  // Format currency
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(amount);
+  };
+
   return (
     <div className="adminorderdetail-container">
       <h2 className="adminorderdetail-title">Thông tin đặt hàng</h2>
       <table className="adminorderdetail-table">
         <tbody>
+          <tr>
+            <td>Mã đơn hàng</td>
+            <td>{order.order_code}</td>
+          </tr>
+          <tr>
+            <td>Ngày đặt</td>
+            <td>{order.order_date}</td>
+          </tr>
           <tr>
             <td>Người nhận</td>
             <td>{order.customer}</td>
@@ -34,7 +50,7 @@ const OrderDetails = () => {
           </tr>
           <tr>
             <td>Địa chỉ</td>
-            <td>{order.address || ", , ,"}</td>
+            <td>{order.address || "Chưa cập nhật"}</td>
           </tr>
           <tr>
             <td>Phương thức thanh toán</td>
@@ -44,7 +60,6 @@ const OrderDetails = () => {
             <td>Trạng thái thanh toán</td>
             <td>{order.payment_status}</td>
           </tr>
-          
           {order.cancel_reason && (
             <tr>
               <td>Lý do huỷ</td>
@@ -54,8 +69,8 @@ const OrderDetails = () => {
         </tbody>
       </table>
 
-             <OrderStatusSteps status={order.status} />
-        
+      <OrderStatusSteps status={order.status} />
+
       <h3 className="adminorderdetail-subtitle">Chi tiết sản phẩm</h3>
       <table className="adminorderdetail-table product">
         <thead>
@@ -71,12 +86,13 @@ const OrderDetails = () => {
         </thead>
         <tbody>
           {order.products.map((product, index) => {
-            const colorAttr = product.variant_attributes.find(attr =>
-              attr.attribute_name.toLowerCase().includes("Màu sắc")
+            const storage = product.variant_attributes.find(
+              (attr) => attr.attribute_name === "Bộ nhớ"
             );
-            const versionAttr = product.variant_attributes.find(attr =>
-              attr.attribute_name.toLowerCase().includes("Bộ nhớ")
+            const color = product.variant_attributes.find(
+              (attr) => attr.attribute_name === "Màu sắc"
             );
+
             return (
               <tr key={index}>
                 <td>
@@ -88,19 +104,22 @@ const OrderDetails = () => {
                 </td>
                 <td>{product.product_name}</td>
                 <td>{product.quantity}</td>
-                <td>{colorAttr?.attribute_value || "-"}</td>
-                <td>{versionAttr?.attribute_value || "không có"}</td>
-                <td>{Number(product.price).toLocaleString()}₫</td>
-                <td>{Number(product.subtotal).toLocaleString()}₫</td>
+                <td>{color?.attribute_value || "-"}</td>
+                <td>{storage?.attribute_value || "-"}</td>
+                <td>{formatCurrency(product.price)}</td>
+                <td>{formatCurrency(product.subtotal)}</td>
               </tr>
             );
           })}
         </tbody>
         <tfoot>
           <tr>
-            <td colSpan="6" className="text-right font-semibold">Tổng cộng:</td>
-            <td className="adminorderdetail-total">
-              {Number(order.total_amount).toLocaleString()}₫
+            <td colSpan="6" className="text-right font-semibold">
+              Tổng cộng:
+            </td>
+            <td className="adminorderdetail-total"
+            style={{color: 'red'}}>
+              {formatCurrency(order.total_amount)}
             </td>
           </tr>
         </tfoot>

@@ -1,0 +1,214 @@
+// components/ReviewModal.jsx
+import { useEffect, useState } from "react";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import { FaStar } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchOrderDetail } from "../slices/orderSlice";
+import numberFormat from "../../utils/numberFormat";
+import { commentsPost } from "../slices/reviewSlice";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
+
+const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
+  const [rating, setRating] = useState(0);
+  const [hover, setHover] = useState(null);
+  const [comment, setComment] = useState("");
+  const [selectedProductId, setSelectedProductId] = useState();
+  const maxLength = 200;
+  const dispatch = useDispatch();
+  const { orderDetail } = useSelector((state) => state.order);
+  const products = orderDetail?.products || [];
+  const allSameProduct =
+    products.length > 0 &&
+    products.every((p) => p.product_id === products[0].product_id);
+
+  const navigate = useNavigate();
+
+  const handleNextPageOrderDetail = (id) => {
+    handleClose();
+    navigate(`/product-detail/${id}`);
+  };
+
+  const confirmClose = () => {
+    Swal.fire({
+      title: "Bạn có chắc chắn muốn đóng?",
+      text: "Mọi nội dung bạn đã nhập sẽ bị mất",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Đóng",
+      cancelButtonText: "Hủy",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleClose();
+      }
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedProductId) {
+      Swal.fire({ icon: "error", title: "Bạn chưa chọn sản phẩm!" });
+      return;
+    }
+    dispatch(
+      commentsPost({
+        product_id: selectedProductId,
+        rating,
+        content: comment,
+      })
+    )
+      .unwrap()
+      .then(() => {
+        Swal.fire({
+          icon: "success",
+          title: "Đanh giá thành công",
+          text: "Cảm ơn bạn đã đánh giá sản phẩm!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        if (onSuccess) onSuccess();
+      })
+      .catch((error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi",
+          text: error || "Không thể gửi đánh giá",
+        });
+      });
+  };
+
+  useEffect(() => {
+    if (allSameProduct && products.length > 0) {
+      setSelectedProductId(products[0].product_id);
+    }
+  }, [allSameProduct, products]);
+
+  useEffect(() => {
+    if (!orderId) return;
+    dispatch(fetchOrderDetail(orderId));
+  }, [orderId, dispatch]);
+
+  return (
+    <Modal size="lg" show={show} onHide={confirmClose} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>
+          <h4 className="modal_change_address_title">Đánh giá sản phẩm</h4>
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <div className="container-fluid">
+          {products.map((product, index) => (
+            <div className="d-flex mt-3" key={index}>
+              <div className="border_image_return">
+                <img
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleNextPageOrderDetail(product.product_id)}
+                  className="image_return"
+                  src={product.product_image || ""}
+                  alt={product.product_name}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <p
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleNextPageOrderDetail(product.product_id)}
+                  className="title_return_product"
+                >
+                  {product.product_name}
+                </p>
+                <div className="color_return_product">
+                  <p className="desc_return_product">
+                    {product.variant_attributes?.find(
+                      (attr) => attr.attribute_name.toLowerCase() === "màu sắc"
+                    )?.attribute_value || "Không rõ"}
+                  </p>
+                  <p className="quantity_return_product">x{product.quantity}</p>
+                </div>
+                <p className="price_return_product">
+                  {numberFormat(product.price || 0)}
+                </p>
+              </div>
+            </div>
+          ))}
+          {/* Ẩn select nếu chỉ có 1 sản phẩm */}
+          {!allSameProduct && products.length > 1 && (
+            <Form.Group className="mb-3">
+              <p className="title_return">Chọn sản phẩm để đánh giá</p>
+              <Form.Select
+                value={selectedProductId}
+                onChange={(e) => setSelectedProductId(e.target.value)}
+                required
+              >
+                <option value="">Chọn sản phẩm</option>
+                {products.map((p) => (
+                  <option
+                    key={p.product_id + p.variant_id}
+                    value={p.product_id}
+                  >
+                    {p.product_name}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          )}
+          <hr className="hr_return" />
+          <div>
+            <p className="title_return">Đánh giá sản phẩm</p>
+          </div>
+          <div className="start_rating">
+            {[...Array(5)].map((_, index) => {
+              const starValue = index + 1;
+              return (
+                <FaStar
+                  key={index}
+                  size={28}
+                  style={{ cursor: "pointer", marginRight: 5 }}
+                  color={starValue <= (hover || rating) ? "#ffc107" : "#e4e5e9"}
+                  onClick={() => setRating(starValue)}
+                  onMouseEnter={() => setHover(starValue)}
+                  onMouseLeave={() => setHover(null)}
+                />
+              );
+            })}
+          </div>
+          <hr className="hr_return" style={{ marginTop: "30px" }} />
+          <Form.Group className="mb-3">
+            <p className="title_return">Viết đánh giá</p>
+            <Form.Control
+              as="textarea"
+              rows={4}
+              value={comment}
+              maxLength={maxLength}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Hãy chia sẻ cảm nhận của bạn về sản phẩm này"
+              className="textarea_review"
+            />
+            <p
+              className="text-end text-muted mt-1"
+              style={{ fontSize: "13px" }}
+            >
+              {comment.length}/{maxLength} ký tự
+            </p>
+          </Form.Group>
+        </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={confirmClose}>
+          Đóng
+        </Button>
+        <Button
+          className="btn_save_address"
+          onClick={handleSubmit}
+          disabled={rating === 0}
+        >
+          Gửi đánh giá
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+};
+
+export default ReviewModal;

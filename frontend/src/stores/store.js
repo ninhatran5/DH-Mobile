@@ -34,8 +34,11 @@ import viewProductReducer from "../slices/viewProductSlice";
 import paymentReducer from "../slices/checkOutSlice";
 import adminOrderReducer from "../slices/adminOrderSlice";
 import changeAddressReducer from "../slices/changeAddressSlice";
-import ordersReducer from "../slices/orderSlice"; 
+import ordersReducer from "../slices/orderSlice";
 import adminNotificationReducer from "../slices/NotificationSlice";
+import adminChatReducer from "../slices/AdminChatSlice";
+import reviewReducer from "../slices/reviewSlice";
+import adminReturnOrderReducer from "../slices/AdminReturnOrderSlice";
 export const store = configureStore({
   reducer: {
     home: homeReducer,
@@ -58,6 +61,7 @@ export const store = configureStore({
     changeAddress: changeAddressReducer,
     blogDetail: blogDetailReducer,
     cart: cartReducer,
+    review: reviewReducer,
     favoriteProduct: favoriteProductReducer,
     viewProduct: viewProductReducer,
     voucher: voucherReducer,
@@ -75,5 +79,7 @@ export const store = configureStore({
     adminNews: adminNewsReducer,
     adminOrder: adminOrderReducer,
     adminNotification: adminNotificationReducer,
+    adminChat: adminChatReducer,
+    adminReturnOrder: adminReturnOrderReducer,
   },
 });

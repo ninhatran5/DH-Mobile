@@ -168,7 +168,7 @@ body {
 #progressbar li.canceled::before {
   content: "\f00d";
   font-family: FontAwesome;
-  background-color: #f44336 !important; 
+  background-color: #f44336 !important;
   color: white;
 }
 
@@ -179,4 +179,40 @@ body {
 #progressbar li.canceled .step-label {
   color: #f44336;
   font-weight: 500;
+}
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #fff;
+  color: #ff8800 !important;
+  font-weight: 600;
+  font-size: 15px;
+  border: 2px solid #ff8800;
+  border-radius: 8px;
+  padding: 8px 20px;
+  box-shadow: 0 1px 4px rgba(228, 3, 3, 0.06);
+  transition: background 0.18s, color 0.18s, border 0.18s;
+  margin-top: 18px;
+  text-decoration: none;
+}
+
+.btn-back svg {
+  font-size: 1.15em;
+  color: #ff8800;
+  margin-right: 2px;
+  transition: color 0.18s;
+}
+
+.btn-back:hover,
+.btn-back:focus {
+  background: #ff8800;
+  color: #fff !important;
+  border-color: #ff8800;
+  text-decoration: none;
+}
+
+.btn-back:hover svg,
+.btn-back:focus svg {
+  color: #fff;
 }

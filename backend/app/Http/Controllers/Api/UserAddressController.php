@@ -66,8 +66,8 @@ class UserAddressController extends Controller
     public function update(Request $request, $id)
     {
         $address = UserAddress::where('address_id', $id)
-                              ->where('user_id', $request->user()->user_id)
-                              ->first();
+            ->where('user_id', $request->user()->user_id)
+            ->first();
 
         if (!$address) {
             return response()->json([
@@ -119,8 +119,8 @@ class UserAddressController extends Controller
     public function destroy(Request $request, $id)
     {
         $address = UserAddress::where('address_id', $id)
-                              ->where('user_id', $request->user()->user_id)
-                              ->first();
+            ->where('user_id', $request->user()->user_id)
+            ->first();
 
         if (!$address) {
             return response()->json([
@@ -143,8 +143,8 @@ class UserAddressController extends Controller
         $user_id = $request->user()->user_id;
 
         $address = UserAddress::where('address_id', $id)
-                              ->where('user_id', $user_id)
-                              ->first();
+            ->where('user_id', $user_id)
+            ->first();
 
         if (!$address) {
             return response()->json([
