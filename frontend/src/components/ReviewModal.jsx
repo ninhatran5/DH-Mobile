@@ -9,14 +9,28 @@ import { fetchOrderDetail } from "../slices/orderSlice";
 import numberFormat from "../../utils/numberFormat";
 import { commentsPost } from "../slices/reviewSlice";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const ReviewModal = ({ show, handleClose, orderId }) => {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(null);
   const [comment, setComment] = useState("");
-  const maxLength = 50;
+  const [selectedProductId, setSelectedProductId] = useState();
+  const maxLength = 200;
   const dispatch = useDispatch();
   const { orderDetail } = useSelector((state) => state.order);
+  const products = orderDetail?.products || [];
+  const allSameProduct =
+    products.length > 0 &&
+    products.every((p) => p.product_id === products[0].product_id);
+
+  const navigate = useNavigate();
+
+  const handleNextPageOrderDetail = (id) => {
+    handleClose();
+    navigate(`/product-detail/${id}`);
+  };
+
   const confirmClose = () => {
     Swal.fire({
       title: "Bạn có chắc chắn muốn đóng?",
@@ -32,10 +46,16 @@ const ReviewModal = ({ show, handleClose, orderId }) => {
       }
     });
   };
-  const handleSubmit = () => {
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedProductId) {
+      Swal.fire({ icon: "error", title: "Bạn chưa chọn sản phẩm!" });
+      return;
+    }
     dispatch(
       commentsPost({
-        product_id: orderId,
+        product_id: selectedProductId,
         rating,
         content: comment,
       })
@@ -59,6 +79,13 @@ const ReviewModal = ({ show, handleClose, orderId }) => {
         });
       });
   };
+
+  useEffect(() => {
+    if (allSameProduct && products.length > 0) {
+      setSelectedProductId(products[0].product_id);
+    }
+  }, [allSameProduct, products]);
+
   useEffect(() => {
     if (!orderId) return;
     dispatch(fetchOrderDetail(orderId));
@@ -73,17 +100,25 @@ const ReviewModal = ({ show, handleClose, orderId }) => {
       </Modal.Header>
       <Modal.Body>
         <div className="container-fluid">
-          {orderDetail?.products?.map((product, index) => (
+          {products.map((product, index) => (
             <div className="d-flex mt-3" key={index}>
               <div className="border_image_return">
                 <img
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleNextPageOrderDetail(product.product_id)}
                   className="image_return"
                   src={product.product_image || ""}
                   alt={product.product_name}
                 />
               </div>
               <div style={{ flex: 1 }}>
-                <p className="title_return_product">{product.product_name}</p>
+                <p
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleNextPageOrderDetail(product.product_id)}
+                  className="title_return_product"
+                >
+                  {product.product_name}
+                </p>
                 <div className="color_return_product">
                   <p className="desc_return_product">
                     {product.variant_attributes?.find(
@@ -98,6 +133,27 @@ const ReviewModal = ({ show, handleClose, orderId }) => {
               </div>
             </div>
           ))}
+          {/* Ẩn select nếu chỉ có 1 sản phẩm */}
+          {!allSameProduct && products.length > 1 && (
+            <Form.Group className="mb-3">
+              <p className="title_return">Chọn sản phẩm để đánh giá</p>
+              <Form.Select
+                value={selectedProductId}
+                onChange={(e) => setSelectedProductId(e.target.value)}
+                required
+              >
+                <option value="">Chọn sản phẩm</option>
+                {products.map((p) => (
+                  <option
+                    key={p.product_id + p.variant_id}
+                    value={p.product_id}
+                  >
+                    {p.product_name}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          )}
           <hr className="hr_return" />
           <div>
             <p className="title_return">Đánh giá sản phẩm</p>

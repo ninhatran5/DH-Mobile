@@ -24,6 +24,20 @@ export const commentsPost = createAsyncThunk(
     }
   }
 );
+
+export const fetchComments = createAsyncThunk(
+  "review/fetchComments",
+  async (id, thunkAPI) => {
+    try {
+      const response = await axiosConfig.get(`/comments/${id}`);
+      return response.data.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Đã có lỗi xảy ra"
+      );
+    }
+  }
+);
 export const reviewSlice = createSlice({
   name: "review",
   initialState,
@@ -39,6 +53,18 @@ export const reviewSlice = createSlice({
         state.reviews = action.payload;
       })
       .addCase(commentsPost.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Đã có lỗi xảy ra";
+      })
+      .addCase(fetchComments.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchComments.fulfilled, (state, action) => {
+        state.loading = false;
+        state.reviews = action.payload;
+      })
+      .addCase(fetchComments.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
       });
