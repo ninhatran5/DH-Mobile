@@ -2,7 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import NumberFormat from "../../utils/numberFormat";
-import { FaEye, FaTimes } from "react-icons/fa";
+import { FaTimes } from "react-icons/fa";
 import { PiKeyReturnFill } from "react-icons/pi";
 import { FaDiagramSuccessor } from "react-icons/fa6";
 import { useState, useEffect } from "react";
@@ -12,7 +12,10 @@ import ReturnReasonModal from "./ReturnReasonModal";
 import ReturnRequestModal from "./ReturnRequestModal";
 import ReviewModal from "./ReviewModal";
 import { useDispatch } from "react-redux";
+import "../assets/css/order-history.css";
 import { fetchOrder, receivedOrder } from "../slices/orderSlice";
+import TooltipIcon from "./TooltipIcon";
+import { FaEye } from "react-icons/fa";
 
 const OrderHistory = ({ order, handleCancelOrder }) => {
   const navigate = useNavigate();
@@ -28,7 +31,6 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
   const [isReviewed, setIsReviewed] = useState(false);
 
   useEffect(() => {
-    // Kiểm tra localStorage để ẩn nút khi reload
     const reviewed = JSON.parse(localStorage.getItem("reviewedOrders") || "[]");
     setIsReviewed(reviewed.includes(order.order_id));
   }, [order.order_id]);
@@ -95,43 +97,51 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
           </td>
           <td>{order?.status}</td>
           <td>
-            <FaEye
-              title={t("orderHistory.vixxewDetail")}
-              style={{ cursor: "pointer", marginRight: "12px" }}
+            <TooltipIcon
+              icon={FaEye}
+              tooltip={t("orderHistory.viewDetail")}
+              className="icon-circle"
               onClick={() => handleNextPageOrderDetail(order.order_id)}
             />
+
             {["chờ xác nhận", "đã xác nhận"].includes(
               order?.status?.trim().toLowerCase()
             ) && (
-              <FaTimes
-                title={t("orderHistory.cancel")}
-                style={{ cursor: "pointer", color: "red", marginRight: "12px" }}
+              <TooltipIcon
+                icon={FaTimes}
+                tooltip={t("orderHistory.cancel")}
+                className="icon-circle"
                 onClick={() => handleCancelOrder(order.order_id)}
               />
             )}
+
             {["đã giao hàng"].includes(order?.status?.trim().toLowerCase()) && (
               <>
-                <PiKeyReturnFill
+                <TooltipIcon
+                  icon={PiKeyReturnFill}
+                  tooltip="Yêu cầu trả hàng"
+                  className="icon-circle"
                   onClick={handleOpenReasonModal}
-                  style={{ cursor: "pointer", marginRight: "12px" }}
-                  title="Yêu cầu trả hàng"
                 />
-                <FaDiagramSuccessor
+                <TooltipIcon
+                  icon={FaDiagramSuccessor}
+                  tooltip="Xác nhận đã nhận hàng"
+                  className="icon-circle"
                   onClick={handleOpenReviewAlert}
-                  style={{ cursor: "pointer" }}
-                  title="Xác nhận đã nhận hàng"
                 />
               </>
             )}
+
             {["hoàn thành"].includes(order?.status?.trim().toLowerCase()) &&
               !isReviewed && (
-                <MdReviews
+                <TooltipIcon
+                  icon={MdReviews}
+                  tooltip="Đánh giá đơn hàng"
+                  className="icon-circle"
                   onClick={() => {
                     setSelectedOrderId(order.order_id);
                     setShowReviewModal(true);
                   }}
-                  style={{ cursor: "pointer", marginRight: "12px" }}
-                  title="Đánh giá đơn hàng"
                 />
               )}
           </td>
@@ -159,7 +169,6 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
           handleClose={() => setShowReviewModal(false)}
           orderId={selectedOrderId}
           onSuccess={() => {
-            // Lưu vào localStorage để ẩn nút khi reload
             const reviewed = JSON.parse(
               localStorage.getItem("reviewedOrders") || "[]"
             );
