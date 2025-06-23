@@ -776,4 +776,54 @@ class OrderController extends Controller
             'history' => $formatted
         ]);
     }
+
+    
+    // Danh sách tất cả yêu cầu hoàn hàng (admin)
+    public function getReturnRequestList(Request $request)
+    {
+        $status = $request->input('status'); // Lọc theo trạng thái nếu có
+        $query = DB::table('return_requests')
+            ->leftJoin('orders', 'return_requests.order_id', '=', 'orders.order_id')
+            ->leftJoin('users', 'return_requests.user_id', '=', 'users.user_id')
+            ->select(
+                'return_requests.return_id',
+                'return_requests.order_id',
+                'orders.order_code',
+                'orders.customer',
+                'users.email',
+                'return_requests.user_id',
+                'users.full_name as user_name',
+                'return_requests.reason',
+                'return_requests.status',
+                'return_requests.refund_amount',
+                'return_requests.created_at',
+                'return_requests.updated_at'
+            );
+        if ($status) {
+            $query->where('return_requests.status', $status);
+        }
+        $results = $query->orderByDesc('return_requests.created_at')->get();
+
+        $formatted = $results->map(function ($row) {
+            return [
+                'return_id' => $row->return_id,
+                'order_id' => $row->order_id,
+                'order_code' => $row->order_code,
+                'customer' => $row->customer,
+                'user_id' => $row->user_id,
+                'user_name' => $row->user_name,
+                'email' => $row->email,
+                'reason' => $row->reason,
+                'status' => $row->status,
+                'refund_amount' => number_format($row->refund_amount, 0, '.', ''),
+                'created_at' => $row->created_at ? date('d/m/Y H:i:s', strtotime($row->created_at)) : null,
+                'updated_at' => $row->updated_at ? date('d/m/Y H:i:s', strtotime($row->updated_at)) : null,
+            ];
+        });
+
+        return response()->json([
+            'status' => true,
+            'return_requests' => $formatted
+        ]);
+    }
 }
