@@ -43,7 +43,7 @@ const Voucher = () => {
         linkMainItem={"/"}
         showMainItem2={false}
       />
-      <section className="container-fluid">
+      <section className="container">
         <div className="userVoucher-margin">
           <div className="row">
             {paginatedVouchers.map((voucher) => (

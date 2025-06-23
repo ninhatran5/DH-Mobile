@@ -380,7 +380,7 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
       )}
 
       <div
-        className={isQuickView ? "" : "container-fluid"}
+        className={isQuickView ? "" : "container"}
         style={isQuickView ? { padding: 0, margin: 0 } : { marginBottom: 80 }}
       >
         <div className="row">
