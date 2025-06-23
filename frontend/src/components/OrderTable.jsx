@@ -2,18 +2,45 @@ import OrderHistory from "./OrderHistory";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { cancelOrder, fetchOrder } from "../slices/orderSlice";
 import Loading from "./Loading";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import { FaFilter } from "react-icons/fa";
 
 const OrderTable = () => {
   const MySwal = withReactContent(Swal);
   const dispatch = useDispatch();
   const { orders, loading } = useSelector((state) => state.order);
   const { t } = useTranslation();
+  const [tab, setTab] = useState("all");
+  const [showFilter, setShowFilter] = useState(false);
+
+  const TABS = [
+    { label: t("orderHistory.all"), value: "all" },
+    { label: t("orderHistory.waitingConfirm"), value: "chờ xác nhận" },
+    { label: t("orderHistory.confirmed"), value: "đã xác nhận" },
+    { label: t("orderHistory.waitingPickup"), value: "chờ lấy hàng" },
+    { label: t("orderHistory.shipping"), value: "đang vận chuyển" },
+    { label: t("orderHistory.delivering"), value: "đang giao hàng" },
+    { label: t("orderHistory.delivered"), value: "đã giao hàng" },
+    { label: t("orderHistory.completed"), value: "hoàn thành" },
+    { label: t("orderHistory.cancelled"), value: "đã hủy" },
+    { label: t("orderHistory.refunded"), value: "đã hoàn tiền" },
+  ];
+
+  const PAYMENT_METHODS = [
+    { label: t("orderHistory.all"), value: "all" },
+    { label: "COD", value: "cod" },
+    { label: "VNPAY", value: "vnpay" },
+  ];
+  const PAYMENT_STATUS = [
+    { label: t("orderHistory.all"), value: "all" },
+    { label: t("orderHistory.paid"), value: "đã thanh toán" },
+    { label: t("orderHistory.unpaid"), value: "chưa thanh toán" },
+  ];
 
   const handleCancelOrder = async (orderId) => {
     const result = await MySwal.fire({
@@ -42,6 +69,12 @@ const OrderTable = () => {
     }
   };
 
+  const filteredOrders = (orders?.orders || []).filter((order) =>
+    tab === "all"
+      ? true
+      : order.status && order.status.trim().toLowerCase() === tab
+  );
+
   useEffect(() => {
     dispatch(fetchOrder());
   }, [dispatch]);
@@ -66,6 +99,66 @@ const OrderTable = () => {
           padding: "1.5rem",
         }}
       >
+        {/* Icon filter */}
+        <div
+          style={{
+            marginBottom: 18,
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+            position: "relative",
+          }}
+        >
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              cursor: "pointer",
+              userSelect: "none",
+              fontWeight: 600,
+              color: "#e40303",
+              fontSize: 16,
+              gap: 6,
+              padding: "8px 16px",
+              borderRadius: 8,
+              transition: "background 0.18s",
+            }}
+            onClick={() => setShowFilter((v) => !v)}
+          >
+            <FaFilter
+              style={{
+                fontSize: 22,
+                color: "#e40303",
+                verticalAlign: "middle",
+                marginRight: 4,
+              }}
+            />
+            {t("orderHistory.filter")}
+          </span>
+          {showFilter && (
+            <div className="order-table-filter-popup">
+              <div>
+                <div className="order-table-filter-title">
+                  {" "}
+                  {t("orderHistory.statusTitle")}:
+                </div>
+                <div className="order-table-filter-group">
+                  {TABS.map((t) => (
+                    <button
+                      key={t.value}
+                      className={`order-table-filter-btn${
+                        tab === t.value ? " active" : ""
+                      }`}
+                      onClick={() => setTab(t.value)}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
         <div className="profile-table-wrapper">
           <table className="profile-table">
             <thead>
@@ -80,13 +173,26 @@ const OrderTable = () => {
                 <th>{t("orderHistory.detail")}</th>
               </tr>
             </thead>
-            {orders?.orders?.map((order) => (
-              <OrderHistory
-                key={order.order_id}
-                handleCancelOrder={handleCancelOrder}
-                order={order}
-              />
-            ))}
+            {filteredOrders?.length === 0 ? (
+              <tbody>
+                <tr>
+                  <td
+                    colSpan={8}
+                    style={{ textAlign: "center", color: "#888" }}
+                  >
+                    {t("orderHistory.noOrder")}
+                  </td>
+                </tr>
+              </tbody>
+            ) : (
+              filteredOrders?.map((order) => (
+                <OrderHistory
+                  key={order.order_id}
+                  handleCancelOrder={handleCancelOrder}
+                  order={order}
+                />
+              ))
+            )}
           </table>
         </div>
       </div>
