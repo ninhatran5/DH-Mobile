@@ -5,7 +5,7 @@ import NumberFormat from "../../utils/numberFormat";
 import { FaEye, FaTimes } from "react-icons/fa";
 import { PiKeyReturnFill } from "react-icons/pi";
 import { FaDiagramSuccessor } from "react-icons/fa6";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { MdReviews } from "react-icons/md";
 import ReturnReasonModal from "./ReturnReasonModal";
@@ -25,6 +25,13 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [caseType, setCaseType] = useState(1);
+  const [isReviewed, setIsReviewed] = useState(false);
+
+  useEffect(() => {
+    // Kiểm tra localStorage để ẩn nút khi reload
+    const reviewed = JSON.parse(localStorage.getItem("reviewedOrders") || "[]");
+    setIsReviewed(reviewed.includes(order.order_id));
+  }, [order.order_id]);
 
   const handleNextPageOrderDetail = (id) => {
     navigate(`/order-detail/${id}`);
@@ -116,8 +123,8 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
                 />
               </>
             )}
-            {["hoàn thành"].includes(order?.status?.trim().toLowerCase()) && (
-              <>
+            {["hoàn thành"].includes(order?.status?.trim().toLowerCase()) &&
+              !isReviewed && (
                 <MdReviews
                   onClick={() => {
                     setSelectedOrderId(order.order_id);
@@ -126,8 +133,7 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
                   style={{ cursor: "pointer", marginRight: "12px" }}
                   title="Đánh giá đơn hàng"
                 />
-              </>
-            )}
+              )}
           </td>
         </tr>
       </tbody>
@@ -152,6 +158,18 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
           show={true}
           handleClose={() => setShowReviewModal(false)}
           orderId={selectedOrderId}
+          onSuccess={() => {
+            // Lưu vào localStorage để ẩn nút khi reload
+            const reviewed = JSON.parse(
+              localStorage.getItem("reviewedOrders") || "[]"
+            );
+            if (!reviewed.includes(order.order_id)) {
+              reviewed.push(order.order_id);
+              localStorage.setItem("reviewedOrders", JSON.stringify(reviewed));
+            }
+            setIsReviewed(true);
+            setShowReviewModal(false);
+          }}
         />
       )}
     </>

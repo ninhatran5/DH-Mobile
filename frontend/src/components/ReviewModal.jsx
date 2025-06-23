@@ -11,7 +11,7 @@ import { commentsPost } from "../slices/reviewSlice";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
-const ReviewModal = ({ show, handleClose, orderId }) => {
+const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(null);
   const [comment, setComment] = useState("");
@@ -69,7 +69,7 @@ const ReviewModal = ({ show, handleClose, orderId }) => {
           showConfirmButton: false,
           timer: 1500,
         });
-        handleClose();
+        if (onSuccess) onSuccess();
       })
       .catch((error) => {
         Swal.fire({
