@@ -7,32 +7,65 @@ import { FaStar } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchOrderDetail } from "../slices/orderSlice";
 import numberFormat from "../../utils/numberFormat";
+import { commentsPost } from "../slices/reviewSlice";
+import Swal from "sweetalert2";
 
 const ReviewModal = ({ show, handleClose, orderId }) => {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(null);
   const [comment, setComment] = useState("");
   const maxLength = 50;
-
-  const handleSubmit = () => {
-    console.log("Đánh giá:", { orderId, rating, comment });
-    handleClose();
-    // TODO: Gửi dữ liệu đánh giá lên API nếu cần
-  };
-
   const dispatch = useDispatch();
   const { orderDetail } = useSelector((state) => state.order);
-  
-
+  const confirmClose = () => {
+    Swal.fire({
+      title: "Bạn có chắc chắn muốn đóng?",
+      text: "Mọi nội dung bạn đã nhập sẽ bị mất",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Đóng",
+      cancelButtonText: "Hủy",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleClose();
+      }
+    });
+  };
+  const handleSubmit = () => {
+    dispatch(
+      commentsPost({
+        product_id: orderId,
+        rating,
+        content: comment,
+      })
+    )
+      .unwrap()
+      .then(() => {
+        Swal.fire({
+          icon: "success",
+          title: "Đanh giá thành công",
+          text: "Cảm ơn bạn đã đánh giá sản phẩm!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        handleClose();
+      })
+      .catch((error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi",
+          text: error || "Không thể gửi đánh giá",
+        });
+      });
+  };
   useEffect(() => {
     if (!orderId) return;
     dispatch(fetchOrderDetail(orderId));
   }, [orderId, dispatch]);
 
-
-
   return (
-    <Modal size="lg" show={show} onHide={handleClose} centered>
+    <Modal size="lg" show={show} onHide={confirmClose} centered>
       <Modal.Header closeButton>
         <Modal.Title>
           <h4 className="modal_change_address_title">Đánh giá sản phẩm</h4>
@@ -107,11 +140,11 @@ const ReviewModal = ({ show, handleClose, orderId }) => {
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
+        <Button variant="secondary" onClick={confirmClose}>
           Đóng
         </Button>
         <Button
-          variant="primary"
+          className="btn_save_address"
           onClick={handleSubmit}
           disabled={rating === 0}
         >

@@ -7,7 +7,7 @@ import { PiKeyReturnFill } from "react-icons/pi";
 import { FaDiagramSuccessor } from "react-icons/fa6";
 import { useState } from "react";
 import Swal from "sweetalert2";
-
+import { MdReviews } from "react-icons/md";
 import ReturnReasonModal from "./ReturnReasonModal";
 import ReturnRequestModal from "./ReturnRequestModal";
 import ReviewModal from "./ReviewModal";
@@ -20,10 +20,10 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
 
   const dispatch = useDispatch();
 
-  const [showReasonModal, setShowReasonModal] = useState(false); 
-  const [showRequestModal, setShowRequestModal] = useState(false); 
-  const [showReviewModal, setShowReviewModal] = useState(false); 
-  const [selectedOrderId, setSelectedOrderId] = useState(null); 
+  const [showReasonModal, setShowReasonModal] = useState(false);
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
 
   const handleNextPageOrderDetail = (id) => {
     navigate(`/order-detail/${id}`);
@@ -39,8 +39,8 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
   };
 
   const handleOpenRequestModal = () => {
-    setShowReasonModal(false); // Đóng modal lý do
-    setShowRequestModal(true); // Mở modal gửi yêu cầu
+    setShowReasonModal(false);
+    setShowRequestModal(true);
   };
 
   const handleCloseRequestModal = () => {
@@ -52,19 +52,11 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
       .unwrap()
       .then(() => {
         Swal.fire({
-          title: "Bạn có hài lòng với đơn hàng?",
+          title: "Xác nhận đã nhận hàng thành công",
           icon: "success",
-          showCancelButton: false,
-          showCloseButton: true,
-          confirmButtonText: "Đánh giá",
-          reverseButtons: true,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            setSelectedOrderId(order.order_id);
-            setShowReviewModal(true);
-            dispatch(fetchOrder());
-          }
+          confirmButtonText: "OK",
         });
+        dispatch(fetchOrder());
       })
       .catch((error) => {
         Swal.fire({
@@ -74,8 +66,6 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
         });
       });
   };
-  
-  
 
   return (
     <>
@@ -124,18 +114,28 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
                 />
               </>
             )}
+            {["hoàn thành"].includes(order?.status?.trim().toLowerCase()) && (
+              <>
+                <MdReviews
+                  onClick={() => {
+                    setSelectedOrderId(order.order_id);
+                    setShowReviewModal(true);
+                  }}
+                  style={{ cursor: "pointer", marginRight: "12px" }}
+                  title="Đánh giá đơn hàng"
+                />
+              </>
+            )}
           </td>
         </tr>
       </tbody>
 
-      {/* Modal chọn lý do trả hàng */}
       <ReturnReasonModal
         show={showReasonModal}
         handleClose={handleCloseReasonModal}
         handleOpenSubModal={handleOpenRequestModal}
       />
 
-      {/* Modal gửi yêu cầu trả hàng */}
       {showRequestModal && selectedOrderId && (
         <ReturnRequestModal
           show={true}
@@ -144,7 +144,6 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
         />
       )}
 
-      {/* Modal đánh giá đơn hàng */}
       {showReviewModal && selectedOrderId && (
         <ReviewModal
           show={true}
