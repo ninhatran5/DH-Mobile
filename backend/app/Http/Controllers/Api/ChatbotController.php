@@ -511,8 +511,6 @@ class ChatbotController extends Controller
         }
 
         $logs = ChatbotLog::where('user_id', $user->user_id)
-            ->orderByDesc('created_at')
-            ->limit(30)
             ->get(['message', 'response', 'created_at']);
         return response()->json([
             'success' => true,
