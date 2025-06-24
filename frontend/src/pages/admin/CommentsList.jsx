@@ -10,9 +10,12 @@ const MySwal = withReactContent(Swal);
 
 const CommentsList = () => {
   const dispatch = useDispatch();
-  const { comments, pagination, loading, error, deleteLoading, deleteError } = useSelector(
+  // Đảm bảo comments luôn là mảng
+  const { comments: rawComments = [], ...rest } = useSelector(
     (state) => state.adminComments
   );
+  const comments = Array.isArray(rawComments) ? rawComments : [];
+  const { pagination, loading, error, deleteLoading, deleteError } = rest;
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedComment, setSelectedComment] = useState(null);
@@ -50,9 +53,9 @@ console.log(comments)
 
   const filteredComments = comments.filter(
     (comment) =>
-      comment.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      comment.user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      comment.product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      (comment.content || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (comment.user?.username || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (comment.product?.name || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleViewComment = (comment) => {
@@ -303,4 +306,4 @@ console.log(comments)
   );
 };
 
-export default CommentsList; 
+export default CommentsList;
