@@ -521,9 +521,10 @@ const Homeadmin = () => {
           className={`${isSidebarCollapsed ? 'admin_dh-content-expanded' : ''} ${isSidebarActive ? 'admin_dh-content-dimmed admin_dh-content-active' : ''}`}
           onClick={handleContentClick}
         >
+        
           {/* Top Navigation */}
           <nav className="admin_dh-navbar navbar-expand-lg">
-            <div className="container">
+            <div className="admin_dh_container">
               <div className="admin_dh-navbar-left" style={{ gap: 10, alignItems: 'center' }}>
                 {/* Nút menu cho desktop - giống với mobile */}
                 <button
@@ -557,14 +558,6 @@ const Homeadmin = () => {
               </div>
 
               <div className="admin_dh-navbar-right">
-                <button
-                  className="btn admin_dh-btn admin_dh-theme-toggle"
-                  onClick={toggleDarkMode}
-                  title={isDarkMode ? "Light mode" : "Dark mode"}
-                >
-                  <i className={`bi ${isDarkMode ? 'bi-sun' : 'bi-moon'}`}></i>
-                </button>
-
                 <button
                   className="btn admin_dh-btn admin_dh-sound-toggle"
                   onClick={toggleSound}

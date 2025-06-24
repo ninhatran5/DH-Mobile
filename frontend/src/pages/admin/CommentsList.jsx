@@ -21,7 +21,7 @@ const CommentsList = () => {
   useEffect(() => {
     dispatch(fetchAdminComments());
   }, [dispatch]);
-
+console.log(comments)
   useEffect(() => {
     if (error) {
       MySwal.fire({
