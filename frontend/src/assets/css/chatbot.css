@@ -355,3 +355,49 @@
   display: flex;
   align-items: center;
 }
+
+/* Đảm bảo nội dung markdown trong bubble không phá layout */
+.bubble p,
+.bubble ul,
+.bubble ol,
+.bubble pre,
+.bubble code,
+.bubble blockquote {
+  margin: 0;
+  padding: 0;
+  font-size: inherit;
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: inherit;
+  word-break: break-word;
+}
+.bubble p {
+  margin-bottom: -28px;
+}
+
+.bubble ul,
+.bubble ol {
+  padding-left: 18px;
+}
+
+.bubble code,
+.bubble pre {
+  background: #f5f5f5;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 13px;
+  color: #333;
+}
+
+.bubble a {
+  color: #1976d2;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.bubble img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin: 4px 0;
+}
