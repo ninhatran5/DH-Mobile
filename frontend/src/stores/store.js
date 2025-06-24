@@ -39,7 +39,12 @@ import adminNotificationReducer from "../slices/NotificationSlice";
 import adminChatReducer from "../slices/AdminChatSlice";
 import reviewReducer from "../slices/reviewSlice";
 import adminReturnOrderReducer from "../slices/AdminReturnOrderSlice";
+
+import adminCommentsReducer from "../slices/adminComments";
+
+
 import chatBotReducer from "../slices/chatBotSlice";
+
 export const store = configureStore({
   reducer: {
     home: homeReducer,
@@ -83,5 +88,6 @@ export const store = configureStore({
     adminNotification: adminNotificationReducer,
     adminChat: adminChatReducer,
     adminReturnOrder: adminReturnOrderReducer,
+    adminComments: adminCommentsReducer,
   },
 });

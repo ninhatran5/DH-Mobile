@@ -500,8 +500,9 @@ const Homeadmin = () => {
                     <i className={`bi bi-caret-${isDropdownActive('comments') ? 'down' : 'right'}-fill`} style={{ marginLeft: '8px' }}></i>
                   </a>
                   <div className={`admin_dh-submenu ${isDropdownActive('comments') ? 'show' : ''}`}>
-                    <div><Link to="/admin/comments">Tất cả bài viết </Link></div>
+                    <div><Link to="/admin/articles">Tất cả bài viết </Link></div>
                     <div><Link to="/admin/comments/pending">Thêm bài viết</Link></div>
+                    <div><Link to="/admin/comments">Quản lí bài viết</Link></div>
                   </div>
                 </div>
               </div>
