@@ -13,7 +13,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('title', 255);
             $table->text('content');
-            $table->longText('description')->nullable();
+            // $table->longText('description')->nullable();
             $table->text('image_url')->nullable();
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();

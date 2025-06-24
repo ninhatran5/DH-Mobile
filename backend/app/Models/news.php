@@ -17,7 +17,7 @@ class news extends Model
         'title',
         'content',
         'image_url',
-        'description',
+        // 'description',
         'created_at',
         'updated_at',
         'deleted_at',
