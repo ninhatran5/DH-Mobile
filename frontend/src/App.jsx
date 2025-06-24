@@ -42,7 +42,7 @@ import OrdersCancelled from "./pages/admin/OrdersCancelled";
 import VoucherList from "./pages/admin/VoucherList";
 import AddVoucher from "./pages/admin/AddVoucher";
 import ListBanner from "./pages/admin/ListBanner";
-import CommentsList from "./pages/admin/CommentsList";
+import ArticlesList from "./pages/admin/ArticlesList";
 import ShowProduct from "./pages/admin/ShowProduct";
 import ScrollToTop from "../utils/ScrollToTop";
 import RequireAuth from "./components/RequireAuth";
@@ -66,6 +66,7 @@ import PaymentFailed from "./pages/PaymentFailed";
 import WaitingForPayment from "./pages/WaitingForPayment";
 import AdminOrderDetail from "./pages/admin/OrderDetail";
 import ChatLiveAdmin from "./pages/admin/ChatLive";
+import CommentsList from "./pages/admin/CommentsList";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -267,6 +268,10 @@ const routerConfig = [
       {
         path: "editbanner/:id",
         element: <EditBanner />,
+      },
+      {
+        path: "articles",
+        element: <ArticlesList />,
       },
       {
         path: "comments",

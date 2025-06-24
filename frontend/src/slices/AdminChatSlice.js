@@ -28,7 +28,6 @@ export const fetchChatbots = createAsyncThunk(
   }
 );
 
-// Toggle chatbot status
 export const toggleChatbot = createAsyncThunk(
   "chat/toggleChatbot",
   async (chatbotId, { rejectWithValue, dispatch }) => {
@@ -40,7 +39,6 @@ export const toggleChatbot = createAsyncThunk(
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Sau khi toggle thành công, fetch lại danh sách để cập nhật state
       dispatch(fetchChatbots());
       
       return response.data;
@@ -75,7 +73,6 @@ const chatSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Toggle chatbot
       .addCase(toggleChatbot.pending, (state) => {
         state.toggleLoading = true;
         state.toggleError = null;

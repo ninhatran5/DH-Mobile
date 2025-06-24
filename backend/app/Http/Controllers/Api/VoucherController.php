@@ -74,6 +74,7 @@ class VoucherController extends Controller
             'code' => 'required|string|max:150|min:10|unique:vouchers,code',
             'title' => 'required|string|min:5|max:255',
             'discount_amount' => 'required|numeric',
+            'quantity' => 'required|integer|min:0|max:255',
             'min_order_value' => 'required|integer',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
@@ -157,6 +158,7 @@ class VoucherController extends Controller
             'title' => 'string|min:5|max:255',
             'discount_amount' => 'numeric',
             'min_order_value' => 'integer',
+            'quantity' => 'required|integer|min:0|max:255',
             'start_date' => 'date',
             'end_date' => 'date|after_or_equal:start_date',
             'is_active' => 'boolean',
@@ -271,12 +273,20 @@ class VoucherController extends Controller
         if (!$voucher) {
             return response()->json([
                 'message' => 'voucher không tồn tại',
-            ]);
+            ], 404);
         }
+
+        // Chỉ cho phép xóa vĩnh viễn nếu đã bị xóa mềm (đã vào thùng rác)
+        if (is_null($voucher->deleted_at)) {
+            return response()->json([
+                'message' => 'Bạn phải bỏ voucher vào thùng rác trước khi xóa vĩnh viễn',
+            ], 400);
+        }
+
         $voucher->forceDelete();
         return response()->json([
-            'massage' => 'Xóa voucher vĩnh viễn thành công',
+            'message' => 'Xóa voucher vĩnh viễn thành công',
             'data' => $voucher
-        ])->setStatusCode(200, 'OK',);
+        ])->setStatusCode(200, 'OK');
     }
 }

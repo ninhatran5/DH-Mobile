@@ -1,119 +1,306 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchNews } from "../../slices/newsSlice";
-import { Link } from "react-router-dom";
-import "../../assets/admin/article.css";
+import { fetchAdminComments, deleteComment, clearError } from "../../slices/adminComments";
+import { FiTrash2, FiEye, FiSearch } from "react-icons/fi";
+import { AiFillStar } from "react-icons/ai";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import "../../assets/admin/adminComment.css"
+const MySwal = withReactContent(Swal);
 
 const CommentsList = () => {
   const dispatch = useDispatch();
-  const { newsList, loading, error } = useSelector((state) => state.adminNews);
+  const { comments, pagination, loading, error, deleteLoading, deleteError } = useSelector(
+    (state) => state.adminComments
+  );
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedComment, setSelectedComment] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchNews());
+    dispatch(fetchAdminComments());
   }, [dispatch]);
 
-  if (loading) {
-    return (
-      <div className="loading-spinner">
-        <div className="spinner"></div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (error) {
+      MySwal.fire({
+        title: "Lỗi",
+        text: error,
+        icon: "error",
+      });
+      dispatch(clearError());
+    }
+  }, [error, dispatch]);
 
-  if (error) {
-    return <div className="error-message">{error}</div>;
-  }
+  useEffect(() => {
+    if (deleteError) {
+      MySwal.fire({
+        title: "Lỗi",
+        text: deleteError,
+        icon: "error",
+      });
+      dispatch(clearError());
+    }
+  }, [deleteError, dispatch]);
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredComments = comments.filter(
+    (comment) =>
+      comment.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      comment.user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      comment.product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleViewComment = (comment) => {
+    setSelectedComment(comment);
+    setShowModal(true);
+  };
+
+  const handleDeleteComment = (commentId) => {
+    MySwal.fire({
+      title: "Xác nhận xóa",
+      text: "Bạn có chắc muốn xóa bình luận này?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Xóa",
+      cancelButtonText: "Hủy",
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(deleteComment(commentId))
+          .unwrap()
+          .then(() => {
+            MySwal.fire("Thành công", "Đã xóa bình luận thành công", "success");
+          })
+          .catch((err) => {
+          });
+      }
+    });
+  };
+
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+    return new Date(dateString).toLocaleDateString('vi-VN', options);
+  };
+
+  const renderStars = (rating) => {
+    const stars = [];
+    for (let i = 0; i < 5; i++) {
+      stars.push(
+        <AiFillStar
+          key={i}
+          size={18}
+          color={i < rating ? "#FFD700" : "#e4e5e9"}
+        />
+      );
+    }
+    return stars;
+  };
 
   return (
-    <div className="articles-container">
-      <div className="article-header">
-        <div className="article-header-content">
-          <div>
-            <h1 className="article-title">Bài viết</h1>
-            <p className="article-count">
-              {newsList?.length || 0} bài viết
-            </p>
-          </div>
-          <button className="add-article-btn">
-            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-            </svg>
-            Thêm bài viết
-          </button>
+    <div className="admin-comment-container">
+        <br/>
+      <div className="admin-comment-header">
+        <div className="admin-comment-header-title">
+          <h1>Quản lý bình luận</h1>
+          <p className="text-muted">Quản lý tất cả các bình luận của người dùng</p>
         </div>
       </div>
 
-      {newsList && newsList.map((news) => (
-        <article key={news._id} className="article-card">
-          <div className="article-content">
-            <div className="article-meta">
-              <img
-                src={news.user?.image_url || "https://via.placeholder.com/40"}
-                alt={news.user?.full_name}
-                className="article-author-avatar"
-              />
-              <div className="article-author-info">
-                <div className="article-author-name">
-                  {news.user?.full_name || "Admin"}
+      <div className="admin-comment-search-container" style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '20px' }}>
+        <div className="admin-comment-search-box" style={{ maxWidth: '600px', width: '100%' }}>
+          <FiSearch className="admin-comment-search-icon" />
+          <input
+            type="text"
+            className="admin-comment-search-input"
+            placeholder="Tìm kiếm bình luận, sản phẩm, người dùng..."
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="admin-comment-loading">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Đang tải...</span>
+          </div>
+          <p>Đang tải dữ liệu...</p>
+        </div>
+      ) : (
+        <div className="admin-comment-table-container">
+          <table className="admin-comment-table">
+            <thead>
+              <tr>
+                <th style={{ width: "5%" }}>STT</th>
+                <th style={{ width: "18%" }}>Người dùng</th>
+                <th style={{ width: "18%" }}>Sản phẩm</th>
+                <th style={{ width: "24%" }}>Nội dung</th>
+                <th style={{ width: "10%" }}>Đánh giá</th>
+                <th style={{ width: "15%" }}>Ngày tạo</th>
+                <th style={{ width: "10%" }}>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredComments.length > 0 ? (
+                filteredComments.map((comment, index) => (
+                  <tr key={comment.comment_id}>
+                    <td>{(currentPage - 1) * 10 + index + 1}</td>
+                    <td>
+                      <div className="admin-comment-user-info">
+                        <img
+                          src={comment.user.image_url}
+                          alt={comment.user.username}
+                          className="admin-comment-user-avatar"
+                        />
+                        <div>
+                          <div className="admin-comment-user-name">{comment.user.username}</div>
+                          <div className="admin-comment-user-email">{comment.user.email}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="admin-comment-product-info">
+                        <img
+                          src={comment.product.image_url}
+                          alt={comment.product.name}
+                          className="admin-comment-product-image"
+                        />
+                        <div className="admin-comment-product-name">{comment.product.name}</div>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="admin-comment-content">
+                        {comment.content.length > 100
+                          ? `${comment.content.substring(0, 100)}...`
+                          : comment.content}
+                      </div>
+                    </td>
+                    <td>
+                      <div className="admin-comment-rating">{renderStars(comment.rating)}</div>
+                    </td>
+                    <td>{formatDate(comment.created_at)}</td>
+                    <td>
+                      <div className="admin-comment-actions">
+                        <button
+                          className="admin-comment-btn admin-comment-btn-view"
+                          onClick={() => handleViewComment(comment)}
+                        >
+                          <FiEye size={18} />
+                        </button>
+                        <button
+                          className="admin-comment-btn admin-comment-btn-delete"
+                          onClick={() => handleDeleteComment(comment.comment_id)}
+                          disabled={deleteLoading}
+                        >
+                          <FiTrash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="7" className="admin-comment-empty-table">
+                    <i className="bi bi-chat-square-text" style={{ fontSize: "2rem" }}></i>
+                    <p>Không tìm thấy bình luận nào</p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {showModal && selectedComment && (
+        <div className="admin-comment-modal-backdrop">
+          <div className="admin-comment-modal">
+            <div className="admin-comment-modal-header">
+              <h2>Chi tiết bình luận</h2>
+              <button
+                className="admin-comment-modal-close"
+                onClick={() => setShowModal(false)}
+              >
+                &times;
+              </button>
+            </div>
+            <div className="admin-comment-modal-body">
+              <div className="admin-comment-detail">
+                <div className="admin-comment-user">
+                  <img
+                    src={selectedComment.user.image_url}
+                    alt={selectedComment.user.username}
+                    className="admin-comment-user-avatar-large"
+                  />
+                  <div>
+                    <h3>{selectedComment.user.full_name}</h3>
+                    <p>@{selectedComment.user.username}</p>
+                    <p>{selectedComment.user.email}</p>
+                  </div>
                 </div>
-                <div className="article-timestamp">
-                  {new Date(news.created_at).toLocaleDateString("vi-VN")}
+                
+                <div className="admin-comment-product">
+                  <h4>Sản phẩm:</h4>
+                  <div className="admin-comment-product-detail">
+                    <img
+                      src={selectedComment.product.image_url}
+                      alt={selectedComment.product.name}
+                      className="admin-comment-product-image-large"
+                    />
+                    <div>
+                      <h3>{selectedComment.product.name}</h3>
+                      <p className="admin-comment-product-price">
+                        {parseInt(selectedComment.product.price).toLocaleString('vi-VN')} VNĐ
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="admin-comment-content-full">
+                  <h4>Nội dung:</h4>
+                  <p>{selectedComment.content}</p>
+                </div>
+                
+                <div className="admin-comment-rating">
+                  <h4>Đánh giá: {selectedComment.rating}/5</h4>
+                  <div>{renderStars(selectedComment.rating)}</div>
+                </div>
+                
+                <div className="admin-comment-date">
+                  <h4>Ngày đăng:</h4>
+                  <p>{formatDate(selectedComment.created_at)}</p>
                 </div>
               </div>
-             
             </div>
-
-            <div className="article-text">
-              <h2 className="article-main-title">{news.title}</h2>
-              <p className="article-description">
-                {news.description || news.content}
-              </p>
+            <div className="admin-comment-modal-footer">
+              <button
+                className="admin-comment-btn admin-comment-btn-secondary"
+                onClick={() => setShowModal(false)}
+              >
+                Đóng
+              </button>
+              <button
+                className="admin-comment-btn admin-comment-btn-danger"
+                onClick={() => {
+                  handleDeleteComment(selectedComment.comment_id);
+                  setShowModal(false);
+                }}
+                disabled={deleteLoading}
+              >
+                Xóa bình luận
+              </button>
             </div>
           </div>
-
-          {news.image_url && (
-            <img
-              src={news.image_url}
-              alt={news.title}
-              className="article-image"
-            />
-          )}
-
-          <div className="article-actions">
-            <Link 
-              to={`/admin/news/${news._id}`}
-              className="action-button view-button"
-            >
-              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
-              Chi tiết
-            </Link>
-            <button className="action-button delete-button">
-              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-              Xóa
-            </button>
-          </div>
-        </article>
-      ))}
-
-      {newsList && newsList.length === 0 && (
-        <div className="empty-state">
-          <svg className="empty-icon" width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" 
-              d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-          </svg>
-          <p className="empty-text">Chưa có bài viết nào</p>
         </div>
       )}
     </div>
   );
 };
 
-export default CommentsList;
+export default CommentsList; 
