@@ -42,7 +42,7 @@ class UserSeeder extends Seeder
                 'ward' => 'Xã An Thái',
                 'district' => 'Huyện An Lão',
                 'city' => 'Thành phố Hải Phòng',
-                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1747896461/users/oib08m30ezexzmdtggzu.jpg',
+                'image_url' => 'https://www.shutterstock.com/image-vector/man-inscription-admin-icon-outline-600nw-1730974153.jpg',
                 'role' => 'customer',
                 'created_at' => '2025-05-22 03:42:09',
                 'updated_at' => '2025-05-22 08:11:55'
@@ -72,7 +72,7 @@ class UserSeeder extends Seeder
                 'ward' => 'Xã Hà Hiệu',
                 'district' => 'Huyện Ba Bể',
                 'city' => 'Tỉnh Bắc Kạn',
-                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1747894504/users/pijni8w5njfy7mombyc6.jpg',
+                'image_url' => 'https://www.shutterstock.com/image-vector/man-inscription-admin-icon-outline-600nw-1730974153.jpg',
                 'role' => 'customer',
                 'created_at' => '2025-05-22 06:14:22',
                 'updated_at' => '2025-05-22 06:29:00'
@@ -87,7 +87,7 @@ class UserSeeder extends Seeder
                 'ward' => 'Phường Thượng Lý',
                 'district' => 'Quận Hồng Bàng',
                 'city' => 'Thành phố Hải Phòng',
-                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1747896461/users/default-admin.jpg',
+                'image_url' => 'https://www.shutterstock.com/image-vector/man-inscription-admin-icon-outline-600nw-1730974153.jpg',
                 'role' => 'admin',
                 'created_at' => now(),
                 'updated_at' => now()
@@ -102,7 +102,7 @@ class UserSeeder extends Seeder
                 'ward' => 'Phường Quán Toan',
                 'district' => 'Quận Hồng Bàng',
                 'city' => 'Thành phố Hải Phòng',
-                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1747896461/users/default-admin.jpg',
+                'image_url' => 'https://www.shutterstock.com/image-vector/man-inscription-admin-icon-outline-600nw-1730974153.jpg',
                 'role' => 'admin',
                 'created_at' => now(),
                 'updated_at' => now()
@@ -117,7 +117,7 @@ class UserSeeder extends Seeder
                 'ward' => 'Thị Trấn Hợp Hòa',
                 'district' => 'Huyện Tam Dương',
                 'city' => 'Tỉnh Vĩnh phúc',
-                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1747896461/users/default-admin.jpg',
+                'image_url' => 'https://www.shutterstock.com/image-vector/man-inscription-admin-icon-outline-600nw-1730974153.jpg',
                 'role' => 'admin',
                 'created_at' => now(),
                 'updated_at' => now()
@@ -132,7 +132,7 @@ class UserSeeder extends Seeder
                 'ward' => 'Thị Trấn Hợp Hòa',
                 'district' => 'Huyện Tam Dương',
                 'city' => 'Tỉnh Vĩnh phúc',
-                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1747896461/users/default-admin.jpg',
+                'image_url' => 'https://www.shutterstock.com/image-vector/man-inscription-admin-icon-outline-600nw-1730974153.jpg',
                 'role' => 'customer',
                 'created_at' => now(),
                 'updated_at' => now()
