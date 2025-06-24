@@ -67,6 +67,7 @@ import WaitingForPayment from "./pages/WaitingForPayment";
 import AdminOrderDetail from "./pages/admin/OrderDetail";
 import ChatLiveAdmin from "./pages/admin/ChatLive";
 import CommentsList from "./pages/admin/CommentsList";
+import AddBlog from "./pages/admin/AddBlog";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -288,6 +289,10 @@ const routerConfig = [
       {
         path: "Addattribute",
         element: <Addattribute />,
+      },
+      {
+        path: "blog/add-blog",
+        element: <AddBlog />,
       },
       {
         path: "Editattribute/:id",
