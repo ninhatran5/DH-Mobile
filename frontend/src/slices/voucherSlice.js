@@ -32,7 +32,7 @@ export const fetchVoucerForUser = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const response = await axiosConfig.get(`/list-save-voucher`);
-      return response.data.data || [];
+      return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Đã có lỗi xảy ra"
