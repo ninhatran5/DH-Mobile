@@ -181,6 +181,8 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::get('/trashed', 'trashed');
         // user lưu voucher để sử dụng
         Route::post('/save-voucher','saveVoucherForUser');
+        // lấy danh sách voucher đã lưu 
+        Route::get('List-save-voucher','getSavedVouchersForUser');
     });
     // product views
     Route::prefix('productsviews')->controller(ProductsViewsController::class)->group(function () {
