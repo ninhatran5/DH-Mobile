@@ -308,6 +308,11 @@ class VoucherController extends Controller
             return response()->json(['message' => 'Voucher không hợp lệ hoặc đã hết hạn'], 404);
         }
 
+        // Kiểm tra số lượng voucher còn lại
+        if ($voucher->quantity <= 0) {
+            return response()->json(['message' => 'Voucher đã hết số lượng'], 409);
+        }
+
         // Kiểm tra user đã lưu voucher này chưa
         $exists = User_vouchers::where('user_id', $user->user_id)
             ->where('voucher_id', $voucher_id)
