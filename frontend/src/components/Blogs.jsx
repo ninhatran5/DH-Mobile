@@ -40,7 +40,7 @@ export default function Blogs({
     <>
       {loading && <Loading />}
       <section id="latest-blog" className={padding}>
-        <div className="container">
+        <div className="container-fluid">
           {showHeader && (
             <div className="row">
               <div className="section-header d-flex align-items-center justify-content-between mt-5">

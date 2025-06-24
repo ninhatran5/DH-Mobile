@@ -16,7 +16,7 @@ const CheckImei = () => {
 
   return (
     <section id="checkimei-hero" className="checkimei-hero section">
-      <div className="container">
+      <div className="container-fluid">
         <div className="row align-items-center">
           <div className="col-lg-6">
             <div className="checkimei-hero-content">

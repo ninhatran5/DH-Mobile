@@ -38,7 +38,7 @@ const FavoriteProducts = () => {
         linkMainItem={"/"}
         showMainItem2={false}
       />
-      <div className="container">
+      <div className="container-fluid">
         <div className="row row-cols-1 row-cols-sm-2 row-cols-md-5 row-cols-lg-5 row-cols-xl-5">
           {listFavorite.length > 0 ? (
             listFavorite.map((product) => (

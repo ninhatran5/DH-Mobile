@@ -118,7 +118,7 @@ const Profile = () => {
         showMainItem2={false}
       />
       <div className="profile-content" style={{ marginTop: "-3rem" }}>
-        <div className="container">
+        <div className="container-fluid">
           <div className="profile-row">
             <div className="profile-col-full">
               <div className="profile-box profile-box-bg">

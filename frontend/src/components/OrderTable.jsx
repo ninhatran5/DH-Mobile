@@ -89,7 +89,7 @@ const OrderTable = () => {
         showMainItem2={false}
       />
       <div
-        className="container"
+        className="container-fluid"
         style={{
           marginTop: "-1.5rem",
           marginBottom: "4rem",

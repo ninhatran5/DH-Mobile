@@ -127,7 +127,7 @@ const EditProfile = () => {
         linkMainItem2={`/profile/${id}`}
         showMainItem2={true}
       />
-      <div className="container">
+      <div className="container-fluid">
         <div className="row">
           <div className="col-12">
             <div className="d-flex">

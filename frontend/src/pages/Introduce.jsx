@@ -27,7 +27,7 @@ const Introduce = () => {
     },
   ];
   return (
-    <div className="container">
+    <div className="container-fluid">
       <div className="bg-white py-16 px-6 max-w-5xl mx-auto text-gray-800 leading-relaxed text-justify">
         <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-cyan-400 mb-8 text-center">
           {t("introduce.title")}

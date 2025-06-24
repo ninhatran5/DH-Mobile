@@ -17,7 +17,7 @@ export default function ChatWindow() {
   const [show, setShow] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  // const handleShow = () => setShow(true);
   const [visible, setVisible] = useState(true);
   const { t } = useTranslation();
   const [message, setMessage] = useState("");
@@ -63,7 +63,7 @@ export default function ChatWindow() {
   }, [dispatch]);
 
   return (
-    <div className="chatbot-container">
+    <div className="chatbot-container-fluid">
       {!visible && (
         <div className="chat-icon" onClick={() => setVisible(true)}>
           <img src={chatbotLogo2} width={55} alt="Chat Icon" />

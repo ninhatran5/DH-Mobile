@@ -29,7 +29,7 @@ export default function ListProductCard({ title, products, desc, gotoShop }) {
 
   return (
     <section className="overflow-hidden">
-      <div className="container">
+      <div className="container-fluid">
         <div className="row">
           <div className="col-md-12">
             <div className="section-header d-flex flex-wrap justify-content-between my-5">

@@ -77,7 +77,7 @@ const ChangeCheckout = forwardRef(({ onSubmitExternal }, ref) => {
     });
   }, [dispatch, navigate]);
   return (
-    <div className="container">
+    <div className="container-fluid">
       <section className="checkout mt-3">
         <div className="checkout__form">
           <div className="row">

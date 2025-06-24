@@ -42,7 +42,7 @@ const Register = () => {
 
       <div style={{ background: "#f8f8f8", width: "100vw", height: "100vh" }}>
         <section className="p-4">
-          <div className="container mt-2">
+          <div className="container-fluid mt-2">
             <div className="row justify-content-center">
               <div className="col-12 col-xxl-11">
                 <div className="card border-light-subtle shadow-sm">
