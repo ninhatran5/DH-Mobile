@@ -33,6 +33,7 @@ return new class extends Migration
                 'Đã giao hàng',
                 'Hoàn thành',
                 'Đã hủy',
+                'Đã yêu cầu hoàn hàng',
                 'Trả hàng/Hoàn tiền',
                 'Đã hoàn tiền'
             ])->default('Chờ xác nhận');

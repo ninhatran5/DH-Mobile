@@ -476,11 +476,19 @@ class OrderController extends Controller
 
         // Nếu duyệt hoàn tiền thì cập nhật trạng thái đơn hàng và trả tiền về refund_amount
         $order = Orders::find($id);
-        if ($newStatus === 'Đã hoàn lại' && $order) {
-            $order->status = 'Đã hoàn tiền';
-            $order->payment_status = 'Đã hoàn tiền';
-            if (isset($order->refund_amount)) {
-                $order->refund_amount = $refundAmount;
+        if ($order) {
+            if ($newStatus === 'Đã yêu cầu') {
+                $order->status = 'Đã yêu cầu hoàn hàng';
+            } elseif (in_array($newStatus, ['Đã chấp thuận', 'Đang xử lý'])) {
+                $order->status = 'Trả hàng/Hoàn tiền';
+            } elseif ($newStatus === 'Đã hoàn lại') {
+                $order->status = 'Đã hoàn tiền';
+                $order->payment_status = 'Đã hoàn tiền';
+                if (isset($order->refund_amount)) {
+                    $order->refund_amount = $refundAmount;
+                }
+            } elseif (in_array($newStatus, ['Đã từ chối', 'Đã hủy'])) {
+                $order->status = 'Từ chối hoàn hàng';
             }
             $order->save();
         }
