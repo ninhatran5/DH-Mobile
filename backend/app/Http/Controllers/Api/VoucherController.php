@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Voucher;
+use App\Models\User_vouchers;
 
 class VoucherController extends Controller
 {
@@ -289,4 +290,44 @@ class VoucherController extends Controller
             'data' => $voucher
         ])->setStatusCode(200, 'OK');
     }
+
+    public function saveVoucherForUser(Request $request)
+    {
+        $user = $request->user();
+        $voucher_id = $request->input('voucher_id');
+
+        // Kiểm tra voucher tồn tại và còn hiệu lực
+        $voucher = Voucher::where('voucher_id', $voucher_id)
+            ->where('is_active', 1)
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->first();
+
+        if (!$voucher) {
+            return response()->json(['message' => 'Voucher không hợp lệ hoặc đã hết hạn'], 404);
+        }
+
+        // Kiểm tra user đã lưu voucher này chưa
+        $exists = User_vouchers::where('user_id', $user->user_id)
+            ->where('voucher_id', $voucher_id)
+            ->exists();
+
+        if ($exists) {
+            return response()->json(['message' => 'Bạn đã lưu voucher này rồi'], 409);
+        }
+
+        // Lưu voucher cho user
+        $userVoucher = User_vouchers::create([
+            'user_id' => $user->user_id,
+            'voucher_id' => $voucher_id,
+            'is_used' => 0,
+        ]);
+
+        return response()->json([
+            'message' => 'Lưu voucher thành công',
+            'data' => $userVoucher
+        ], 201);
+    }
+
+    
 }
