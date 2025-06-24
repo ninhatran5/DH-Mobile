@@ -439,7 +439,7 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
             >
               <Modal.Header closeButton className="border-0"></Modal.Header>
               <Modal.Body className="text-center p-0">
-                <div {...handlers} className="carousel-swipeable-container">
+                <div {...handlers} className="carousel-swipeable-container-fluid">
                   <Carousel
                     data-bs-theme="dark"
                     interval={null}

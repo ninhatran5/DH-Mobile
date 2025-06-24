@@ -78,7 +78,7 @@ const ShowProduct = () => {
   };
 
   return (
-    <div className="container-fluid px-4 py-4">
+    <div className="container px-4 py-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="mb-0" style={{ fontWeight: '600', color: 'var(--admin_dh-text)' }}>Chi tiết sản phẩm</h2>
         <div>

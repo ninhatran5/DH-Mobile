@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\Controller;
 
 
@@ -56,9 +57,18 @@ class ChatbotController extends Controller
             'user_id' => 'nullable|integer'
         ]);
 
-        $message = $request->input('message');
+        $message = trim(Str::lower($request->input('message')));
         $userId = $request->input('user_id');
-
+        $cacheKey = 'chatbot:' . md5($message . '|' . ($userId ?? 'guest'));
+        $cacheTtl = 600; // cache 10 phút
+        if (Cache::has($cacheKey)) {
+            $cached = Cache::get($cacheKey);
+            return response()->json([
+                'success' => true,
+                'response' => $cached,
+                'cached' => true
+            ]);
+        }
 
         $bot = DB::table('chatbots')
             ->where('name', 'Bot Tư Vấn Khách Hàng')
@@ -79,7 +89,6 @@ class ChatbotController extends Controller
 
         try {
             $response = $this->handleIntent($intent, $message, $userId);
-
             if ($userId) {
                 DB::table('chatbot_logs')->insert([
                     'user_id' => $userId,
@@ -89,7 +98,8 @@ class ChatbotController extends Controller
                     'updated_at' => now()
                 ]);
             }
-
+            // Lưu cache
+            Cache::put($cacheKey, $response, $cacheTtl);
             return response()->json([
                 'success' => true,
                 'response' => $response
@@ -497,7 +507,7 @@ class ChatbotController extends Controller
             return $json['choices'][0]['message']['content'];
         }
         return 'Xin lỗi, mình chưa có thông tin phù hợp cho câu hỏi này. Bạn có thể hỏi lại chi tiết hơn hoặc liên hệ nhân viên để được hỗ trợ nhé! 😊';
-    }
+    }   
 
     // Lấy lịch sử hội thoại của user (nếu có user_id)
     public function getConversation(Request $request)
@@ -511,8 +521,6 @@ class ChatbotController extends Controller
         }
 
         $logs = ChatbotLog::where('user_id', $user->user_id)
-            ->orderByDesc('created_at')
-            ->limit(30)
             ->get(['message', 'response', 'created_at']);
         return response()->json([
             'success' => true,

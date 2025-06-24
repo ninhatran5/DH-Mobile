@@ -118,12 +118,6 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
             {["đã giao hàng"].includes(order?.status?.trim().toLowerCase()) && (
               <>
                 <TooltipIcon
-                  icon={PiKeyReturnFill}
-                  tooltip="Yêu cầu trả hàng"
-                  className="icon-circle"
-                  onClick={handleOpenReasonModal}
-                />
-                <TooltipIcon
                   icon={FaDiagramSuccessor}
                   tooltip="Xác nhận đã nhận hàng"
                   className="icon-circle"
@@ -134,15 +128,23 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
 
             {["hoàn thành"].includes(order?.status?.trim().toLowerCase()) &&
               !isReviewed && (
-                <TooltipIcon
-                  icon={MdReviews}
-                  tooltip="Đánh giá đơn hàng"
-                  className="icon-circle"
-                  onClick={() => {
-                    setSelectedOrderId(order.order_id);
-                    setShowReviewModal(true);
-                  }}
-                />
+                <>
+                  <TooltipIcon
+                    icon={PiKeyReturnFill}
+                    tooltip="Yêu cầu trả hàng"
+                    className="icon-circle"
+                    onClick={handleOpenReasonModal}
+                  />
+                  <TooltipIcon
+                    icon={MdReviews}
+                    tooltip="Đánh giá đơn hàng"
+                    className="icon-circle"
+                    onClick={() => {
+                      setSelectedOrderId(order.order_id);
+                      setShowReviewModal(true);
+                    }}
+                  />
+                </>
               )}
           </td>
         </tr>

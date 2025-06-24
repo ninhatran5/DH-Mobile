@@ -447,7 +447,7 @@ const Home = () => {
               backgroundImage: `url('images/${backgroundPhone}') no-repeat`,
             }}
           >
-            <div className="container mb-4">
+            <div className="container-fluid mb-4">
               <div className="row">
                 <div className="col-md-4">
                   <img

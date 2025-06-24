@@ -1,58 +1,88 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import "../assets/css/chatbot.css";
 import chatbotLogo2 from "../assets/images/logochat.png";
 import { FaPaperPlane, FaTimes } from "react-icons/fa";
-import { GoPaperclip } from "react-icons/go";
+import { ImEnlarge2 } from "react-icons/im";
+import { MdOutlineZoomInMap } from "react-icons/md";
 import { Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { fetchProfile } from "../slices/profileSlice";
-
-const messagesData = [
-  { sender: "user", text: "Xin chào", time: "10:00 AM" },
-  { sender: "user", text: "Bạn khỏe không ?", time: "10:01 AM" },
-  { sender: "user", text: "Hmmmmm", time: "10:02 AM" },
-  {
-    sender: "user",
-    text: "Bạn còn tiền không? cho tôi vay 5 triệu?",
-    time: "10:02 AM",
-  },
-  { sender: "bot", text: "Xin chào, tôi khỏe.", time: "10:03 AM" },
-  { sender: "bot", text: "Cút mẹ m đi", time: "10:04 AM" },
-  {
-    sender: "user",
-    text: "Đây là một hình ảnh tôi muốn chia sẻ:",
-    time: "10:05 AM",
-  },
-  {
-    sender: "user",
-    image:
-      "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg",
-    time: "10:05 AM",
-  },
-  {
-    sender: "bot",
-    image: "https://picsum.photos/201",
-    time: "10:15 AM",
-  },
-];
+import { chatBotPost, fetchChatBot } from "../slices/chatBotSlice";
+import dayjs from "dayjs";
+import { marked } from "marked";
 
 export default function ChatWindow() {
   const dispatch = useDispatch();
   const { profile } = useSelector((state) => state.profile);
+  const { response } = useSelector((state) => state.chatBot);
   const [show, setShow] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  // const handleShow = () => setShow(true);
   const [visible, setVisible] = useState(true);
   const { t } = useTranslation();
+  const [message, setMessage] = useState("");
+  const [sending, setSending] = useState(false);
+  const [pendingMessages, setPendingMessages] = useState([]);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+
+  const handleSendMessage = async () => {
+    if (message.trim() === "") return;
+    setSending(true);
+    setPendingMessages((prev) => [
+      ...prev,
+      {
+        sender: "user",
+        message,
+        created_at: new Date().toISOString(),
+      },
+    ]);
+    setMessage("");
+    await dispatch(
+      chatBotPost({
+        user_id: profile?.user?.id,
+        message,
+      })
+    );
+    await dispatch(fetchChatBot());
+    setPendingMessages([]); // clear khi đã fetch xong
+    setSending(false);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  const flatMessages = [];
+  if (Array.isArray(response)) {
+    response.forEach((item) => {
+      flatMessages.push({
+        sender: "user",
+        message: item.message,
+        created_at: item.created_at,
+      });
+      flatMessages.push({
+        sender: "bot",
+        message: item.response,
+        created_at: item.created_at,
+      });
+    });
+  }
+
+  const allMessages = [...flatMessages, ...pendingMessages];
 
   useEffect(() => {
     dispatch(fetchProfile());
+    dispatch(fetchChatBot());
   }, [dispatch]);
 
   return (
-    <div className="chatbot-container">
+    <div className="chatbot-container-fluid">
       {!visible && (
         <div className="chat-icon" onClick={() => setVisible(true)}>
           <img src={chatbotLogo2} width={55} alt="Chat Icon" />
@@ -60,17 +90,43 @@ export default function ChatWindow() {
       )}
 
       {visible && (
-        <div className="chat-window">
+        <div className={`chat-window${isFullScreen ? " fullscreen" : ""}`}>
           <div className="chat-header">
             <h2>{t("chatBot.chat")}</h2>
-            <button className="close-button" onClick={() => setVisible(false)}>
-              <FaTimes />
-            </button>
+            <div className="chat-header-actions">
+              <button
+                className="expand-btn"
+                onClick={() => setIsFullScreen((v) => !v)}
+                title={isFullScreen ? t("chatBot.shrink") : t("chatBot.expand")}
+              >
+                {isFullScreen ? (
+                  <MdOutlineZoomInMap className="icon-zoomout" />
+                ) : (
+                  <ImEnlarge2 className="icon-enlarge" />
+                )}
+              </button>
+              <button
+                className="close-button"
+                onClick={() => setVisible(false)}
+              >
+                <FaTimes />
+              </button>
+            </div>
           </div>
 
           <div className="messages">
-            {messagesData.map((msg, index) => (
-              <div className={`message ${msg.sender}`} key={index}>
+            {allMessages.map((msg, index) => (
+              <div
+                className={`message ${msg.sender}`}
+                key={index}
+                style={{
+                  display: "flex",
+                  flexDirection: msg.sender === "user" ? "row-reverse" : "row",
+                  alignItems: "flex-end",
+                  marginBottom: 10,
+                }}
+              >
+                {/* Avatar */}
                 <div className="avatar_chat">
                   <img
                     src={
@@ -83,26 +139,30 @@ export default function ChatWindow() {
                     className="avatar"
                   />
                 </div>
-                <div className="bubble">
-                  {msg.text && <div>{msg.text}</div>}
-                  {msg.image && (
-                    <img
-                      src={msg.image}
-                      alt="message"
-                      className="message-image"
-                      onClick={() => {
-                        setSelectedImage(msg.image);
-                        handleShow();
-                      }}
-                      style={{ cursor: "pointer" }}
-                    />
-                  )}
-                  <div className="timestamp">{msg.time}</div>
+
+                {/* Bubble + Time */}
+                <div
+                  className="bubble"
+                  style={{
+                    backgroundColor:
+                      msg.sender === "user" ? "#54b4d3" : "#f1f0f0",
+                    textAlign: msg.sender === "user" ? "right" : "left",
+                  }}
+                >
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: marked.parse(msg.message || ""),
+                    }}
+                  />
+                  <div className="timestamp">
+                    {dayjs(msg.created_at).format("HH:mm")}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
 
+          {/* Modal preview ảnh */}
           <Modal show={show} onHide={handleClose} centered size="lg">
             <Modal.Body style={{ padding: 0, position: "relative" }}>
               <button
@@ -138,22 +198,20 @@ export default function ChatWindow() {
           </Modal>
 
           <div className="input-container">
-            <input type="text" placeholder={t("chatBot.message")} />
             <input
-              type="file"
-              id="file-input"
-              className="file-input"
-              onChange={(e) => console.log(e.target.files)}
+              type="text"
+              placeholder={t("chatBot.message")}
+              value={message}
+              onKeyDown={handleKeyDown}
+              onChange={(e) => setMessage(e.target.value)}
+              disabled={sending}
             />
-            <label
-              htmlFor="file-input"
-              className="btn_message2"
-              style={{ cursor: "pointer", marginTop: 9 }}
+            <button
+              className="btn_message"
+              onClick={handleSendMessage}
+              disabled={sending}
             >
-              <GoPaperclip />
-            </label>
-            <button className="btn_message">
-              <FaPaperPlane />
+              {sending ? <span className="chat_spinner" /> : <FaPaperPlane />}
             </button>
           </div>
         </div>

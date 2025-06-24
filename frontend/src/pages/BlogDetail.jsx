@@ -23,7 +23,7 @@ const BlogDetail = () => {
     <>
       {loading && <Loading />}
       <section className="blog-hero spad">
-        <div className="container">
+        <div className="container-fluid">
           <div className="row d-flex justify-content-center">
             <div className="col-lg-9 text-center">
               <div className="blog__hero__text">
@@ -45,7 +45,7 @@ const BlogDetail = () => {
       </section>
 
       <section className="blog-details spad">
-        <div className="container">
+        <div className="container-fluid">
           <div className="row d-flex justify-content-center">
             <div className="col-lg-12">
               <div className="blog__details__pic">
