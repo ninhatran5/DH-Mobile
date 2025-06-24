@@ -184,6 +184,10 @@ const VoucherList = () => {
                     <span>Đơn tối thiểu:</span>
                     <strong>{formatCurrency(voucher.min_order_value)}</strong>
                   </div>
+                  <div className="adminvoucher-info-item">
+                    <span>Số lượng:</span>
+                    <strong>{voucher.min_order_value}</strong>
+                  </div>
                 </div>
               </div>
 

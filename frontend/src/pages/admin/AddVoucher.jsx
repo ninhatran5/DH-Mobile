@@ -77,6 +77,7 @@ const AddVoucherPage = () => {
         ...data,
         discount_amount: parseFloat(data.discount_amount),
         min_order_value: parseInt(data.min_order_value),
+        quantity: parseInt(data.quantity), // Thêm dòng này
         is_active: Number(data.is_active),
       };
 
@@ -103,6 +104,7 @@ const AddVoucherPage = () => {
     { name: "title", label: "Tiêu đề", type: "text", placeholder: "Nhập tiêu đề voucher", required: true },
     { name: "discount_amount", label: "Số tiền giảm", type: "number", step: "1000", placeholder: "Nhập số tiền giảm", required: true },
     { name: "min_order_value", label: "Giá trị đơn tối thiểu", type: "number", placeholder: "Nhập giá trị đơn tối thiểu", required: true },
+    { name: "quantity", label: "Số lượng", type: "number", placeholder: "Nhập số lượng voucher", required: true }, // Thêm dòng này
     { name: "start_date", label: "Ngày bắt đầu", type: "datetime-local", placeholder: "", required: true },
   ];
 

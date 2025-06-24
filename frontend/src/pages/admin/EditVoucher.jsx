@@ -18,6 +18,7 @@ const EditVoucher = () => {
     title: "",
     discount_amount: "",
     min_order_value: "",
+    quantity: "", // Thêm dòng này
     start_date: "",
     end_date: "",
     is_active: false,
@@ -88,6 +89,7 @@ const EditVoucher = () => {
           title: voucherToEdit.title || "",
           discount_amount: voucherToEdit.discount_amount || "",
           min_order_value: voucherToEdit.min_order_value || "",
+          quantity: voucherToEdit.quantity || "", // Thêm dòng này
           start_date: formatDateTimeLocal(voucherToEdit.start_date),
           end_date: formatDateTimeLocal(voucherToEdit.end_date),
           is_active: voucherToEdit.is_active === 1,
@@ -127,6 +129,7 @@ const EditVoucher = () => {
     updatedData.append("title", formData.title);
     updatedData.append("discount_amount", parseFloat(formData.discount_amount));
     updatedData.append("min_order_value", parseInt(formData.min_order_value, 10));
+    updatedData.append("quantity", parseInt(formData.quantity, 10)); // Thêm dòng này
     updatedData.append("start_date", formatDateTimeBackend(formData.start_date));
     updatedData.append("end_date", formatDateTimeBackend(formData.end_date));
     updatedData.append("is_active", formData.is_active ? 1 : 0);
@@ -207,6 +210,18 @@ const EditVoucher = () => {
             name="min_order_value"
             className="admineditvoucher-input admineditvoucher-minorder"
             value={formData.min_order_value}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="admineditvoucher-group">
+          <label className="admineditvoucher-label">Số lượng:</label>
+          <input
+            type="number"
+            name="quantity"
+            className="admineditvoucher-input admineditvoucher-quantity"
+            value={formData.quantity}
             onChange={handleChange}
             required
           />

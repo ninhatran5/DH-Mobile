@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchNotifications, markNotificationsRead, markNotificationRead } from "../../slices/NotificationSlice";
 import Thongbao from "../../assets/sound/thongbaomuahang.mp3"
+import avatarDefeult from "../../assets/images/adminacccount.jpg";
 const sidebarCollapsedStyles = {
   submenu: {
     position: 'absolute',
@@ -257,6 +258,10 @@ const Homeadmin = () => {
     localStorage.setItem('notificationSound', newSoundState);
   };
 
+  const adminID = localStorage.getItem("adminID");
+  const users = useSelector(state => state.adminuser?.users || []);
+  const currentUser = users.find(u => String(u.user_id) === String(adminID));
+
   return (
     <>
       <div className={`admin_dh-wrapper ${isDarkMode ? 'dark-mode' : ''}`}>
@@ -485,26 +490,37 @@ const Homeadmin = () => {
                   </div>
                 </div>
 
-                <div className={location.pathname.includes('/admin/comments') ? 'active' : ''}>
+                <div className={location.pathname.includes('/admin/articles') ? 'active' : ''}>
                   <a
                     href="#"
-                    className={`admin_dh-dropdown-toggle ${isDropdownActive('comments') ? 'show' : ''}`}
+                    className={`admin_dh-dropdown-toggle ${isDropdownActive('articles') ? 'show' : ''}`}
                     onClick={(e) => {
                       e.preventDefault();
-                      toggleDropdown('comments');
+                      toggleDropdown('articles');
                     }}
-                    data-title="Bình luận"
+                    data-title="Bài viết"
                   >
-                    <i className="bi bi-chat-dots" style={{ color: '#ff9f0a' }} />
+                 <i className="bi bi-file-earmark-text" style={{ color: '#ff9f0a' }} />
+
                     <span>Bài viết </span>
-                    <i className={`bi bi-caret-${isDropdownActive('comments') ? 'down' : 'right'}-fill`} style={{ marginLeft: '8px' }}></i>
+                    <i className={`bi bi-caret-${isDropdownActive('articles') ? 'down' : 'right'}-fill`} style={{ marginLeft: '8px' }}></i>
                   </a>
-                  <div className={`admin_dh-submenu ${isDropdownActive('comments') ? 'show' : ''}`}>
+                  <div className={`admin_dh-submenu ${isDropdownActive('articles') ? 'show' : ''}`}>
                     <div><Link to="/admin/articles">Tất cả bài viết </Link></div>
                     <div><Link to="/admin/blog/add-blog">Thêm bài viết</Link></div>
-                    <div><Link to="/admin/comments">Quản lí bài viết</Link></div>
                   </div>
                 </div>
+
+                  <div className={location.pathname === '/admin/comments' ? 'active' : ''}>
+                  <Link to="/admin/comments" className="admin_dh-nav-link" data-title="Dashboard">
+                     <i className="bi bi-chat-dots" style={{ color: '#ff9f0a' }} /> 
+                    <span>Bài viết </span>
+                  </Link>
+                </div>
+
+
+
+
               </div>
             </div>
           </div>
@@ -526,7 +542,6 @@ const Homeadmin = () => {
           <nav className="admin_dh-navbar navbar-expand-lg">
             <div className="admin_dh_container">
               <div className="admin_dh-navbar-left" style={{ gap: 10, alignItems: 'center' }}>
-                {/* Nút menu cho desktop - giống với mobile */}
                 <button
                   type="button"
                   id="admin_dh-sidebarCollapse"
@@ -536,7 +551,6 @@ const Homeadmin = () => {
                   aria-label="Toggle sidebar"
                   style={{ backgroundColor: 'var(--admin_dh-primary)', color: 'white' }}
                 ><i className="bi bi-layout-sidebar" /></button>
-                {/* Nút menu cho mobile */}
                 <button
                   type="button"
                   id="admin_dh-sidebarOpen"
@@ -632,13 +646,23 @@ const Homeadmin = () => {
                 <div className="dropdown admin_dh-user-dropdown">
                   <a className="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
                     <div className="admin_dh-user-avatar">
-                      <i className="bi bi-person"></i>
+                      {currentUser && currentUser.image_url ? (
+                        <img
+                          src={currentUser.image_url}
+                          alt={currentUser.username || "avatar"}
+                          style={{ width: 32, height: 32, borderRadius: "50%", objectFit: "cover" }}
+                        />
+                      ) : (
+                        <img
+                          src={avatarDefeult}
+                          alt="default avatar"
+                          style={{ width: 32, height: 32, borderRadius: "50%", objectFit: "cover" }}
+                        />
+                      )}
                     </div>
                     <i className="bi bi-caret-down-fill ms-2 text-muted"></i>
                   </a>
                   <ul className="dropdown-menu dropdown-menu-end admin_dh-user-menu">
-                    <li><a className="dropdown-item" href="#"><i className="bi bi-person me-2"></i>Hồ sơ</a></li>
-                    <li><a className="dropdown-item" href="#"><i className="bi bi-gear me-2"></i>Cài đặt</a></li>
                     <li><hr className="dropdown-divider" /></li>
                     <li>
                       <button
