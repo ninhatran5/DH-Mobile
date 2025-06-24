@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { fetchProfile } from "../slices/profileSlice";
 import { chatBotPost, fetchChatBot } from "../slices/chatBotSlice";
 import dayjs from "dayjs";
+import { marked } from "marked";
 
 export default function ChatWindow() {
   const dispatch = useDispatch();
@@ -148,7 +149,11 @@ export default function ChatWindow() {
                     textAlign: msg.sender === "user" ? "right" : "left",
                   }}
                 >
-                  <div>{msg.message}</div>
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: marked.parse(msg.message || ""),
+                    }}
+                  />
                   <div className="timestamp">
                     {dayjs(msg.created_at).format("HH:mm")}
                   </div>
