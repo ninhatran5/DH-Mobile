@@ -54,9 +54,8 @@ Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::put('/resetpassword', [AuthController::class, 'resetPassword']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/refresh', [AuthController::class, 'refreshToken']);
 });
-
+ Route::post('/refresh', [AuthController::class, 'refreshToken']);
 
 // API User
 
