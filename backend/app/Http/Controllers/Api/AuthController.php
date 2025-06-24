@@ -323,8 +323,8 @@ class AuthController extends Controller
 
             $user = $tokenModel->tokenable;
 
-            // Xoá token cũ
-            $tokenModel->delete();
+            // // Xoá token cũ
+            // $tokenModel->delete();
 
             // Tạo token mới
             $token = $user->createToken('auth_token')->plainTextToken;
