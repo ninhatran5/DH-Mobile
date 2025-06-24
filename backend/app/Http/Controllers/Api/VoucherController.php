@@ -273,12 +273,20 @@ class VoucherController extends Controller
         if (!$voucher) {
             return response()->json([
                 'message' => 'voucher không tồn tại',
-            ]);
+            ], 404);
         }
+
+        // Chỉ cho phép xóa vĩnh viễn nếu đã bị xóa mềm (đã vào thùng rác)
+        if (is_null($voucher->deleted_at)) {
+            return response()->json([
+                'message' => 'Bạn phải bỏ voucher vào thùng rác trước khi xóa vĩnh viễn',
+            ], 400);
+        }
+
         $voucher->forceDelete();
         return response()->json([
-            'massage' => 'Xóa voucher vĩnh viễn thành công',
+            'message' => 'Xóa voucher vĩnh viễn thành công',
             'data' => $voucher
-        ])->setStatusCode(200, 'OK',);
+        ])->setStatusCode(200, 'OK');
     }
 }
