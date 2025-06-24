@@ -1,7 +1,5 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "../assets/css/editprofile.css";
-import { FaEyeSlash } from "react-icons/fa";
-import { IoEyeSharp } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import Breadcrumb from "../components/Breadcrumb";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,9 +21,9 @@ const EditProfile = () => {
   const {
     register,
     handleSubmit,
-    setValue,
     watch,
     formState: { errors },
+    reset, // thêm reset
   } = useForm({
     mode: "onTouched",
   });
@@ -49,6 +47,7 @@ const EditProfile = () => {
       ?.wards || [];
 
   useEffect(() => {
+    // Chỉ reset khi profile và data đã có, và data có đủ tỉnh/thành
     if (
       profile?.user &&
       data.length > 0 &&
@@ -56,15 +55,26 @@ const EditProfile = () => {
       profile.user.district &&
       profile.user.ward
     ) {
-      setValue("full_name", profile.user.full_name || "");
-      setValue("phone", profile.user.phone || "");
-      setValue("email", profile.user.email || "");
-      setValue("city", profile.user.city || "");
-      setValue("district", profile.user.district || "");
-      setValue("ward", profile.user.ward || "");
-      setValue("address", profile.user.address || "");
+      // Kiểm tra xem city, district, ward có trong data không
+      const province = data.find((p) => p.name === profile.user.city);
+      const district = province?.districts?.find(
+        (d) => d.name === profile.user.district
+      );
+      const ward = district?.wards?.find((w) => w.name === profile.user.ward);
+
+      if (province && district && ward) {
+        reset({
+          full_name: profile.user.full_name || "",
+          phone: profile.user.phone || "",
+          email: profile.user.email || "",
+          city: profile.user.city || "",
+          district: profile.user.district || "",
+          ward: profile.user.ward || "",
+          address: profile.user.address || "",
+        });
+      }
     }
-  }, [profile, data, setValue]);
+  }, [profile, data, reset]);
 
   useEffect(() => {
     dispatch(fetchAddress());
@@ -292,7 +302,7 @@ const EditProfile = () => {
                               "editProfile.validate.districtRequired"
                             ),
                           })}
-                          disabled={!watchCity}
+                          disabled={!watchCity && !profile?.user?.city}
                         >
                           <option value="">
                             {t("editProfile.selectDistrict")}
@@ -324,7 +334,7 @@ const EditProfile = () => {
                           {...register("ward", {
                             required: t("editProfile.validate.wardRequired"),
                           })}
-                          disabled={!watchDistrict}
+                          disabled={!watchDistrict && !profile?.user?.district}
                         >
                           <option value="">
                             {t("editProfile.selectWard")}
