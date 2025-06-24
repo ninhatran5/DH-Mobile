@@ -336,7 +336,7 @@ Route::middleware('auth:sanctum')->prefix('support-chat')->group(function () {
 // voucher dành cho user
 Route::middleware('auth:sanctum')->group(function () {
     // User lưu voucher để sử dụng
-    Route::post('/save-voucher', [VoucherController::class, 'saveVoucherForUser']);
+    Route::post('/save-voucher/{id}', [VoucherController::class, 'saveVoucherForUser']);
     // Lấy danh sách voucher đã lưu
     Route::get('/list-save-voucher', [VoucherController::class, 'getSavedVouchersForUser']);
 });
