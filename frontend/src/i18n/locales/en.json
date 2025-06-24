@@ -477,7 +477,11 @@
   "voucher": {
     "saveSuccess": "Voucher saved successfully",
     "iconSave": "Save",
-    "iconCopy": "Copy"
+    "iconCopy": "Copy",
+    "expiry": "Expiry",
+    "minOrder": "Minimum order",
+    "discountAmount": "Discount amount",
+    "saveError": "You have saved this coupon code"
   },
   "toast": {
     "errorMin": "Minimum quantity is 1",

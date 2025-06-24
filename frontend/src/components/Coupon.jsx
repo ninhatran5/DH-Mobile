@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { RiShoppingBag3Fill } from "react-icons/ri";
 import { FaCopy } from "react-icons/fa6";
 import { useRef } from "react";
@@ -5,10 +6,14 @@ import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { HiSave } from "react-icons/hi";
 import dayjs from "dayjs";
+import { useDispatch } from "react-redux";
+import { saveVoucher } from "../slices/voucherSlice";
+import Swal from "sweetalert2";
 
 const Coupon = ({ voucher, isMyVoucher }) => {
   const inputRef = useRef(null);
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const handleCopyVoucher = () => {
     inputRef.current.select();
     inputRef.current.setSelectionRange(0, 99999);
@@ -19,8 +24,33 @@ const Coupon = ({ voucher, isMyVoucher }) => {
       .catch((err) => console.error(t("breadcrumbVoucher.err"), err));
   };
 
-  const handleSaveVoucher = () => {
-    toast.success(t("voucher.saveSuccess"));
+  const handleSaveVoucher = async () => {
+    try {
+      const result = await dispatch(saveVoucher(voucher.voucher_id));
+      if (result.meta && result.meta.requestStatus === "fulfilled") {
+        Swal.fire({
+          icon: "success",
+          title: t("voucher.saveSuccess"),
+          showConfirmButton: false,
+          timer: 1500,
+          customClass: {
+            popup: "swal2-padding-custom",
+          },
+        });
+      } else {
+        throw new Error(result.error?.message || t("voucher.saveError"));
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: t("voucher.saveError"),
+        showConfirmButton: false,
+        timer: 1800,
+        customClass: {
+          popup: "swal2-padding-custom",
+        },
+      });
+    }
   };
 
   return (
@@ -29,7 +59,7 @@ const Coupon = ({ voucher, isMyVoucher }) => {
         <div className="userVoucher-leftSide">
           <RiShoppingBag3Fill className="userVoucher-icon-bag" />
         </div>
-        
+
         <div className="userVoucher-dashedLine">
           <div className="userVoucher-circle userVoucher-topCircle"></div>
           <div className="userVoucher-circle userVoucher-bottomCircle"></div>
@@ -43,7 +73,9 @@ const Coupon = ({ voucher, isMyVoucher }) => {
                   onClick={handleSaveVoucher}
                   className="userVoucher-icon"
                 />
-                <span className="userVoucher-tooltip">{t("voucher.iconSave")}</span>
+                <span className="userVoucher-tooltip">
+                  {t("voucher.iconSave")}
+                </span>
               </>
             ) : (
               <>
@@ -51,7 +83,9 @@ const Coupon = ({ voucher, isMyVoucher }) => {
                   onClick={handleCopyVoucher}
                   className="userVoucher-icon"
                 />
-                <span className="userVoucher-tooltip">{t("voucher.iconCopy")}</span>
+                <span className="userVoucher-tooltip">
+                  {t("voucher.iconCopy")}
+                </span>
               </>
             )}
           </div>
@@ -65,8 +99,18 @@ const Coupon = ({ voucher, isMyVoucher }) => {
           />
 
           <h5 className="userVoucher-title">{voucher.title}</h5>
-          <div className="userVoucher-date">
-            {dayjs(voucher.start_date).format("HH:mm")} | {dayjs(voucher.start_date).format("DD.MM.YYYY")} - {dayjs(voucher.end_date).format("HH:mm")} | {dayjs(voucher.end_date).format("DD.MM.YYYY")}
+          <div className="userVoucher-date-right">
+            {t("voucher.expiry")}:{" "}
+            {dayjs(voucher.end_date).format("DD/MM/YYYY")}
+          </div>
+          <div>
+            <p className="userVoucher-info-item">
+              {t("voucher.minOrder")}: <span>{voucher.min_order_value}</span>
+            </p>
+            <p className="userVoucher-info-item2">
+              {t("voucher.discountAmount")}:{" "}
+              <span>{voucher.discount_amount}</span>
+            </p>
           </div>
         </div>
       </div>

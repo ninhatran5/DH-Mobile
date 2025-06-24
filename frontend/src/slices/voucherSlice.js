@@ -14,7 +14,19 @@ export const fetchVouhcer = createAsyncThunk(
     return response.data;
   }
 );
-
+export const saveVoucher = createAsyncThunk(
+  "vouhcer/saveVoucher",
+  async (id, thunkAPI) => {
+    try {
+      const response = await axiosConfig.post(`/save-voucher/${id}`);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Đã có lỗi xảy ra"
+      );
+    }
+  }
+);
 export const vouhcerSlice = createSlice({
   name: "vouhcer",
   initialState,
@@ -35,6 +47,20 @@ export const vouhcerSlice = createSlice({
       })
       // call lỗi
       .addCase(fetchVouhcer.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Đã có lỗi xảy ra";
+      })
+      .addCase(saveVoucher.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(saveVoucher.fulfilled, (state, action) => {
+        state.loading = false;
+        state.vouchers = Array.isArray(state.vouchers)
+          ? [...state.vouchers, action.payload]
+          : [action.payload];
+      })
+      .addCase(saveVoucher.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
       });

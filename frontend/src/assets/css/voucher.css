@@ -29,7 +29,7 @@
 .userVoucher-dashedLine {
   position: relative;
   width: 2px;
-  border-left: 2px dashed rgba(255,255,255,0.8);
+  border-left: 2px dashed rgba(255, 255, 255, 0.8);
   margin: 0;
   flex-shrink: 0;
 }
@@ -124,7 +124,30 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
+.userVoucher-info-item {
+  font-size: 14px;
+  color: white;
+  font-weight: 300;
+}
+.userVoucher-info-item2 {
+  font-size: 14px;
+  color: white;
+  font-weight: 300;
+  margin-top: -17px;
+}
+.userVoucher-date-right {
+  position: absolute;
+  top: 72%;
+  right: 15px;
+  font-size: 11px;
+  color: #fff;
+  background: #f0881f;
+  padding: 4px 14px;
+  border-radius: 16px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  z-index: 2;
+}
 @media (max-width: 1200px) {
   .userVoucher-card {
     height: 130px;
@@ -155,7 +178,9 @@
     font-size: 12px;
   }
 }
-
+.swal2-padding-custom {
+  padding: 2.5em 2em !important;
+}
 @media (max-width: 768px) {
   .userVoucher-card {
     height: 120px;
