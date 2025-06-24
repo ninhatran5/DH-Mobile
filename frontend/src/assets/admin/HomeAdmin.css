@@ -608,6 +608,7 @@ body {
   display: flex;
   align-items: center;
   gap: var(--admin_dh-spacing-sm);
+  margin-left: auto; /* Đẩy sang phải tự động */
 }
 
 .admin_dh-btn {
@@ -1903,4 +1904,9 @@ html {
   border-radius: 50%;
   border: 2px solid #fff;
 }
-
+.admin_dh_container{
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
