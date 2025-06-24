@@ -46,9 +46,9 @@ const Voucher = () => {
       <section className="container-fluid">
         <div className="userVoucher-margin">
           <div className="row">
-            {paginatedVouchers.map((voucher) => (
+            {paginatedVouchers?.map((voucher) => (
               <Coupon
-                key={voucher.voucher_id}
+                key={voucher?.voucher_id}
                 voucher={voucher}
                 isMyVoucher={true}
               />
