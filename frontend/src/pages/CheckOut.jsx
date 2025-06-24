@@ -118,7 +118,7 @@ const CheckOut = () => {
         linkMainItem="/"
         linkMainItem2="/shopping-cart"
       />
-      <div className="container">
+      <div className="container-fluid">
         <section className="checkout" style={{ marginTop: 60 }}>
           <div className="checkout__form">
             <form action="#">

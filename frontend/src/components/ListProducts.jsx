@@ -313,7 +313,7 @@ export default function ListProducts({
   return (
     <>
       <section className={padding}>
-        <div className="container">
+        <div className="container-fluid">
           {filter && (
             <>
               <div className="d-flex justify-content-end mb-3">

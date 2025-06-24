@@ -8,7 +8,7 @@ const PaymentFailed = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="container d-flex justify-content-center">
+    <div className="container-fluid d-flex justify-content-center">
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}

@@ -22,8 +22,8 @@ const SliderLogoBrand = () => {
     slidesToShow: 8,
     slidesToScroll: 1,
     autoplay: true,
-    speed: 3800, // Giảm tốc độ chuyển động
-    autoplaySpeed: 100, // Thay đổi tốc độ chuyển tiếp
+    speed: 3800, 
+    autoplaySpeed: 100, 
     cssEase: "ease-in-out",
     arrows: false,
     pauseOnHover: false,
@@ -67,14 +67,14 @@ const SliderLogoBrand = () => {
 
   return (
     <>
-      <div className="container">
+      <div className="container-fluid">
         <div className="partner-page">
           <div className="slide-partner">
             <div className="partner">
               <p className="partner-title text-center">{t("home.partners")}</p>
               <p className="partner-des text-center">PARTNERS AND CUSTOMERS</p>
             </div>
-            <div className="slider-container">
+            <div className="slider-container-fluid">
               <Slider {...settings} key={logos.length}>
                 {logos.map((logo, index) => (
                   <div key={index} className="logo-slide">
