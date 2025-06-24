@@ -291,10 +291,11 @@ class VoucherController extends Controller
         ])->setStatusCode(200, 'OK');
     }
 
-    public function saveVoucherForUser(Request $request)
+    // lưu voucher 
+    public function saveVoucherForUser(Request $request, $id)
     {
         $user = $request->user();
-        $voucher_id = $request->input('voucher_id');
+        $voucher_id = $id;
 
         // Kiểm tra voucher tồn tại và còn hiệu lực
         $voucher = Voucher::where('voucher_id', $voucher_id)
