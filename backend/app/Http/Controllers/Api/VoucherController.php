@@ -329,6 +329,9 @@ class VoucherController extends Controller
             'is_used' => 0,
         ]);
 
+        // Trừ số lượng voucher đi 1
+        $voucher->decrement('quantity');
+
         return response()->json([
             'message' => 'Lưu voucher thành công',
             'data' => $userVoucher
