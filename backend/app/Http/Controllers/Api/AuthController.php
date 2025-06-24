@@ -306,7 +306,7 @@ class AuthController extends Controller
     public function refreshToken(Request $request)
     {
         try {
-            $oldToken = $request->input('Token');
+            $oldToken = $request->bearerToken();
             if (!$oldToken) {
                 return response()->json([
                     'message' => 'Vui lòng truyền Token.'
