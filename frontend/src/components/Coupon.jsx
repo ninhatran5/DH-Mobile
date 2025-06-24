@@ -9,6 +9,7 @@ import dayjs from "dayjs";
 import { useDispatch } from "react-redux";
 import { saveVoucher } from "../slices/voucherSlice";
 import Swal from "sweetalert2";
+import numberFormat from "../../utils/numberFormat";
 
 const Coupon = ({ voucher, isMyVoucher }) => {
   const inputRef = useRef(null);
@@ -67,6 +68,10 @@ const Coupon = ({ voucher, isMyVoucher }) => {
 
         <div className="userVoucher-content">
           <div className="userVoucher-copyBtn">
+            <div className="userVoucher-quantity">
+              <span>{voucher.quantity}</span>
+            </div>
+            <span className="userVoucher-tooltip">{t("voucher.iconCopy")}</span>
             {isMyVoucher ? (
               <>
                 <HiSave
@@ -105,11 +110,12 @@ const Coupon = ({ voucher, isMyVoucher }) => {
           </div>
           <div>
             <p className="userVoucher-info-item">
-              {t("voucher.minOrder")}: <span>{voucher.min_order_value}</span>
+              {t("voucher.minOrder")}:{" "}
+              <span>{numberFormat(voucher.min_order_value)}</span>
             </p>
             <p className="userVoucher-info-item2">
               {t("voucher.discountAmount")}:{" "}
-              <span>{voucher.discount_amount}</span>
+              <span>{numberFormat(voucher.discount_amount)}</span>
             </p>
           </div>
         </div>

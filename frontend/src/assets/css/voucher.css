@@ -148,6 +148,24 @@
   letter-spacing: 0.5px;
   z-index: 2;
 }
+.userVoucher-quantity {
+  position: absolute;
+  top: 20px;
+  left: -455px;
+  width: 30px;
+  height: 30px;
+  background-color: #f0881f;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px #0001;
+  z-index: 2;
+  border: 2px solid #fff;
+  transition: background 0.2s;
+}
 @media (max-width: 1200px) {
   .userVoucher-card {
     height: 130px;
