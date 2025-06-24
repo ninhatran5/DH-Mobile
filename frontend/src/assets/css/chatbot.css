@@ -90,16 +90,23 @@
 
 .bubble {
   background-color: #e0e0e0;
-  padding: 10px 12px;
-  border-radius: 12px;
+  padding: 10px 14px;
+  border-radius: 16px;
   max-width: 70%;
-  position: relative;
+  word-break: break-word;
+  white-space: pre-line;
   font-size: 14px;
+  box-sizing: border-box;
 }
 
 .message.user .bubble {
   background-color: #54b4d3;
-  color: white;
+  color: #fff;
+  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 16px;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  /* Có thể thêm border nếu muốn giống admin hơn */
 }
 
 .timestamp {
@@ -188,9 +195,30 @@
   cursor: pointer;
 }
 .chat-window.fullscreen {
-  width: 100vw;
-  height: 100vh;
-  border-radius: 0;
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  border-radius: 0 !important;
+  z-index: 9999;
+}
+
+.expand-btn {
+  background: none;
+  border: none;
+  color: #54b4d3;
+  font-size: 16px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.expand-btn:hover {
+  color: #1e90ff;
 }
 
 @media (max-width: 768px) {
@@ -199,15 +227,15 @@
     right: 0;
     width: 100%;
     display: flex;
-    justify-content: flex-end; /* Đảm bảo icon nằm bên phải */
-    padding: 0; /* Không dùng padding ở đây nữa */
-    position: fixed; /* Đảm bảo chat icon không bị lệch */
+    justify-content: flex-end;
+    padding: 0;
+    position: fixed;
   }
 
   .chat-icon {
     position: absolute;
-    bottom: 25px; /* Vị trí cách đáy một chút */
-    right: 25px; /* Vị trí cách phải một chút */
+    bottom: 25px;
+    right: 25px;
     z-index: 1001;
     cursor: pointer;
   }
@@ -252,7 +280,6 @@
 
   .input-container {
     flex-wrap: nowrap;
-    gap: 6px;
   }
 
   .input-container input[type="text"] {
@@ -268,4 +295,46 @@
   .input-container .btn_message2 svg {
     font-size: 16px;
   }
+  .expand-btn,
+  .icon-enlarge,
+  .icon-zoomout {
+    display: none !important;
+  }
+}
+.chat_spinner {
+  border: 2px solid #eee;
+  border-top: 2px solid #54b4d3;
+  border-radius: 50%;
+  width: 27px;
+  height: 27px;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+}
+.chat_spinner:hover {
+  border: 2px solid #eee;
+  color: white;
+  border-radius: 50%;
+  width: 27px;
+  height: 27px;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+}
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.icon-enlarge {
+  font-size: 17px;
+  vertical-align: middle;
+  display: inline-flex;
+}
+
+.icon-zoomout {
+  font-size: 21px;
+  vertical-align: middle;
+  display: inline-flex;
 }
