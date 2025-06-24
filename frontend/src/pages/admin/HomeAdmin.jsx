@@ -501,7 +501,7 @@ const Homeadmin = () => {
                   </a>
                   <div className={`admin_dh-submenu ${isDropdownActive('comments') ? 'show' : ''}`}>
                     <div><Link to="/admin/articles">Tất cả bài viết </Link></div>
-                    <div><Link to="/admin/comments/pending">Thêm bài viết</Link></div>
+                    <div><Link to="/admin/blog/add-blog">Thêm bài viết</Link></div>
                     <div><Link to="/admin/comments">Quản lí bài viết</Link></div>
                   </div>
                 </div>
