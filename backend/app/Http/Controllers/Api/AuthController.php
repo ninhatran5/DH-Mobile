@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Laravel\Sanctum\PersonalAccessToken;
+
 
 /**
  *    @OA\Info(
@@ -304,25 +306,32 @@ class AuthController extends Controller
     public function refreshToken(Request $request)
     {
         try {
-            $user = $request->user();
+            $oldToken = $request->input('Token');
+            if (!$oldToken) {
+                return response()->json([
+                    'message' => 'Vui lòng truyền Token.'
+                ], 400);
+            }
 
-            // Kiểm tra user và token có tồn tại không
-            if (!$user || !$user->currentAccessToken()) {
+            // Tìm PersonalAccessToken theo token cũ
+            $tokenModel = PersonalAccessToken::findToken($oldToken);
+            if (!$tokenModel) {
                 return response()->json([
                     'message' => 'Token không hợp lệ hoặc đã hết hạn.'
                 ], 401);
             }
 
-            // Luôn tạo token mới, bất kể token cũ còn hạn hay không
+            $user = $tokenModel->tokenable;
+
             // Xoá token cũ
-            $user->currentAccessToken()->delete();
+            $tokenModel->delete();
 
             // Tạo token mới
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return response()->json([
                 'message' => 'Token đã được làm mới thành công.',
-                'access_token' => $token,
+                'Token' => $token,
                 'token_type' => 'Bearer',
                 'user' => [
                     'id' => $user->user_id,
