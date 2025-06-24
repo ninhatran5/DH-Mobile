@@ -1,8 +1,10 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import "../assets/css/chatbot.css";
 import chatbotLogo2 from "../assets/images/logochat.png";
 import { FaPaperPlane, FaTimes } from "react-icons/fa";
-import { GoPaperclip } from "react-icons/go";
+import { ImEnlarge2 } from "react-icons/im";
+import { MdOutlineZoomInMap } from "react-icons/md";
 import { Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
@@ -21,9 +23,22 @@ export default function ChatWindow() {
   const [visible, setVisible] = useState(true);
   const { t } = useTranslation();
   const [message, setMessage] = useState("");
+  const [sending, setSending] = useState(false);
+  const [pendingMessages, setPendingMessages] = useState([]);
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
   const handleSendMessage = async () => {
     if (message.trim() === "") return;
+    setSending(true);
+    setPendingMessages((prev) => [
+      ...prev,
+      {
+        sender: "user",
+        message,
+        created_at: new Date().toISOString(),
+      },
+    ]);
+    setMessage("");
     await dispatch(
       chatBotPost({
         user_id: profile?.user?.id,
@@ -31,7 +46,8 @@ export default function ChatWindow() {
       })
     );
     await dispatch(fetchChatBot());
-    setMessage("");
+    setPendingMessages([]); // clear khi đã fetch xong
+    setSending(false);
   };
 
   const handleKeyDown = (e) => {
@@ -57,6 +73,8 @@ export default function ChatWindow() {
     });
   }
 
+  const allMessages = [...flatMessages, ...pendingMessages];
+
   useEffect(() => {
     dispatch(fetchProfile());
     dispatch(fetchChatBot());
@@ -71,16 +89,32 @@ export default function ChatWindow() {
       )}
 
       {visible && (
-        <div className="chat-window">
+        <div className={`chat-window${isFullScreen ? " fullscreen" : ""}`}>
           <div className="chat-header">
             <h2>{t("chatBot.chat")}</h2>
-            <button className="close-button" onClick={() => setVisible(false)}>
-              <FaTimes />
-            </button>
+            <div style={{ display: "flex" }}>
+              <button
+                className="expand-btn"
+                onClick={() => setIsFullScreen((v) => !v)}
+                title={isFullScreen ? t("chatBot.shrink") : t("chatBot.expand")}
+              >
+                {isFullScreen ? (
+                  <MdOutlineZoomInMap className="icon-zoomout" />
+                ) : (
+                  <ImEnlarge2 className="icon-enlarge" />
+                )}
+              </button>
+              <button
+                className="close-button"
+                onClick={() => setVisible(false)}
+              >
+                <FaTimes />
+              </button>
+            </div>
           </div>
 
           <div className="messages">
-            {flatMessages.map((msg, index) => (
+            {allMessages.map((msg, index) => (
               <div
                 className={`message ${msg.sender}`}
                 key={index}
@@ -165,22 +199,14 @@ export default function ChatWindow() {
               value={message}
               onKeyDown={handleKeyDown}
               onChange={(e) => setMessage(e.target.value)}
+              disabled={sending}
             />
-            <input
-              type="file"
-              id="file-input"
-              className="file-input"
-              // onChange={(e) => console.log("File được chọn:", e.target.files)}
-            />
-            <label
-              htmlFor="file-input"
-              className="btn_message2"
-              style={{ cursor: "pointer", marginTop: 9 }}
+            <button
+              className="btn_message"
+              onClick={handleSendMessage}
+              disabled={sending}
             >
-              <GoPaperclip />
-            </label>
-            <button className="btn_message" onClick={handleSendMessage}>
-              <FaPaperPlane />
+              {sending ? <span className="chat_spinner" /> : <FaPaperPlane />}
             </button>
           </div>
         </div>
