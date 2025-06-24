@@ -408,7 +408,7 @@ const Homeadmin = () => {
                   >
                     <div><Link to="/admin/orders">Tất cả đơn hàng</Link></div>
                     <div><Link to="/admin/orders-completed">Đơn đã hoàn thành</Link></div>
-                    <div><Link to="/admin/orders-cancelled">Đơn đã hủy</Link></div>
+                    <div><Link to="/admin/orders-cancelled">Đơn hàng hoàn trả </Link></div>
                   </div>
                 </div>
 

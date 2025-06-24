@@ -79,13 +79,13 @@ const OrdersList = () => {
       cancelButtonText: "Hủy",
       confirmButtonColor: "#007aff",
       cancelButtonColor: "#d33",
+      reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(updateOrderStatus({ orderId, status: newStatus }))
           .then(() => {
             setSelectedOrder(null);
             Swal.fire("Thành công", "Trạng thái đơn hàng đã được cập nhật.", "success");
-            // Fetch lại danh sách đơn hàng để cập nhật UI
             dispatch(fetchAdminOrders(currentPage));
           });
       }
@@ -311,11 +311,7 @@ const OrdersList = () => {
                   <td><strong>Trạng thái:</strong></td>
                   <td>
                     <div className="adminorder-status-wrapper">
-                      <div className="adminorder-current-status mb-2">
-                        <span className={`admin_order-status ${getStatusColorClass(selectedOrder.status)}`}>
-                          {selectedOrder.status}
-                        </span>
-                      </div>
+                     
                       <select
                         value={selectedOrder.status}
                         onChange={(e) =>
@@ -347,6 +343,13 @@ const OrdersList = () => {
             </table>
 
             <div className="adminorder-modal-actions">
+              
+              <button
+                className="adminorder-btn-cancel"
+                onClick={() => setSelectedOrder(null)}
+              >
+                Hủy
+              </button>
               <button
                 className="adminorder-btn-submit"
                 onClick={() =>
@@ -354,12 +357,6 @@ const OrdersList = () => {
                 }
               >
                 Cập nhật
-              </button>
-              <button
-                className="adminorder-btn-cancel"
-                onClick={() => setSelectedOrder(null)}
-              >
-                Hủy
               </button>
             </div>
           </div>
