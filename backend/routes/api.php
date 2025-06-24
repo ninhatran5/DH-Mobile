@@ -179,10 +179,7 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::put('/restore/{id}', 'restore');
         Route::delete('/forceDelete/{id}', 'forceDelete');
         Route::get('/trashed', 'trashed');
-        // user lưu voucher để sử dụng
-        Route::post('/save-voucher','saveVoucherForUser');
-        // lấy danh sách voucher đã lưu 
-        Route::get('List-save-voucher','getSavedVouchersForUser');
+        // Route::get('/list-save-voucher', [VoucherController::class, 'getSavedVouchersForUser']);
     });
     // product views
     Route::prefix('productsviews')->controller(ProductsViewsController::class)->group(function () {
@@ -213,7 +210,6 @@ Route::get('news', [NewsController::class, 'index']); // lấy danh sách tin t�
 Route::get('news/{id}', [NewsController::class, 'show']); // lấy tin tức theo id
 Route::get('voucher', [VoucherController::class, 'index']); // lấy danh sách voucher
 Route::get('voucher/{id}', [VoucherController::class, 'show']); // lấy voucher theo id
-
 // Product Views
 Route::prefix('productsviews')->controller(ProductsViewsController::class)->group(function () {
     Route::post('/', 'addview'); // thêm sản phẩm đã xem
@@ -336,4 +332,11 @@ Route::middleware('auth:sanctum')->prefix('support-chat')->group(function () {
 
     // Đánh dấu 1 tin nhắn là đã đọc
     Route::patch('/mark-as-read/{chat_id}', [SupportChatController::class, 'markAsRead']);
+});
+// voucher dành cho user
+Route::middleware('auth:sanctum')->group(function () {
+    // User lưu voucher để sử dụng
+    Route::post('/save-voucher', [VoucherController::class, 'saveVoucherForUser']);
+    // Lấy danh sách voucher đã lưu
+    Route::get('/list-save-voucher', [VoucherController::class, 'getSavedVouchersForUser']);
 });
