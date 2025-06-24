@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchVouhcer } from "../slices/voucherSlice";
+import { fetchVoucerForUser } from "../slices/voucherSlice";
 import Breadcrumb from "../components/Breadcrumb";
 import Coupon from "../components/Coupon";
 import Loading from "../components/Loading";
@@ -11,7 +11,15 @@ export default function MyDiscountCode() {
   const dispatch = useDispatch();
   const { vouchers, loading } = useSelector((state) => state.voucher);
   useEffect(() => {
-    dispatch(fetchVouhcer());
+    dispatch(fetchVoucerForUser());
+    const handleFocus = () => {
+      dispatch(fetchVoucerForUser());
+    };
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+    };
   }, [dispatch]);
   return (
     <>
@@ -26,10 +34,14 @@ export default function MyDiscountCode() {
       <section className="container-fluid">
         <div className="voucher_margin">
           <div className="row">
-            {vouchers.map((voucher) => (
+            {vouchers.map((item) => (
               <Coupon
-                key={voucher.voucher_id}
-                voucher={voucher}
+                key={
+                  item.voucher_id ||
+                  item.voucher?.voucher_id ||
+                  item.user_voucher_id
+                }
+                voucher={item.voucher ? item.voucher : item}
                 isMyVoucher={false}
               />
             ))}
