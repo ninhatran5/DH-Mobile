@@ -334,7 +334,24 @@
 }
 
 .icon-zoomout {
-  font-size: 21px;
+  font-size: 22px;
   vertical-align: middle;
   display: inline-flex;
+}
+
+.chat-header-actions {
+  display: flex;
+  align-items: center;
+  padding: 12px 2px;
+}
+
+.expand-btn,
+.close-button {
+  margin: 0;
+  padding: 6px 8px;
+  background: none;
+  border: none;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
 }

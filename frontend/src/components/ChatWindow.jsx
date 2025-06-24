@@ -92,7 +92,7 @@ export default function ChatWindow() {
         <div className={`chat-window${isFullScreen ? " fullscreen" : ""}`}>
           <div className="chat-header">
             <h2>{t("chatBot.chat")}</h2>
-            <div style={{ display: "flex" }}>
+            <div className="chat-header-actions">
               <button
                 className="expand-btn"
                 onClick={() => setIsFullScreen((v) => !v)}
