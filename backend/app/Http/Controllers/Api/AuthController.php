@@ -323,13 +323,10 @@ class AuthController extends Controller
 
             $user = $tokenModel->tokenable;
 
-            // // Xoá token cũ
-            // $tokenModel->delete();
-
             // Tạo token mới
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            return response()->json([
+            $res = response()->json([
                 'message' => 'Token đã được làm mới thành công.',
                 'Token' => $token,
                 'token_type' => 'Bearer',
@@ -342,7 +339,13 @@ class AuthController extends Controller
                     'address' => $user->address,
                     'role' => $user->role,
                 ]
+
             ]);
+
+            // xoá token cũ
+            $tokenModel->delete();
+            return $res ;
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Có lỗi xảy ra khi làm mới token.'
