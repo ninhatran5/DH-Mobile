@@ -179,6 +179,8 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::put('/restore/{id}', 'restore');
         Route::delete('/forceDelete/{id}', 'forceDelete');
         Route::get('/trashed', 'trashed');
+        // user lưu voucher để sử dụng
+        Route::post('/save-voucher','saveVoucherForUser');
     });
     // product views
     Route::prefix('productsviews')->controller(ProductsViewsController::class)->group(function () {
