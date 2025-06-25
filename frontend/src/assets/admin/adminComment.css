@@ -183,9 +183,14 @@
 .admin-comment-rating {
   display: flex;
   align-items: center;
-  padding: 4px;
 }
-
+.admin-comment-date{
+display: flex;
+}
+.admin-comment-date p {
+  font-size: 20px;
+  line-height: 30px;
+}
 /* Action Buttons */
 .admin-comment-actions {
   display: flex;

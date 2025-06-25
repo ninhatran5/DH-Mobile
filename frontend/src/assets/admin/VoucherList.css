@@ -317,8 +317,10 @@
 
 .adminvoucher-container {
   max-width: 1400px;
-  margin: 20px auto;
+  margin: 10px auto;
   padding: 24px;
+  background-color: #ffff;
+  border-radius: 14px;
 }
 
 .adminvoucher-header {

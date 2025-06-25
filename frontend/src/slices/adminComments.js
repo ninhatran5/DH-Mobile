@@ -12,10 +12,35 @@ const initialState = {
   loading: false,
   error: null,
   deleteLoading: false,
-  deleteError: null
+  deleteError: null,
 };
 
-// Fetch all comments
+export const fetchCommentReplyById = createAsyncThunk(
+  "adminComments/fetchCommentReplyById",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
+
+      if (typeof payload === "object" && payload.reply !== undefined) {
+        const response = await axiosConfig.post(
+          `/admin/comments/rely/${payload.commentId}`,
+          { reply: payload.reply },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        return response.data.data;
+      } else {
+       
+        return null;
+      }
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Lỗi khi lấy/gửi phản hồi bình luận"
+      );
+    }
+  }
+);
+
 export const fetchAdminComments = createAsyncThunk(
   "adminComments/fetchAdminComments",
   async (page = 1, { rejectWithValue }) => {
@@ -34,7 +59,6 @@ export const fetchAdminComments = createAsyncThunk(
   }
 );
 
-// Delete a comment
 export const deleteComment = createAsyncThunk(
   "adminComments/deleteComment",
   async (commentId, { rejectWithValue, dispatch }) => {
@@ -46,7 +70,6 @@ export const deleteComment = createAsyncThunk(
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Refresh comments list after deletion
       dispatch(fetchAdminComments());
       
       return { commentId, response: response.data };
@@ -67,7 +90,6 @@ const adminCommentsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch comments cases
       .addCase(fetchAdminComments.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -88,7 +110,6 @@ const adminCommentsSlice = createSlice({
         state.error = action.payload;
       })
       
-      // Delete comment cases
       .addCase(deleteComment.pending, (state) => {
         state.deleteLoading = true;
         state.deleteError = null;
@@ -100,6 +121,20 @@ const adminCommentsSlice = createSlice({
       .addCase(deleteComment.rejected, (state, action) => {
         state.deleteLoading = false;
         state.deleteError = action.payload;
+      })
+      
+      // Thêm xử lý cho fetchCommentReplyById
+      .addCase(fetchCommentReplyById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCommentReplyById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.replyDetail = action.payload; // Lưu dữ liệu reply vào state
+      })
+      .addCase(fetchCommentReplyById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

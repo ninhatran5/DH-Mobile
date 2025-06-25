@@ -514,7 +514,7 @@ const Homeadmin = () => {
                   <div className={location.pathname === '/admin/comments' ? 'active' : ''}>
                   <Link to="/admin/comments" className="admin_dh-nav-link" data-title="Dashboard">
                      <i className="bi bi-chat-dots" style={{ color: '#ff9f0a' }} /> 
-                    <span>Bài viết </span>
+                    <span>Bình Luận</span>
                   </Link>
                 </div>
 
@@ -663,7 +663,8 @@ const Homeadmin = () => {
                     <i className="bi bi-caret-down-fill ms-2 text-muted"></i>
                   </a>
                   <ul className="dropdown-menu dropdown-menu-end admin_dh-user-menu">
-                    <li><hr className="dropdown-divider" /></li>
+                  <li><div className="menu-divider" /></li>
+
                     <li>
                       <button
                         className="dropdown-item"
