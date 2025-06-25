@@ -31,7 +31,6 @@
     "voucher": "Vouchers",
     "blog": "Blog",
     "introduce": "About Us",
-    "deleteFilter": "Delete Filter",
     "service": "Services",
     "warrantyPolicy": "Warranty Policy",
     "returnPolicy": "Return Policy",
@@ -74,7 +73,8 @@
     "search": "Search",
     "filter": "Filter",
     "storage": "Storage",
-    "color": "Color"
+    "color": "Color",
+    "deleteFilter": "Delete Filter"
   },
   "blog": {
     "poster": "Posted by",
@@ -599,7 +599,10 @@
     "confirmUpdateTitle": "Confirm update",
     "confirmUpdateText": "Are you sure you want to update this information?",
     "updateBtn": "Update",
-    "updateAddressTitle": "Update information"
+    "updateAddressTitle": "Update information",
+    "successTitle": "Update successful",
+    "successText": "Your information has been updated!",
+    "closeBtn": "Close"
   },
   "deleteAddress": {
     "confirmTitle": "Are you sure you want to delete?",

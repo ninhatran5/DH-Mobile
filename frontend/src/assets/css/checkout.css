@@ -249,7 +249,7 @@ a {
 }
 
 .btn__discountCode {
-  flex: 0 0 auto; /* không co nhỏ hơn nội dung */
+  flex: 0 0 auto;
   min-width: 100px;
   height: 50px;
   background: #111111;
