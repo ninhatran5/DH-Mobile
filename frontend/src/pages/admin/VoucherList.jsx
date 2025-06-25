@@ -186,7 +186,7 @@ const VoucherList = () => {
                   </div>
                   <div className="adminvoucher-info-item">
                     <span>Số lượng:</span>
-                    <strong>{voucher.min_order_value}</strong>
+                    <strong>{voucher.quantity}</strong>
                   </div>
                 </div>
               </div>

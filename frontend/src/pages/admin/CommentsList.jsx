@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAdminComments, deleteComment, clearError } from "../../slices/adminComments";
+import { fetchAdminComments, deleteComment, clearError, fetchCommentReplyById } from "../../slices/adminComments";
 import { FiTrash2, FiEye, FiSearch } from "react-icons/fi";
 import { AiFillStar } from "react-icons/ai";
 import Swal from "sweetalert2";
@@ -10,7 +10,6 @@ const MySwal = withReactContent(Swal);
 
 const CommentsList = () => {
   const dispatch = useDispatch();
-  // Đảm bảo comments luôn là mảng
   const { comments: rawComments = [], ...rest } = useSelector(
     (state) => state.adminComments
   );
@@ -20,6 +19,10 @@ const CommentsList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedComment, setSelectedComment] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const replyDetail = useSelector(state => state.adminComments.replyDetail);
+  const [replyLoading, setReplyLoading] = useState(false);
+  const [replyInput, setReplyInput] = useState("");
+  const [replySubmitting, setReplySubmitting] = useState(false);
 
   useEffect(() => {
     dispatch(fetchAdminComments());
@@ -59,9 +62,9 @@ console.log(comments)
   );
 
   const handleViewComment = (comment) => {
-    setSelectedComment(comment);
-    setShowModal(true);
-  };
+  setSelectedComment(comment);
+  setShowModal(true);
+};
 
   const handleDeleteComment = (commentId) => {
     MySwal.fire({
@@ -104,6 +107,22 @@ console.log(comments)
       );
     }
     return stars;
+  };
+
+  const handleReplySubmit = async (e) => {
+    e.preventDefault();
+    if (!replyInput.trim() || !selectedComment) return;
+    setReplySubmitting(true);
+    try {
+      // Gửi phản hồi lên server bằng fetchCommentReplyById (dùng dispatch)
+      await dispatch(fetchCommentReplyById({ commentId: selectedComment.comment_id, reply: replyInput })).unwrap();
+      setReplyInput("");
+      // Sau khi gửi thành công, có thể gọi lại fetchAdminComments hoặc fetchCommentReplyById để cập nhật giao diện nếu cần
+      await dispatch(fetchCommentReplyById(selectedComment.comment_id));
+    } catch (err) {
+      // Xử lý lỗi nếu cần
+    }
+    setReplySubmitting(false);
   };
 
   return (
@@ -266,10 +285,15 @@ console.log(comments)
                 </div>
                 
                 <div className="admin-comment-content-full">
-                  <h4>Nội dung:</h4>
+                  <h4>Bình Luận:</h4>
                   <p>{selectedComment.content}</p>
                 </div>
-                
+
+                <div className="admin-comment-content-full">
+                  <h4>Phản hồi :</h4>
+                  <p>{selectedComment.reply}</p>
+                </div>
+
                 <div className="admin-comment-rating">
                   <h4>Đánh giá: {selectedComment.rating}/5</h4>
                   <div>{renderStars(selectedComment.rating)}</div>
@@ -279,6 +303,41 @@ console.log(comments)
                   <h4>Ngày đăng:</h4>
                   <p>{formatDate(selectedComment.created_at)}</p>
                 </div>
+                
+               
+                <form
+                  onSubmit={handleReplySubmit}
+                  style={{ marginTop: 16 }}
+                >
+                  <input
+                    type="text"
+                    placeholder="Nhập phản hồi..."
+                    value={replyInput}
+                    onChange={e => setReplyInput(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "8px",
+                      borderRadius: 4,
+                      border: "1px solid #ccc",
+                      marginBottom: 8
+                    }}
+                    disabled={replySubmitting}
+                  />
+                  <button
+                    type="submit"
+                    disabled={replySubmitting || !replyInput.trim()}
+                    style={{
+                      padding: "8px 16px",
+                      background: "#0071e3",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: 4,
+                      cursor: replySubmitting ? "not-allowed" : "pointer"
+                    }}
+                  >
+                    {replySubmitting ? "Đang gửi..." : "Gửi phản hồi"}
+                  </button>
+                </form>
               </div>
             </div>
             <div className="admin-comment-modal-footer">
