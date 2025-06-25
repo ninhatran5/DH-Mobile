@@ -125,6 +125,37 @@ const EditProfile = () => {
     navigate(`/profile/${id}`);
   };
 
+  useEffect(() => {
+    if (watchCity && filteredDistricts.length > 0) {
+      const existDistrict = filteredDistricts.some(
+        (d) => d.name === watchDistrict
+      );
+      if (!existDistrict) {
+        reset((formValues) => ({
+          ...formValues,
+          district: "",
+          ward: "",
+        }));
+      }
+    }
+    if (watchDistrict && filteredWards.length > 0) {
+      const existWard = filteredWards.some((w) => w.name === watch("ward"));
+      if (!existWard) {
+        reset((formValues) => ({
+          ...formValues,
+          ward: "",
+        }));
+      }
+    }
+  }, [
+    watchCity,
+    watchDistrict,
+    filteredDistricts,
+    filteredWards,
+    reset,
+    watch,
+  ]);
+
   return (
     <>
       {loading && <Loading />}

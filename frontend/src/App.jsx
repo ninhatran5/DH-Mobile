@@ -12,7 +12,6 @@ import Guarantee from "./pages/Guarantee";
 import ReturnPolicy from "./pages/ReturnPolicy";
 import DeliveryPolicy from "./pages/DeliveryPolicy";
 import CheckOut from "./pages/CheckOut";
-import ChangeCheckout from "./pages/ChangeCheckout";
 import ThanksYou from "./pages/ThanksYou";
 import Voucher from "./pages/Voucher";
 import CheckImei from "./pages/CheckImei";
@@ -110,10 +109,6 @@ const routerConfig = [
   {
     path: "/checkout",
     element: withLayoutClient(CheckOut, true),
-  },
-  {
-    path: "/change-checkout",
-    element: withLayoutClient(ChangeCheckout, true),
   },
   {
     path: "/thank-you",
