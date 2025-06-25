@@ -12,6 +12,7 @@ import { fetchCODCheckout, fetchVnpayCheckout } from "../slices/checkOutSlice";
 import { toast } from "react-toastify";
 import { fetchCart } from "../slices/cartSlice";
 import ChangeAddressModal from "../components/ChangeAddressModal";
+import "../assets/css/checkout.css";
 
 const CheckOut = () => {
   const [paymentMethod, setPaymentMethod] = useState("cod");

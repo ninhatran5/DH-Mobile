@@ -94,11 +94,25 @@ const ShoppingCart = () => {
 
   const handleChangeQuantity = (id, value) => {
     let newQuantity = Number(value);
-    if (value === "" || isNaN(newQuantity) || newQuantity < 1) {
-      newQuantity = 1;
-    }
     const item = cartItems.find((item) => item.cart_item_id === id);
-    if (item) {
+
+    if (!item) return;
+
+    if (value === "" || isNaN(newQuantity)) {
+      newQuantity = 0;
+    }
+
+    if (newQuantity === 0) {
+      dispatch(deleteProductCart(item.variant_id))
+        .unwrap()
+        .then(() => {
+          dispatch(fetchCart());
+          toast.success(t("toast.deleteSuccess"));
+        })
+        .catch(() => {
+          toast.error(t("toast.deleteError"));
+        });
+    } else {
       dispatch(
         fetchUpdateCartQuantity({
           variant_id: item.variant_id,
