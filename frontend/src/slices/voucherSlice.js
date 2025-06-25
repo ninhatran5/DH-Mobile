@@ -69,9 +69,12 @@ export const vouhcerSlice = createSlice({
       })
       .addCase(saveVoucher.fulfilled, (state, action) => {
         state.loading = false;
-        state.vouchers = Array.isArray(state.vouchers)
-          ? [...state.vouchers, action.payload]
-          : [action.payload];
+        // Chỉ thêm nếu payload là object hợp lệ và có voucher_id
+        if (action.payload && action.payload.voucher_id) {
+          state.vouchers = Array.isArray(state.vouchers)
+            ? [...state.vouchers, action.payload]
+            : [action.payload];
+        }
       })
       .addCase(saveVoucher.rejected, (state, action) => {
         state.loading = false;
