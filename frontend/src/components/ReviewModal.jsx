@@ -10,8 +10,10 @@ import numberFormat from "../../utils/numberFormat";
 import { commentsPost } from "../slices/reviewSlice";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
+  const { t } = useTranslation();
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(null);
   const [comment, setComment] = useState("");
@@ -33,12 +35,12 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
 
   const confirmClose = () => {
     Swal.fire({
-      title: "Bạn có chắc chắn muốn đóng?",
-      text: "Mọi nội dung bạn đã nhập sẽ bị mất",
+      title: t("review.confirmCloseTitle"),
+      text: t("review.confirmCloseText"),
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Đóng",
-      cancelButtonText: "Hủy",
+      confirmButtonText: t("review.confirmCloseBtn"),
+      cancelButtonText: t("review.cancelBtn"),
       reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
@@ -50,7 +52,7 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedProductId) {
-      Swal.fire({ icon: "error", title: "Bạn chưa chọn sản phẩm!" });
+      Swal.fire({ icon: "error", title: t("review.noProductSelected") });
       return;
     }
     dispatch(
@@ -64,8 +66,8 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
       .then(() => {
         Swal.fire({
           icon: "success",
-          title: "Đanh giá thành công",
-          text: "Cảm ơn bạn đã đánh giá sản phẩm!",
+          title: t("review.successTitle"),
+          text: t("review.successText"),
           showConfirmButton: false,
           timer: 1500,
         });
@@ -74,8 +76,8 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
       .catch((error) => {
         Swal.fire({
           icon: "error",
-          title: "Lỗi",
-          text: error || "Không thể gửi đánh giá",
+          title: t("review.errorTitle"),
+          text: error || t("review.errorText"),
         });
       });
   };
@@ -95,7 +97,7 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
     <Modal size="lg" show={show} onHide={confirmClose} centered>
       <Modal.Header closeButton>
         <Modal.Title>
-          <h4 className="modal_change_address_title">Đánh giá sản phẩm</h4>
+          <h4 className="modal_change_address_title">{t("review.title")}</h4>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -136,13 +138,13 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
           {/* Ẩn select nếu chỉ có 1 sản phẩm */}
           {!allSameProduct && products.length > 1 && (
             <Form.Group className="mb-3">
-              <p className="title_return">Chọn sản phẩm để đánh giá</p>
+              <p className="title_return">{t("review.selectProduct")}</p>
               <Form.Select
                 value={selectedProductId}
                 onChange={(e) => setSelectedProductId(e.target.value)}
                 required
               >
-                <option value="">Chọn sản phẩm</option>
+                <option value="">{t("review.selectProductPlaceholder")}</option>
                 {products.map((p) => (
                   <option
                     key={p.product_id + p.variant_id}
@@ -156,7 +158,7 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
           )}
           <hr className="hr_return" />
           <div>
-            <p className="title_return">Đánh giá sản phẩm</p>
+            <p className="title_return">{t("review.ratingTitle")}</p>
           </div>
           <div className="start_rating">
             {[...Array(5)].map((_, index) => {
@@ -176,35 +178,35 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
           </div>
           <hr className="hr_return" style={{ marginTop: "30px" }} />
           <Form.Group className="mb-3">
-            <p className="title_return">Viết đánh giá</p>
+            <p className="title_return">{t("review.writeReview")}</p>
             <Form.Control
               as="textarea"
               rows={4}
               value={comment}
               maxLength={maxLength}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="Hãy chia sẻ cảm nhận của bạn về sản phẩm này"
+              placeholder={t("review.writeReviewPlaceholder")}
               className="textarea_review"
             />
             <p
               className="text-end text-muted mt-1"
               style={{ fontSize: "13px" }}
             >
-              {comment.length}/{maxLength} ký tự
+              {comment.length}/{maxLength} {t("review.characters")}
             </p>
           </Form.Group>
         </div>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={confirmClose}>
-          Đóng
+          {t("review.closeBtn")}
         </Button>
         <Button
           className="btn_save_address"
           onClick={handleSubmit}
           disabled={rating === 0}
         >
-          Gửi đánh giá
+          {t("review.submitBtn")}
         </Button>
       </Modal.Footer>
     </Modal>

@@ -7,8 +7,10 @@ import { fetchOrderDetail, refundOrder } from "../slices/orderSlice";
 import numberFormat from "../../utils/numberFormat";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
+  const { t } = useTranslation();
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
   const maxChars = 2000;
@@ -21,19 +23,28 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
   };
 
   const returnReasonsCase1 = [
-    { value: "", label: "Chọn lý do" },
-    { value: "Hàng bể vỡ", label: "Hàng bể vỡ" },
-    { value: "Hàng lỗi, không hoạt động", label: "Hàng lỗi, không hoạt động" },
-    { value: "Hàng giả, nhái", label: "Hàng giả, nhái" },
-    { value: "Hàng khác với mô tả", label: "Hàng khác với mô tả" },
-    { value: "Hàng đã qua sử dụng", label: "Hàng đã qua sử dụng" },
-    { value: "Lý do khác", label: "Lý do khác" },
+    { value: "", label: t("returnRequest.selectReason") },
+    { value: "Hàng bể vỡ", label: t("returnRequest.reasonBroken") },
+    {
+      value: "Hàng lỗi, không hoạt động",
+      label: t("returnRequest.reasonDefective"),
+    },
+    { value: "Hàng giả, nhái", label: t("returnRequest.reasonFake") },
+    {
+      value: "Hàng khác với mô tả",
+      label: t("returnRequest.reasonNotAsDescribed"),
+    },
+    { value: "Hàng đã qua sử dụng", label: t("returnRequest.reasonUsed") },
+    { value: "Lý do khác", label: t("returnRequest.reasonOther") },
   ];
   const returnReasonsCase2 = [
-    { value: "", label: "Chọn lý do" },
-    { value: "Thiếu hàng", label: "Thiếu hàng" },
-    { value: "Người bán gửi sai hàng", label: "Người bán gửi sai hàng" },
-    { value: "Lý do khác", label: "Lý do khác" },
+    { value: "", label: t("returnRequest.selectReason") },
+    { value: "Thiếu hàng", label: t("returnRequest.reasonMissing") },
+    {
+      value: "Người bán gửi sai hàng",
+      label: t("returnRequest.reasonWrongSent"),
+    },
+    { value: "Lý do khác", label: t("returnRequest.reasonOther") },
   ];
 
   const returnReasons =
@@ -56,9 +67,9 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
 
       Swal.fire({
         icon: "success",
-        title: "Đã gửi yêu cầu",
-        text: "Chúng tôi sẽ xử lý trong thời gian sớm nhất.",
-        confirmButtonText: "Đóng",
+        title: t("returnRequest.successTitle"),
+        text: t("returnRequest.successText"),
+        confirmButtonText: t("returnRequest.closeBtn"),
       });
 
       handleClose();
@@ -67,20 +78,20 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "Lỗi",
-        text: error || "Gửi yêu cầu thất bại",
+        title: t("returnRequest.errorTitle"),
+        text: error || t("returnRequest.errorText"),
       });
     }
   };
 
   const handleCloseWithConfirm = async () => {
     const result = await Swal.fire({
-      title: "Bạn có chắc chắn muốn đóng?",
-      text: "Thông tin bạn nhập sẽ không được lưu.",
+      title: t("returnRequest.confirmCloseTitle"),
+      text: t("returnRequest.confirmCloseText"),
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Đóng",
-      cancelButtonText: "Hủy",
+      confirmButtonText: t("returnRequest.closeBtn"),
+      cancelButtonText: t("returnRequest.cancelBtn"),
       reverseButtons: true,
     });
     if (result.isConfirmed) {
@@ -94,7 +105,7 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
         <Modal.Header closeButton>
           <Modal.Title>
             <h4 className="modal_change_address_title">
-              Yêu cầu Trả hàng/Hoàn tiền
+              {t("returnRequest.title")}
             </h4>
           </Modal.Title>
         </Modal.Header>
@@ -128,7 +139,7 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
                       {product.variant_attributes?.find(
                         (attr) =>
                           attr.attribute_name.toLowerCase() === "màu sắc"
-                      )?.attribute_value || "Không rõ"}
+                      )?.attribute_value || t("returnRequest.unknownColor")}
                     </p>
                     <p className="quantity_return_product">
                       x{product.quantity}
@@ -148,7 +159,7 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
                 className="return-label me-2 mb-0"
                 style={{ minWidth: "80px" }}
               >
-                Lý do
+                {t("returnRequest.reasonLabel")}
               </label>
               <div className="flex-grow-1">
                 <select
@@ -169,7 +180,7 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
 
             <hr className="hr_return" />
             <div>
-              <p className="refund_amount">Số tiền hoàn lại</p>
+              <p className="refund_amount">{t("returnRequest.refundAmount")}</p>
               <p className="refund_price">
                 {numberFormat(orderDetail?.total_amount || 0)}
               </p>
@@ -181,13 +192,13 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
                 htmlFor="additionalInfo"
                 className="return-label form-label"
               >
-                Mô tả
+                {t("returnRequest.descriptionLabel")}
               </label>
               <textarea
                 id="additionalInfo"
                 className="return-textarea form-control"
                 rows="4"
-                placeholder="Ghi chú thêm..."
+                placeholder={t("returnRequest.descriptionPlaceholder")}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 maxLength={maxChars}
@@ -196,26 +207,26 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
                 className="text-end text-muted mt-1"
                 style={{ fontSize: "13px" }}
               >
-                {description.length}/{maxChars} ký tự
+                {description.length}/{maxChars} {t("returnRequest.characters")}
               </p>
             </div>
 
             <div className="d-flex justify-content-between align-items-center mb-3">
-              <p className="email_return">Email</p>
+              <p className="email_return">{t("returnRequest.emailLabel")}</p>
               <p className="email_address_return">{orderDetail?.email || ""}</p>
             </div>
           </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseWithConfirm}>
-            Đóng
+            {t("returnRequest.closeBtn")}
           </Button>
           <Button
             className="btn_save_address"
             onClick={handleSubmit}
             disabled={!description}
           >
-            Gửi yêu cầu
+            {t("returnRequest.submitBtn")}
           </Button>
         </Modal.Footer>
       </Modal>

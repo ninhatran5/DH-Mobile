@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import "../assets/css/changeAddress.css";
@@ -19,6 +20,7 @@ import UpdateAddressModal from "./UpdateAddressModal";
 
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import { useTranslation } from "react-i18next";
 const MySwal = withReactContent(Swal);
 
 export default function ChangeAddressModal({
@@ -26,6 +28,7 @@ export default function ChangeAddressModal({
   handleClose,
   onSaveAddress,
 }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { profile, loading } = useSelector((state) => state.profile);
   const { changeAddressNew } = useSelector((state) => state.changeAddress);
@@ -41,12 +44,12 @@ export default function ChangeAddressModal({
 
   const handleCloseWithConfirm = async () => {
     const result = await MySwal.fire({
-      title: "Bạn có chắc chắn muốn đóng?",
-      text: "Các thay đổi chưa được lưu sẽ bị mất.",
+      title: t("address.confirmCloseTitle"),
+      text: t("address.confirmCloseText"),
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Đóng",
-      cancelButtonText: "Hủy",
+      confirmButtonText: t("returnRequest.closeBtn"),
+      cancelButtonText: t("address.cancelBtn"),
       reverseButtons: true,
     });
 
@@ -94,7 +97,9 @@ export default function ChangeAddressModal({
         size="xl"
       >
         <Modal.Header closeButton>
-          <h4 className="modal_change_address_title">Chọn địa chỉ nhận hàng</h4>
+          <h4 className="modal_change_address_title">
+            {t("address.selectAddressTitle")}
+          </h4>
         </Modal.Header>
         <Modal.Body>
           <div className="container-fluid">
@@ -117,22 +122,6 @@ export default function ChangeAddressModal({
                       {profile?.user?.phone || ""}
                     </p>
                   </div>
-                  <div className="d-flex">
-                    <button
-                      disabled={true}
-                      className="edit-address-btn"
-                      type="button"
-                    >
-                      <TbEditCircle />
-                    </button>
-                    <button
-                      disabled={true}
-                      className="delete-address-btn"
-                      type="button"
-                    >
-                      <FaTrash />
-                    </button>
-                  </div>
                 </div>
                 <div className="full_address_profile">
                   <p className="address_profile">
@@ -146,7 +135,7 @@ export default function ChangeAddressModal({
                   </p>
                 </div>
                 <div className="default_address_profile">
-                  <p>Mặc định</p>
+                  <p>{t("address.default")}</p>
                 </div>
               </label>
             </div>
@@ -163,14 +152,14 @@ export default function ChangeAddressModal({
                 <MdAddCircleOutline />
               </p>
               <p className="text_add_address" onClick={nagivateToAddAddress}>
-                Thêm địa chỉ mới
+                {t("address.addNew")}
               </p>
             </div>
           </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseWithConfirm}>
-            Hủy
+            {t("address.cancelBtn")}
           </Button>
           <Button
             onClick={async () => {
@@ -188,7 +177,7 @@ export default function ChangeAddressModal({
             }}
             className="btn_save_address"
           >
-            Lưu
+            {t("address.saveBtn")}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -198,12 +187,12 @@ export default function ChangeAddressModal({
         onHide={() => setShowAddModal(false)}
         onAddAddress={async (data) => {
           const result = await Swal.fire({
-            title: "Bạn có muốn lưu địa chỉ này?",
-            text: "Thông tin địa chỉ sẽ được thêm vào danh sách của bạn.",
+            title: t("address.confirmSaveTitle"),
+            text: t("address.confirmSaveText"),
             icon: "question",
             showCancelButton: true,
-            confirmButtonText: "Lưu",
-            cancelButtonText: "Hủy",
+            confirmButtonText: t("address.saveBtn"),
+            cancelButtonText: t("address.cancelBtn"),
             reverseButtons: true,
           });
 
@@ -222,14 +211,17 @@ export default function ChangeAddressModal({
               );
               await dispatch(fetchAddressNew());
               Swal.fire(
-                "Đã lưu!",
-                "Địa chỉ đã được thêm thành công.",
+                t("address.savedTitle"),
+                t("address.savedText"),
                 "success"
               );
               setShowAddModal(false);
-              // eslint-disable-next-line no-unused-vars
             } catch (error) {
-              Swal.fire("Lỗi!", "Không thể thêm địa chỉ.", "error");
+              Swal.fire(
+                t("address.errorTitle"),
+                t("address.errorText"),
+                "error"
+              );
             }
           }
         }}

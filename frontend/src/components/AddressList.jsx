@@ -1,12 +1,13 @@
+/* eslint-disable no-unused-vars */
 import { useDispatch, useSelector } from "react-redux";
 import AddressItem from "./AddressItem";
 import {
   deleteAddressNew,
   fetchAddressNew,
 } from "../slices/changeAddressSlice";
-
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import { useTranslation } from "react-i18next";
 const MySwal = withReactContent(Swal);
 
 export default function AddressList({
@@ -17,38 +18,38 @@ export default function AddressList({
   setShowUpdateModal,
 }) {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const { changeAddressNew: _ } = useSelector((state) => state.address);
 
   if (!Array.isArray(addresses) || addresses.length === 0) return null;
 
   const handleDeleteAddress = (addressId) => {
     Swal.fire({
-      title: "Bạn có chắc chắn muốn xóa?",
-      text: "Địa chỉ này sẽ bị xóa khỏi danh sách!",
+      title: t("deleteAddress.confirmTitle"),
+      text: t("deleteAddress.confirmText"),
       icon: "warning",
       showCancelButton: true,
       reverseButtons: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Xóa",
-      cancelButtonText: "Hủy",
+      confirmButtonText: t("deleteAddress.confirmBtn"),
+      cancelButtonText: t("deleteAddress.cancelBtn"),
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(deleteAddressNew(addressId))
           .unwrap()
           .then(() => {
             Swal.fire({
-              title: "Đã xóa!",
-              text: "Địa chỉ đã được xóa.",
+              title: t("deleteAddress.deletedTitle"),
+              text: t("deleteAddress.deletedText"),
               icon: "success",
             });
             dispatch(fetchAddressNew());
           })
-          // eslint-disable-next-line no-unused-vars
           .catch((error) => {
             Swal.fire({
-              title: "Lỗi!",
-              text: "Xóa địa chỉ thất bại.",
+              title: t("deleteAddress.errorTitle"),
+              text: t("deleteAddress.errorText"),
               icon: "error",
             });
           });
@@ -73,7 +74,7 @@ export default function AddressList({
             checked={selectedRadio === address.address_id}
             onChange={() => setSelectedRadio(address.address_id)}
             onEdit={() => {
-              setEditAddress(address); // set state để truyền vào modal update
+              setEditAddress(address);
               setShowUpdateModal(true);
             }}
           />
