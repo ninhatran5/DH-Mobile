@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import '../../assets/admin/HomeAdmin.css';
 import '../../assets/admin/product.css';
 import { Link } from 'react-router-dom';
@@ -12,6 +13,8 @@ const ProductList = () => {
   const { adminproducts, loading, error } = useSelector((state) => state.adminproduct);
   const { categories } = useSelector((state) => state.category);
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const pageParam = parseInt(searchParams.get('page') || '1', 10);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
@@ -19,7 +22,7 @@ const ProductList = () => {
     priceRange: 'all',
     category: 'all'
   });
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(pageParam);
   const productsPerPage = 10;
 
   useEffect(() => {
@@ -29,6 +32,20 @@ const ProductList = () => {
       toast.error(`Lỗi từ server: ${error}`);
     }
   }, [dispatch, error]);
+
+  // Khi currentPage thay đổi, cập nhật query param
+  useEffect(() => {
+    setSearchParams(params => {
+      params.set('page', currentPage);
+      return params;
+    });
+  }, [currentPage, setSearchParams]);
+
+  // Khi page trên URL thay đổi, cập nhật state
+  useEffect(() => {
+    if (pageParam !== currentPage) setCurrentPage(pageParam);
+    // eslint-disable-next-line
+  }, [pageParam]);
 
   const handleSelectAll = (e) => {
     if (e.target.checked) {
