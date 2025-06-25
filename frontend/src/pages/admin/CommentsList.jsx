@@ -10,17 +10,13 @@ const MySwal = withReactContent(Swal);
 
 const CommentsList = () => {
   const dispatch = useDispatch();
-  const { comments: rawComments = [], ...rest } = useSelector(
+  const { comments, pagination, loading, error, deleteLoading, deleteError } = useSelector(
     (state) => state.adminComments
   );
-  const comments = Array.isArray(rawComments) ? rawComments : [];
-  const { pagination, loading, error, deleteLoading, deleteError } = rest;
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedComment, setSelectedComment] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const replyDetail = useSelector(state => state.adminComments.replyDetail);
-  const [replyLoading, setReplyLoading] = useState(false);
   const [replyInput, setReplyInput] = useState("");
   const [replySubmitting, setReplySubmitting] = useState(false);
 
@@ -56,15 +52,15 @@ console.log(comments)
 
   const filteredComments = comments.filter(
     (comment) =>
-      (comment.content || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (comment.user?.username || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (comment.product?.name || "").toLowerCase().includes(searchTerm.toLowerCase())
+      comment.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      comment.user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      comment.product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleViewComment = (comment) => {
-  setSelectedComment(comment);
-  setShowModal(true);
-};
+    setSelectedComment(comment);
+    setShowModal(true);
+  };
 
   const handleDeleteComment = (commentId) => {
     MySwal.fire({
@@ -90,6 +86,24 @@ console.log(comments)
     });
   };
 
+  const handleReplySubmit = async (e) => {
+    e.preventDefault();
+    if (!replyInput.trim() || !selectedComment) return;
+    setReplySubmitting(true);
+    try {
+      // Gửi phản hồi lên server
+      await dispatch(
+        fetchCommentReplyById({ commentId: selectedComment.comment_id, reply: replyInput })
+      ).unwrap();
+      setReplyInput("");
+      // Có thể reload lại bình luận nếu muốn cập nhật giao diện
+      dispatch(fetchAdminComments());
+    } catch (err) {
+      // Xử lý lỗi nếu cần
+    }
+    setReplySubmitting(false);
+  };
+
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
     return new Date(dateString).toLocaleDateString('vi-VN', options);
@@ -107,22 +121,6 @@ console.log(comments)
       );
     }
     return stars;
-  };
-
-  const handleReplySubmit = async (e) => {
-    e.preventDefault();
-    if (!replyInput.trim() || !selectedComment) return;
-    setReplySubmitting(true);
-    try {
-      // Gửi phản hồi lên server bằng fetchCommentReplyById (dùng dispatch)
-      await dispatch(fetchCommentReplyById({ commentId: selectedComment.comment_id, reply: replyInput })).unwrap();
-      setReplyInput("");
-      // Sau khi gửi thành công, có thể gọi lại fetchAdminComments hoặc fetchCommentReplyById để cập nhật giao diện nếu cần
-      await dispatch(fetchCommentReplyById(selectedComment.comment_id));
-    } catch (err) {
-      // Xử lý lỗi nếu cần
-    }
-    setReplySubmitting(false);
   };
 
   return (
@@ -288,23 +286,12 @@ console.log(comments)
                   <h4>Bình Luận:</h4>
                   <p>{selectedComment.content}</p>
                 </div>
-
                 <div className="admin-comment-content-full">
-                  <h4>Phản hồi :</h4>
+                  <h4>Phản hồi:</h4>
                   <p>{selectedComment.reply}</p>
                 </div>
-
-                <div className="admin-comment-rating">
-                  <h4>Đánh giá: {selectedComment.rating}/5</h4>
-                  <div>{renderStars(selectedComment.rating)}</div>
-                </div>
                 
-                <div className="admin-comment-date">
-                  <h4>Ngày đăng:</h4>
-                  <p>{formatDate(selectedComment.created_at)}</p>
-                </div>
-                
-               
+                {/* Form phản hồi */}
                 <form
                   onSubmit={handleReplySubmit}
                   style={{ marginTop: 16 }}
@@ -338,6 +325,16 @@ console.log(comments)
                     {replySubmitting ? "Đang gửi..." : "Gửi phản hồi"}
                   </button>
                 </form>
+                
+                <div className="admin-comment-rating">
+                  <h4>Đánh giá: {selectedComment.rating}/5</h4>
+                  <div>{renderStars(selectedComment.rating)}</div>
+                </div>
+                
+                <div className="admin-comment-date">
+                  <h4>Ngày đăng:</h4>
+                  <p>{formatDate(selectedComment.created_at)}</p>
+                </div>
               </div>
             </div>
             <div className="admin-comment-modal-footer">
