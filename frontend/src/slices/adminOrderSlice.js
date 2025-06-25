@@ -35,8 +35,6 @@ export const updateOrderStatus = createAsyncThunk(
           },
         }
       );
-      
-      // API trả về { order: { ... } }
       if (response.data && response.data.order) {
         return response.data.order;
       } else {
