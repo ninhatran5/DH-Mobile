@@ -595,7 +595,10 @@
     "confirmUpdateTitle": "Xác nhận cập nhật",
     "confirmUpdateText": "Bạn có chắc chắn muốn cập nhật thông tin này?",
     "updateBtn": "Cập nhật",
-    "updateAddressTitle": "Cập nhật thông tin"
+    "updateAddressTitle": "Cập nhật thông tin",
+    "successTitle": "Cập nhật thành công",
+    "successText": "Thông tin đã được cập nhật!",
+    "closeBtn": "Đóng"
   },
   "deleteAddress": {
     "confirmTitle": "Bạn có chắc chắn muốn xóa?",

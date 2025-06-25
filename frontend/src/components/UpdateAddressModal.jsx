@@ -39,6 +39,13 @@ export default function UpdateAddressModal({
     });
     if (result.isConfirmed && formRef.current) {
       formRef.current.submit();
+      Swal.fire({
+        icon: "success",
+        title: t("updateProfile.successTitle"),
+        text: t("updateProfile.successText"),
+        showConfirmButton: false,
+        timer: 1500,
+      });
     }
   };
 
