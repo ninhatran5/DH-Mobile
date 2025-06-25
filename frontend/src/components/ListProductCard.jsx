@@ -56,6 +56,8 @@ export default function ListProductCard({ title, products, desc, gotoShop }) {
             <Swiper
               modules={[Navigation]}
               spaceBetween={20}
+              observer={true}
+              observeParents={true}
               navigation={{
                 nextEl: ".category-carousel-next",
                 prevEl: ".category-carousel-prev",
@@ -69,11 +71,12 @@ export default function ListProductCard({ title, products, desc, gotoShop }) {
                 1200: { slidesPerView: 5 },
               }}
             >
-              {products?.slice(0, 8).map((product, index) => {
+              {products?.slice(0, 8).map((product) => {
                 const discountPercent = getDiscountPercent(product);
                 return (
-                  <SwiperSlide key={`${product?.product_id}-${index}`}>
+                  <SwiperSlide key={product?.product_id}>
                     <ProductCard
+                      key={product?.product_id}
                       favorites={favorites}
                       setFavorites={setFavorites}
                       discountPercent={discountPercent}

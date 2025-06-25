@@ -13,17 +13,19 @@ import {
 } from "../slices/favoriteProductsSlice";
 import ProductModal from "./ProductModal";
 
-const Product = ({ product, discountPercent, onClick, status }) => {
+const Product = ({ product, discountPercent, onClick }) => {
   const dispatch = useDispatch();
-  const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
+  const { listFavorite } = useSelector((state) => state.favoriteProduct);
   const { t } = useTranslation();
   const [show, setShow] = useState(false);
-  const [favorite, setFavorite] = useState(status);
+  // Kiểm tra sản phẩm này có trong listFavorite không
+  const isFavorite = listFavorite?.some(
+    (item) => item.product_id === product?.product_id || item.product?.product_id === product?.product_id
+  );
   const handleUnFavorites = async () => {
     if (!checkLogin()) return;
     try {
       await dispatch(deleteFavoriteProduct(product.product_id)).unwrap();
-      setFavorite(false);
       toast.success(t("products.removeFavorites"));
       dispatch(fetchListFavorite());
     } catch (error) {
@@ -35,7 +37,6 @@ const Product = ({ product, discountPercent, onClick, status }) => {
     if (!checkLogin()) return;
     try {
       await dispatch(fetchFavoriteProduct(product.product_id)).unwrap();
-      setFavorite(true);
       toast.success(t("products.addedToFavorites"));
       dispatch(fetchListFavorite());
     } catch (error) {
@@ -58,7 +59,7 @@ const Product = ({ product, discountPercent, onClick, status }) => {
             </span>
           )}
 
-          {!favorite ? (
+          {!isFavorite ? (
             <a
               onClick={addToFavorites}
               style={{ cursor: "pointer" }}
