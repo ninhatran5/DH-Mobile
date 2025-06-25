@@ -21,12 +21,12 @@ const OrdersCancelled = () => {
 
   const statusTabs = ['Tất cả', 'Đã yêu cầu', 'Đã chấp thuận', 'Đang xử lý', 'Đã hoàn lại', 'Đã từ chối'];
   
-  // Status progression flow
   const statusFlow = [
     'Đã yêu cầu',
     'Đã chấp thuận',
     'Đang xử lý',
-    'Đã hoàn lại'
+    'Đã hoàn lại',
+    'Đã từ chối',
   ];
 
   useEffect(() => {
@@ -38,8 +38,13 @@ const OrdersCancelled = () => {
     setShowDeleteModal(true);
   };
 
-  // Get the next status in the flow
   const getNextStatus = (currentStatus) => {
+    const statusFlow = [
+      'Đã yêu cầu',
+      'Đã chấp thuận',
+      'Đang xử lý',
+      'Đã hoàn lại'
+    ];
     const currentIndex = statusFlow.indexOf(currentStatus);
     if (currentIndex < 0 || currentIndex >= statusFlow.length - 1) {
       return null;
@@ -50,10 +55,9 @@ const OrdersCancelled = () => {
   const handleStatusUpdate = (order) => {
     const currentStatus = order.status;
     const nextStatus = getNextStatus(currentStatus);
-    
+
     if (!nextStatus) return;
-    
-    // Show confirmation dialog
+
     Swal.fire({
       title: 'Xác nhận thay đổi trạng thái',
       text: `Bạn muốn chuyển từ trạng thái "${currentStatus}" sang trạng thái "${nextStatus}" không?`,
@@ -61,15 +65,14 @@ const OrdersCancelled = () => {
       showCancelButton: true,
       confirmButtonText: 'Đồng ý',
       cancelButtonText: 'Hủy',
-      confirmButtonColor: '#007aff'
+      confirmButtonColor: '#007aff',
+      cancelButtonColor: '#dc3545'
     }).then((result) => {
       if (result.isConfirmed) {
         setProcessingOrderId(order.return_id);
-        
-        // Determine if we're approving or rejecting the return request
-        const isApproving = true; // Always approving when advancing to next step
-        
-        dispatch(updateReturnOrderStatus({ orderId: order.order_id, status: isApproving }))
+
+        // Truyền status là chuỗi trạng thái tiếp theo
+        dispatch(updateReturnOrderStatus({ orderId: order.order_id, status: nextStatus }))
           .unwrap()
           .then((response) => {
             Swal.fire({
@@ -94,7 +97,6 @@ const OrdersCancelled = () => {
   };
 
   const handleRejectReturn = (order) => {
-    // Show confirmation dialog for rejection
     Swal.fire({
       title: 'Xác nhận từ chối',
       text: `Bạn muốn chuyển từ trạng thái "${order.status}" sang trạng thái "Đã từ chối" không?`,
@@ -106,8 +108,8 @@ const OrdersCancelled = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         setProcessingOrderId(order.return_id);
-        
-        dispatch(updateReturnOrderStatus({ orderId: order.order_id, status: false }))
+
+        dispatch(updateReturnOrderStatus({ orderId: order.order_id, status: "Đã từ chối" }))
           .unwrap()
           .then((response) => {
             Swal.fire({
@@ -132,7 +134,6 @@ const OrdersCancelled = () => {
   };
 
   const handleDeleteOrder = () => {
-    // Implement delete functionality here
     setShowDeleteModal(false);
   };
 
@@ -141,7 +142,6 @@ const OrdersCancelled = () => {
     window.scrollTo(0, 0);
   };
 
-  // Format currency
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
@@ -162,7 +162,6 @@ const OrdersCancelled = () => {
   };
 
   const filteredOrders = returnOrders.filter(order => {
-    // Apply search filter
     if (searchTerm && 
         !order.order_code.toLowerCase().includes(searchTerm.toLowerCase()) && 
         !order.customer.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -269,6 +268,19 @@ const OrdersCancelled = () => {
         </div>
       </div>
 
+ <div className="admin-return-order-top-row">
+        <div className="admin-return-order-search-box">
+          <i className="bi bi-search admin-return-order-search-icon" style={{ color: '#0071e3' }}></i>
+          <input
+            type="text"
+            className="admin-return-order-search-input"
+            placeholder="Tìm kiếm theo mã đơn, tên khách hàng, email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
+
       <div className="admin-return-order-status-tabs">
         {statusTabs.map((status) => (
           <button
@@ -286,18 +298,7 @@ const OrdersCancelled = () => {
         ))}
       </div>
 
-      <div className="admin-return-order-top-row">
-        <div className="admin-return-order-search-box">
-          <i className="bi bi-search admin-return-order-search-icon" style={{ color: '#0071e3' }}></i>
-          <input
-            type="text"
-            className="admin-return-order-search-input"
-            placeholder="Tìm kiếm theo mã đơn, tên khách hàng, email..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-      </div>
+     
 
       {loading ? (
         <div className="admin-return-order-loading">
@@ -353,7 +354,6 @@ const OrdersCancelled = () => {
                             <>
                               {order.status !== 'Đã từ chối' && order.status !== 'Đã hoàn lại' && (
                                 <>
-                                  {/* Nút chuyển sang trạng thái tiếp theo */}
                                   {getNextStatus(order.status) && (
                                     <button
                                       className="admin-return-order-action-btn"
@@ -364,7 +364,6 @@ const OrdersCancelled = () => {
                                     </button>
                                   )}
                                   
-                                  {/* Nút từ chối chỉ hiển thị khi đơn đang ở trạng thái "Đã yêu cầu" */}
                                   {order.status === 'Đã yêu cầu' && (
                                     <button
                                       className="admin-return-order-action-btn"
@@ -403,7 +402,6 @@ const OrdersCancelled = () => {
             </table>
           </div>
 
-          {/* Pagination */}
           {filteredOrders.length > 0 && (
             <div className="admin-return-order-pagination">
               <div className="admin-return-order-pagination-info">
@@ -417,7 +415,6 @@ const OrdersCancelled = () => {
         </>
       )}
 
-      {/* Delete Modal */}
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Xóa đơn hàng</Modal.Title>
@@ -439,4 +436,4 @@ const OrdersCancelled = () => {
   );
 };
 
-export default OrdersCancelled; 
+export default OrdersCancelled;

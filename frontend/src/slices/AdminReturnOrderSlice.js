@@ -45,24 +45,16 @@ export const fetchReturnOrderDetails = createAsyncThunk(
   }
 );
 
-// Cập nhật trạng thái đơn hoàn hàng
 export const updateReturnOrderStatus = createAsyncThunk(
   "adminReturnOrder/updateReturnOrderStatus",
-  async ({ orderId, status }, { rejectWithValue, dispatch }) => {
+  async ({ orderId, status }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
-      let isApproved;
-      if (typeof status === 'boolean') {
-        isApproved = status;
-      } else {
-        isApproved = status === 'Đã chấp thuận';
-      }
-
       const response = await axiosConfig.put(
         `/admin/orders/${orderId}/handle-return`,
-        { status: isApproved },
+        { status }, 
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -149,7 +141,7 @@ const adminReturnOrderSlice = createSlice({
       })
       .addCase(updateReturnOrderStatus.fulfilled, (state, action) => {
         state.updateLoading = false;
-        
+        console.log("✅ API trả về:", action.payload);
         const returnRequestId = action.payload.return_request_id;
         const newStatus = action.payload.return_request_status;
         const refundAmount = action.payload.refund_amount;
@@ -163,7 +155,6 @@ const adminReturnOrderSlice = createSlice({
           };
         }
         
-        // Update in list if exists
         state.returnOrders = state.returnOrders.map(order =>
           order.return_id === returnRequestId
             ? {
@@ -174,6 +165,7 @@ const adminReturnOrderSlice = createSlice({
             : order
         );
       })
+      
       .addCase(updateReturnOrderStatus.rejected, (state, action) => {
         state.updateLoading = false;
         state.updateError = action.payload;
@@ -182,4 +174,4 @@ const adminReturnOrderSlice = createSlice({
 });
 
 export const { clearErrors } = adminReturnOrderSlice.actions;
-export default adminReturnOrderSlice.reducer; 
+export default adminReturnOrderSlice.reducer;
