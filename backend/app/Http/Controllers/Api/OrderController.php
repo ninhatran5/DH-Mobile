@@ -359,7 +359,7 @@ class OrderController extends Controller
         $reasons = [
             'Thiếu hàng',
             'Người bán gửi sai hàng',
-            'Hàng bị vỡ',
+            'Hàng bể vỡ',
             'Hàng lỗi, không hoạt động',
             'Hàng giả, nhái',
             'Hàng khác với mô tả',
@@ -410,6 +410,10 @@ class OrderController extends Controller
             'refund_amount' => $order->total_amount, // Lưu tổng tiền đã thanh toán vào refund_amount
             'created_at' => now(),
             'updated_at' => now(),
+        ]);
+        // Cập nhật trạng thái đơn hàng
+        DB::table('orders')->where('order_id', $order->order_id)->update([
+            'status' => 'Yêu cầu hoàn hàng',
         ]);
 
         return response()->json([
