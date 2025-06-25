@@ -2,6 +2,7 @@ import Swal from "sweetalert2";
 import { Modal, Button } from "react-bootstrap";
 import UpdateAddressForm from "./UpdateAddressForm";
 import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function UpdateAddressModal({
   show,
@@ -10,14 +11,16 @@ export default function UpdateAddressModal({
   defaultValues,
 }) {
   const formRef = useRef();
+  const { t } = useTranslation();
+
   const handleClose = async () => {
     const result = await Swal.fire({
-      title: "Bạn có chắc chắn muốn đóng?",
-      text: "Các thay đổi chưa được lưu sẽ bị mất.",
+      title: t("updateProfile.confirmCloseTitle"),
+      text: t("updateProfile.confirmCloseText"),
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Đóng",
-      cancelButtonText: "Hủy",
+      confirmButtonText: t("updateProfile.confirmCloseBtn"),
+      cancelButtonText: t("updateProfile.cancelBtn"),
       reverseButtons: true,
     });
     if (result.isConfirmed) {
@@ -26,12 +29,12 @@ export default function UpdateAddressModal({
   };
   const handleComplete = async () => {
     const result = await Swal.fire({
-      title: "Xác nhận cập nhật",
-      text: "Bạn có chắc chắn muốn cập nhật địa chỉ này?",
+      title: t("updateProfile.confirmUpdateTitle"),
+      text: t("updateProfile.confirmUpdateText"),
       icon: "question",
       showCancelButton: true,
-      confirmButtonText: "Cập nhật",
-      cancelButtonText: "Hủy",
+      confirmButtonText: t("updateProfile.updateBtn"),
+      cancelButtonText: t("updateProfile.cancelBtn"),
       reverseButtons: true,
     });
     if (result.isConfirmed && formRef.current) {
@@ -42,7 +45,9 @@ export default function UpdateAddressModal({
   return (
     <Modal size="xl" show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <h4 className="modal_change_address_title">Cập nhật địa chỉ</h4>
+        <h4 className="modal_change_address_title">
+          {t("updateProfile.updateAddressTitle")}
+        </h4>
       </Modal.Header>
       <Modal.Body>
         <UpdateAddressForm
@@ -53,7 +58,7 @@ export default function UpdateAddressModal({
       </Modal.Body>
       <Modal.Footer>
         <Button className="btn_save_address" onClick={handleComplete}>
-          Cập nhật
+          {t("updateProfile.updateBtn")}
         </Button>
       </Modal.Footer>
     </Modal>

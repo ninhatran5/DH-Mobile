@@ -4,11 +4,13 @@ import { Modal, Button } from "react-bootstrap";
 import AddAddressForm from "./AddAddressForm";
 import { useRef } from "react";
 import "../assets/css/changeAddress.css";
+import { useTranslation } from "react-i18next";
 
 const MySwal = withReactContent(Swal);
 
 export default function AddAddressModal({ show, onHide, onAddAddress }) {
   const formRef = useRef();
+  const { t } = useTranslation();
 
   const handleComplete = () => {
     if (formRef.current) {
@@ -18,12 +20,12 @@ export default function AddAddressModal({ show, onHide, onAddAddress }) {
 
   const handleClose = async () => {
     const result = await MySwal.fire({
-      title: "Bạn có chắc chắn muốn đóng?",
-      text: "Địa chỉ chưa được lưu sẽ bị mất.",
+      title: t("address_2.confirmCloseTitle"),
+      text: t("address_2.confirmCloseText"),
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Đóng",
-      cancelButtonText: "Hủy",
+      confirmButtonText: t("address_2.confirmCloseBtn"),
+      cancelButtonText: t("address_2.cancelBtn"),
       reverseButtons: true,
     });
 
@@ -35,14 +37,16 @@ export default function AddAddressModal({ show, onHide, onAddAddress }) {
   return (
     <Modal size="xl" show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <h4 className="modal_change_address_title">Địa chỉ mới</h4>
+        <h4 className="modal_change_address_title">
+          {t("address_2.newAddressTitle")}
+        </h4>
       </Modal.Header>
       <Modal.Body>
         <AddAddressForm ref={formRef} onSubmitExternal={onAddAddress} />
       </Modal.Body>
       <Modal.Footer>
         <Button className="btn_save_address" onClick={handleComplete}>
-          Hoàn thành
+          {t("address_2.completeBtn")}
         </Button>
       </Modal.Footer>
     </Modal>
