@@ -102,7 +102,10 @@ export const favoriteProductSlice = createSlice({
       .addCase(deleteFavoriteProduct.fulfilled, (state, action) => {
         state.loading = false;
         state.listFavorite = state.listFavorite.filter(
-          (product) => product.id !== action.payload
+          (product) =>
+            product.id !== action.payload &&
+            product.product_id !== action.payload &&
+            product.product?.product_id !== action.payload
         );
       })
 
