@@ -11,22 +11,20 @@ import {
   fetchFavoriteProduct,
   fetchListFavorite,
 } from "../slices/favoriteProductsSlice";
-import { fetchUpdateStatus } from "../slices/updateStatusSlice";
 import ProductModal from "./ProductModal";
 
-const Product = ({ product, discountPercent, onClick }) => {
+const Product = ({ product, discountPercent, onClick, status }) => {
   const dispatch = useDispatch();
   const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
   const { t } = useTranslation();
   const [show, setShow] = useState(false);
-  const [favorite, setFavorite] = useState(product.status);
+  const [favorite, setFavorite] = useState(status);
   const handleUnFavorites = async () => {
     if (!checkLogin()) return;
     try {
       await dispatch(deleteFavoriteProduct(product.product_id)).unwrap();
       setFavorite(false);
       toast.success(t("products.removeFavorites"));
-      await dispatch(fetchUpdateStatus(product.product_id)).unwrap();
       dispatch(fetchListFavorite());
     } catch (error) {
       toast.error(error?.message || t("products.errorRemovingFavorite"));
