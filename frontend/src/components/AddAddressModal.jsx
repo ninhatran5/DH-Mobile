@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { Modal, Button } from "react-bootstrap";
-import ChangeCheckout from "../pages/ChangeCheckout";
+import AddAddressForm from "./AddAddressForm";
 import { useRef } from "react";
 import "../assets/css/changeAddress.css";
 
@@ -38,7 +38,7 @@ export default function AddAddressModal({ show, onHide, onAddAddress }) {
         <h4 className="modal_change_address_title">Địa chỉ mới</h4>
       </Modal.Header>
       <Modal.Body>
-        <ChangeCheckout ref={formRef} onSubmitExternal={onAddAddress} />
+        <AddAddressForm ref={formRef} onSubmitExternal={onAddAddress} />
       </Modal.Body>
       <Modal.Footer>
         <Button className="btn_save_address" onClick={handleComplete}>

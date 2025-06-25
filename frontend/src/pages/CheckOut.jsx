@@ -22,7 +22,6 @@ const CheckOut = () => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const { profile, loading } = useSelector((state) => state.profile);
-  console.log("🚀 ~ CheckOut ~ profile:", profile)
   const location = useLocation();
   const selectedItems = location.state?.selectedItems || [];
   const navigate = useNavigate();

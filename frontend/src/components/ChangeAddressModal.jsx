@@ -8,9 +8,14 @@ import { fetchProfile } from "../slices/profileSlice";
 import { MdAddCircleOutline } from "react-icons/md";
 import Loading from "./Loading";
 import AddAddressModal from "./AddAddressModal";
-import { addAddresNew, fetchAddressNew } from "../slices/changeAddressSlice";
+import {
+  addAddresNew,
+  fetchAddressNew,
+  updateAddresNew,
+} from "../slices/changeAddressSlice";
 import { FaTrash } from "react-icons/fa";
 import AddressList from "./AddressList";
+import UpdateAddressModal from "./UpdateAddressModal";
 
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
@@ -25,7 +30,9 @@ export default function ChangeAddressModal({
   const { profile, loading } = useSelector((state) => state.profile);
   const { changeAddressNew } = useSelector((state) => state.changeAddress);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedRadio, setSelectedRadio] = useState("profile"); // "profile" hoặc address_id
+  const [selectedRadio, setSelectedRadio] = useState("profile");
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [editAddress, setEditAddress] = useState(null);
 
   useEffect(() => {
     dispatch(fetchProfile());
@@ -51,6 +58,29 @@ export default function ChangeAddressModal({
   const nagivateToAddAddress = () => {
     setShowAddModal(true);
     handleClose();
+  };
+  const handleUpdateAddress = async (data) => {
+    if (!editAddress || !editAddress.address_id) {
+      Swal.fire("Lỗi!", "Không tìm thấy địa chỉ để cập nhật.", "error");
+      return;
+    }
+    await dispatch(
+      updateAddresNew({
+        id: editAddress.address_id,
+        data: {
+          recipient_name: data.fullName,
+          phone: data.phone,
+          email: data.email,
+          address: data.addressDetail,
+          ward: data.ward,
+          district: data.district,
+          city: data.city,
+        },
+      })
+    );
+    setShowUpdateModal(false);
+    setEditAddress(null);
+    dispatch(fetchAddressNew());
   };
 
   return (
@@ -125,6 +155,8 @@ export default function ChangeAddressModal({
               addresses={changeAddressNew}
               selectedRadio={selectedRadio}
               setSelectedRadio={setSelectedRadio}
+              setShowUpdateModal={setShowUpdateModal}
+              setEditAddress={setEditAddress}
             />
             <div onClick={nagivateToAddAddress} className="add_address_new">
               <p className="icon_add_address">
@@ -172,7 +204,7 @@ export default function ChangeAddressModal({
             showCancelButton: true,
             confirmButtonText: "Lưu",
             cancelButtonText: "Hủy",
-            reverseButtons: true, // "Hủy" nằm bên phải
+            reverseButtons: true,
           });
 
           if (result.isConfirmed) {
@@ -200,6 +232,21 @@ export default function ChangeAddressModal({
               Swal.fire("Lỗi!", "Không thể thêm địa chỉ.", "error");
             }
           }
+        }}
+      />
+
+      <UpdateAddressModal
+        show={showUpdateModal}
+        onHide={() => setShowUpdateModal(false)}
+        onUpdateAddress={handleUpdateAddress}
+        defaultValues={{
+          fullName: editAddress?.recipient_name,
+          phone: editAddress?.phone,
+          email: editAddress?.email,
+          city: editAddress?.city,
+          district: editAddress?.district,
+          ward: editAddress?.ward,
+          addressDetail: editAddress?.address,
         }}
       />
     </>

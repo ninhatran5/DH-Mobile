@@ -13,6 +13,8 @@ export default function AddressList({
   addresses,
   selectedRadio,
   setSelectedRadio,
+  setEditAddress,
+  setShowUpdateModal,
 }) {
   const dispatch = useDispatch();
   const { changeAddressNew: _ } = useSelector((state) => state.address);
@@ -70,6 +72,10 @@ export default function AddressList({
             handleDeleteAddress={() => handleDeleteAddress(address?.address_id)}
             checked={selectedRadio === address.address_id}
             onChange={() => setSelectedRadio(address.address_id)}
+            onEdit={() => {
+              setEditAddress(address); // set state để truyền vào modal update
+              setShowUpdateModal(true);
+            }}
           />
           <hr className="address-divider" />
         </div>
