@@ -12,7 +12,6 @@ const FavoriteProducts = () => {
   const { listFavorite, loading } = useSelector(
     (state) => state.favoriteProduct
   );
-  console.log("🚀 ~ FavoriteProducts ~ listFavorite:", listFavorite)
   useEffect(() => {
     dispatch(fetchListFavorite());
   }, [dispatch]);
@@ -41,11 +40,12 @@ const FavoriteProducts = () => {
       <div className="container-fluid">
         <div className="row row-cols-1 row-cols-sm-2 row-cols-md-5 row-cols-lg-5 row-cols-xl-5">
           {listFavorite.length > 0 ? (
-            listFavorite.map((product) => (
+            listFavorite.map((item) => (
               <Product
-                key={product.product_id}
-                product={product.product}
-                discountPercent={getDiscountPercent(product)}
+                key={item.product_id}
+                product={item.product}
+                discountPercent={getDiscountPercent(item)}
+                status={item.status}
                 nextProductDetail={() => {}}
               />
             ))
