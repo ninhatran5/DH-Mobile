@@ -356,7 +356,6 @@ const Chart = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
     
-    // Simulate initial loading
     useEffect(() => {
         setIsLoading(true);
         setTimeout(() => {
@@ -364,12 +363,20 @@ const Chart = () => {
         }, 1000);
     }, []);
     
-    // Calculate total pages based on filtered transactions
     const filteredTransactions = getFilteredTransactions();
     const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
     
-    // Current transactions to display
     const displayedTransactions = getCurrentTransactions();
+    
+    useEffect(() => {
+        const interval = setInterval(() => {
+            dispatch(fetchUsers());
+            dispatch(fetchAdminProducts());
+            dispatch(fetchAdminOrders());
+        }, 2000);
+
+        return () => clearInterval(interval);
+    }, [dispatch]);
     
     return(
         <div className="container admin_thongke-dashboard">
