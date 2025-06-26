@@ -12,9 +12,11 @@ class Comment extends Model
     protected $fillable = [
         'user_id',
         'product_id',
+        'variant_id',
         'rating',
         'content',
-        'created_at'
+        'created_at',
+        'replied_at'
     ];
 
     protected static function booted()
@@ -30,5 +32,13 @@ class Comment extends Model
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id', 'product_id');
+    }
+    public function repliedBy()
+    {
+        return $this->belongsTo(User::class, 'replied_by', 'user_id');
+    }
+    public function variant()
+    {
+        return $this->belongsTo(ProductVariant::class, 'variant_id', 'variant_id');
     }
 }
