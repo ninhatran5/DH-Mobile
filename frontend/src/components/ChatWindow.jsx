@@ -61,6 +61,25 @@ export default function ChatWindow() {
   // Thêm trạng thái loadingBot để hiển thị "Bot đang trả lời..."
   const [loadingBot, setLoadingBot] = useState(false);
 
+  // Lắng nghe localStorage để realtime giữa các tab
+  useEffect(() => {
+    const handleStorage = (e) => {
+      if (e.key === 'chatbot-messages') {
+        try {
+          const data = JSON.parse(e.newValue);
+          if (Array.isArray(data)) setMessages(data);
+        } catch {}
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
+  // Lưu messages vào localStorage mỗi khi thay đổi
+  useEffect(() => {
+    localStorage.setItem('chatbot-messages', JSON.stringify(messages));
+  }, [messages]);
+
   const handleSendMessage = async () => {
     if (message.trim() === "") return;
     setSending(true);
@@ -70,7 +89,11 @@ export default function ChatWindow() {
       message,
       created_at: new Date().toISOString(),
     };
-    setMessages((prev) => [...prev, userMsg]);
+    setMessages((prev) => {
+      const next = [...prev, userMsg];
+      localStorage.setItem('chatbot-messages', JSON.stringify(next));
+      return next;
+    });
     setMessage("");
     const result = await dispatch(
       chatBotPost({
@@ -78,24 +101,11 @@ export default function ChatWindow() {
         message,
       })
     );
-    if (result?.payload && result.payload.response) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: "bot",
-          message: result.payload.response,
-          created_at: new Date().toISOString(),
-        },
-      ]);
-      setSending(false);
-      setLoadingBot(false);
-      return;
-    }
-    // Nếu chưa có response ngay, bắt đầu polling
+    // Luôn hiển thị "Bot đang trả lời..." cho đến khi có phản hồi mới
     let pollCount = 0;
-    let lastBotMsg = null;
+    let prevMsgCount = messages.length;
+    let prevLastBotMsg = messages.filter(m => m.sender === 'bot').slice(-1)[0]?.message || null;
     pollingRef.current = setInterval(async () => {
-      pollCount++;
       const fetchResult = await dispatch(fetchChatBot());
       if (Array.isArray(fetchResult.payload)) {
         const flat = [];
@@ -103,34 +113,31 @@ export default function ChatWindow() {
           flat.push({ sender: "user", message: item.message, created_at: item.created_at });
           flat.push({ sender: "bot", message: item.response, created_at: item.created_at });
         });
-        // Tìm tin nhắn bot cuối cùng trong dữ liệu mới
-        const newBotMsg = flat.slice().reverse().find((msg) => msg.sender === "bot" && msg.message);
         setMessages((prev) => {
-          // Nếu tin nhắn cuối cùng của bạn chưa có trong API, giữ lại
+          let next;
           if (
             prev.length > flat.length &&
             prev[prev.length - 1].sender === "user" &&
             (!flat.length || prev[prev.length - 1].message !== flat[flat.length - 1].message)
           ) {
-            return [...flat, prev[prev.length - 1]];
+            next = [...flat, prev[prev.length - 1]];
+          } else {
+            next = flat;
           }
-          return flat;
+          localStorage.setItem('chatbot-messages', JSON.stringify(next));
+          return next;
         });
-        // Nếu có tin nhắn bot mới (khác với lần trước), dừng polling
-        if (newBotMsg && newBotMsg.message !== lastBotMsg) {
+        // Dừng polling khi có tin nhắn bot mới thực sự (so sánh nội dung cuối)
+        const lastBotMsg = flat.filter(m => m.sender === 'bot').slice(-1)[0]?.message || null;
+        if (flat.length > prevMsgCount || (lastBotMsg && lastBotMsg !== prevLastBotMsg)) {
           clearInterval(pollingRef.current);
           setSending(false);
           setLoadingBot(false);
         }
-        lastBotMsg = newBotMsg ? newBotMsg.message : lastBotMsg;
+        prevMsgCount = flat.length;
+        prevLastBotMsg = lastBotMsg;
       }
-      // Tăng số lần polling lên 30 lần (~30s)
-      if (pollCount > 30) {
-        clearInterval(pollingRef.current);
-        setSending(false);
-        setLoadingBot(false);
-      }
-    }, 1500); // 1.5s/lần
+    }, 500); // 0.5s/lần, có thể chỉnh nhanh hơn nếu muốn
   };
 
   const handleKeyDown = (e) => {

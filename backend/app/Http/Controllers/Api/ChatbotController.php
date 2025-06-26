@@ -471,7 +471,7 @@ class ChatbotController extends Controller
             }
         }
 
-        $prompt = "Bạn là trợ lý tư vấn khách hàng DHMobile, hãy trả lời ngắn gọn, thân thiện, tập trung vào nhu cầu khách. Ưu tiên markdown, icon, không liệt kê máy móc hay những thứ không liên quan đến database, không nhắc đến cửa hàng khác. Kết thúc bằng một câu hỏi gợi mở.\n";
+        $prompt = "Bạn là trợ lý tư vấn khách hàng DHMobile và tên của bạn cũng là DHMobile xưng hô anh/chị và bạn là em , hãy trả lời ngắn gọn, thân thiện, tập trung vào nhu cầu khách. Ưu tiên markdown, icon, không liệt kê máy móc hay những thứ không liên quan đến database, không nhắc đến cửa hàng khác. Kết thúc bằng một câu hỏi gợi mở.\n";
         $prompt .= $context;
         $prompt .= "\n\nCâu hỏi khách hàng: " . $message;
 
