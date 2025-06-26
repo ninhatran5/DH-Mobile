@@ -62,18 +62,30 @@ export const addUser = createAsyncThunk(
       const res = await axiosConfig.post("/createuser", newUserData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("Phản hồi từ server:", res.data);
-      const newUser = res.data.data;
-      console.log("User mới:", newUser);
-      return newUser;
+      console.log("API trả về khi thêm user:", res.data);
+
+      let user = res.data.user; 
+      if (Array.isArray(user)) {
+        user = user[0];
+      }
+      if (!user || !user.user_id) {
+        return rejectWithValue("Dữ liệu trả về không hợp lệ khi thêm user");
+      }
+      return user;
     } catch (err) {
-      console.error("Lỗi khi thêm user:", err);
+      console.error("Lỗi khi thêm user:", err.response?.data);
+
+      if (err.response?.data?.errors) {
+        return rejectWithValue(err.response.data.errors);
+      }
+
       return rejectWithValue(
-        err.response?.data?.message || "Lỗi khi thêm user"
+        err.response?.data?.message || "Lỗi không xác định khi thêm user"
       );
     }
   }
 );
+
 
 // Cập nhật user
 export const updateUser = createAsyncThunk(
@@ -150,7 +162,10 @@ const adminuserSlice = createSlice({
       .addCase(addUser.fulfilled, (state, action) => {
         state.loading = false;
         console.log("Người dùng mới được thêm:", action.payload);
-        state.users.push(action.payload);
+        // Chỉ push nếu payload hợp lệ
+        if (action.payload && action.payload.user_id) {
+          state.users.push(action.payload);
+        }
       })
       .addCase(addUser.rejected, (state, action) => {
         state.loading = false;
