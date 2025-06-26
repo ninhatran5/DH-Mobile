@@ -1,10 +1,9 @@
-// components/ReviewModal.jsx
 import { useEffect, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { FaStar } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { fetchOrderDetail } from "../slices/orderSlice";
 import numberFormat from "../../utils/numberFormat";
 import { commentsPost } from "../slices/reviewSlice";
@@ -14,19 +13,16 @@ import { useTranslation } from "react-i18next";
 
 const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(null);
   const [comment, setComment] = useState("");
   const [selectedVariantId, setSelectedVariantId] = useState();
+  const [reviewableProducts, setReviewableProducts] = useState([]);
   const maxLength = 200;
-  const dispatch = useDispatch();
-  const { orderDetail } = useSelector((state) => state.order);
-  const products = orderDetail?.products || [];
-  const allSameVariant =
-    products.length > 0 &&
-    products.every((p) => p.variant_id === products[0].variant_id);
 
-  const navigate = useNavigate();
 
   const handleNextPageOrderDetail = (id) => {
     handleClose();
@@ -55,6 +51,7 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
       Swal.fire({ icon: "error", title: t("review.noProductSelected") });
       return;
     }
+
     dispatch(
       commentsPost({
         variant_id: selectedVariantId,
@@ -71,7 +68,34 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
           showConfirmButton: false,
           timer: 1500,
         });
-        if (onSuccess) onSuccess();
+
+        // Cập nhật localStorage
+        const reviewed = JSON.parse(
+          localStorage.getItem("reviewedVariants") || "[]"
+        );
+        if (!reviewed.includes(selectedVariantId)) {
+          reviewed.push(selectedVariantId);
+          localStorage.setItem("reviewedVariants", JSON.stringify(reviewed));
+        }
+
+        // Cập nhật danh sách sản phẩm chưa đánh giá
+        const updated = reviewableProducts.filter(
+          (p) => p.variant_id !== selectedVariantId
+        );
+        setReviewableProducts(updated);
+
+        // Gọi callback về OrderHistory
+        if (onSuccess) onSuccess(selectedVariantId);
+
+        // Reset state
+        setComment("");
+        setRating(0);
+        setSelectedVariantId(undefined);
+
+        // Đóng nếu hết sản phẩm cần đánh giá
+        if (updated.length === 0) {
+          handleClose();
+        }
       })
       .catch((error) => {
         Swal.fire({
@@ -83,14 +107,23 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
   };
 
   useEffect(() => {
-    if (allSameVariant && products.length > 0) {
-      setSelectedVariantId(Number(products[0].variant_id));
-    }
-  }, [allSameVariant, products]);
-
-  useEffect(() => {
     if (!orderId) return;
-    dispatch(fetchOrderDetail(orderId));
+
+    dispatch(fetchOrderDetail(orderId)).then((action) => {
+      const reviewed = JSON.parse(
+        localStorage.getItem("reviewedVariants") || "[]"
+      );
+      const products = action.payload?.products || [];
+      const filtered = products.filter(
+        (p) => !reviewed.includes(p.variant_id)
+      );
+
+      setReviewableProducts(filtered);
+
+      if (filtered.length === 1) {
+        setSelectedVariantId(filtered[0].variant_id);
+      }
+    });
   }, [orderId, dispatch]);
 
   return (
@@ -102,12 +135,14 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
       </Modal.Header>
       <Modal.Body>
         <div className="container-fluid">
-          {products.map((product, index) => (
+          {reviewableProducts.map((product, index) => (
             <div className="d-flex mt-3" key={index}>
               <div className="border_image_return">
                 <img
                   style={{ cursor: "pointer" }}
-                  onClick={() => handleNextPageOrderDetail(product.product_id)}
+                  onClick={() =>
+                    handleNextPageOrderDetail(product.product_id)
+                  }
                   className="image_return"
                   src={product.product_image || ""}
                   alt={product.product_name}
@@ -116,7 +151,9 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
               <div style={{ flex: 1 }}>
                 <p
                   style={{ cursor: "pointer" }}
-                  onClick={() => handleNextPageOrderDetail(product.product_id)}
+                  onClick={() =>
+                    handleNextPageOrderDetail(product.product_id)
+                  }
                   className="title_return_product"
                 >
                   {product.product_name}
@@ -127,7 +164,9 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
                       ?.map((attr) => attr.attribute_value)
                       .join(", ") || "Không rõ"}
                   </p>
-                  <p className="quantity_return_product">x{product.quantity}</p>
+                  <p className="quantity_return_product">
+                    x{product.quantity}
+                  </p>
                 </div>
                 <p className="price_return_product">
                   {numberFormat(product.price || 0)}
@@ -135,19 +174,23 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
               </div>
             </div>
           ))}
-          {/* Ẩn select nếu chỉ có 1 sản phẩm */}
-          {!allSameVariant && products.length > 1 && (
+
+          {reviewableProducts.length > 1 && (
             <Form.Group className="mb-3">
               <p className="title_return">{t("review.selectProduct")}</p>
               <Form.Select
                 value={selectedVariantId || ""}
-                onChange={(e) => setSelectedVariantId(Number(e.target.value))}
+                onChange={(e) =>
+                  setSelectedVariantId(Number(e.target.value))
+                }
                 required
               >
-                <option value="">{t("review.selectProductPlaceholder")}</option>
-                {products.map((p) => (
+                <option value="">
+                  {t("review.selectProductPlaceholder")}
+                </option>
+                {reviewableProducts.map((p) => (
                   <option
-                    key={p.product_id + "-" + p.variant_id}
+                    key={p.variant_id}
                     value={p.variant_id}
                   >
                     {p.product_name} -{" "}
@@ -159,6 +202,7 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
               </Form.Select>
             </Form.Group>
           )}
+
           <hr className="hr_return" />
           <div>
             <p className="title_return">{t("review.ratingTitle")}</p>
@@ -171,7 +215,11 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
                   key={index}
                   size={28}
                   style={{ cursor: "pointer", marginRight: 5 }}
-                  color={starValue <= (hover || rating) ? "#ffc107" : "#e4e5e9"}
+                  color={
+                    starValue <= (hover || rating)
+                      ? "#ffc107"
+                      : "#e4e5e9"
+                  }
                   onClick={() => setRating(starValue)}
                   onMouseEnter={() => setHover(starValue)}
                   onMouseLeave={() => setHover(null)}
@@ -179,7 +227,9 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
               );
             })}
           </div>
+
           <hr className="hr_return" style={{ marginTop: "30px" }} />
+
           <Form.Group className="mb-3">
             <p className="title_return">{t("review.writeReview")}</p>
             <Form.Control
@@ -207,7 +257,7 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
         <Button
           className="btn_save_address"
           onClick={handleSubmit}
-          disabled={rating === 0}
+          disabled={rating === 0 || !selectedVariantId}
         >
           {t("review.submitBtn")}
         </Button>
