@@ -3,23 +3,26 @@ import '../../assets/admin/Chart.css';
 import { useSelector, useDispatch } from "react-redux";
 import { fetchUsers } from "../../slices/adminuserSlice";
 import { fetchAdminProducts } from "../../slices/adminproductsSlice";
-
+import { fetchAdminOrders } from "../../slices/adminOrderSlice";
 const Chart = () => {
     const dispatch = useDispatch();
     const { users } = useSelector((state) => state.adminuser);
     const { adminproducts } = useSelector((state) => state.adminproduct);
+    const { orders } = useSelector((state) => state.adminOrder);
     const [activeTab, setActiveTab] = useState('day');
     const [currentPage, setCurrentPage] = useState(1);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [isLoading, setIsLoading] = useState(false);
-    
-    // Fetch data when component mounts
+    const completedOrders = orders.filter(order => order.status === 'completed');
+    const totalRevenue = completedOrders.reduce((sum, order) => {
+  return sum + Number(order.total_price); 
+}, 0);
     useEffect(() => {
         dispatch(fetchUsers());
         dispatch(fetchAdminProducts());
+        dispatch(fetchAdminOrders());
     }, [dispatch]);
     
-    // Filter states
     const [showFilters, setShowFilters] = useState(false);
     const [filters, setFilters] = useState({
         status: 'all',
@@ -225,11 +228,9 @@ const Chart = () => {
         }
     ];
     
-    // Apply filters to transactions
     const getFilteredTransactions = () => {
         let filtered = [...transactions];
         
-        // Filter by status
         if (filters.status !== 'all') {
             filtered = filtered.filter(transaction => {
                 if (filters.status === 'active') return transaction.status.class === 'admin_thongke-status-active';
@@ -283,21 +284,18 @@ const Chart = () => {
         return filtered;
     };
     
-    // Toggle filter panel
     const toggleFilters = () => {
         setShowFilters(!showFilters);
     };
     
-    // Update a single filter
     const handleFilterChange = (name, value) => {
         setFilters(prev => ({
             ...prev,
             [name]: value
         }));
-        setCurrentPage(1); // Reset to first page when filter changes
+        setCurrentPage(1); 
     };
     
-    // Reset all filters
     const resetFilters = () => {
         setFilters({
             status: 'all',
@@ -408,8 +406,6 @@ const Chart = () => {
                             <h5>Tổng người dùng</h5>
                             <div className="admin_thongke-stat-value">{users?.length || 0}</div>
                             <div className="admin_thongke-stat-change admin_thongke-positive">
-                                <i className="bi bi-arrow-up-right"></i>
-                                <span>12.5% so với tuần trước</span>
                             </div>
                         </div>
                     </div>
@@ -421,10 +417,8 @@ const Chart = () => {
                         </div>
                         <div className="admin_thongke-card-content">
                             <h5>Doanh thu</h5>
-                            <div className="admin_thongke-stat-value">45,678,000đ</div>
+                            <div className="admin_thongke-stat-value">{totalRevenue.toLocaleString()}đ</div>
                             <div className="admin_thongke-stat-change admin_thongke-positive">
-                                <i className="bi bi-arrow-up-right"></i>
-                                <span>8.3% so với tuần trước</span>
                             </div>
                         </div>
                     </div>
@@ -436,10 +430,8 @@ const Chart = () => {
                         </div>
                         <div className="admin_thongke-card-content">
                             <h5>Đơn hàng</h5>
-                            <div className="admin_thongke-stat-value">567</div>
+                            <div className="admin_thongke-stat-value">{orders?.length || 0}</div>
                             <div className="admin_thongke-stat-change admin_thongke-negative">
-                                <i className="bi bi-arrow-down-right"></i>
-                                <span>3.2% so với tuần trước</span>
                             </div>
                         </div>
                     </div>
@@ -453,8 +445,7 @@ const Chart = () => {
                             <h5>Sản phẩm</h5>
                             <div className="admin_thongke-stat-value">{adminproducts?.length || 0}</div>
                             <div className="admin_thongke-stat-change admin_thongke-positive">
-                                <i className="bi bi-arrow-up-right"></i>
-                                <span>5.7% so với tuần trước</span>
+
                             </div>
                         </div>
                     </div>
