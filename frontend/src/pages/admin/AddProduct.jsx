@@ -503,16 +503,7 @@ const AdminAddProduct = () => {
                     </div>
                   ))}
                 </div>
-                <div className="form-check mb-3 adminAddProduct-variant-active">
-                  <input
-                    className="form-check-input adminAddProduct-checkbox"
-                    type="checkbox"
-                    name="is_active"
-                    checked={variantFormData.is_active === 1}
-                    onChange={handleVariantInputChange}
-                  />
-                  <label className="form-check-label adminAddProduct-label">Kích hoạt</label>
-                </div>
+               
                 <div className="d-flex justify-content-between adminAddProduct-variant-buttons">
                   <button className="btn btn-primary adminAddProduct-add-variant-submit-btn" type="button" onClick={handleAddVariantSubmit}>Thêm biến thể</button>
                   <button className="btn btn-secondary adminAddProduct-cancel-btn" type="button" onClick={() => setShowVariantForm(false)}>Hủy</button>
