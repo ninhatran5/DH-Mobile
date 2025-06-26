@@ -9,7 +9,6 @@
 margin-bottom: var(--admin_dh-spacing-md);
 
   transition: var(--admin_dh-transition);
-  max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
 }

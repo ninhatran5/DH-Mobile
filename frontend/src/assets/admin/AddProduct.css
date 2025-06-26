@@ -8,7 +8,6 @@
   padding: var(--admin_dh-spacing-xl);
   margin-bottom: var(--admin_dh-spacing-xl);
   transition: var(--admin_dh-transition);
-  max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
 }
