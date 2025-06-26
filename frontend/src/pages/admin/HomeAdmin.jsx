@@ -566,7 +566,7 @@ const Homeadmin = () => {
                   className="btn admin_dh-btn admin_dh-sound-toggle"
                   onClick={toggleSound}
                   title={isSoundEnabled ? "Tắt âm thanh thông báo" : "Bật âm thanh thông báo"}
-                  style={{ marginRight: '10px' }}
+                  style={{ marginRight: '-13px', fontSize: 23, color: isSoundEnabled ? 'var(--admin_dh-primary)' : 'var(--admin_dh-text-muted)', border: 'none', background: 'transparent' }}
                 >
                   <i className={`bi ${isSoundEnabled ? 'bi-volume-up' : 'bi-volume-mute'}`}></i>
                 </button>

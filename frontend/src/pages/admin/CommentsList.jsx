@@ -184,6 +184,7 @@ console.log(comments)
                             <div className="comment-user-name">{comment.user.username}</div>
                             <div className="comment-user-email">{comment.user.email}</div>
                           </div>
+                          <div className="comment-user-name">{comment.user.name}</div>
                         </div>
                       </td>
                       <td>
@@ -196,12 +197,7 @@ console.log(comments)
                                 className="comment-product-image"
                               />
                               <div className="comment-product-name" style={{ fontSize: "0.95em" }}>
-                                <div
-                                  className="comment-variant-sku"
-                                  style={{ fontWeight: "bold", fontSize: "0.97em", color: "#222" }}
-                                >
-                                  {comment.variant.sku}
-                                </div>
+                                <p>{comment?.product?.name}</p>
                                 {comment.variant_attributes && comment.variant_attributes.length > 0 && (
                                   <div
                                     className="comment-variant-attributes"
@@ -217,6 +213,7 @@ console.log(comments)
                                     }}
                                   >
                                     {comment.variant_attributes.map((attr, idx) => (
+                                      
                                       <span key={idx} style={{ whiteSpace: "nowrap" }}>
                                         {attr.attribute_name}: {attr.attribute_value}
                                       </span>
