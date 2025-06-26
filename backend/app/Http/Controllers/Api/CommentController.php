@@ -18,7 +18,7 @@ class CommentController extends Controller
             'repliedBy',
             'variant.variantAttributeValues.value.attribute'
         ])
-            ->where('variant_id', $id)
+            ->where('product_id', $id)
             ->orderBy('created_at', 'desc')
             ->get();
         $comments = $comments->map(function ($comment) {
