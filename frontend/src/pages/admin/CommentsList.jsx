@@ -26,7 +26,6 @@ const CommentsList = () => {
   useEffect(() => {
     dispatch(fetchAdminComments());
   }, [dispatch]);
-console.log(comments)
   useEffect(() => {
     if (error) {
       MySwal.fire({
@@ -53,7 +52,7 @@ console.log(comments)
     setSearchTerm(e.target.value);
   };
 
-  const filteredComments = comments.filter(
+  const filteredComments = comments?.filter(
     (comment) =>
       comment.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
       comment.user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -168,8 +167,8 @@ console.log(comments)
               </tr>
             </thead>
             <tbody>
-              {filteredComments.length > 0 ? (
-                filteredComments.map((comment, index) => (
+              {filteredComments?.length > 0 ? (
+                filteredComments?.map((comment, index) => (
                   <React.Fragment key={comment.comment_id}>
                     <tr>
                       <td>{(currentPage - 1) * 10 + index + 1}</td>
