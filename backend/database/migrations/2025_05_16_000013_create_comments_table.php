@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id('comment_id');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('product_id')->nullable();
-            $table->unsignedBigInteger('variant_id')->nullable()->after('product_id');
+            $table->unsignedBigInteger('variant_id')->nullable();
             $table->unsignedBigInteger('replied_by')->nullable();
             $table->text('content')->nullable();
             $table->integer('rating')->nullable();
