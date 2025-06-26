@@ -1,17 +1,31 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosConfig } from "../../utils/axiosConfig";
 
+// Fetch danh sách đơn hàng (kèm completedOrders)
 export const fetchAdminOrders = createAsyncThunk(
   "adminOrder/fetchAdminOrders",
   async (page = 1, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await axiosConfig.get(`/admin/orders`, {
+      const response = await axiosConfig.get(`/admin/orders?page=${page}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      return response.data;
+
+      const allOrders = response.data.orders || [];
+      const completedOrders = allOrders.filter(
+  (order) => order.status?.toLowerCase().trim() === "hoàn thành"
+);
+
+console.log("Dữ liệu đơn hàng trả về:", response.data.orders);
+
+      return {
+        orders: allOrders,
+        completedOrders,
+        pagination: response.data.pagination || {},
+      };
+      
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Lỗi khi lấy danh sách đơn hàng"
@@ -96,9 +110,10 @@ const adminOrderSlice = createSlice({
   name: "adminOrder",
   initialState: {
     orders: [],
+    completedOrders: [],
     order: null,
-    returnOrders: [], // Thêm state cho đơn hoàn hàng
-    returnOrdersPagination: {}, // Thêm pagination cho đơn hoàn hàng
+    returnOrders: [],
+    returnOrdersPagination: {},
     pagination: {},
     loading: false,
     error: null,
@@ -112,9 +127,10 @@ const adminOrderSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchAdminOrders.fulfilled, (state, action) => {
-        state.orders = action.payload.orders || [];
-        state.pagination = action.payload.pagination || {};
         state.loading = false;
+        state.orders = action.payload.orders || [];
+        state.completedOrders = action.payload.completedOrders || [];
+        state.pagination = action.payload.pagination || {};
       })
       .addCase(fetchAdminOrders.rejected, (state, action) => {
         state.loading = false;
@@ -129,14 +145,18 @@ const adminOrderSlice = createSlice({
       .addCase(updateOrderStatus.fulfilled, (state, action) => {
         state.loading = false;
         const updatedOrder = action.payload;
-        
-        state.orders = state.orders.map(order => 
-          order?.order_id === updatedOrder.order_id 
-            ? { ...order, ...updatedOrder }  
+
+        state.orders = state.orders.map(order =>
+          order?.order_id === updatedOrder.order_id
+            ? { ...order, ...updatedOrder }
             : order
         );
 
-        // Cập nhật trong order detail nếu đang xem chi tiết
+        // Cập nhật lại completedOrders
+        state.completedOrders = state.orders.filter(
+          (order) => order.status?.toLowerCase() === "completed"
+        );
+
         if (state.order && state.order.order_id === updatedOrder.order_id) {
           state.order = { ...state.order, ...updatedOrder };
         }
@@ -157,19 +177,21 @@ const adminOrderSlice = createSlice({
         state.loading = false;
         const orderDetails = action.payload;
 
-        if (!orderDetails || !orderDetails.order_id) {
-          console.warn("Dữ liệu đơn hàng không hợp lệ:", orderDetails);
-          return;
-        }
+        if (!orderDetails || !orderDetails.order_id) return;
 
         const index = state.orders.findIndex(o => o?.order_id === orderDetails.order_id);
         if (index !== -1) {
           state.orders[index] = orderDetails;
         } else {
-          state.orders.push(orderDetails); // Nếu chưa có thì thêm vào
+          state.orders.push(orderDetails);
         }
 
-        state.order = orderDetails; 
+        // Cập nhật lại completedOrders
+        state.completedOrders = state.orders.filter(
+          (order) => order.status?.toLowerCase() === "Hoàn Thành"
+        );
+
+        state.order = orderDetails;
       })
       .addCase(fetchorderdetails.rejected, (state, action) => {
         state.loading = false;
@@ -177,7 +199,7 @@ const adminOrderSlice = createSlice({
         state.order = null;
       })
 
-      // Xử lý fetch đơn hoàn hàng
+      // Đơn hoàn hàng
       .addCase(fetchReturnOrders.pending, (state) => {
         state.loading = true;
         state.error = null;
