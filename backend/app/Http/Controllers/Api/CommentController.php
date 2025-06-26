@@ -18,7 +18,7 @@ class CommentController extends Controller
             'repliedBy',
             'variant.variantAttributeValues.value.attribute'
         ])
-            ->where('variant_id', $id)
+            ->where('product_id', $id)
             ->orderBy('created_at', 'desc')
             ->get();
         $comments = $comments->map(function ($comment) {
@@ -113,7 +113,11 @@ class CommentController extends Controller
 
     public function getAllComments()
     {
-        $comments = Comment::with(['user', 'product'])
+        $comments = Comment::with([
+            'user',
+            'product',
+            'variant.variantAttributeValues.value.attribute'
+        ])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -122,6 +126,31 @@ class CommentController extends Controller
                 'message' => 'Chưa có đánh giá nào',
             ]);
         }
+        $comments = $comments->map(function ($comment) {
+            $arr = $comment->toArray();
+            if ($comment->variant) {
+                $arr['variant'] = [
+                    'variant_id' => $comment->variant->variant_id,
+                    'sku' => $comment->variant->sku,
+                    'image_url' => $comment->variant->image_url,
+                    'price' => $comment->variant->price,
+                    'price_original' => $comment->variant->price_original
+                ];
+                $arr['variant_attributes'] = $comment->variant->variantAttributeValues->map(function ($attrValue) {
+                    return [
+                        'attribute_name' => $attrValue->value->attribute->name,
+                        'attribute_value' => $attrValue->value->value
+                    ];
+                });
+            } else {
+                $arr['variant'] = null;
+                $arr['variant_attributes'] = [];
+            }
+            if (isset($arr['variant']['variant_attribute_values'])) {
+                unset($arr['variant']['variant_attribute_values']);
+            }
+            return $arr;
+        });
         return response()->json([
             'status' => true,
             'message' => 'Danh sách tất cả đánh giá',
