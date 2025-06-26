@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAdminVouchers,
@@ -19,11 +19,23 @@ const VoucherList = () => {
   const [expiryDaysFilter, setExpiryDaysFilter] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [firstLoading, setFirstLoading] = useState(true);
+  const pollingRef = useRef(false);
 
   const vouchersPerPage = 10;
 
   useEffect(() => {
-    dispatch(fetchAdminVouchers());
+    setFirstLoading(true);
+    dispatch(fetchAdminVouchers()).finally(() => {
+      setFirstLoading(false);
+      pollingRef.current = true;
+    });
+    const interval = setInterval(() => {
+      if (pollingRef.current) {
+        dispatch(fetchAdminVouchers());
+      }
+    }, 2000);
+    return () => clearInterval(interval);
   }, [dispatch]);
 
   const handleDelete = (voucherId) => {
@@ -96,7 +108,7 @@ const VoucherList = () => {
     setCurrentPage(1);
   }, [searchTerm, discountFilter, expiryDaysFilter]);
 
-  if (loading) return <div className="adminvoucher-loading">Đang tải danh sách voucher...</div>;
+  if (firstLoading) return <div className="adminvoucher-loading">Đang tải danh sách voucher...</div>;
   if (error) return <div className="adminvoucher-error">Lỗi: {error}</div>;
 
   return (
