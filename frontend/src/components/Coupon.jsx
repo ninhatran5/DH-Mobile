@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { HiSave } from "react-icons/hi";
 import dayjs from "dayjs";
 import { useDispatch } from "react-redux";
-import { saveVoucher } from "../slices/voucherSlice";
+import { fetchVouhcer, saveVoucher } from "../slices/voucherSlice";
 import Swal from "sweetalert2";
 import numberFormat from "../../utils/numberFormat";
 
@@ -38,6 +38,7 @@ const Coupon = ({ voucher, isMyVoucher }) => {
             popup: "swal2-padding-custom",
           },
         });
+        dispatch(fetchVouhcer());
       } else {
         throw new Error(result.error?.message || t("voucher.saveError"));
       }
