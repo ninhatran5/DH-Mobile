@@ -429,9 +429,9 @@ const Homeadmin = () => {
                   >
                     <div className="d-flex align-items-center">
                       <i className="bi bi-ticket-perforated" style={{ color: '#ff9f0a' }} />
-                      <span className="ms-2">Mã giảm giá</span>
+                      <span className="ms-3">Voucher</span>
                     </div>
-                    <i className={`bi bi-caret-${isDropdownActive('vouchers') ? 'down' : 'right'}-fill`} />
+                    <i className={`mr-5 bi bi-caret-${isDropdownActive('vouchers') ? 'down' : 'right'}-fill`} />
                   </a>
                   <div
                     className={`admin_dh-submenu ${isDropdownActive('vouchers') ? 'show' : ''}`}
@@ -479,7 +479,7 @@ const Homeadmin = () => {
                   >
                     <div className="d-flex align-items-center">
                       <i className="bi bi-robot" style={{ color: '#0071e3' }} />
-                      <span className="ms-2">Hỗ trợ </span>
+                      <span className="ms-3"> Hỗ trợ </span>
                     </div>
                     <i className={`bi bi-caret-${isDropdownActive('chatbot') ? 'down' : 'right'}-fill`} />
                   </a>

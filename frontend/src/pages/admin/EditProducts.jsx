@@ -550,21 +550,7 @@ const AdminProductEdit = () => {
                     </select>
                   </div>
 
-                  <div
-                    className="admineditproduct-form-group"
-                    style={{ marginBottom: "12px" }}
-                  >
-                    <label>Trạng thái</label>
-                    <select
-                      name="status"
-                      value={formData.status}
-                      onChange={handleInputChange}
-                      style={{ width: "100%", padding: "6px" }}
-                    >
-                      <option value="Còn hàng">Còn hàng</option>
-                      <option value="Hết hàng">Hết hàng</option>
-                    </select>
-                  </div>
+                  
 
                   <div
                     className="admineditproduct-form-group"

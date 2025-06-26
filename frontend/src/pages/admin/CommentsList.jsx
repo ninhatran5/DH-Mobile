@@ -187,15 +187,56 @@ console.log(comments)
                         </div>
                       </td>
                       <td>
-                        <div className="comment-product-info">
-                          <img
-                            src={comment.product.image_url}
-                            alt={comment.product.name}
-                            className="comment-product-image"
-                          />
-                          <div className="comment-product-name">
-                            {comment.product.name}
-                          </div>
+                        <div className="comment-product-info comment-product-flex" style={{ fontSize: "0.92em" }}>
+                          {comment.variant ? (
+                            <>
+                              <img
+                                src={comment.variant.image_url}
+                                alt={comment.variant.sku}
+                                className="comment-product-image"
+                              />
+                              <div className="comment-product-name" style={{ fontSize: "0.95em" }}>
+                                <div
+                                  className="comment-variant-sku"
+                                  style={{ fontWeight: "bold", fontSize: "0.97em", color: "#222" }}
+                                >
+                                  {comment.variant.sku}
+                                </div>
+                                {comment.variant_attributes && comment.variant_attributes.length > 0 && (
+                                  <div
+                                    className="comment-variant-attributes"
+                                    style={{
+                                      fontSize: "0.85em",
+                                      color: "#555",
+                                      display: "flex",
+                                      gap: "8px",
+                                      marginTop: "2px",
+                                      fontWeight: 500,
+                                      flexWrap: "wrap",
+                                      alignItems: "center"
+                                    }}
+                                  >
+                                    {comment.variant_attributes.map((attr, idx) => (
+                                      <span key={idx} style={{ whiteSpace: "nowrap" }}>
+                                        {attr.attribute_name}: {attr.attribute_value}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <img
+                                src={comment.product.image_url}
+                                alt={comment.product.name}
+                                className="comment-product-image"
+                              />
+                              <div className="comment-product-name" style={{ fontSize: "0.95em" }}>
+                                {comment.product.name}
+                              </div>
+                            </>
+                          )}
                         </div>
                       </td>
                       <td>
