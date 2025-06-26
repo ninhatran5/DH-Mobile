@@ -1,8 +1,7 @@
-/* eslint-disable no-unused-vars */
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import NumberFormat from "../../utils/numberFormat";
-import { FaTimes } from "react-icons/fa";
+import { FaTimes, FaEye } from "react-icons/fa";
 import { PiKeyReturnFill } from "react-icons/pi";
 import { FaDiagramSuccessor } from "react-icons/fa6";
 import { useState, useEffect } from "react";
@@ -15,12 +14,10 @@ import { useDispatch } from "react-redux";
 import "../assets/css/order-history.css";
 import { fetchOrder, receivedOrder } from "../slices/orderSlice";
 import TooltipIcon from "./TooltipIcon";
-import { FaEye } from "react-icons/fa";
 
 const OrderHistory = ({ order, handleCancelOrder }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-
   const dispatch = useDispatch();
 
   const [showReasonModal, setShowReasonModal] = useState(false);
@@ -31,9 +28,13 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
   const [isReviewed, setIsReviewed] = useState(false);
 
   useEffect(() => {
-    const reviewed = JSON.parse(localStorage.getItem("reviewedOrders") || "[]");
-    setIsReviewed(reviewed.includes(order.order_id));
-  }, [order.order_id]);
+    const reviewed = JSON.parse(
+      localStorage.getItem("reviewedVariants") || "[]"
+    );
+    const products = order?.products || [];
+    const allReviewed = products.every((p) => reviewed.includes(p.variant_id));
+    setIsReviewed(allReviewed);
+  }, [order]);
 
   const handleNextPageOrderDetail = (id) => {
     navigate(`/order-detail/${id}`);
@@ -116,18 +117,16 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
             )}
 
             {["đã giao hàng"].includes(order?.status?.trim().toLowerCase()) && (
-              <>
-                <TooltipIcon
-                  icon={FaDiagramSuccessor}
-                  tooltip="Xác nhận đã nhận hàng"
-                  className="icon-circle"
-                  onClick={handleOpenReviewAlert}
-                />
-              </>
+              <TooltipIcon
+                icon={FaDiagramSuccessor}
+                tooltip="Xác nhận đã nhận hàng"
+                className="icon-circle"
+                onClick={handleOpenReviewAlert}
+              />
             )}
 
             {["hoàn thành"].includes(order?.status?.trim().toLowerCase()) &&
-              !isReviewed && (
+              isReviewed && (
                 <>
                   <TooltipIcon
                     icon={PiKeyReturnFill}
@@ -170,15 +169,24 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
           show={true}
           handleClose={() => setShowReviewModal(false)}
           orderId={selectedOrderId}
-          onSuccess={() => {
+          onSuccess={(variantId) => {
             const reviewed = JSON.parse(
-              localStorage.getItem("reviewedOrders") || "[]"
+              localStorage.getItem("reviewedVariants") || "[]"
             );
-            if (!reviewed.includes(order.order_id)) {
-              reviewed.push(order.order_id);
-              localStorage.setItem("reviewedOrders", JSON.stringify(reviewed));
+
+            if (!reviewed.includes(variantId)) {
+              reviewed.push(variantId);
+              localStorage.setItem(
+                "reviewedVariants",
+                JSON.stringify(reviewed)
+              );
             }
-            setIsReviewed(true);
+
+            const products = order?.products || [];
+            const allReviewed = products.every((p) =>
+              reviewed.includes(p.variant_id)
+            );
+            setIsReviewed(allReviewed);
             setShowReviewModal(false);
           }}
         />
