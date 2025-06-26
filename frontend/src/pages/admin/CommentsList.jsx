@@ -6,6 +6,8 @@ import { AiFillStar } from "react-icons/ai";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import "../../assets/admin/adminComment.css"
+import DefaultImage from "../../assets/images/adminacccount.jpg";
+
 const MySwal = withReactContent(Swal);
 
 const CommentsList = () => {
@@ -175,7 +177,7 @@ console.log(comments)
                     <td>
                       <div className="admin-comment-user-info">
                         <img
-                          src={comment.user.image_url}
+                          src={(comment.user.image_url) || DefaultImage} 
                           alt={comment.user.username}
                           className="admin-comment-user-avatar"
                         />
