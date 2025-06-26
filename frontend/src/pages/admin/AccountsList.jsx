@@ -128,11 +128,11 @@ const ListUser = () => {
                           onClick={() => navigate(`/admin/editaccount/${user.user_id}`)}
                           title="Sửa user"
                         />
-                        <FaTrash
+                        {/* <FaTrash
                           className="adminuser-icon adminuser-icon-delete"
                           onClick={() => handleDelete(user.user_id)}
                           title="Xóa user"
-                        />
+                        /> */}
                       </td>
                     </tr>
                   ))
