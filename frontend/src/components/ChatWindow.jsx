@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "../assets/css/chatbot.css";
 import chatbotLogo2 from "../assets/images/logochat.png";
 import { FaPaperPlane, FaTimes } from "react-icons/fa";
@@ -25,30 +25,112 @@ export default function ChatWindow() {
   const { t } = useTranslation();
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
-  const [pendingMessages, setPendingMessages] = useState([]);
+  // Tối ưu: lưu trữ toàn bộ messages trong state, không clear pending khi fetch lại
+  const [messages, setMessages] = useState([]);
   const [isFullScreen, setIsFullScreen] = useState(false);
+
+  // Ref để scroll đến cuối khi có tin nhắn mới
+  const messagesEndRef = useRef(null);
+
+  // Khi fetch lịch sử chat thành công, chỉ cập nhật nếu API trả về nhiều hoặc bằng số lượng tin nhắn hiện tại
+  useEffect(() => {
+    if (Array.isArray(response)) {
+      const flat = [];
+      response.forEach((item) => {
+        flat.push({
+          sender: "user",
+          message: item.message,
+          created_at: item.created_at,
+        });
+        flat.push({
+          sender: "bot",
+          message: item.response,
+          created_at: item.created_at,
+        });
+      });
+      setMessages((prev) => {
+        if (flat.length >= prev.length) return flat;
+        return prev;
+      });
+    }
+  }, [response]);
+
+  // Polling để lấy phản hồi bot sau khi gửi tin nhắn
+  const pollingRef = useRef();
+
+  // Thêm trạng thái loadingBot để hiển thị "Bot đang trả lời..."
+  const [loadingBot, setLoadingBot] = useState(false);
 
   const handleSendMessage = async () => {
     if (message.trim() === "") return;
     setSending(true);
-    setPendingMessages((prev) => [
-      ...prev,
-      {
-        sender: "user",
-        message,
-        created_at: new Date().toISOString(),
-      },
-    ]);
+    setLoadingBot(true);
+    const userMsg = {
+      sender: "user",
+      message,
+      created_at: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, userMsg]);
     setMessage("");
-    await dispatch(
+    const result = await dispatch(
       chatBotPost({
         user_id: profile?.user?.id,
         message,
       })
     );
-    await dispatch(fetchChatBot());
-    setPendingMessages([]); // clear khi đã fetch xong
-    setSending(false);
+    if (result?.payload && result.payload.response) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "bot",
+          message: result.payload.response,
+          created_at: new Date().toISOString(),
+        },
+      ]);
+      setSending(false);
+      setLoadingBot(false);
+      return;
+    }
+    // Nếu chưa có response ngay, bắt đầu polling
+    let pollCount = 0;
+    let lastBotMsg = null;
+    pollingRef.current = setInterval(async () => {
+      pollCount++;
+      const fetchResult = await dispatch(fetchChatBot());
+      if (Array.isArray(fetchResult.payload)) {
+        const flat = [];
+        fetchResult.payload.forEach((item) => {
+          flat.push({ sender: "user", message: item.message, created_at: item.created_at });
+          flat.push({ sender: "bot", message: item.response, created_at: item.created_at });
+        });
+        // Tìm tin nhắn bot cuối cùng trong dữ liệu mới
+        const newBotMsg = flat.slice().reverse().find((msg) => msg.sender === "bot" && msg.message);
+        setMessages((prev) => {
+          // Nếu tin nhắn cuối cùng của bạn chưa có trong API, giữ lại
+          if (
+            prev.length > flat.length &&
+            prev[prev.length - 1].sender === "user" &&
+            (!flat.length || prev[prev.length - 1].message !== flat[flat.length - 1].message)
+          ) {
+            return [...flat, prev[prev.length - 1]];
+          }
+          return flat;
+        });
+        // Nếu có tin nhắn bot mới (khác với lần trước), dừng polling
+        if (newBotMsg && newBotMsg.message !== lastBotMsg) {
+          clearInterval(pollingRef.current);
+          setSending(false);
+          setLoadingBot(false);
+        }
+        lastBotMsg = newBotMsg ? newBotMsg.message : lastBotMsg;
+      }
+      // Tăng số lần polling lên 30 lần (~30s)
+      if (pollCount > 30) {
+        clearInterval(pollingRef.current);
+        setSending(false);
+        setLoadingBot(false);
+      }
+    }, 1500); // 1.5s/lần
   };
 
   const handleKeyDown = (e) => {
@@ -58,28 +140,23 @@ export default function ChatWindow() {
     }
   };
 
-  const flatMessages = [];
-  if (Array.isArray(response)) {
-    response.forEach((item) => {
-      flatMessages.push({
-        sender: "user",
-        message: item.message,
-        created_at: item.created_at,
-      });
-      flatMessages.push({
-        sender: "bot",
-        message: item.response,
-        created_at: item.created_at,
-      });
-    });
-  }
-
-  const allMessages = [...flatMessages, ...pendingMessages];
+  // allMessages giờ là messages (không cần pendingMessages)
+  const allMessages = messages;
 
   useEffect(() => {
     dispatch(fetchProfile());
     dispatch(fetchChatBot());
   }, [dispatch]);
+
+  // Auto scroll đến cuối khi có tin nhắn mới hoặc bot đang trả lời, hoặc khi mở chat box
+  useEffect(() => {
+    if (visible && messages.length > 0 && messagesEndRef.current) {
+      // Đảm bảo scroll sau khi render xong
+      setTimeout(() => {
+        messagesEndRef.current.scrollIntoView({ behavior: "auto" });
+      }, 0);
+    }
+  }, [messages, loadingBot, visible]);
 
   return (
     <div className="chatbot-container-fluid">
@@ -146,7 +223,7 @@ export default function ChatWindow() {
                   style={{
                     backgroundColor:
                       msg.sender === "user" ? "#54b4d3" : "#f1f0f0",
-                    textAlign: msg.sender === "user" ? "right" : "left",
+                    textAlign: msg.sender === "user" ? "left" : "left",
                   }}
                 >
                   <div
@@ -160,6 +237,15 @@ export default function ChatWindow() {
                 </div>
               </div>
             ))}
+            {loadingBot && (
+              <div className="message bot" style={{ opacity: 0.7 }}>
+                <div className="bubble" style={{ background: '#f1f0f0', fontStyle: 'italic' }}>
+                  <span>Bot đang trả lời...</span>
+                </div>
+              </div>
+            )}
+            {/* Auto scroll đến cuối */}
+            <div ref={messagesEndRef} />
           </div>
 
           {/* Modal preview ảnh */}
