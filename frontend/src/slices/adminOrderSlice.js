@@ -6,7 +6,7 @@ export const fetchAdminOrders = createAsyncThunk(
   async (page = 1, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await axiosConfig.get(`/admin/orders?page=${page}`, {
+      const response = await axiosConfig.get(`/admin/orders`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
