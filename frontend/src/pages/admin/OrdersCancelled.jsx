@@ -192,7 +192,6 @@ const OrdersCancelled = () => {
       </button>
     );
 
-    // First page
     items.push(
       <button
         key={1}
@@ -244,7 +243,6 @@ const OrdersCancelled = () => {
       );
     }
 
-    // Next button
     items.push(
       <button
         key="next"
