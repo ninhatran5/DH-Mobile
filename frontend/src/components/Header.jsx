@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchProfile } from "../slices/profileSlice";
 import Loading from "./Loading";
 import Product from "./Product";
+import { fetchCart } from "../slices/cartSlice";
 
 export default function Header() {
   const dispatch = useDispatch();
@@ -212,6 +213,7 @@ export default function Header() {
 
   useEffect(() => {
     dispatch(fetchProfile());
+    dispatch(fetchCart());
   }, [dispatch]);
   return (
     <>
