@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { fetchorderdetails } from "../../slices/adminOrderSlice";
 import "../../assets/admin/OrderDetail.css";
 import OrderStatusSteps from "../../components/AdminOrderDetail";
@@ -8,6 +8,7 @@ import OrderStatusSteps from "../../components/AdminOrderDetail";
 const OrderDetails = () => {
   const { orderId } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { order, loading, error } = useSelector((state) => state.adminOrder);
 
   useEffect(() => {
@@ -29,6 +30,12 @@ const OrderDetails = () => {
 
   return (
     <div className="adminorderdetail-container">
+      <button
+        className="adminorderdetail-back-btn"
+        onClick={() => navigate("/admin/orders")}
+      >
+        ← Quay lại danh sách đơn hàng
+      </button>
       <h2 className="adminorderdetail-title">Thông tin đặt hàng</h2>
       <table className="adminorderdetail-table">
         <tbody>

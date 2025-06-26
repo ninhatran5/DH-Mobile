@@ -21,6 +21,7 @@ const OrdersList = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [selectedStatusTab, setSelectedStatusTab] = useState("Tất cả");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,6 +34,17 @@ const OrdersList = () => {
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/\s+/g, "-") || "";
 
+  const statusTabs = [
+    "Tất cả",
+    "Chờ xác nhận",
+    "Đã xác nhận",
+    "Chờ lấy hàng",
+    "Đang vận chuyển",
+    "Đang giao hàng",
+    "Đã giao hàng",
+    "Hoàn thành"
+  ];
+
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
       const matchSearch =
@@ -40,12 +52,15 @@ const OrdersList = () => {
         order.customer.toLowerCase().includes(searchTerm.toLowerCase());
       const matchStatus =
         !statusFilter || normalizeString(order.status) === normalizeString(statusFilter);
-      return matchSearch && matchStatus;
+      const matchTab =
+        selectedStatusTab === "Tất cả" ||
+        normalizeString(order.status) === normalizeString(selectedStatusTab);
+      return matchSearch && matchStatus && matchTab;
     });
-  }, [orders, searchTerm, statusFilter]);
+  }, [orders, searchTerm, statusFilter, selectedStatusTab]);
 
   // Pagination client-side
-  const ORDERS_PER_PAGE = 10;
+  const ORDERS_PER_PAGE = 15;
   const totalOrders = filteredOrders.length;
   const lastPage = Math.ceil(totalOrders / ORDERS_PER_PAGE) || 1;
   const paginatedOrders = filteredOrders.slice(
@@ -113,65 +128,77 @@ const OrdersList = () => {
 
   return (
     <div className="admin_order-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      {/* Header Section */}
       <div className="admin_order-header">
         <div className="admin_order-title">
           <h1>Danh sách đơn hàng</h1>
           <p className="text-muted">Quản lý tất cả các đơn hàng trong hệ thống</p>
         </div>
       </div>
-      {/* Filter/Search Section */}
-      <div className="admin_order-top-row" style={{ display: 'flex', width: '100%', maxWidth: 1200, margin: '0 auto', gap: 24, alignItems: 'flex-start', flexWrap: 'wrap' }}>
-        {/* Left: Search */}
-        <div style={{ flex: 1, minWidth: 220 }}>
-          <div className="admin_order-search-box">
-            <i className="bi bi-search admin_order-search-icon" style={{ color: "#0071e3" }}></i>
-            <input
-              type="text"
-              className="admin_order-search-input"
-              placeholder="Tìm kiếm theo mã đơn, tên khách hàng..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-        </div>
-        {/* Right: Filter */}
-        <div style={{ minWidth: 220, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-          <button 
-            className="admin_order-btn admin_order-btn-outline" 
-            onClick={handleFilterToggle}
-            style={{ marginBottom: 12 }}
-          >
-            <i className="bi bi-funnel" style={{ color: '#5ac8fa' }}></i> Bộ lọc
-          </button>
-          {showFilters && (
-            <div className="admin_order-filter-panel" style={{ minWidth: 220 }}>
-              <div className="admin_order-filter-row">
-                <div className="admin_order-filter-column">
-                  <div className="admin_order-filter-group">
-                    <label className="admin_order-filter-label">Trạng thái đơn hàng</label>
-                    <select 
-                      className="admin_order-filter-select" 
-                      value={statusFilter}
-                      onChange={(e) => setStatusFilter(e.target.value)}
-                    >
-                      <option value="">Tất cả</option>
-                      <option value="Chờ xác nhận">Chờ xác nhận</option>
-                      <option value="Đã xác nhận">Đã xác nhận</option>
-                      <option value="Chờ lấy hàng">Chờ lấy hàng</option>
-                      <option value="Đang vận chuyển">Đang vận chuyển</option>
-                      <option value="Đang giao hàng">Đang giao hàng</option>
-                      <option value="Đã giao hàng">Đã Giao hàng</option>
-                      <option value="Hoàn thành">Hoàn thành</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+      {/* Thanh tìm kiếm sát trái và kéo dài */}
+      <div style={{ width: '100%', maxWidth: 1200, margin: '0 auto', marginBottom: 16 }}>
+        <div className="admin_order-search-box" style={{ width: '100%', position: 'relative', display: 'flex', alignItems: 'center' }}>
+          <i
+            className="bi bi-search admin_order-search-icon"
+            style={{
+              color: "#0071e3",
+              position: "absolute",
+              left: 12,
+              top: "50%",
+              transform: "translateY(-50%)",
+              pointerEvents: "none"
+            }}
+          ></i>
+          <input
+            type="text"
+            className="admin_order-search-input"
+            placeholder="Tìm kiếm theo mã đơn, tên khách hàng..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ width: '100%', paddingLeft: 36 }}
+          />
         </div>
       </div>
-      {/* Danh sách đơn hàng */}
+      {/* Thêm tabs filter trạng thái */}
+      <div className="admin_order-status-tabs" style={{ margin: '16px 0', width: '100%', maxWidth: 1200 }}>
+        {statusTabs.map((status) => (
+          <button
+            key={status}
+            className={`admin_order-status-tab${selectedStatusTab === status ? ' active' : ''}`}
+            onClick={() => setSelectedStatusTab(status)}
+            style={{
+              marginRight: 8,
+              padding: '6px 16px',
+              border: 'none',
+              borderRadius: 16,
+              background: selectedStatusTab === status ? '#007aff' : '#f1f1f1',
+              color: selectedStatusTab === status ? '#fff' : '#222',
+              fontWeight: selectedStatusTab === status ? 600 : 400,
+              cursor: 'pointer'
+            }}
+          >
+            {status}
+            {status !== "Tất cả" && (
+              <span
+                className="admin_order-status-count"
+                style={{
+                  marginLeft: 6,
+                  background: '#fff',
+                  color: '#007aff',
+                  borderRadius: '50%',
+                  padding: '2px 8px',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  display: 'inline-block'
+                }}
+              >
+                {orders.filter(order => normalizeString(order.status) === normalizeString(status)).length}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+     
+
       {loading ? (
         <div className="admin_order-loading">
           <div className="spinner-border text-primary" role="status">
@@ -184,7 +211,8 @@ const OrdersList = () => {
           <table className="admin_order-table">
             <thead>
               <tr>
-                <th style={{ width: '40px' }}></th>
+                <th style={{ width: '40px' }}>STT</th>
+                <th style={{ width: '40px' }}>Ảnh</th>
                 <th style={{ width: '20%' }}>Mã đơn / Khách hàng</th>
                 <th style={{ width: '15%' }}>Ngày đặt</th>
                 <th className="admin_order-hide-sm" style={{ width: '20%' }}>Tổng tiền</th>
@@ -199,6 +227,9 @@ const OrdersList = () => {
                   const stt = (currentPage - 1) * ORDERS_PER_PAGE + idx + 1;
                   return (
                     <tr key={order.order_id}>
+                      <td>
+                        <div className="admin_order-stt">{stt}</div>
+                      </td>
                       <td>
                         <div className="admin_order-avatar">
                           <img src={order.image_url || DefaultImage} alt={order.customer} />
@@ -224,34 +255,47 @@ const OrdersList = () => {
                         </span>
                       </td>
                       <td>
-                        <div className="adminorder-action-group" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                        <div
+                          className="adminorder-action-group"
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '14px', // tăng gap nếu cần
+                            justifyContent: 'center',
+                            minWidth: 60 // đảm bảo đủ rộng cho 2 icon
+                          }}
+                        >
                           <button
                             className="adminorder-icon-btn"
                             onClick={() => setSelectedOrder(order)}
                             title="Sửa trạng thái"
-                            style={{ 
+                            style={{
                               background: 'none',
                               border: 'none',
                               cursor: 'pointer',
                               color: '#007aff',
-                              padding: '5px'
+                              padding: 0,
+                              display: 'flex',
+                              alignItems: 'center'
                             }}
                           >
-                            <FiEdit size={24} />
+                            <FiEdit size={16} />
                           </button>
                           <button
                             className="adminorder-icon-btn"
                             onClick={() => handleViewOrder(order)}
                             title="Xem chi tiết"
-                            style={{ 
+                            style={{
                               background: 'none',
                               border: 'none',
                               cursor: 'pointer',
                               color: '#007aff',
-                              padding: '5px'
+                              padding: 0, 
+                              display: 'flex',
+                              alignItems: 'center'
                             }}
                           >
-                            <FiEye size={24} />
+                            <FiEye size={16} />
                           </button>
                         </div>
                       </td>

@@ -71,6 +71,32 @@
   font-size: 13px;
 }
 
+.admin_order-search-box {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.admin_order-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.admin_order-search-input {
+  width: 100%;
+  padding-left: 36px;
+  border: none;
+  outline: none;
+  padding: 8px 12px;
+  font-size: 1rem;
+  background: #f9f9f9;
+  border-radius: 6px;
+}
+
 /* === Table === */
 .adminorder-scrollable {
   overflow-x: auto;
@@ -154,21 +180,19 @@ display: inline-block;
 .adminorder-action-group {
   display: flex;
   align-items: center;
+  gap: 14px;
   justify-content: center;
-  gap: 10px;
+  min-width: 60px;
 }
 
 .adminorder-icon-btn {
   background: none;
   border: none;
-  padding: 6px;
   cursor: pointer;
   color: #007aff;
-  border-radius: 8px;
-  transition: background 0.2s, color 0.2s, transform 0.2s;
+  padding: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
 }
 
 .adminorder-icon-btn svg {
@@ -414,3 +438,4 @@ display: inline-block;
   cursor: pointer;
   font-size: 13px;
 }
+  
