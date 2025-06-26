@@ -13,10 +13,17 @@ const Chart = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [isLoading, setIsLoading] = useState(false);
-    const completedOrders = orders.filter(order => order.status === 'completed');
-    const totalRevenue = completedOrders.reduce((sum, order) => {
-  return sum + Number(order.total_price); 
-}, 0);
+   const completedOrders = useSelector((state) => state.adminOrder.completedOrders);
+    
+  useEffect(() => {
+    console.log("Giá từng đơn:", completedOrders.map(o => o.total_amount));
+  }, [completedOrders]);
+
+  const totalRevenue = completedOrders.reduce(
+    (sum, order) => sum + Number(order.total_amount || 0),
+    0
+  );
+
     useEffect(() => {
         dispatch(fetchUsers());
         dispatch(fetchAdminProducts());
@@ -417,7 +424,7 @@ const Chart = () => {
                         </div>
                         <div className="admin_thongke-card-content">
                             <h5>Doanh thu</h5>
-                            <div className="admin_thongke-stat-value">{totalRevenue.toLocaleString()}đ</div>
+                            <div className="admin_thongke-stat-value">{totalRevenue.toLocaleString("vi-VN")} đ</div>
                             <div className="admin_thongke-stat-change admin_thongke-positive">
                             </div>
                         </div>
