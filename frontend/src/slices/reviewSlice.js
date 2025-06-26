@@ -9,10 +9,10 @@ const initialState = {
 
 export const commentsPost = createAsyncThunk(
   "review/commentsPost",
-  async ({ product_id, rating, content }, thunkAPI) => {
+  async ({ variant_id, rating, content }, thunkAPI) => {
     try {
       const response = await axiosConfig.post("/comments", {
-        product_id,
+        variant_id,
         rating,
         content,
       });

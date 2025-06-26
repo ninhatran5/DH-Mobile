@@ -613,5 +613,10 @@
     "deletedText": "The address has been deleted.",
     "errorTitle": "Error!",
     "errorText": "Failed to delete address."
+  },
+  "role": {
+    "admin": "Administrator",
+    "staff": "Staff",
+    "customer": "Customer"
   }
 }

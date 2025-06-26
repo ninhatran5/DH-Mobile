@@ -609,5 +609,10 @@
     "deletedText": "Địa chỉ đã được xóa.",
     "errorTitle": "Lỗi!",
     "errorText": "Xóa địa chỉ thất bại."
+  },
+  "role": {
+    "admin": "Quản trị viên",
+    "staff": "Nhân viên",
+    "customer": "Khách hàng"
   }
 }
