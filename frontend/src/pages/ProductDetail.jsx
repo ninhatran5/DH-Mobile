@@ -367,7 +367,6 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
   return (
     <>
       {loading && <Loading />}
-      {/* Ẩn breadcrumb nếu là quick view hoặc hideExtraInfo */}
       {!isQuickView && !hideExtraInfo && (
         <Breadcrumb
           title={t("breadcrumbProductDetail.breadcrumbHeader")}

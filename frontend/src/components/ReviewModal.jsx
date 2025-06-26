@@ -17,14 +17,14 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(null);
   const [comment, setComment] = useState("");
-  const [selectedProductId, setSelectedProductId] = useState();
+  const [selectedVariantId, setSelectedVariantId] = useState();
   const maxLength = 200;
   const dispatch = useDispatch();
   const { orderDetail } = useSelector((state) => state.order);
   const products = orderDetail?.products || [];
-  const allSameProduct =
+  const allSameVariant =
     products.length > 0 &&
-    products.every((p) => p.product_id === products[0].product_id);
+    products.every((p) => p.variant_id === products[0].variant_id);
 
   const navigate = useNavigate();
 
@@ -51,13 +51,13 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedProductId) {
+    if (!selectedVariantId) {
       Swal.fire({ icon: "error", title: t("review.noProductSelected") });
       return;
     }
     dispatch(
       commentsPost({
-        product_id: selectedProductId,
+        variant_id: selectedVariantId,
         rating,
         content: comment,
       })
@@ -83,10 +83,10 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
   };
 
   useEffect(() => {
-    if (allSameProduct && products.length > 0) {
-      setSelectedProductId(products[0].product_id);
+    if (allSameVariant && products.length > 0) {
+      setSelectedVariantId(Number(products[0].variant_id));
     }
-  }, [allSameProduct, products]);
+  }, [allSameVariant, products]);
 
   useEffect(() => {
     if (!orderId) return;
@@ -123,9 +123,9 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
                 </p>
                 <div className="color_return_product">
                   <p className="desc_return_product">
-                    {product.variant_attributes?.find(
-                      (attr) => attr.attribute_name.toLowerCase() === "màu sắc"
-                    )?.attribute_value || "Không rõ"}
+                    {product.variant_attributes
+                      ?.map((attr) => attr.attribute_value)
+                      .join(", ") || "Không rõ"}
                   </p>
                   <p className="quantity_return_product">x{product.quantity}</p>
                 </div>
@@ -136,21 +136,24 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
             </div>
           ))}
           {/* Ẩn select nếu chỉ có 1 sản phẩm */}
-          {!allSameProduct && products.length > 1 && (
+          {!allSameVariant && products.length > 1 && (
             <Form.Group className="mb-3">
               <p className="title_return">{t("review.selectProduct")}</p>
               <Form.Select
-                value={selectedProductId}
-                onChange={(e) => setSelectedProductId(e.target.value)}
+                value={selectedVariantId || ""}
+                onChange={(e) => setSelectedVariantId(Number(e.target.value))}
                 required
               >
                 <option value="">{t("review.selectProductPlaceholder")}</option>
                 {products.map((p) => (
                   <option
-                    key={p.product_id + p.variant_id}
-                    value={p.product_id}
+                    key={p.product_id + "-" + p.variant_id}
+                    value={p.variant_id}
                   >
-                    {p.product_name}
+                    {p.product_name} -{" "}
+                    {p.variant_attributes
+                      ?.map((attr) => attr.attribute_value)
+                      .join(", ")}
                   </option>
                 ))}
               </Form.Select>
