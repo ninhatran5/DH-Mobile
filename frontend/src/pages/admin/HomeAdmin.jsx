@@ -412,7 +412,6 @@ const Homeadmin = () => {
                     style={isSidebarCollapsed && isDropdownActive('orders') ? sidebarCollapsedStyles.submenu : {}}
                   >
                     <div><Link to="/admin/orders">Tất cả đơn hàng</Link></div>
-                    <div><Link to="/admin/orders-completed">Đơn đã hoàn thành</Link></div>
                     <div><Link to="/admin/orders-cancelled">Đơn hàng hoàn trả </Link></div>
                   </div>
                 </div>
@@ -559,16 +558,7 @@ const Homeadmin = () => {
                   ref={sidebarOpenRef}
                   style={{ backgroundColor: 'var(--admin_dh-primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 ><i className="bi bi-layout-sidebar" /></button>
-                <div className={`admin_dh-search-bar ${isSearchFocused ? 'focused' : ''}`}>
-                  <i className="bi bi-search admin_dh-search-icon"></i>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Search..."
-                    onFocus={() => setIsSearchFocused(true)}
-                    onBlur={() => setIsSearchFocused(false)}
-                  />
-                </div>
+                
               </div>
 
               <div className="admin_dh-navbar-right">
