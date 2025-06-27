@@ -12,6 +12,7 @@ import { fetchProfile } from "../slices/profileSlice";
 import { chatBotPost, fetchChatBot } from "../slices/chatBotSlice";
 import dayjs from "dayjs";
 import { marked } from "marked";
+import { toast } from "react-toastify";
 
 export default function ChatWindow() {
   const dispatch = useDispatch();
@@ -68,7 +69,9 @@ export default function ChatWindow() {
         try {
           const data = JSON.parse(e.newValue);
           if (Array.isArray(data)) setMessages(data);
-        } catch {}
+        } catch {
+          toast.error("Invalid data in localStorage for chatbot-messages");
+        }
       }
     };
     window.addEventListener('storage', handleStorage);
@@ -210,7 +213,6 @@ export default function ChatWindow() {
                   marginBottom: 10,
                 }}
               >
-                {/* Avatar */}
                 <div className="avatar_chat">
                   <img
                     src={
@@ -245,9 +247,36 @@ export default function ChatWindow() {
               </div>
             ))}
             {loadingBot && (
-              <div className="message bot" style={{ opacity: 0.7 }}>
-                <div className="bubble" style={{ background: '#f1f0f0', fontStyle: 'italic' }}>
-                  <span>Bot đang trả lời...</span>
+              <div 
+                className="message bot" 
+                style={{ 
+                  opacity: 0.7,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "flex-end",
+                  marginBottom: 10,
+                }}
+              >
+                <div className="avatar_chat">
+                  <img
+                    src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg"
+                    alt="avatar"
+                    className="avatar"
+                  />
+                </div>
+                
+                <div 
+                  className="bubble" 
+                  style={{ 
+                    background: '#f1f0f0', 
+                    fontStyle: 'italic' 
+                  }}
+                >
+                  <div className="typing-indicator">
+                    <span className="typing-dot"></span>
+                    <span className="typing-dot"></span>
+                    <span className="typing-dot"></span>
+                  </div>
                 </div>
               </div>
             )}
