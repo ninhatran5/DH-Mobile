@@ -16,6 +16,9 @@ class CodController extends Controller
     {
         $user = Auth::user();
         $items = $request->input('items');
+        $voucherId = $request->input('voucher_id');
+        $voucher = null;
+        $voucherDiscount = 0;
 
         // Validate địa chỉ
         $request->validate([
@@ -27,6 +30,7 @@ class CodController extends Controller
             'email' => 'required|email',
             'customer' => 'required|string',
             'items' => 'required|array|min:1',
+            'voucher_id' => 'nullable|integer',
         ]);
 
         if (empty($items) || !is_array($items)) {
@@ -55,6 +59,35 @@ class CodController extends Controller
             }
         }
 
+        // Kiểm tra và áp dụng voucher nếu có
+        if ($voucherId) {
+            $voucher = DB::table('vouchers')
+                ->where('voucher_id', $voucherId)
+                ->where('is_active', 1)
+                ->whereNull('deleted_at')
+                ->where('start_date', '<=', now())
+                ->where('end_date', '>=', now())
+                ->first();
+            if (!$voucher) {
+                return response()->json(['message' => 'Voucher không hợp lệ hoặc đã hết hạn'], 400);
+            }
+            // Kiểm tra số lượng còn lại
+            if ($voucher->quantity <= 0) {
+                return response()->json(['message' => 'Voucher đã hết lượt sử dụng'], 400);
+            }
+            // Kiểm tra user đã dùng voucher này chưa
+            $userVoucher = DB::table('user_vouchers')
+                ->where('user_id', $user->user_id)
+                ->where('voucher_id', $voucher->voucher_id)
+                ->where('is_used', 1)
+                ->first();
+            if ($userVoucher) {
+                return response()->json(['message' => 'Bạn đã sử dụng voucher này rồi'], 400);
+            }
+        } else {
+            $voucherId = null;
+        }
+
         DB::beginTransaction();
         try {
             $orderCode = $this->generateOrderCode();
@@ -72,7 +105,7 @@ class CodController extends Controller
                 'phone' => $request->phone,
                 'email' => $request->email,
                 'customer' => $request->customer,
-                'voucher_id' => null,
+                'voucher_id' => $voucherId,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -97,6 +130,27 @@ class CodController extends Controller
                     ->where('variant_id', $item['variant_id'])
                     ->decrement('stock', $item['quantity']);
                 $paidVariantIds[] = $item['variant_id'];
+            }
+
+            // Áp dụng voucher nếu hợp lệ
+            if ($voucher) {
+                if ($total < $voucher->min_order_value) {
+                    DB::rollBack();
+                    return response()->json(['message' => 'Đơn hàng chưa đạt giá trị tối thiểu để sử dụng voucher'], 400);
+                }
+                $voucherDiscount = min($voucher->discount_amount, $total);
+                $total -= $voucherDiscount;
+                // Trừ số lượng voucher
+                DB::table('vouchers')->where('voucher_id', $voucher->voucher_id)->decrement('quantity', 1);
+                // Đánh dấu user đã dùng voucher
+                DB::table('user_vouchers')->insert([
+                    'user_id' => $user->user_id,
+                    'voucher_id' => $voucher->voucher_id,
+                    'is_used' => 1,
+                    'used_at' => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
             }
 
             DB::table('orders')->where('order_id', $orderId)->update([
@@ -132,7 +186,9 @@ class CodController extends Controller
             return response()->json([
                 'message' => 'Đặt hàng thành công (COD)',
                 'order_id' => $orderId,
-                'order_code' => $orderCode
+                'order_code' => $orderCode,
+                'voucher_discount' => $voucherDiscount,
+                'voucher_id' => $voucherId,
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
