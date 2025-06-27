@@ -6,8 +6,12 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAdminLogin } from "../../slices/adminLoginSlice";
 import Loading from "../../components/Loading";
+import "../../assets/admin/adminLogin.css";
 import logo from "../../assets/images/logo3.png";
-import { FaLock, FaEnvelope, FaEye, FaEyeSlash } from "react-icons/fa";
+import { MdEmail } from "react-icons/md";
+import { FaEyeSlash } from "react-icons/fa";
+import { IoEyeSharp } from "react-icons/io5";
+import { LuLockKeyhole } from "react-icons/lu";
 
 const AdminLogin = () => {
   const dispatch = useDispatch();
@@ -25,12 +29,14 @@ const AdminLogin = () => {
   const login = async (data) => {
     try {
       const result = await dispatch(fetchAdminLogin(data)).unwrap();
-      
       if (result && result.access_token) {
         localStorage.setItem("adminToken", result.access_token);
-        localStorage.setItem("adminID", result.user ? result.user.id : (result.admin ? result.admin.id : null));
+        localStorage.setItem(
+          "adminID",
+          result.user ? result.user.id : result.admin ? result.admin.id : null
+        );
         toast.success(t("Đăng nhập thành công ") || "Admin login successful");
-        navigate("/admin")
+        navigate("/admin");
       } else {
         toast.error("Invalid login response");
       }
@@ -42,107 +48,76 @@ const AdminLogin = () => {
   return (
     <>
       {loading && <Loading />}
-      <div className="d-flex vh-100" style={{ backgroundColor: "#f5f5f5" }}>
-        <div className="container my-6">
-          <div className="row justify-content-center">
-            <div className="col-md-8 col-lg-6 col-xl-5">
-              <div className="card shadow-lg border-0 rounded-lg overflow-hidden">
-                <div className="bg-primary text-white py-4 text-center">
-                  <img src={logo} alt="Logo" style={{ height: "60px" }} className="mb-2" />
-                  <h3 className="text-white">{t("Đăng nhập Admin") || "Admin Dashboard"}</h3>
-                </div>
-                <div className="card-body p-4 p-sm-5">
-                  <div className="text-center mb-4">
-                    <h4>{t("Chào mừng bạn đến với Admin") || "Welcome Back!"}</h4>
-                  </div>
-
-                  <form onSubmit={handleSubmit(login)} noValidate>
-                    <div className="mb-4">
-                      <div className="input-group">
-                        <span className="input-group-text bg-light border-0">
-                          <FaEnvelope className="text-muted" />
-                        </span>
-                        <input
-                          type="email"
-                          className={`form-control form-control-lg border-0 ${errors.email ? "is-invalid" : ""}`}
-                          placeholder={t(" Vui lòng nhập Email") || "Email address"}
-                          {...register("email", {
-                            required: t("auth.validation.emailRequired") || "Email is required",
-                            pattern: {
-                              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                              message: t("auth.validation.emailInvalid") || "Email is invalid",
-                            },
-                          })}
-                        />
-                      </div>
-                      {errors?.email && (
-                        <div className="invalid-feedback d-block mt-1 ps-1">
-                          {errors.email.message}
-                        </div>
-                      )}
+      <div className="dhm-admin-section">
+        <div className="dhm-admin-card-3d-wrap">
+          <div className="dhm-admin-card-3d-wrapper">
+            <div className="dhm-admin-center-wrap">
+              <img src={logo} alt="Logo" className="dhm-admin-logo" />
+              <h4 className="dhm-admin-title">ĐĂNG NHẬP ADMIN</h4>
+              <form onSubmit={handleSubmit(login)} style={{ width: "100%" }}>
+                <div className="dhm-admin-form-group">
+                  <input
+                    type="email"
+                    name="email"
+                    className="dhm-admin-form-style"
+                    placeholder="Nhập email"
+                    autoComplete="off"
+                    {...register("email", {
+                      required: t("auth.validation.emailRequired"),
+                      pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                        message: t("auth.validation.emailInvalid"),
+                      },
+                    })}
+                  />
+                  <span className="dhm-admin-input-icon">
+                    <MdEmail />
+                  </span>
+                  {errors?.email && (
+                    <div className="dhm-admin-error">
+                      {errors.email.message}
                     </div>
-
-                    <div className="mb-4">
-                      <div className="input-group">
-                        <span className="input-group-text bg-light border-0">
-                          <FaLock className="text-muted" />
-                        </span>
-                        <input
-                          type={isShowPassword ? "text" : "password"}
-                          className={`form-control form-control-lg border-0 ${errors.password ? "is-invalid" : ""}`}
-                          placeholder={t("auth.password") || "Password"}
-                          {...register("password", {
-                            required: t("auth.validation.passwordRequired") || "Password is required"
-                          })}
-                        />
-                        <button
-                          className="btn btn-light border-0"
-                          type="button"
-                          onClick={() => setIsShowPassword(!isShowPassword)}
-                        >
-                          {isShowPassword ? <FaEyeSlash /> : <FaEye />}
-                        </button>
-                      </div>
-                      {errors?.password && (
-                        <div className="invalid-feedback d-block mt-1 ps-1">
-                          {errors.password.message}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="d-flex justify-content-between align-items-center mb-4">
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          id="rememberMe"
-                        />
-                        <label className="form-check-label" htmlFor="rememberMe">
-                          {t("Ghi nhớ tài khoản") || "Remember me"}
-                        </label>
-                      </div>
-                    </div>
-
-                    <button 
-                      type="submit" 
-                      className="btn btn-primary w-100 py-2 mb-3"
-                      disabled={loading}
-                    >
-                      {loading ? (
-                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                      ) : null}
-                      {t("Đăng Nhập ") || "Sign in"}
-                    </button>
-                  </form>
-                  
-                  
+                  )}
                 </div>
-                <div className="card-footer bg-light py-3 text-center">
-                  <p className="text-muted mb-0">
-                    &copy; {new Date().getFullYear()} - {t("DHMobile") || "All rights reserved"}
-                  </p>
+                <div className="dhm-admin-form-group">
+                  <input
+                    type={isShowPassword ? "text" : "password"}
+                    name="password"
+                    className="dhm-admin-form-style"
+                    placeholder="Nhập mật khẩu"
+                    autoComplete="off"
+                    {...register("password", {
+                      required: t("auth.validation.passwordRequired"),
+                      pattern: {
+                        value:
+                          /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/,
+                        message: t("auth.validation.passwordInvalid"),
+                      },
+                    })}
+                  />
+                  <span className="dhm-admin-input-icon">
+                    <LuLockKeyhole />
+                  </span>
+                  <span
+                    className="dhm-admin-eye-toggle"
+                    onClick={() => setIsShowPassword((v) => !v)}
+                  >
+                    {isShowPassword ? <FaEyeSlash /> : <IoEyeSharp />}
+                  </span>
+                  {errors?.password && (
+                    <div className="dhm-admin-error">
+                      {errors.password.message}
+                    </div>
+                  )}
                 </div>
-              </div>
+                <button
+                  type="submit"
+                  className="dhm-admin-btn"
+                  disabled={loading}
+                >
+                  ĐĂNG NHẬP
+                </button>
+              </form>
             </div>
           </div>
         </div>
