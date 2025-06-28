@@ -15,7 +15,7 @@ class CheckAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user() && $request->user()->role === 'admin') {
+        if ($request->user() && in_array($request->user()->role, ['admin','sale']))  {
             return $next($request);
         }
 
