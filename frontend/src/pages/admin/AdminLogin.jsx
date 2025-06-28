@@ -88,11 +88,11 @@ const AdminLogin = () => {
                     autoComplete="off"
                     {...register("password", {
                       required: t("auth.validation.passwordRequired"),
-                      // pattern: {
-                      //   value:
-                      //     /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/,
-                      //   message: t("auth.validation.passwordInvalid"),
-                      // },
+                      pattern: {
+                        value:
+                          /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/,
+                        message: t("auth.validation.passwordInvalid"),
+                      },
                     })}
                   />
                   <span className="dhm-admin-input-icon">
