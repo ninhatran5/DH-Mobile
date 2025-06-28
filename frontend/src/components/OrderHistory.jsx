@@ -14,6 +14,7 @@ import { useDispatch } from "react-redux";
 import "../assets/css/order-history.css";
 import { fetchOrder, receivedOrder } from "../slices/orderSlice";
 import TooltipIcon from "./TooltipIcon";
+import dayjs from "dayjs";
 
 const OrderHistory = ({ order, handleCancelOrder }) => {
   const navigate = useNavigate();
@@ -64,19 +65,39 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
       .unwrap()
       .then(() => {
         Swal.fire({
-          title: "Xác nhận đã nhận hàng thành công",
+          title: t("order.confirmReceivedSuccessTitle"),
           icon: "success",
-          confirmButtonText: "OK",
+          confirmButtonText: t("order.confirmReceivedSuccessBtn"),
         });
         dispatch(fetchOrder());
       })
       .catch((error) => {
         Swal.fire({
           icon: "error",
-          title: "Lỗi",
-          text: error || "Không thể xác nhận đã nhận hàng",
+          title: t("order.confirmReceivedErrorTitle"),
+          text: error || t("order.confirmReceivedErrorText"),
         });
       });
+  };
+
+  const getStatusClass = (status) => {
+    const s = status?.trim().toLowerCase();
+    switch (s) {
+      case "chờ xác nhận":
+        return "order-status-pending";
+      case "đã xác nhận":
+        return "order-status-confirmed";
+      case "đang vận chuyển":
+        return "order-status-shipping";
+      case "đã giao hàng":
+        return "order-status-shipped";
+      case "hoàn thành":
+        return "order-status-delivered";
+      case "đã huỷ":
+        return "order-status-canceled";
+      default:
+        return "order-status-default";
+    }
   };
 
   return (
@@ -90,13 +111,17 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
             #{order?.order_code}
           </td>
           <td>{order?.customer}</td>
-          <td>{order?.address}</td>
           <td>{order?.payment_method}</td>
           <td>{order?.payment_status}</td>
+          <td>
+            {dayjs(order?.created_at, "DD/MM/YYYY HH:mm:ss").format(
+              "HH:mm - DD/MM/YYYY"
+            )}
+          </td>
           <td style={{ fontWeight: 600 }}>
             {NumberFormat(order?.total_amount)}
           </td>
-          <td>{order?.status}</td>
+          <td className={getStatusClass(order?.status)}>{order?.status}</td>
           <td>
             <TooltipIcon
               icon={FaEye}
@@ -119,7 +144,7 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
             {["đã giao hàng"].includes(order?.status?.trim().toLowerCase()) && (
               <TooltipIcon
                 icon={FaDiagramSuccessor}
-                tooltip="Xác nhận đã nhận hàng"
+                tooltip={t("orderHistory.confirmReceived")}
                 className="icon-circle"
                 onClick={handleOpenReviewAlert}
               />
@@ -130,13 +155,13 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
                 <>
                   <TooltipIcon
                     icon={PiKeyReturnFill}
-                    tooltip="Yêu cầu trả hàng"
+                    tooltip={t("orderHistory.returnRequest")}
                     className="icon-circle"
                     onClick={handleOpenReasonModal}
                   />
                   <TooltipIcon
                     icon={MdReviews}
-                    tooltip="Đánh giá đơn hàng"
+                    tooltip={t("orderHistory.reviewOrder")}
                     className="icon-circle"
                     onClick={() => {
                       setSelectedOrderId(order.order_id);

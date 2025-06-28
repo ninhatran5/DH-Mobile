@@ -339,7 +339,7 @@
     "orderCode": "Mã đơn hàng",
     "orderName": "Tên người nhận",
     "price": "Tổng tiền",
-    "address": "Địa chỉ",
+    "address": "Ngày đặt hàng",
     "paymentMethod": "Phương thức thanh toán",
     "status": "Trạng thái",
     "detail": "Chi tiết",
@@ -369,7 +369,10 @@
     "unpaid": "Chưa thanh toán",
     "filter": "Lọc",
     "statusTitle": "Trạng thái",
-    "noOrder": "Không có đơn hàng nào."
+    "noOrder": "Không có đơn hàng nào.",
+    "confirmReceived": "Xác nhận đã nhận hàng",
+    "returnRequest": "Yêu cầu trả hàng",
+    "reviewOrder": "Đánh giá đơn hàng"
   },
   "breadcrumbOrder": {
     "breadcrumbHeader": "Lịch Sử Mua Hàng"
@@ -614,5 +617,11 @@
     "admin": "Quản trị viên",
     "staff": "Nhân viên",
     "customer": "Khách hàng"
+  },
+  "order": {
+    "confirmReceivedSuccessTitle": "Xác nhận đã nhận hàng thành công",
+    "confirmReceivedSuccessBtn": "OK",
+    "confirmReceivedErrorTitle": "Lỗi",
+    "confirmReceivedErrorText": "Không thể xác nhận đã nhận hàng"
   }
 }

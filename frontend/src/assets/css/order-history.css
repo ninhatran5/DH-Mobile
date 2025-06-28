@@ -106,3 +106,31 @@
   background: #e40303;
   color: #fff;
 }
+.order-status-pending {
+  color: #ff9800; /* cam */
+  font-weight: bold;
+}
+.order-status-confirmed {
+  color: #2196f3; /* xanh dương */
+  font-weight: bold;
+}
+.order-status-shipping {
+  color: #00bcd4; /* xanh cyan */
+  font-weight: bold;
+}
+.order-status-shipped {
+  color: #4caf50; /* xanh lá */
+  font-weight: bold;
+}
+.order-status-delivered {
+  color: #2e7d32; /* xanh đậm */
+  font-weight: bold;
+}
+.order-status-canceled {
+  color: #f44336; /* đỏ */
+  font-weight: bold;
+}
+.order-status-default {
+  color: #757575;
+  font-weight: bold;
+}
