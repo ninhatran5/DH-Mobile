@@ -81,7 +81,7 @@ const ArticlesList = () => {
 
           <div className="article-actions">
             <Link 
-              to={`/admin/news/${news._id}`}
+              to={`/admin/news/${news.news_id}`}
               className="action-button view-button"
             >
               <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">

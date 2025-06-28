@@ -16,7 +16,6 @@ const Chart = () => {
    const completedOrders = useSelector((state) => state.adminOrder.completedOrders);
     
   useEffect(() => {
-    console.log("Giá từng đơn:", completedOrders.map(o => o.total_amount));
   }, [completedOrders]);
 
   const totalRevenue = completedOrders.reduce(

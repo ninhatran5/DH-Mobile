@@ -12,13 +12,18 @@ export const fetchAdminLogin = createAsyncThunk(
   async (data, thunkAPI) => {
     try {
       const response = await axiosConfig.post("/login", data);
-      
-      if (response.data?.user?.role !== 'admin') {
-        return thunkAPI.rejectWithValue("Bạn không có quyền truy cập vào trang quản trị");
+
+      if (
+        response.data?.user?.role !== "admin" &&
+        response.data?.user?.role !== "sale"
+      ) {
+        return thunkAPI.rejectWithValue(
+          "Bạn không có quyền truy cập vào trang quản trị"
+        );
       }
 
       if (response.data?.token) {
-        localStorage.setItem('adminToken', response.data.token);
+        localStorage.setItem("adminToken", response.data.token);
       }
       return response.data;
     } catch (error) {
@@ -37,9 +42,9 @@ export const adminLoginSlice = createSlice({
       state.adminLoginInitial = null;
       state.loading = false;
       state.error = null;
-      localStorage.removeItem('adminToken');
-      window.location.href = '/Adminlogin';
-    }
+      localStorage.removeItem("adminToken");
+      window.location.href = "/Adminlogin";
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -59,4 +64,4 @@ export const adminLoginSlice = createSlice({
 });
 
 export const { logout: logoutAction } = adminLoginSlice.actions;
-export default adminLoginSlice.reducer; 
+export default adminLoginSlice.reducer;

@@ -9,12 +9,10 @@ function EditAttributeValue() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { attributeValues, loading } = useSelector((state) => state.attributeValue);
+  const { attributeValues } = useSelector((state) => state.attributeValue);
   const [valueData, setValueData] = useState({});
 
   useEffect(() => {
-    console.log(" attributeValues:", attributeValues);
-    console.log(" value_id param:", value_id);
 
     let currentValue = null;
     Object.values(attributeValues).forEach(arr => {
@@ -26,7 +24,6 @@ function EditAttributeValue() {
       }
     });
 
-    console.log("✅ currentValue tìm thấy:", currentValue);
     if (currentValue) {
       setValueData(currentValue);
     }
@@ -46,20 +43,12 @@ function EditAttributeValue() {
     alert("Vui lòng nhập Value.");
     return;
   }
-
-  console.log("🚀 Dữ liệu gửi lên server:", {
-    id: valueData.value_id,
-    updatedData: {
-      value: valueData.value,
-      attribute_id: valueData.attribute_id, // thêm
-    },
-  });
-
+ 
   dispatch(updateAttributeValue({
     id: valueData.value_id,
     updatedData: {
       value: valueData.value,
-      attribute_id: valueData.attribute_id, // thêm
+      attribute_id: valueData.attribute_id,
     },
   }))
     .unwrap()

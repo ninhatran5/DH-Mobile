@@ -18,7 +18,6 @@ export const fetchAdminOrders = createAsyncThunk(
   (order) => order.status?.toLowerCase().trim() === "hoàn thành"
 );
 
-console.log("Dữ liệu đơn hàng trả về:", response.data.orders);
 
       return {
         orders: allOrders,

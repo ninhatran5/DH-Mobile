@@ -19,7 +19,6 @@ export const fetchUsers = createAsyncThunk(
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      console.log("Fetch users res.data:", res.data);
       return res.data.user || [];
     } catch (err) {
       return rejectWithValue(
@@ -62,7 +61,6 @@ export const addUser = createAsyncThunk(
       const res = await axiosConfig.post("/createuser", newUserData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("API trả về khi thêm user:", res.data);
 
       let user = res.data.user; 
       if (Array.isArray(user)) {
@@ -106,7 +104,6 @@ export const updateUser = createAsyncThunk(
         }
       );
 
-      console.log("Response updateUser API:", res.data);
 
       // Nếu API trả về user đã cập nhật ở res.data.data
       return res.data.data || null;
@@ -161,7 +158,6 @@ const adminuserSlice = createSlice({
       })
       .addCase(addUser.fulfilled, (state, action) => {
         state.loading = false;
-        console.log("Người dùng mới được thêm:", action.payload);
         // Chỉ push nếu payload hợp lệ
         if (action.payload && action.payload.user_id) {
           state.users.push(action.payload);

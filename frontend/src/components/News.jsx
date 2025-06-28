@@ -66,7 +66,7 @@ export default function News({ item }) {
           </div>
           <small>
             {t("blog.poster")}:{" "}
-            <span className="fw-bold">{item.user.full_name}</span>
+            <span className="fw-bold">{item?.user?.full_name}</span>
           </small>
         </div>
       </article>

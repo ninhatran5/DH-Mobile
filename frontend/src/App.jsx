@@ -67,6 +67,7 @@ import AdminOrderDetail from "./pages/admin/OrderDetail";
 import ChatLiveAdmin from "./pages/admin/ChatLive";
 import CommentsList from "./pages/admin/CommentsList";
 import AddBlog from "./pages/admin/AddBlog";
+import RequireNotSaleRole from "./components/RequireNotSaleRole";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -198,7 +199,11 @@ const routerConfig = [
     children: [
       {
         path: "",
-        element: <Chart />,
+        element: (
+          <RequireNotSaleRole>
+            <Chart />
+          </RequireNotSaleRole>
+        ),
       },
       {
         path: "product",
@@ -210,19 +215,35 @@ const routerConfig = [
       },
       {
         path: "addproduct",
-        element: <AddProduct />,
+        element: (
+          <RequireNotSaleRole>
+            <AddProduct />
+          </RequireNotSaleRole>
+        ),
       },
       {
         path: "categories",
-        element: <Categories />,
+        element: (
+          <RequireNotSaleRole>
+            <Categories />
+          </RequireNotSaleRole>
+        ),
       },
       {
         path: "Addcategories",
-        element: <AddCategories />,
+        element: (
+          <RequireNotSaleRole>
+            <AddCategories />
+          </RequireNotSaleRole>
+        ),
       },
       {
         path: "chatbot",
-        element: <ChatBotAdmin />,
+        element: (
+          <RequireNotSaleRole>
+            <ChatBotAdmin />
+          </RequireNotSaleRole>
+        ),
       },
       {
         path: "chatlive",
@@ -230,32 +251,60 @@ const routerConfig = [
       },
       {
         path: "accounts",
-        element: <AcccountList />,
+        element: (
+          <RequireNotSaleRole>
+            <AcccountList />
+          </RequireNotSaleRole>
+        ),
       },
 
       {
         path: "addaccount",
-        element: <AddAccount />,
+        element: (
+          <RequireNotSaleRole>
+            <AddAccount />
+          </RequireNotSaleRole>
+        ),
       },
       {
         path: "orders",
-        element: <OrdersList />,
+        element: (
+          <RequireNotSaleRole>
+            <OrdersList />
+          </RequireNotSaleRole>
+        ),
       },
       {
         path: "orders-completed",
-        element: <OrdersCompleted />,
+        element: (
+          <RequireNotSaleRole>
+            <OrdersCompleted />
+          </RequireNotSaleRole>
+        ),
       },
       {
         path: "orders-cancelled",
-        element: <OrdersCancelled />,
+        element: (
+          <RequireNotSaleRole>
+            <OrdersCancelled />
+          </RequireNotSaleRole>
+        ),
       },
       {
         path: "vouchers",
-        element: <VoucherList />,
+        element: (
+          <RequireNotSaleRole>
+            <VoucherList />
+          </RequireNotSaleRole>
+        ),
       },
       {
         path: "addvoucher",
-        element: <AddVoucher />,
+        element: (
+          <RequireNotSaleRole>
+            <AddVoucher />
+          </RequireNotSaleRole>
+        ),
       },
       {
         path: "banners",
@@ -275,15 +324,27 @@ const routerConfig = [
       },
       {
         path: "EditCategories/:id",
-        element: <EditCategory />,
+        element: (
+          <RequireNotSaleRole>
+            <EditCategory />
+          </RequireNotSaleRole>
+        ),
       },
       {
         path: "attribute",
-        element: <Attributes />,
+        element: (
+          <RequireNotSaleRole>
+            <Attributes />
+          </RequireNotSaleRole>
+        ),
       },
       {
         path: "Addattribute",
-        element: <Addattribute />,
+        element: (
+          <RequireNotSaleRole>
+            <Addattribute />
+          </RequireNotSaleRole>
+        ),
       },
       {
         path: "blog/add-blog",
@@ -291,40 +352,76 @@ const routerConfig = [
       },
       {
         path: "Editattribute/:id",
-        element: <EditAttribute />,
+        element: (
+          <RequireNotSaleRole>
+            <EditAttribute />,
+          </RequireNotSaleRole>
+        ),
       },
       {
         path: "AddAttributevalues/:attribute_id",
-        element: <AddAttributevalues />,
+        element: (
+          <RequireNotSaleRole>
+            <AddAttributevalues />
+          </RequireNotSaleRole>
+        ),
       },
       {
         path: "EditAttributevalues/:value_id",
-        element: <EditAttributevalues />,
+        element: (
+          <RequireNotSaleRole>
+            <EditAttributevalues />
+          </RequireNotSaleRole>
+        ),
       },
       {
         path: "EditProduct/:id",
-        element: <EditProduct />,
+        element: (
+          <RequireNotSaleRole>
+            <EditProduct />
+          </RequireNotSaleRole>
+        ),
       },
       {
         path: "editaccount/:id",
-        element: <EditAccount />,
+        element: (
+          <RequireNotSaleRole>
+            <EditAccount />
+          </RequireNotSaleRole>
+        ),
       },
       {
         path: "addvariant/:product_id",
-        element: <AddVariant />,
+        element: (
+          <RequireNotSaleRole>
+            <AddVariant />
+          </RequireNotSaleRole>
+        ),
       },
       {
         path: "EditVoucher/:id",
-        element: <EditVoucher />,
+        element: (
+          <RequireNotSaleRole>
+            <EditVoucher />
+          </RequireNotSaleRole>
+        ),
       },
       {
         path: "variants/update/:variant_id",
-        element: <EditVariant />,
+        element: (
+          <RequireNotSaleRole>
+            <EditVariant />
+          </RequireNotSaleRole>
+        ),
       },
       {
-        path:"orderdetail/:orderId",
-        element: < AdminOrderDetail />
-      }
+        path: "orderdetail/:orderId",
+        element: (
+          <RequireNotSaleRole>
+            <AdminOrderDetail />
+          </RequireNotSaleRole>
+        ),
+      },
     ],
   },
   {
