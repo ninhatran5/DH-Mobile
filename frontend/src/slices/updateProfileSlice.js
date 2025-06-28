@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosUser } from "../../utils/axiosConfig";
 
 const initialState = {
   profile: {},
@@ -12,7 +12,7 @@ export const fetchProfile = createAsyncThunk(
   "editProfile/fetchProfile",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosConfig.get("/profile");
+      const response = await axiosUser.get("/profile");
       return response.data;
     } catch (err) {
       return rejectWithValue(
@@ -27,7 +27,7 @@ export const fetchEditProfile = createAsyncThunk(
   "editProfile/fetchEditProfile",
   async (data, thunkAPI) => {
     try {
-      const response = await axiosConfig.post("/update-profile", data);
+      const response = await axiosUser.post("/update-profile", data);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(

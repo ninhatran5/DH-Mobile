@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosUser } from "../../utils/axiosConfig";
 
 const initialState = {
   carts: [],
@@ -11,7 +11,7 @@ export const fetchAddToCart = createAsyncThunk(
   "cart/fetchAddToCart",
   async (data, thunkAPI) => {
     try {
-      const response = await axiosConfig.post(
+      const response = await axiosUser.post(
         `/cart/add/${data.variant_id}`,
         data
       );
@@ -27,7 +27,7 @@ export const fetchCart = createAsyncThunk(
   "cart/fetchCart",
   async (thunkAPI) => {
     try {
-      const response = await axiosConfig.get(`/getCart`);
+      const response = await axiosUser.get(`/getCart`);
       return response.data.cart_items;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -41,7 +41,7 @@ export const fetchUpdateCartQuantity = createAsyncThunk(
   "cart/fetchUpdateCartQuantity",
   async ({ variant_id, quantity }, thunkAPI) => {
     try {
-      const response = await axiosConfig.post(
+      const response = await axiosUser.post(
         `/cart/updateProductQuantity/${variant_id}`,
         { quantity }
       );
@@ -58,7 +58,7 @@ export const deleteProductCart = createAsyncThunk(
   "cart/deleteProductCart",
   async (id, thunkAPI) => {
     try {
-      const response = await axiosConfig.delete(`/cart/remove/${id}`);
+      const response = await axiosUser.delete(`/cart/remove/${id}`);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(

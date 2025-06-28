@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosUser } from "../../utils/axiosConfig";
 
 const initialState = {
   categorys: [],
@@ -10,7 +10,7 @@ const initialState = {
 export const fetchCategory = createAsyncThunk(
   "product/fetchCategory",
   async () => {
-    const response = await axiosConfig.get("/categories");
+    const response = await axiosUser.get("/categories");
     return response.data.data;
   }
 );

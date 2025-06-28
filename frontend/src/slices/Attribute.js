@@ -1,6 +1,6 @@
 // src/slices/attributeSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosAdmin } from "../../utils/axiosConfig";
 
 const initialState = {
   attributes: [],
@@ -12,7 +12,7 @@ export const fetchAttributes = createAsyncThunk(
   "attribute/fetchAttributes",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axiosConfig.get("/attributes");
+      const res = await axiosAdmin.get("/attributes");
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Lỗi khi gọi API");
@@ -25,7 +25,7 @@ export const addAttribute = createAsyncThunk(
   async (newAttribute, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const res = await axiosConfig.post("/attributes", newAttribute, {
+      const res = await axiosAdmin.post("/attributes", newAttribute, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return res.data.data;
@@ -40,7 +40,7 @@ export const updateAttribute = createAsyncThunk(
   async ({ id, updatedData }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const res = await axiosConfig.post(`/attributes/${id}?_method=PUT`, updatedData, {
+      const res = await axiosAdmin.post(`/attributes/${id}?_method=PUT`, updatedData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -58,7 +58,7 @@ export const deleteAttribute = createAsyncThunk(
   async (attributeId, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      await axiosConfig.delete(`/attributes/${attributeId}`, {
+      await axiosAdmin.delete(`/attributes/${attributeId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return attributeId;

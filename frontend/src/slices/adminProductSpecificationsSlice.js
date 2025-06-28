@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosAdmin } from "../../utils/axiosConfig";
 
 const initialState = {
   productSpecifications: [],
@@ -12,7 +12,7 @@ export const fetchAdminProductSpecifications = createAsyncThunk(
   "adminProductSpecifications/fetchAdminProductSpecifications",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axiosConfig.get("/productspecifications");
+      const res = await axiosAdmin.get("/productspecifications");
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Lỗi khi gọi API");
@@ -30,7 +30,7 @@ export const addAdminProductSpecification = createAsyncThunk(
         return rejectWithValue("Token không tồn tại hoặc hết hạn");
       }
 
-      const res = await axiosConfig.post("/productspecifications", newSpecData, {
+      const res = await axiosAdmin.post("/productspecifications", newSpecData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -55,7 +55,7 @@ export const updateAdminProductSpecification = createAsyncThunk(
       if (!updatedData.product_id) {
         return rejectWithValue("Trường product_id là bắt buộc");
       }
-      const res = await axiosConfig.post(
+      const res = await axiosAdmin.post(
         `/productspecifications/${id}?_method=PUT`,
         updatedData,
         {
@@ -82,7 +82,7 @@ export const deleteAdminProductSpecification = createAsyncThunk(
         return rejectWithValue("Token không tồn tại hoặc hết hạn");
       }
 
-      const res = await axiosConfig.delete(`/productspecifications/${id}`, {
+      const res = await axiosAdmin.delete(`/productspecifications/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

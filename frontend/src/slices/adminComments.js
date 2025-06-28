@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosAdmin } from "../../utils/axiosConfig";
 
 const initialState = {
   comments: [],
@@ -23,7 +23,7 @@ export const fetchCommentReplyById = createAsyncThunk(
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
       if (typeof payload === "object" && payload.reply !== undefined) {
-        const response = await axiosConfig.post(
+        const response = await axiosAdmin.post(
           `/admin/comments/rely/${payload.commentId}`,
           { reply: payload.reply },
           { headers: { Authorization: `Bearer ${token}` } }
@@ -48,7 +48,7 @@ export const fetchAdminComments = createAsyncThunk(
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
-      const response = await axiosConfig.get(`/admin/comments`, {
+      const response = await axiosAdmin.get(`/admin/comments`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -66,7 +66,7 @@ export const deleteComment = createAsyncThunk(
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
-      const response = await axiosConfig.delete(`/admin/comments/${commentId}`, {
+      const response = await axiosAdmin.delete(`/admin/comments/${commentId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

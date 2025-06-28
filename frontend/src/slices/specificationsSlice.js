@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosUser } from "../../utils/axiosConfig";
 
 const initialState = {
   specifications: [],
@@ -11,7 +11,7 @@ const initialState = {
 export const fetchSpecification = createAsyncThunk(
   "specification/fetchSpecification",
   async (id) => {
-    const response = await axiosConfig.get(`/productspecifications/${id}`);
+    const response = await axiosUser.get(`/productspecifications/${id}`);
     return response.data.data;
   }
 );

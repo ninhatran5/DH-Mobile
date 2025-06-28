@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosUser } from "../../utils/axiosConfig";
 
 const initialState = {
   changeAddressNew: [],
@@ -12,7 +12,7 @@ export const fetchAddressNew = createAsyncThunk(
   "changeAddress/fetchAddressNew",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosConfig.get("/user-addresses");
+      const response = await axiosUser.get("/user-addresses");
       return response.data.data;
     } catch (err) {
       return rejectWithValue(
@@ -27,7 +27,7 @@ export const addAddresNew = createAsyncThunk(
   "changeAddress/addAddresNew",
   async (data, thunkAPI) => {
     try {
-      const response = await axiosConfig.post("/user-addresses", data);
+      const response = await axiosUser.post("/user-addresses", data);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -41,7 +41,7 @@ export const updateAddresNew = createAsyncThunk(
   "changeAddress/updateAddresNew",
   async ({ id, data }, thunkAPI) => {
     try {
-      const response = await axiosConfig.post(`/user-addresses/${id}`, {
+      const response = await axiosUser.post(`/user-addresses/${id}`, {
         ...data,
         _method: "PUT",
       });
@@ -58,7 +58,7 @@ export const deleteAddressNew = createAsyncThunk(
   "changeAddress/deleteAddressNew",
   async (id, thunkAPI) => {
     try {
-      const response = await axiosConfig.delete(`/user-addresses/${id}`);
+      const response = await axiosUser.delete(`/user-addresses/${id}`);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(

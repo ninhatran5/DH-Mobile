@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosUser } from "../../utils/axiosConfig";
 
 const initialState = {
   updateStatus: null,
@@ -10,7 +10,7 @@ const initialState = {
 export const fetchUpdateStatus = createAsyncThunk(
   "updateStatus/fetchUpdateStatus",
   async (id) => {
-    const response = await axiosConfig.put(`/updatestatuslike/${id}`);
+    const response = await axiosUser.put(`/updatestatuslike/${id}`);
     return response.data;
   }
 );

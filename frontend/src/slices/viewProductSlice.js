@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosUser } from "../../utils/axiosConfig";
 
 const initialState = {
   viewProducts: [],
@@ -23,7 +23,7 @@ export const addViewProducts = createAsyncThunk(
     }
 
     try {
-      const response = await axiosConfig.post(`/productsviews`, {
+      const response = await axiosUser.post(`/productsviews`, {
         product_id: productId,
         user_id: userId,
       });
@@ -46,7 +46,7 @@ export const fetchViewProduct = createAsyncThunk(
   "listViewProduct/fetchViewProduct",
   async (userId, thunkAPI) => {
     try {
-      const response = await axiosConfig.get(
+      const response = await axiosUser.get(
         `/productsviews/getbyuser/${userId}`
       );
       return response.data.data || [];
@@ -63,7 +63,7 @@ export const deleteFavoriteProduct = createAsyncThunk(
   "viewProduct/deleteFavoriteProduct",
   async (productId, thunkAPI) => {
     try {
-      const response = await axiosConfig.delete(`/productunlike/${productId}`);
+      const response = await axiosUser.delete(`/productunlike/${productId}`);
       if (response.data?.message === "Sản phẩm không tồn tại") {
         return thunkAPI.rejectWithValue("Sản phẩm không tồn tại");
       }

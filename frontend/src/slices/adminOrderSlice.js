@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosAdmin } from "../../utils/axiosConfig";
 
 // Fetch danh sách đơn hàng (kèm completedOrders)
 export const fetchAdminOrders = createAsyncThunk(
@@ -7,7 +7,7 @@ export const fetchAdminOrders = createAsyncThunk(
   async (page = 1, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await axiosConfig.get(`/admin/orders?page=${page}`, {
+      const response = await axiosAdmin.get(`/admin/orders?page=${page}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -39,7 +39,7 @@ export const updateOrderStatus = createAsyncThunk(
   async ({ orderId, status }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await axiosConfig.put(
+      const response = await axiosAdmin.put(
         `/admin/orders/${orderId}/status`,
         { status },
         {
@@ -67,7 +67,7 @@ export const fetchorderdetails = createAsyncThunk(
   async (orderId, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const res = await axiosConfig.get(`/admin/orders/${orderId}`, {
+      const res = await axiosAdmin.get(`/admin/orders/${orderId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -90,7 +90,7 @@ export const fetchReturnOrders = createAsyncThunk(
   async (page = 1, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await axiosConfig.get(`/admin/return-orders?page=${page}`, {
+      const response = await axiosAdmin.get(`/admin/return-orders?page=${page}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

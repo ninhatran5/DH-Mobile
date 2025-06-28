@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosAdmin } from "../../utils/axiosConfig";
 
 const initialState = {
   chatbots: [],
@@ -17,7 +17,7 @@ export const fetchChatbots = createAsyncThunk(
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
-      const response = await axiosConfig.get("/admin/chatbots", {
+      const response = await axiosAdmin.get("/admin/chatbots", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -35,7 +35,7 @@ export const toggleChatbot = createAsyncThunk(
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
-      const response = await axiosConfig.post(`/admin/chatbots/toggle/${chatbotId}`, {}, {
+      const response = await axiosAdmin.post(`/admin/chatbots/toggle/${chatbotId}`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

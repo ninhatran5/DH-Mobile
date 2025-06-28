@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosUser } from "../../utils/axiosConfig";
 
 const initialState = {
   news: [],
@@ -8,7 +8,7 @@ const initialState = {
 };
 
 export const fetchBlogs = createAsyncThunk("blog/fetchBlogs", async () => {
-  const response = await axiosConfig.get("/news");
+  const response = await axiosUser.get("/news");
   return response.data;
 });
 
@@ -21,7 +21,7 @@ export const addBlog = createAsyncThunk(
       formData.append("content", content);
       formData.append("image", image_url);
 
-      const response = await axiosConfig.post(`/news`, formData, {
+      const response = await axiosUser.post(`/news`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

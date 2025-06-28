@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosUser } from "../../utils/axiosConfig";
 
 const initialState = {
   changePassword: null,
@@ -11,7 +11,7 @@ export const fetchChangePassword = createAsyncThunk(
   "changePassword/fetchRegister",
   async (data, thunkAPI) => {
     try {
-      const response = await axiosConfig.put("/resetpassword", data);
+      const response = await axiosUser.put("/resetpassword", data);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(

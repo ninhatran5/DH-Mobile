@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosUser } from "../../utils/axiosConfig";
 
 const initialState = {
   registerInitial: null,
@@ -12,7 +12,7 @@ export const fetchRegister = createAsyncThunk(
   "register/fetchRegister",
   async (data, thunkAPI) => {
     try {
-      const response = await axiosConfig.post("/register", data);
+      const response = await axiosUser.post("/register", data);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(

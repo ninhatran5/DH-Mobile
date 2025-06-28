@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosUser } from "../../utils/axiosConfig";
 
 const initialState = {
   orders: [],
@@ -12,7 +12,7 @@ export const fetchOrder = createAsyncThunk(
   "order/fetchOrder",
   async (thunkAPI) => {
     try {
-      const response = await axiosConfig.get(`/getOrder`);
+      const response = await axiosUser.get(`/getOrder`);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -26,7 +26,7 @@ export const fetchOrderDetail = createAsyncThunk(
   "order/fetchOrderDetail",
   async (id, thunkAPI) => {
     try {
-      const response = await axiosConfig.get(`/getDetailOrder/${id}`);
+      const response = await axiosUser.get(`/getDetailOrder/${id}`);
       return response.data.order;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -40,7 +40,7 @@ export const cancelOrder = createAsyncThunk(
   "order/cancelOrder",
   async ({ id, reason }, thunkAPI) => {
     try {
-      const response = await axiosConfig.post(`/orders/${id}/cancel`, {
+      const response = await axiosUser.post(`/orders/${id}/cancel`, {
         cancel_reason: reason,
       });
       return response.data.order;
@@ -56,7 +56,7 @@ export const refundOrder = createAsyncThunk(
   "order/refundOrder",
   async ({ id, reason, reasonOther }, thunkAPI) => {
     try {
-      const response = await axiosConfig.post(`/orders/${id}/request-return`, {
+      const response = await axiosUser.post(`/orders/${id}/request-return`, {
         return_reason: reason,
         return_reason_other: reasonOther,
       });
@@ -73,7 +73,7 @@ export const receivedOrder = createAsyncThunk(
   "order/receivedOrder",
   async ({ id }, thunkAPI) => {
     try {
-      const response = await axiosConfig.post(`/orders/${id}/confirm-received`);
+      const response = await axiosUser.post(`/orders/${id}/confirm-received`);
       return response.data.order;
     } catch (error) {
       return thunkAPI.rejectWithValue(

@@ -1,18 +1,18 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosUser } from "../../utils/axiosConfig";
+import { axiosAdmin } from "../../utils/axiosConfig";
 
 const initialState = {
-  profile: {},
+  adminProfile: {},
   loading: false,
   error: null,
 };
 
 // CALL API GET PROFILE
-export const fetchProfile = createAsyncThunk(
-  "profile/fetchProfile",
+export const fetchProfileAdmin = createAsyncThunk(
+  "profile/fetchProfileAdmin",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosUser.get("/profile");
+      const response = await axiosAdmin.get("/profile");
       return response.data;
     } catch (err) {
       return rejectWithValue(
@@ -22,21 +22,21 @@ export const fetchProfile = createAsyncThunk(
   }
 );
 
-export const profileSlice = createSlice({
-  name: "profile",
+export const adminProfileSlice = createSlice({
+  name: "adminProfile",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchProfile.pending, (state) => {
+      .addCase(fetchProfileAdmin.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchProfile.fulfilled, (state, action) => {
+      .addCase(fetchProfileAdmin.fulfilled, (state, action) => {
         state.loading = false;
-        state.profile = action.payload;
+        state.adminProfile = action.payload;
       })
-      .addCase(fetchProfile.rejected, (state, action) => {
+      .addCase(fetchProfileAdmin.rejected, (state, action) => {
         state.loading = false;
         state.error =
           action.payload || action.error?.message || "Đã có lỗi xảy ra";
@@ -44,4 +44,4 @@ export const profileSlice = createSlice({
   },
 });
 
-export default profileSlice.reducer;
+export default adminProfileSlice.reducer;

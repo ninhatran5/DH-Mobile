@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosUser } from "../../utils/axiosConfig";
 
 const initialState = {
   vnpayUrl: null,
@@ -13,7 +13,7 @@ export const fetchVnpayCheckout = createAsyncThunk(
   "payment/fetchVnpayCheckout",
   async (payload, thunkAPI) => {
     try {
-      const response = await axiosConfig.post("/vnpay/checkout", payload);
+      const response = await axiosUser.post("/vnpay/checkout", payload);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -28,7 +28,7 @@ export const fetchCODCheckout = createAsyncThunk(
   "payment/fetchCODCheckout",
   async (payload, thunkAPI) => {
     try {
-      const response = await axiosConfig.post("/codpay/checkout", payload);
+      const response = await axiosUser.post("/codpay/checkout", payload);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(

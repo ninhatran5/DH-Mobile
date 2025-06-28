@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosUser } from "../../utils/axiosConfig";
 
 const initialState = {
   response: [],
@@ -11,7 +11,7 @@ export const chatBotPost = createAsyncThunk(
   "chatbot/postMessage",
   async ({ user_id, message }, thunkAPI) => {
     try {
-      const response = await axiosConfig.post("/public/chatbot", {
+      const response = await axiosUser.post("/public/chatbot", {
         user_id,
         message,
       });
@@ -28,7 +28,7 @@ export const fetchChatBot = createAsyncThunk(
   "chatbot/fetchChatBot",
   async (_, thunkAPI) => {
     try {
-      const response = await axiosConfig.get("/public/chatbot/conversation");
+      const response = await axiosUser.get("/public/chatbot/conversation");
       return response.data.conversation;
     } catch (error) {
       return thunkAPI.rejectWithValue(

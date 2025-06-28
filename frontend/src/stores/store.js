@@ -42,8 +42,8 @@ import adminReturnOrderReducer from "../slices/AdminReturnOrderSlice";
 
 import adminCommentsReducer from "../slices/adminComments";
 
-
 import chatBotReducer from "../slices/chatBotSlice";
+import adminProfileReducer from "../slices/adminProfile";
 
 export const store = configureStore({
   reducer: {
@@ -89,5 +89,6 @@ export const store = configureStore({
     adminChat: adminChatReducer,
     adminReturnOrder: adminReturnOrderReducer,
     adminComments: adminCommentsReducer,
+    adminProfile: adminProfileReducer,
   },
 });

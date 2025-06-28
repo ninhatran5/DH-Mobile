@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosUser } from "../../utils/axiosConfig";
 
 const initialState = {
   productVariationDetails: [],
@@ -12,7 +12,7 @@ export const fetchProductVariationDetail = createAsyncThunk(
   "productVariationDetail/fetchProductDetail",
   async (id, thunkAPI) => {
     try {
-      const response = await axiosConfig.get(`/productvariants/${id}`);
+      const response = await axiosUser.get(`/productvariants/${id}`);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(

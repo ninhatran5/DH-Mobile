@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosAdmin } from "../../utils/axiosConfig";
 
 const initialState = {
   adminLoginInitial: null,
@@ -11,7 +11,7 @@ export const fetchAdminLogin = createAsyncThunk(
   "adminLogin/fetchAdminLogin",
   async (data, thunkAPI) => {
     try {
-      const response = await axiosConfig.post("/login", data);
+      const response = await axiosAdmin.post("/login", data);
 
       if (
         response.data?.user?.role !== "admin" &&

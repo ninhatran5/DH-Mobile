@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosUser } from "../../utils/axiosConfig";
 
 const initialState = {
   reviews: null,
@@ -11,7 +11,7 @@ export const commentsPost = createAsyncThunk(
   "review/commentsPost",
   async ({ variant_id, rating, content }, thunkAPI) => {
     try {
-      const response = await axiosConfig.post("/comments", {
+      const response = await axiosUser.post("/comments", {
         variant_id,
         rating,
         content,
@@ -29,7 +29,7 @@ export const fetchComments = createAsyncThunk(
   "review/fetchComments",
   async (id, thunkAPI) => {
     try {
-      const response = await axiosConfig.get(`/comments/${id}`);
+      const response = await axiosUser.get(`/comments/${id}`);
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
