@@ -1,13 +1,19 @@
 import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
 import ErrorPage from "../pages/Error";
+import Loading from "../components/Loading"; // nếu có component loading riêng
 
 const RequireNotSaleRole = ({ children }) => {
-  const { profile } = useSelector((state) => state.profile);
-  const role = profile?.user?.role;
+  const { adminProfile } = useSelector((state) => state.adminProfile);
+  const role = adminProfile?.user?.role;
+
+  if (!role) {
+    return <Loading />;
+  }
+
   if (role === "sale") {
     return <ErrorPage />;
   }
+
   return children;
 };
 
