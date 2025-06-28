@@ -299,7 +299,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: var(--admin_dh-spacing-xs);
-  padding: var(--admin_dh-spacing-md);
+  padding-left: 12px;
 }
 
 .admin_dh-components li {
