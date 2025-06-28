@@ -35,7 +35,7 @@ class OrderController extends Controller
                 'payment_method' => $order->paymentMethods->name,
                 'status' => $order->status,
                 'cancel_reason' => $order->cancel_reason,
-                'created_at' => $order->created_at->format('d/m/Y H:i:s'),
+                'created_at' => $order->created_at,
             ];
         });
 
@@ -110,8 +110,6 @@ class OrderController extends Controller
             'cancel_reason' => $order->cancel_reason,
             'total_amount' => number_format($order->total_amount, 0, ".", ""),
             'products' => $orderItems,
-            'created_at' => $order->created_at->format('d/m/Y H:i:s'),
-
         ];
 
         return response()->json([
