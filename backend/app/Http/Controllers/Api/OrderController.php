@@ -35,6 +35,7 @@ class OrderController extends Controller
                 'payment_method' => $order->paymentMethods->name,
                 'status' => $order->status,
                 'cancel_reason' => $order->cancel_reason,
+                'created_at' => $order->created_at->format('d/m/Y H:i:s'),
             ];
         });
 
@@ -108,7 +109,9 @@ class OrderController extends Controller
             'status' => $order->status,
             'cancel_reason' => $order->cancel_reason,
             'total_amount' => number_format($order->total_amount, 0, ".", ""),
-            'products' => $orderItems
+            'products' => $orderItems,
+            'created_at' => $order->created_at->format('d/m/Y H:i:s'),
+
         ];
 
         return response()->json([
@@ -246,15 +249,14 @@ class OrderController extends Controller
         $currentStatus = $order->status;
         $nextStatus = $request->status;
         // Chỉ cho phép admin thao tác từ Chờ xác nhận đến Đã giao hàng
-        $allowedStatuses = ['Chờ xác nhận', 'Đã xác nhận', 'Chờ lấy hàng', 'Đang vận chuyển', 'Đang giao hàng', 'Đã giao hàng', 'Hoàn thành'];
+        $allowedStatuses = ['Chờ xác nhận', 'Đã xác nhận', 'Đang vận chuyển', 'Đã giao hàng'];
         $validTransitions = [
             'Chờ xác nhận' => ['Đã xác nhận'],
-            'Đã xác nhận' => ['Chờ lấy hàng'],
-            'Chờ lấy hàng' => ['Đang vận chuyển'],
-            'Đang vận chuyển' => ['Đang giao hàng'],
-            'Đang giao hàng' => ['Đã giao hàng'],
+            'Đã xác nhận' => ['Đang vận chuyển'],
+            'Đang vận chuyển' => ['Đã giao hàng'],
             'Đã giao hàng' => ['Hoàn thành'],
-            'Hoàn thành' => []
+            'Hoàn thành' => [],
+            'Đã hủy' => [],
         ];
 
         if (!in_array($currentStatus, $allowedStatuses) || !in_array($nextStatus, $allowedStatuses)) {
@@ -518,8 +520,8 @@ class OrderController extends Controller
                 'message' => 'Không tìm thấy đơn hàng'
             ], 404);
         }
-        // Chỉ cho phép hủy khi trạng thái là Chờ xác nhận, Đã xác nhận hoặc Chờ lấy hàng
-        if (!in_array($order->status, ['Chờ xác nhận', 'Đã xác nhận', 'Chờ lấy hàng'])) {
+        // Chỉ cho phép hủy khi trạng thái là Chờ xác nhận
+        if (!in_array($order->status, ['Chờ xác nhận'])) {
             return response()->json([
                 'status' => false,
                 'message' => 'Chỉ được hủy đơn hàng khi ở trạng thái Chờ xác nhận, Đã xác nhận hoặc Chờ lấy hàng'
