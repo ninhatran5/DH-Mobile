@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosAdmin } from "../../utils/axiosConfig";
 
 // Lấy danh sách đơn hoàn hàng
 export const fetchReturnOrders = createAsyncThunk(
@@ -9,7 +9,7 @@ export const fetchReturnOrders = createAsyncThunk(
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
-      const response = await axiosConfig.get(`/admin/return-requests`, {
+      const response = await axiosAdmin.get(`/admin/return-requests`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -31,7 +31,7 @@ export const fetchReturnOrderDetails = createAsyncThunk(
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
-      const response = await axiosConfig.get(`/admin/return-requests/${returnId}`, {
+      const response = await axiosAdmin.get(`/admin/return-requests/${returnId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -52,7 +52,7 @@ export const updateReturnOrderStatus = createAsyncThunk(
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
-      const response = await axiosConfig.put(
+      const response = await axiosAdmin.put(
         `/admin/orders/${orderId}/handle-return`,
         { status }, 
         {

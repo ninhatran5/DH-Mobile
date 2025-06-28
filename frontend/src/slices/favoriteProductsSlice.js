@@ -1,10 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosUser } from "../../utils/axiosConfig";
 
 // Initial state
 const initialState = {
   favoriteProducts: [],
-  listFavorite: [], // ✅ luôn là mảng
+  listFavorite: [], 
   loading: false,
   error: null,
 };
@@ -14,7 +14,7 @@ export const fetchFavoriteProduct = createAsyncThunk(
   "favoriteProduct/fetchFavoriteProduct",
   async (productId, thunkAPI) => {
     try {
-      const response = await axiosConfig.post(`/productlike/${productId}`);
+      const response = await axiosUser.post(`/productlike/${productId}`);
       if (response.data?.message === "Sản phẩm không tồn tại") {
         return thunkAPI.rejectWithValue("Sản phẩm không tồn tại");
       }
@@ -32,7 +32,7 @@ export const fetchListFavorite = createAsyncThunk(
   "favoriteProduct/fetchListFavorite",
   async (_, thunkAPI) => {
     try {
-      const response = await axiosConfig.get("/listproductlike");
+      const response = await axiosUser.get("/listproductlike");
       return response.data.data || [];
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -47,7 +47,7 @@ export const deleteFavoriteProduct = createAsyncThunk(
   "favoriteProduct/deleteFavoriteProduct",
   async (productId, thunkAPI) => {
     try {
-      const response = await axiosConfig.delete(`/productunlike/${productId}`);
+      const response = await axiosUser.delete(`/productunlike/${productId}`);
       if (response.data?.message === "Sản phẩm không tồn tại") {
         return thunkAPI.rejectWithValue("Sản phẩm không tồn tại");
       }

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosAdmin } from "../../utils/axiosConfig";
 
 const initialState = {
   vouchers: [],
@@ -13,7 +13,7 @@ export const fetchAdminVouchers = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const adminToken = localStorage.getItem("adminToken");
-      const res = await axiosConfig.get("/voucher", {
+      const res = await axiosAdmin.get("/voucher", {
         headers: {
           Authorization: `Bearer ${adminToken}`,
         },
@@ -31,7 +31,7 @@ export const deleteAdminVoucher = createAsyncThunk(
   async (voucherId, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      await axiosConfig.delete(`/voucher/${voucherId}`, {
+      await axiosAdmin.delete(`/voucher/${voucherId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -53,7 +53,7 @@ export const addAdminVoucher = createAsyncThunk(
         return rejectWithValue("Token không tồn tại hoặc hết hạn");
       }
 
-      const res = await axiosConfig.post("/voucher", newVoucher, {
+      const res = await axiosAdmin.post("/voucher", newVoucher, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -76,7 +76,7 @@ export const updateAdminVoucher = createAsyncThunk(
         return rejectWithValue("Token không tồn tại hoặc hết hạn");
       }
 
-      const response = await axiosConfig.post(`/voucher/${id}?_method=PUT`, updatedData, {
+      const response = await axiosAdmin.post(`/voucher/${id}?_method=PUT`, updatedData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

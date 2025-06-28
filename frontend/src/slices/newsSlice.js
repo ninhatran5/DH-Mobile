@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosAdmin } from "../../utils/axiosConfig";
 
 const initialState = {
   newsList: [],
@@ -12,7 +12,7 @@ export const fetchNews = createAsyncThunk(
   "AdminNews/fetchNews",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axiosConfig.get("/news");
+      const res = await axiosAdmin.get("/news");
       return res.data.data;  
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Lỗi khi gọi API news");
@@ -24,7 +24,7 @@ export const fetchNewsById = createAsyncThunk(
   "AdminNews/fetchNewsById",
   async (newsId, { rejectWithValue }) => {
     try {
-      const res = await axiosConfig.get(`/news/${newsId}`);
+      const res = await axiosAdmin.get(`/news/${newsId}`);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Lỗi khi tải chi tiết news");

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosAdmin } from "../../utils/axiosConfig";
 
 const initialState = {
   variantAttributeValues: [],
@@ -12,7 +12,7 @@ export const fetchVariantAttributeValues = createAsyncThunk(
   "variantAttributeValue/fetchVariantAttributeValues",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axiosConfig.get("/variantattributevalues");
+      const res = await axiosAdmin.get("/variantattributevalues");
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Lỗi khi gọi API");
@@ -26,7 +26,7 @@ export const addVariantAttributeValue = createAsyncThunk(
   async (newValue, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const res = await axiosConfig.post("/variantattributevalues", newValue, {
+      const res = await axiosAdmin.post("/variantattributevalues", newValue, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return res.data.data;
@@ -63,7 +63,7 @@ export const updateVariantAttributeValue = createAsyncThunk(
       }
 
 
-      const res = await axiosConfig.post( 
+      const res = await axiosAdmin.post( 
         `/variantattributevalues/${id}`,
         formData,
         {
@@ -91,7 +91,7 @@ export const deleteVariantAttributeValue = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      await axiosConfig.delete(`/variantattributevalues/${id}`, {
+      await axiosAdmin.delete(`/variantattributevalues/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return id;

@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosUser } from "../../utils/axiosConfig";
 
 const initialState = {
   productsVariants: [],
@@ -10,7 +10,7 @@ const initialState = {
 export const fetchProductVariants = createAsyncThunk(
   "product/fetchProductVariants",
   async () => {
-    const response = await axiosConfig.get("/productvariants");
+    const response = await axiosUser.get("/productvariants");
     return response.data.data;
   }
 );

@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosAdmin } from "../../utils/axiosConfig";
 
 const initialState = {
   banners: [],
@@ -15,7 +15,7 @@ export const fetchBanners = createAsyncThunk(
   "banner/fetchBanners",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axiosConfig.get("/getbanners");
+      const res = await axiosAdmin.get("/getbanners");
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Lỗi khi lấy danh sách banner");
@@ -28,7 +28,7 @@ export const fetchBannerById = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const res = await axiosConfig.get("/getbanners", {
+      const res = await axiosAdmin.get("/getbanners", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -53,7 +53,7 @@ export const updateBanner = createAsyncThunk(
         return rejectWithValue("Token không tồn tại hoặc hết hạn");
       }
 
-      const res = await axiosConfig.post(`/updatebanners/${id}`, data, {
+      const res = await axiosAdmin.post(`/updatebanners/${id}`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

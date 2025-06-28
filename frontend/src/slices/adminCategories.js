@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosAdmin } from "../../utils/axiosConfig";
 
 const initialState = {
   categories: [],
@@ -12,7 +12,7 @@ export const fetchCategories = createAsyncThunk(
   "category/fetchCategories",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axiosConfig.get("/categories");
+      const res = await axiosAdmin.get("/categories");
       return res.data.data; 
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Lỗi khi gọi API");
@@ -25,7 +25,7 @@ export const fetchTrashedCategories = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const res = await axiosConfig.get("/categories/trashed", {
+      const res = await axiosAdmin.get("/categories/trashed", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -42,7 +42,7 @@ export const deleteCategory = createAsyncThunk(
   async (categoryId, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      await axiosConfig.post(`/categories/${categoryId}?_method=DELETE`, {}, {
+      await axiosAdmin.post(`/categories/${categoryId}?_method=DELETE`, {}, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -63,7 +63,7 @@ export const addCategory = createAsyncThunk(
         return rejectWithValue("Token không tồn tại hoặc hết hạn");
       }
 
-      const res = await axiosConfig.post("/categories", newCategory, {
+      const res = await axiosAdmin.post("/categories", newCategory, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -85,7 +85,7 @@ export const updateCategory = createAsyncThunk(
         return rejectWithValue("Token không tồn tại hoặc hết hạn");
       }
 
-      const response = await axiosConfig.post(`/categories/${id}?_method=PUT`, updatedData, {
+      const response = await axiosAdmin.post(`/categories/${id}?_method=PUT`, updatedData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data"
@@ -105,7 +105,7 @@ export const restoreCategory = createAsyncThunk(
     try {
       const token = localStorage.getItem("adminToken");
 
-      await axiosConfig.put(
+      await axiosAdmin.put(
         `/categories/restore/${categoryId}`,
         {},
         {
@@ -129,7 +129,7 @@ export const forceDeleteCategory = createAsyncThunk(
   async (categoryId, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      await axiosConfig.delete(`/categories/forceDelete/${categoryId}`, {
+      await axiosAdmin.delete(`/categories/forceDelete/${categoryId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

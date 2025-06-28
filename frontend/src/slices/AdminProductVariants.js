@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosAdmin } from "../../utils/axiosConfig";
 
 const initialState = {
   productVariants: [],
@@ -11,7 +11,7 @@ export const fetchAdminProductVariants = createAsyncThunk(
   "adminProductVariants/fetchAdminProductVariants",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axiosConfig.get("/productvariants");
+      const res = await axiosAdmin.get("/productvariants");
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Lỗi khi gọi API");
@@ -28,7 +28,7 @@ export const addAdminProductVariant = createAsyncThunk(
         return rejectWithValue("Token không tồn tại hoặc hết hạn");
       }
 
-      const res = await axiosConfig.post("/productvariants", formData, {
+      const res = await axiosAdmin.post("/productvariants", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": formData instanceof FormData ? "multipart/form-data" : "application/json",
@@ -79,7 +79,7 @@ export const updateAdminProductVariant = createAsyncThunk(
         contentType = "application/json";
       }
 
-      const res = await axiosConfig.post(
+      const res = await axiosAdmin.post(
         `/productvariants/${id}?_method=PUT`,
         payload,
         {
@@ -103,7 +103,7 @@ export const deleteAdminProductVariant = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      await axiosConfig.delete(`/productvariants/${id}`, {
+      await axiosAdmin.delete(`/productvariants/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return id;

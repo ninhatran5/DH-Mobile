@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosUser } from "../../utils/axiosConfig";
 
 const initialState = {
   vouchers: [],
@@ -10,7 +10,7 @@ const initialState = {
 export const fetchVouhcer = createAsyncThunk(
   "vouhcer/fetchVouhcer",
   async () => {
-    const response = await axiosConfig.get("/voucher");
+    const response = await axiosUser.get("/voucher");
     return response.data;
   }
 );
@@ -18,7 +18,7 @@ export const saveVoucher = createAsyncThunk(
   "vouhcer/saveVoucher",
   async (id, thunkAPI) => {
     try {
-      const response = await axiosConfig.post(`/save-voucher/${id}`);
+      const response = await axiosUser.post(`/save-voucher/${id}`);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -31,7 +31,7 @@ export const fetchVoucerForUser = createAsyncThunk(
   "vouhcer/fetchVoucerForUser",
   async (_, thunkAPI) => {
     try {
-      const response = await axiosConfig.get(`/list-save-voucher`);
+      const response = await axiosUser.get(`/list-save-voucher`);
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(

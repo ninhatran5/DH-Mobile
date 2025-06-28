@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
-
+import { axiosUser } from "../../utils/axiosConfig";
 const initialState = {
   banners: [],
   loading: false,
@@ -9,7 +8,7 @@ const initialState = {
 
 ///CALL API BANNER
 export const fetchBanners = createAsyncThunk("home/fetchBanners", async () => {
-  const response = await axiosConfig.get("/getbanners");
+  const response = await axiosUser.get("/getbanners");
   return response.data;
 });
 

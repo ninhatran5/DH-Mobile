@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosAdmin } from "../../utils/axiosConfig";
 
 const initialState = {
   adminproducts: [],
@@ -13,13 +13,13 @@ export const fetchAdminProducts = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       // Lấy trang đầu tiên để biết tổng số trang
-      const firstPageRes = await axiosConfig.get(`/products?page=1`);
+      const firstPageRes = await axiosAdmin.get(`/products?page=1`);
       const firstPageData = firstPageRes.data.data || [];
       const totalPages = firstPageRes.data.totalPage || 1;
       const allProducts = [...firstPageData];
       const pageRequests = [];
       for (let page = 2; page <= totalPages; page++) {
-        pageRequests.push(axiosConfig.get(`/products?page=${page}`));
+        pageRequests.push(axiosAdmin.get(`/products?page=${page}`));
       }
       const remainingPages = await Promise.all(pageRequests);
       remainingPages.forEach((res) => {
@@ -42,7 +42,7 @@ export const deleteAdminProduct = createAsyncThunk(
   async (productId, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      await axiosConfig.delete(`/products/${productId}`, {
+      await axiosAdmin.delete(`/products/${productId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return productId;
@@ -60,7 +60,7 @@ export const addAdminProduct = createAsyncThunk(
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
-      const res = await axiosConfig.post("/products", newProduct, {
+      const res = await axiosAdmin.post("/products", newProduct, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -78,7 +78,7 @@ export const updateAdminProduct = createAsyncThunk(
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
-      const response = await axiosConfig.post(`/products/${id}?_method=PUT`, updatedData, {
+      const response = await axiosAdmin.post(`/products/${id}?_method=PUT`, updatedData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

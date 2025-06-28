@@ -1,12 +1,13 @@
+/* eslint-disable no-unused-vars */
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosAdmin } from '../../utils/axiosConfig';
 
 export const fetchNotifications = createAsyncThunk(
   'notifications/fetchNotifications',
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await axiosConfig.get('/admin/notifications', {
+      const response = await axiosAdmin.get('/admin/notifications', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -30,7 +31,7 @@ export const markNotificationsRead = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await axiosConfig.post('/admin/notifications/readAll', {}, {
+      const response = await axiosAdmin.post('/admin/notifications/readAll', {}, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -47,7 +48,7 @@ export const markNotificationRead = createAsyncThunk(
   async (notification_id, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await axiosConfig.post(`/admin/notifications/read/${notification_id}`, {}, {
+      const response = await axiosAdmin.post(`/admin/notifications/read/${notification_id}`, {}, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

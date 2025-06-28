@@ -15,6 +15,7 @@ import {
 } from "../../slices/NotificationSlice";
 import Thongbao from "../../assets/sound/thongbaomuahang.mp3";
 import { fetchProfile } from "../../slices/profileSlice";
+import { fetchProfileAdmin } from "../../slices/adminProfile";
 const sidebarCollapsedStyles = {
   submenu: {
     position: "absolute",
@@ -276,13 +277,12 @@ const Homeadmin = () => {
   // const users = useSelector((state) => state.adminuser?.users || []);
   // const currentUser = users.find((u) => String(u.user_id) === String(adminID));
 
-  const { profile } = useSelector((state) => state.profile);
+  const { adminProfile } = useSelector((state) => state.adminProfile);
 
-  const checkRole = profile?.user?.role;
-  
+  const checkRole = adminProfile?.user?.role;
 
   useEffect(() => {
-    dispatch(fetchProfile());
+    dispatch(fetchProfileAdmin());
   }, [dispatch]);
 
   return (
@@ -955,18 +955,16 @@ const Homeadmin = () => {
                     data-bs-toggle="dropdown"
                   >
                     <div className="admin_dh-user-avatar">
-               
-                        <img
-                          src={profile?.user?.image_url}
-                          alt={profile?.user?.username || "avatar"}
-                          style={{
-                            width: 32,
-                            height: 32,
-                            borderRadius: "50%",
-                            objectFit: "cover",
-                          }}
-                        />
-                    
+                      <img
+                        src={adminProfile?.user?.image_url}
+                        alt={adminProfile?.user?.username || "avatar"}
+                        style={{
+                          width: 32,
+                          height: 32,
+                          borderRadius: "50%",
+                          objectFit: "cover",
+                        }}
+                      />
                     </div>
                     <i className="bi bi-caret-down-fill ms-2 text-muted"></i>
                   </a>

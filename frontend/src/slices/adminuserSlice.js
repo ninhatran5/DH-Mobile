@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axiosConfig } from "../../utils/axiosConfig";
+import { axiosAdmin } from "../../utils/axiosConfig";
 
 const initialState = {
   users: [],
@@ -15,7 +15,7 @@ export const fetchUsers = createAsyncThunk(
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
-      const res = await axiosConfig.get("/getuser", {
+      const res = await axiosAdmin.get("/getuser", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -36,7 +36,7 @@ export const deleteUser = createAsyncThunk(
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
-      await axiosConfig.delete(`/getuser/${userId}`, {
+      await axiosAdmin.delete(`/getuser/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -58,7 +58,7 @@ export const addUser = createAsyncThunk(
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
-      const res = await axiosConfig.post("/createuser", newUserData, {
+      const res = await axiosAdmin.post("/createuser", newUserData, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -93,7 +93,7 @@ export const updateUser = createAsyncThunk(
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
-      const res = await axiosConfig.post(
+      const res = await axiosAdmin.post(
         `/updateuser/${id}?_method=PUT`,
         updatedData,
         {
