@@ -62,7 +62,6 @@ export const updateVariantAttributeValue = createAsyncThunk(
         });
       }
 
-      console.log('Sending update request with FormData:', Object.fromEntries(formData));
 
       const res = await axiosConfig.post( 
         `/variantattributevalues/${id}`,

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -70,7 +71,6 @@ const EditBanner = () => {
     setUploading(true);
     try {
       const resultAction = await dispatch(updateBanner({ id, data })).unwrap();
-      console.log("Update result:", resultAction);
       await dispatch(fetchBannerById(id));
       alert("Cập nhật thành công!");
       navigate("/admin/banners");

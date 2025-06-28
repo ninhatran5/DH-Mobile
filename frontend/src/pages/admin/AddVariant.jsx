@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -148,13 +149,9 @@ const AddVariant = () => {
           imageFormData.append(key, value);
         });
         
-        console.log('Creating new variant with image:', Object.fromEntries(imageFormData));
         variantResponse = await dispatch(addAdminProductVariant(imageFormData)).unwrap();
-        console.log('Variant created:', variantResponse);
       } else {
-        console.log('Creating new variant without image:', variantData);
         variantResponse = await dispatch(addAdminProductVariant(variantData)).unwrap();
-        console.log('Variant created:', variantResponse);
       }
 
       if (!variantResponse || !variantResponse.variant_id) {

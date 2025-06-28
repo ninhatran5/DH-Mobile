@@ -25,7 +25,6 @@ export const addAttribute = createAsyncThunk(
   async (newAttribute, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      console.log("Token hiện tại:", token);
       const res = await axiosConfig.post("/attributes", newAttribute, {
         headers: { Authorization: `Bearer ${token}` },
       });

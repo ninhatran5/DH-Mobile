@@ -1,43 +1,52 @@
-body,
+body {
+  background: #1f2029;
+  margin: 0;
+  font-family: "Inter", Arial, sans-serif;
+}
+
 a {
   cursor: pointer;
   transition: all 200ms linear;
 }
+
 a:hover {
   text-decoration: none;
 }
+
 .link {
   color: #c4c3ca;
 }
+
 .link:hover {
   color: #ffeba7;
 }
+
 p {
   font-weight: 500;
   font-size: 14px;
   line-height: 1.7;
 }
+
 h4 {
   font-weight: 600;
 }
+
 h6 span {
   padding: 0 20px;
   text-transform: uppercase;
   font-weight: 700;
 }
+
 .section {
   position: relative;
   width: 100%;
   display: block;
 }
+
 .full-height {
   min-height: 100vh;
 }
-[type="checkbox"]:checked,
-[type="checkbox"]:not(:checked) {
-  position: absolute;
-  left: -9999px;
-}
+
 .checkbox:checked + label,
 .checkbox:not(:checked) + label {
   position: relative;
@@ -51,6 +60,7 @@ h6 span {
   cursor: pointer;
   background-color: #ffeba7;
 }
+
 .checkbox:checked + label:before,
 .checkbox:not(:checked) + label:before {
   position: absolute;
@@ -70,6 +80,7 @@ h6 span {
   font-size: 24px;
   transition: all 0.5s ease;
 }
+
 .checkbox:checked + label:before {
   transform: translateX(44px) rotate(-270deg);
 }
@@ -84,6 +95,7 @@ h6 span {
   perspective: 800px;
   margin-top: 60px;
 }
+
 .card-3d-wrapper {
   width: 100%;
   height: 100%;
@@ -94,6 +106,7 @@ h6 span {
   transform-style: preserve-3d;
   transition: all 600ms ease-out;
 }
+
 .card-front,
 .card-back {
   width: 100%;
@@ -114,12 +127,15 @@ h6 span {
   -o-backface-visibility: hidden;
   backface-visibility: hidden;
 }
+
 .card-back {
   transform: rotateY(180deg);
 }
+
 .checkbox:checked ~ .card-3d-wrap .card-3d-wrapper {
   transform: rotateY(180deg);
 }
+
 .center-wrap {
   position: absolute;
   width: 100%;
@@ -137,6 +153,7 @@ h6 span {
   margin: 0;
   padding: 0;
 }
+
 .form-style {
   padding: 13px 20px;
   padding-left: 55px;
@@ -155,12 +172,14 @@ h6 span {
   transition: all 200ms linear;
   box-shadow: 0 4px 8px 0 rgba(21, 21, 21, 0.2);
 }
+
 .form-style:focus,
 .form-style:active {
   border: none;
   outline: none;
   box-shadow: 0 4px 8px 0 rgba(21, 21, 21, 0.2);
 }
+
 .input-icon {
   position: absolute;
   top: 0;
@@ -180,39 +199,46 @@ h6 span {
   -webkit-transition: all 200ms linear;
   transition: all 200ms linear;
 }
+
 .form-group input::-moz-placeholder {
   color: #c4c3ca;
   opacity: 0.7;
   -webkit-transition: all 200ms linear;
   transition: all 200ms linear;
 }
+
 .form-group input:-moz-placeholder {
   color: #c4c3ca;
   opacity: 0.7;
   -webkit-transition: all 200ms linear;
   transition: all 200ms linear;
 }
+
 .form-group input::-webkit-input-placeholder {
   color: #c4c3ca;
   opacity: 0.7;
   -webkit-transition: all 200ms linear;
   transition: all 200ms linear;
 }
+
 .form-group input:focus:-ms-input-placeholder {
   opacity: 0;
   -webkit-transition: all 200ms linear;
   transition: all 200ms linear;
 }
+
 .form-group input:focus::-moz-placeholder {
   opacity: 0;
   -webkit-transition: all 200ms linear;
   transition: all 200ms linear;
 }
+
 .form-group input:focus:-moz-placeholder {
   opacity: 0;
   -webkit-transition: all 200ms linear;
   transition: all 200ms linear;
 }
+
 .form-group input:focus::-webkit-input-placeholder {
   opacity: 0;
   -webkit-transition: all 200ms linear;
@@ -247,17 +273,20 @@ h6 span {
   color: #102770;
   box-shadow: 0 8px 24px 0 rgba(255, 235, 167, 0.2);
 }
+
 .btn-admin-login-dhmoblie:active,
 .btn-admin-login-dhmoblie:focus {
   background-color: #102770;
   color: #ffeba7;
   box-shadow: 0 8px 24px 0 rgba(16, 39, 112, 0.2);
 }
+
 .btn-admin-login-dhmoblie:hover {
   background-color: #102770;
   color: #ffeba7;
   box-shadow: 0 8px 24px 0 rgba(16, 39, 112, 0.2);
 }
+
 .logo {
   position: absolute;
   top: 30px;
@@ -266,14 +295,17 @@ h6 span {
   z-index: 100;
   transition: all 250ms linear;
 }
+
 .logo img {
   height: 26px;
   width: auto;
   display: block;
 }
+
 .admin-login-dhmobie {
   color: #c4c3ca;
 }
+
 .admin-login-icon {
   position: absolute;
   top: 0;
@@ -303,9 +335,9 @@ h6 span {
 }
 
 .dhm-admin-card-3d-wrap {
-  width: 820px; /* tăng chiều rộng */
+  width: 820px;
   max-width: 98vw;
-  min-height: 620px; /* tăng chiều cao tối thiểu */
+  min-height: 620px;
   border-radius: 16px;
   background: #23243a;
   box-shadow: 0 8px 32px 0 rgba(31, 32, 41, 0.37);
@@ -313,14 +345,14 @@ h6 span {
   align-items: center;
   justify-content: center;
 }
+
 .dhm-admin-card-3d-wrapper {
   width: 100%;
-  padding: 206px 48px; /* tăng padding cho rộng và thoáng */
+  padding: 206px 48px;
   border-radius: 16px;
-  background: #2a2b38;
-  background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/1462889/pat.svg");
-  background-position: bottom center;
-  background-repeat: no-repeat;
+  background: #2a2b38
+    url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/1462889/pat.svg") bottom
+    center no-repeat;
   background-size: 300%;
   display: flex;
   align-items: center;
@@ -339,6 +371,12 @@ h6 span {
   font-weight: 700;
   margin-bottom: 24px;
   letter-spacing: 1px;
+  text-align: center;
+}
+
+.dhm-admin-logo {
+  height: 40px;
+  margin-bottom: 18px;
 }
 
 .dhm-admin-form-group {
@@ -353,19 +391,19 @@ h6 span {
   width: 100%;
   font-weight: 500;
   border-radius: 6px;
-  font-size: 15px; /* tăng size cho dễ đọc */
+  font-size: 16px;
   line-height: 22px;
   letter-spacing: 0.5px;
   outline: none;
-  color: #fff; /* chữ trắng nổi bật */
-  background-color: #23243a; /* đồng bộ với card */
+  color: #fff;
+  background-color: #23243a;
   border: none;
   box-shadow: 0 4px 8px 0 rgba(21, 21, 21, 0.2);
   transition: border 0.2s, background 0.2s, color 0.2s;
 }
 
 .dhm-admin-form-style::placeholder {
-  color: #bdbdbd; /* placeholder sáng hơn, dễ nhìn */
+  color: #bdbdbd;
   opacity: 1;
   font-size: 15px;
   font-weight: 400;
@@ -378,11 +416,37 @@ h6 span {
   color: #fff;
 }
 
-/* Button style cải thiện */
+.dhm-admin-input-icon {
+  color: #ffeba7;
+  font-size: 22px;
+  position: absolute;
+  top: 0;
+  left: 18px;
+  height: 48px;
+  line-height: 48px;
+  display: flex;
+  align-items: center;
+}
+
+.dhm-admin-eye-toggle {
+  position: absolute;
+  right: 18px;
+  top: 5px;
+  cursor: pointer;
+  color: #ffeba7;
+  font-size: 18px;
+}
+
+.dhm-admin-error {
+  color: #ffeba7;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
 .dhm-admin-btn {
   border-radius: 6px;
   height: 48px;
-  font-size: 16px; /* tăng size cho dễ đọc */
+  font-size: 16px;
   font-weight: 700;
   text-transform: uppercase;
   transition: all 200ms linear;
@@ -407,39 +471,6 @@ h6 span {
   border: 1.5px solid #ffeba7;
 }
 
-/* Đảm bảo icon input cũng sáng */
-.dhm-admin-input-icon {
-  color: #ffeba7;
-  font-size: 22px;
-  position: absolute;
-  top: 0;
-  left: 18px;
-  height: 48px;
-  line-height: 48px;
-  display: flex;
-  align-items: center;
-}
-
-.dhm-admin-logo {
-  height: 40px;
-  margin-bottom: 18px;
-}
-
-.dhm-admin-error {
-  color: #ffeba7;
-  font-size: 13px;
-  margin-top: 4px;
-}
-
-.dhm-admin-eye-toggle {
-  position: absolute;
-  right: 18px;
-  top: 5px;
-  cursor: pointer;
-  color: #ffeba7;
-  font-size: 18px;
-}
-
 @media (max-width: 600px) {
   .dhm-admin-card-3d-wrap {
     width: 98vw;
@@ -451,6 +482,7 @@ h6 span {
     padding: 24px 8px;
   }
 }
+
 @media (max-width: 700px) {
   .dhm-admin-card-3d-wrap {
     width: 98vw;

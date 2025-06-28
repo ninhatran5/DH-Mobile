@@ -141,7 +141,6 @@ const adminReturnOrderSlice = createSlice({
       })
       .addCase(updateReturnOrderStatus.fulfilled, (state, action) => {
         state.updateLoading = false;
-        console.log("✅ API trả về:", action.payload);
         const returnRequestId = action.payload.return_request_id;
         const newStatus = action.payload.return_request_status;
         const refundAmount = action.payload.refund_amount;
