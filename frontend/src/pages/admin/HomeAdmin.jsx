@@ -14,8 +14,8 @@ import {
   markNotificationRead,
 } from "../../slices/NotificationSlice";
 import Thongbao from "../../assets/sound/thongbaomuahang.mp3";
-import { fetchProfile } from "../../slices/profileSlice";
 import { fetchProfileAdmin } from "../../slices/adminProfile";
+import Swal from "sweetalert2";
 const sidebarCollapsedStyles = {
   submenu: {
     position: "absolute",
@@ -240,8 +240,17 @@ const Homeadmin = () => {
 
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    if (window.confirm("Bạn có chắc chắn muốn đăng xuất không?")) {
+  const handleLogout = async () => {
+    const result = await Swal.fire({
+      title: "Bạn có chắc chắn muốn đăng xuất không?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Đăng xuất",
+      cancelButtonText: "Hủy",
+      reverseButtons: true,
+    });
+
+    if (result.isConfirmed) {
       try {
         localStorage.removeItem("adminToken");
         localStorage.removeItem("adminID");
@@ -296,7 +305,10 @@ const Homeadmin = () => {
         >
           <div className="admin_dh-sidebar-header">
             <div className="admin_dh-logo-container">
-              <Link to="/" className="d-flex align-items-center">
+              <Link
+                to={checkRole && checkRole === "sale" ? "/admin/product" : "/admin/chart"}
+                className="d-flex align-items-center"
+              >
                 <div className="admin_dh-logo-img">
                   <img src={logo} alt="DH Mobile" />
                 </div>
