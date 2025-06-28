@@ -68,6 +68,7 @@ import ChatLiveAdmin from "./pages/admin/ChatLive";
 import CommentsList from "./pages/admin/CommentsList";
 import AddBlog from "./pages/admin/AddBlog";
 import RequireNotSaleRole from "./components/RequireNotSaleRole";
+import AdminRouteRedirector from "./components/AdminRouteRedirector";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -199,6 +200,10 @@ const routerConfig = [
     children: [
       {
         path: "",
+        element: <AdminRouteRedirector />,
+      },
+      {
+        path: "chart",
         element: (
           <RequireNotSaleRole>
             <Chart />
