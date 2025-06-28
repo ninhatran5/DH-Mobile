@@ -42,12 +42,29 @@ const OrderDetail = () => {
   const statusMap = {
     "cho xac nhan": "pending",
     "da xac nhan": "confirmed",
-    "cho lay hang": "waiting_pickup",
     "dang van chuyen": "shipping",
-    "dang giao hang": "delivering",
     "da giao hang": "shipped",
     "hoan thanh": "delivered",
     "da huy": "canceled",
+  };
+  const getStatusClass = (status) => {
+    const s = status?.trim().toLowerCase();
+    switch (s) {
+      case "chờ xác nhận":
+        return "order-status-pending";
+      case "đã xác nhận":
+        return "order-status-confirmed";
+      case "đang vận chuyển":
+        return "order-status-shipping";
+      case "đã giao hàng":
+        return "order-status-shipped";
+      case "hoàn thành":
+        return "order-status-delivered";
+      case "đã huỷ":
+        return "order-status-canceled";
+      default:
+        return "order-status-default";
+    }
   };
 
   const normalizedStatus = removeVietnameseTones(orderDetail?.status || "");
@@ -60,7 +77,6 @@ const OrderDetail = () => {
     : [
         "pending",
         "confirmed",
-        "waiting_pickup",
         "shipping",
         "delivering",
         "shipped",
@@ -97,7 +113,11 @@ const OrderDetail = () => {
     },
     {
       label: t("orderDetail.order_status_note"),
-      value: orderDetail?.status || t("toast.pending_update"),
+      value: (
+        <span className={getStatusClass(orderDetail?.status)}>
+          {orderDetail?.status || t("toast.pending_update")}
+        </span>
+      ),
     },
   ];
 
@@ -142,10 +162,10 @@ const OrderDetail = () => {
                 <li
                   key={index}
                   className={`step0 
-    ${step.active ? "active" : ""} 
-    ${index === currentStatusIndex ? "current" : ""} 
-    ${currentStatusKey === "canceled" ? "canceled" : ""}
-  `}
+                    ${step.active ? "active" : ""} 
+                    ${index === currentStatusIndex ? "current" : ""} 
+                    ${currentStatusKey === "canceled" ? "canceled" : ""}
+                  `}
                 >
                   <span className="step-label">{step.label}</span>
                 </li>

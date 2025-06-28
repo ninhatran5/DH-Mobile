@@ -343,7 +343,7 @@
     "orderCode": "Order Code",
     "orderName": "Order Name",
     "price": "Price",
-    "address": "Address",
+    "address": "Order Date",
     "paymentMethod": "Payment Method",
     "status": "Status",
     "detail": "Detail",
@@ -373,7 +373,10 @@
     "unpaid": "Unpaid",
     "filter": "Filter",
     "statusTitle": "Status",
-    "noOrder": "No orders found."
+    "noOrder": "No orders found.",
+    "confirmReceived": "Confirm received",
+    "returnRequest": "Request return",
+    "reviewOrder": "Review order"
   },
   "breadcrumbOrder": {
     "breadcrumbHeader": "Purchase History"
@@ -618,5 +621,11 @@
     "admin": "Administrator",
     "staff": "Staff",
     "customer": "Customer"
+  },
+  "order": {
+    "confirmReceivedSuccessTitle": "Order received successfully",
+    "confirmReceivedSuccessBtn": "OK",
+    "confirmReceivedErrorTitle": "Error",
+    "confirmReceivedErrorText": "Could not confirm order received"
   }
 }

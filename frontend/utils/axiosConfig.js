@@ -12,18 +12,12 @@ export const axiosConfigAddress = axios.create({
 });
 
 axiosConfig.interceptors.request.use((config) => {
-  const adminToken = localStorage.getItem("adminToken");
-  const userToken = localStorage.getItem("userToken");
-
-  const token = adminToken || userToken;
-
+  const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-
   return config;
 });
-
 // let isRefreshing = false;
 // let subscribers = [];
 
