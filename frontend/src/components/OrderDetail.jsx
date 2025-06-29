@@ -9,6 +9,7 @@ import { fetchOrderDetail } from "../slices/orderSlice";
 import Loading from "./Loading";
 import numberFormat from "../../utils/numberFormat";
 import OrderProductRow from "./OrderProductRow";
+import dayjs from "dayjs";
 
 const removeVietnameseTones = (str) => {
   return String(str)
@@ -38,7 +39,6 @@ const OrderDetail = () => {
     return () => clearInterval(interval);
   }, [id, dispatch]);
 
-  // Map status không dấu sang key chuẩn
   const statusMap = {
     "cho xac nhan": "pending",
     "da xac nhan": "confirmed",
@@ -90,7 +90,7 @@ const OrderDetail = () => {
     active: idx <= currentStatusIndex,
   }));
 
-  const orderInfo = [
+  const receiverInfo = [
     {
       label: t("orderDetail.receiver"),
       value: orderDetail?.customer || t("toast.pending_update"),
@@ -103,6 +103,9 @@ const OrderDetail = () => {
       label: t("orderDetail.address"),
       value: orderDetail?.address || t("toast.pending_update"),
     },
+  ];
+
+  const orderInfo = [
     {
       label: t("orderDetail.paymentMethod"),
       value: orderDetail?.payment_method?.[1] || t("toast.pending_update"),
@@ -110,6 +113,10 @@ const OrderDetail = () => {
     {
       label: t("orderDetail.payment_status_note"),
       value: orderDetail?.payment_status || t("toast.pending_update"),
+    },
+    {
+      label: t("orderDetail.order_date"),
+      value: orderDetail?.order_date || t("toast.pending_update"),
     },
     {
       label: t("orderDetail.order_status_note"),
@@ -149,7 +156,9 @@ const OrderDetail = () => {
             <p className="mb-0">
               {t("orderDetail.orderDate")}:{" "}
               <span>
-                {orderDetail?.order_date || t("toast.pending_update")}
+                {orderDetail?.order_date
+                  ? dayjs(orderDetail.order_date).format("HH:mm - DD/MM/YYYY")
+                  : t("toast.pending_update")}
               </span>
             </p>
           </div>
@@ -174,10 +183,25 @@ const OrderDetail = () => {
           </div>
         </div>
 
-        <div className="row px-3 mt-4">
+        <div className="row px-3 mt-3">
           <div className="col-12">
-            <div className="order-info-table">
-              <h5 className="mb-3">{t("orderDetail.info")}</h5>
+            <div className="order-info-table mb-4">
+              <h5 className="mb-3">{t("orderDetail.receiverInfo")}</h5>
+              <table className="table table-bordered">
+                <tbody>
+                  {receiverInfo.map((item, index) => (
+                    <tr key={index}>
+                      <td className="fw-bold" style={{ width: "30%" }}>
+                        {item.label}
+                      </td>
+                      <td>{item.value}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="order-info-table mb-4 mt-5">
+              <h5 className="mb-3">{t("orderDetail.orderInfo")}</h5>
               <table className="table table-bordered">
                 <tbody>
                   {orderInfo.map((item, index) => (

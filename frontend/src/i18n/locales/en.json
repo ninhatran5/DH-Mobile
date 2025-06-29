@@ -394,6 +394,7 @@
     "address": "Address",
     "paymentMethod": "Payment Method",
     "payment_status_note": "Payment status",
+    "order_date": "Order Date",
     "order_status_note": "Order status",
     "note": "Note",
     "productDetail": "Product Details",
@@ -411,7 +412,9 @@
       "shipping": "Shipping",
       "shipped": "Shipped",
       "delivered": "Completed"
-    }
+    },
+    "receiverInfo": "Recipient Information",
+    "orderInfo": "Order Information"
   },
   "auth": {
     "titleLogin": "Welcome to DH Mobile, please Login!",

@@ -390,6 +390,7 @@
     "address": "Địa chỉ",
     "paymentMethod": "Phương thức thanh toán",
     "payment_status_note": "Trạng thái thanh toán",
+    "order_date": "Ngày đặt hàng",
     "order_status_note": "Trạng thái đơn hàng",
     "productDetail": "Chi tiết sản phẩm",
     "product": "Tên sản phẩm",
@@ -406,7 +407,9 @@
       "shipping": "Đang giao hàng",
       "shipped": "Đã giao hàng",
       "delivered": "Hoàn thành"
-    }
+    },
+    "receiverInfo": "Thông tin người nhận",
+    "orderInfo": "Thông tin đơn hàng"
   },
   "auth": {
     "titleLogin": "Chào mừng bạn đến DH Moblie, hãy đăng nhập nhé!",
