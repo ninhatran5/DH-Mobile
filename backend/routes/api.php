@@ -170,7 +170,7 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::delete('/forceDelete/{id}', 'forceDelete');
         Route::get('/trashed', 'trashed');
     });
-    // Vouucher
+    // Voucher
     Route::prefix('voucher')->controller(VoucherController::class)->group(function () {
         Route::post('/', 'store');
         Route::put('/{id}', 'update');

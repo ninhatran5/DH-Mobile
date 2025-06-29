@@ -53,6 +53,12 @@ class NewsController extends Controller
             'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'is_active' => 'nullable|boolean',
         ]);
+
+        $user = $request->user();
+        if ($user) {
+            $validatedData['user_id'] = $user->user_id;
+        }
+
         if ($request->hasFile('image_url')) {
             try {
                 $cloudinary = app(Cloudinary::class);
