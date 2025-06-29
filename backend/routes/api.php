@@ -293,7 +293,7 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(f
     // Danh sách tất cả yêu cầu hoàn hàng (admin)
     Route::get('/return-requests', [OrderController::class, 'getReturnRequestList']);
     // admin hủy đơn hàng 
-    Route::post('/admin/orders/{id}/cancel', [OrderController::class, 'adminCancelOrder']);
+    Route::post('/orders/{id}/cancel', [OrderController::class, 'adminCancelOrder']);
 });
 
 
