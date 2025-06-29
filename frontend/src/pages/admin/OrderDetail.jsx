@@ -36,45 +36,95 @@ const OrderDetails = () => {
       >
         ← Quay lại danh sách đơn hàng
       </button>
-      <h2 className="adminorderdetail-title">Thông tin đặt hàng</h2>
-      <table className="adminorderdetail-table">
-        <tbody>
-          <tr>
-            <td>Mã đơn hàng</td>
-            <td>{order.order_code}</td>
-          </tr>
-          <tr>
-            <td>Ngày đặt</td>
-            <td>{order.order_date}</td>
-          </tr>
-          <tr>
-            <td>Người nhận</td>
-            <td>{order.customer}</td>
-          </tr>
-          <tr>
-            <td>Số điện thoại</td>
-            <td>{order.phone || "Chưa cập nhật"}</td>
-          </tr>
-          <tr>
-            <td>Địa chỉ</td>
-            <td>{order.address || "Chưa cập nhật"}</td>
-          </tr>
-          <tr>
-            <td>Phương thức thanh toán</td>
-            <td>{order.payment_method.join(" - ")}</td>
-          </tr>
-          <tr>
-            <td>Trạng thái thanh toán</td>
-            <td>{order.payment_status}</td>
-          </tr>
-          {order.cancel_reason && (
-            <tr>
-              <td>Lý do huỷ</td>
-              <td>{order.cancel_reason}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      <div
+        style={{
+          display: "flex",
+          gap: 48,
+          alignItems: "flex-start",
+          marginBottom: 32,
+          justifyContent: "center",
+          width: "100%",
+        }}
+      >
+        <div
+          style={{
+            flex: 1,
+            minWidth: 340,
+            maxWidth: 500,
+          }}
+        >
+          <h2 className="adminorderdetail-title">Thông tin đơn hàng</h2>
+          <table
+            className="adminorderdetail-table"
+            style={{ width: "100%", fontSize: 16 }}
+          >
+            <tbody>
+              <tr>
+                <td>Mã đơn hàng</td>
+                <td>{order.order_code}</td>
+              </tr>
+              <tr>
+                <td>Ngày đặt</td>
+                <td>{order.order_date}</td>
+              </tr>
+              <tr>
+                <td>Phương thức thanh toán</td>
+                <td>
+                  <span style={{ background: "#e6f7ff", color: "#005fa3", padding: "2px 8px", borderRadius: 4 }}>
+                    {order.payment_method.join(" - ")}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td>Trạng thái thanh toán</td>
+                <td>
+                  <span style={{ background: "#f0fff0", color: "#008000", padding: "2px 8px", borderRadius: 4 }}>
+                    {order.payment_status}
+                  </span>
+                </td>
+              </tr>
+              {order.cancel_reason && (
+                <tr>
+                  <td>Lý do huỷ</td>
+                  <td>
+                    <span style={{ background: "#ffeaea", color: "#d8000c", padding: "2px 8px", borderRadius: 4 }}>
+                      {order.cancel_reason}
+                    </span>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        <div
+          style={{
+            flex: 1,
+            minWidth: 340,
+            maxWidth: 500,
+          }}
+        >
+          <h2 className="adminorderdetail-title">Thông tin người nhận</h2>
+          <table
+            className="adminorderdetail-table"
+            style={{ width: "100%", fontSize: 16 }}
+          >
+            <tbody>
+              <tr>
+                <td>Người nhận</td>
+                <td>{order.customer}</td>
+              </tr>
+              <tr>
+                <td>Số điện thoại</td>
+                <td>{order.phone || "Chưa cập nhật"}</td>
+              </tr>
+              <tr>
+                <td>Địa chỉ</td>
+                <td>{order.address || "Chưa cập nhật"}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       <OrderStatusSteps status={order.status} />
 
@@ -124,8 +174,7 @@ const OrderDetails = () => {
             <td colSpan="6" className="text-right font-semibold">
               Tổng cộng:
             </td>
-            <td className="adminorderdetail-total"
-            style={{color: 'red'}}>
+            <td className="adminorderdetail-total" style={{ color: "red" }}>
               {formatCurrency(order.total_amount)}
             </td>
           </tr>

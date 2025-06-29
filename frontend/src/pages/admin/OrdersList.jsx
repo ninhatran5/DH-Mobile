@@ -262,9 +262,9 @@ const OrdersList = () => {
                           style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '14px', // tăng gap nếu cần
+                            gap: '14px', 
                             justifyContent: 'center',
-                            minWidth: 60 // đảm bảo đủ rộng cho 2 icon
+                            minWidth: 60 
                           }}
                         >
                           <button
@@ -368,6 +368,7 @@ const OrdersList = () => {
                         <option value="Chờ xác nhận">Chờ xác nhận</option>
                         <option value="Đã xác nhận">Đã xác nhận</option>
                         <option value="Đã giao hàng">Đã giao hàng</option>
+                        <option value="Đã huỷ">Đã huỷ</option>
                       </select>
                     </div>
                   </td>
