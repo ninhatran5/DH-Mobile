@@ -6,6 +6,7 @@ use App\Models\Orders;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Mail\OrderStatusUpdatedMail;
+use App\Mail\OrderCancelledByAdminMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Models\OrderStatusHistory; // Thêm dòng này để sử dụng model OrderStatusHistory
@@ -898,6 +899,16 @@ class OrderController extends Controller
         $order->status = 'Đã hủy';
         $order->cancel_reason = $request->cancel_reason;
         $order->save();
+
+        // Gửi email thông báo nếu có email
+        if ($order->user && $order->user->email) {
+            try {
+                Mail::to($order->user->email)->send(new OrderCancelledByAdminMail($order, $request->cancel_reason));
+            } catch (\Exception $e) {
+                // Bạn có thể log lỗi nếu muốn: Log::error($e->getMessage());
+            }
+        }
+
 
         // Lưu vào bảng lịch sử trạng thái (nếu có)
         OrderStatusHistory::create([
