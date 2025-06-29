@@ -34,6 +34,8 @@ export const addAdminProductVariant = createAsyncThunk(
           "Content-Type": formData instanceof FormData ? "multipart/form-data" : "application/json",
         },
       });
+      console.log("Submitting variant data:", formData);
+      console.log("DATA GỬI LÊN:", formData);
 
       return res.data.data;
     } catch (err) {

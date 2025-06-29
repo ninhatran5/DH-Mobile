@@ -8,7 +8,7 @@ const Loading = () => {
         left: 0,
         width: "100vw",
         height: "100vh",
-        backgroundColor: "rgba(61, 61, 61, 0.5)", // overlay nền mờ đen
+        backgroundColor: "rgba(61, 61, 61, 0.5)", 
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
