@@ -870,4 +870,47 @@ class OrderController extends Controller
             'return_requests' => $formatted
         ]);
     }
+    // Admin hủy đơn hàng
+    public function adminCancelOrder(Request $request, $id)
+    {
+        $order = Orders::find($id);
+        if (!$order) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Không tìm thấy đơn hàng'
+            ], 404);
+        }
+
+        // Không cho hủy nếu đơn hàng đã hoàn thành hoặc đã hủy
+        if (in_array($order->status, ['Hoàn thành', 'Đã hủy'])) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Không thể hủy đơn hàng đã hoàn thành hoặc đã hủy'
+            ], 400);
+        }
+
+        $request->validate([
+            'cancel_reason' => 'required|string|max:255'
+        ]);
+
+        $oldStatus = $order->status;
+
+        $order->status = 'Đã hủy';
+        $order->cancel_reason = $request->cancel_reason;
+        $order->save();
+
+        // Lưu vào bảng lịch sử trạng thái (nếu có)
+        OrderStatusHistory::create([
+            'order_id' => $order->order_id,
+            'old_status' => $oldStatus,
+            'new_status' => 'Đã hủy',
+            'changed_by' => $request->user() ? $request->user()->user_id : null,
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Đơn hàng đã được admin hủy thành công',
+            'order' => $order
+        ]);
+    }
 }

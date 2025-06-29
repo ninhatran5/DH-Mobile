@@ -55,7 +55,7 @@ Route::put('/resetpassword', [AuthController::class, 'resetPassword']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 });
- Route::post('/refresh', [AuthController::class, 'refreshToken']);
+Route::post('/refresh', [AuthController::class, 'refreshToken']);
 
 // API User
 
@@ -292,6 +292,8 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(f
     Route::get('/status-histories', [OrderController::class, 'getAllOrderStatusHistories']);
     // Danh sách tất cả yêu cầu hoàn hàng (admin)
     Route::get('/return-requests', [OrderController::class, 'getReturnRequestList']);
+    // admin hủy đơn hàng 
+    Route::post('/admin/orders/{id}/cancel', [OrderController::class, 'adminCancelOrder']);
 });
 
 
