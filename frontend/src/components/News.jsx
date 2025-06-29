@@ -1,14 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-function truncateText(text, maxLength) {
-  if (!text) return "";
-  if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength) + "...";
-}
 
 export default function News({ item }) {
-  console.log("🚀 ~ News ~ item:", item);
   const { t } = useTranslation();
+  function truncateText(text, maxLength) {
+    if (!text) return "";
+    if (text.length <= maxLength) return text;
+    return text.slice(0, maxLength) + "...";
+  }
 
   return (
     <div className="card-products col-md-4" key={item.id}>
