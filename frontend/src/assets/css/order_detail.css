@@ -184,36 +184,48 @@ body {
 .btn-back {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  background: #fff;
-  color: #ff8800 !important;
-  font-weight: 600;
-  font-size: 15px;
-  border: 2px solid #ff8800;
+  background: orange;
+  color: white;
+  border: none;
   border-radius: 8px;
-  padding: 8px 20px;
-  box-shadow: 0 1px 4px rgba(228, 3, 3, 0.06);
-  transition: background 0.18s, color 0.18s, border 0.18s;
-  margin-top: 18px;
+  padding: 10px 24px;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px #1677ff22;
   text-decoration: none;
-}
-
-.btn-back svg {
-  font-size: 1.15em;
-  color: #ff8800;
-  margin-right: 2px;
-  transition: color 0.18s;
+  margin-right: 12px;
+  gap: 8px;
 }
 
 .btn-back:hover,
 .btn-back:focus {
-  background: #ff8800;
-  color: #fff !important;
-  border-color: #ff8800;
+  background: rgb(235, 152, 0);
+  color: white;
   text-decoration: none;
+  outline: none;
 }
 
-.btn-back:hover svg,
-.btn-back:focus svg {
+.btn-back svg {
+  font-size: 1.2em;
+  margin-right: 6px;
+}
+.btn-cancel-order {
+  background: #ff4d4f;
   color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 28px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px #ff4d4f22;
+  margin-left: 12px;
+}
+
+.btn-cancel-order:hover,
+.btn-cancel-order:focus {
+  background: #d9363e;
+  color: #fff;
+  outline: none;
 }

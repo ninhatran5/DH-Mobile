@@ -5,11 +5,14 @@ import { useTranslation } from "react-i18next";
 import { RiArrowGoBackFill } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { fetchOrderDetail } from "../slices/orderSlice";
+import { cancelOrder, fetchOrderDetail } from "../slices/orderSlice";
 import Loading from "./Loading";
 import numberFormat from "../../utils/numberFormat";
 import OrderProductRow from "./OrderProductRow";
 import dayjs from "dayjs";
+import Swal from "sweetalert2";
+import { toast } from "react-toastify";
+import withReactContent from "sweetalert2-react-content";
 
 const removeVietnameseTones = (str) => {
   return String(str)
@@ -23,11 +26,10 @@ const removeVietnameseTones = (str) => {
 
 const OrderDetail = () => {
   const { t } = useTranslation();
+  const MySwal = withReactContent(Swal);
   const dispatch = useDispatch();
   const { id } = useParams();
-
   const { orderDetail, loading } = useSelector((state) => state.order);
-
   useEffect(() => {
     if (!id) return;
     dispatch(fetchOrderDetail(id));
@@ -127,7 +129,32 @@ const OrderDetail = () => {
       ),
     },
   ];
+  const handleCancelOrder = async (orderId) => {
+    const result = await MySwal.fire({
+      title: t("orderHistory.cancelOrder"),
+      text: t("orderHistory.enterCancelReason"),
+      input: "text",
+      inputPlaceholder: t("orderHistory.reasonPlaceholder"),
+      showCancelButton: true,
+      reverseButtons: true,
+      confirmButtonText: t("orderHistory.confirm"),
+      cancelButtonText: t("orderHistory.close"),
+      inputValidator: (value) => {
+        if (!value) return t("orderHistory.emptyReasonError");
+      },
+    });
 
+    if (result.isConfirmed) {
+      const reason = result.value;
+      try {
+        await dispatch(cancelOrder({ id: orderId, reason })).unwrap();
+        toast.success(t("orderHistory.cancelSuccess"));
+        dispatch(fetchOrderDetail());
+      } catch (error) {
+        toast.error(error || t("orderHistory.cancelFailed"));
+      }
+    }
+  };
   return (
     <>
       {loading && <Loading />}
@@ -253,10 +280,18 @@ const OrderDetail = () => {
                   </tfoot>
                 </table>
 
-                <Link to="/order-history" className="btn-back">
-                  <RiArrowGoBackFill />
-                  <span>{t("orderDetail.back")}</span>
-                </Link>
+                <div className="d-flex justify-content-between align-items-center mt-4">
+                  <Link to="/order-history" className="btn-back fw-bold">
+                    <RiArrowGoBackFill />
+                    <span>{t("orderDetail.back")}</span>
+                  </Link>
+                  <button
+                    className="btn-cancel-order"
+                    onClick={() => handleCancelOrder(orderDetail.order_id)}
+                  >
+                    {t("orderHistory.cancel")}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
