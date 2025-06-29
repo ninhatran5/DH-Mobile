@@ -273,7 +273,14 @@
   color: #0071e3;
   font-size: 13px;
 }
-
+.admin_order-payment1 {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: #fff0e0;
+  color: #ff7300;
+  font-size: 13px;
+}
 /* Status */
 .admin_order-status {
   display: inline-block;

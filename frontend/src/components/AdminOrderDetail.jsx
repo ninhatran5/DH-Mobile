@@ -6,9 +6,7 @@ const OrderStatusSteps = ({ status }) => {
   const statusOrder = [
     { key: "Chờ xác nhận", label: "Chờ xác nhận", icon: <FiClock /> },
     { key: "Đã xác nhận", label: "Đã xác nhận", icon: <FiCheckCircle /> },
-    { key: "Chờ lấy hàng", label: "Chờ lấy hàng", icon: <FiPackage /> },
     { key: "Đang vận chuyển", label: "Đang vận chuyển", icon: <FiTruck /> },
-    { key: "Đang giao hàng", label: "Đang giao hàng", icon: <FiSend /> },
     { key: "Đã giao hàng", label: "Đã giao hàng", icon: <FiAward /> },
     { key: "Hoàn thành", label: "Hoàn thành", icon: <FiAward /> },
   ];

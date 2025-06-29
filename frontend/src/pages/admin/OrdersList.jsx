@@ -38,11 +38,10 @@ const OrdersList = () => {
     "Tất cả",
     "Chờ xác nhận",
     "Đã xác nhận",
-    "Chờ lấy hàng",
     "Đang vận chuyển",
-    "Đang giao hàng",
     "Đã giao hàng",
-    "Hoàn thành"
+    "Hoàn thành",
+    "Đã huỷ"
   ];
 
   const filteredOrders = useMemo(() => {
@@ -213,11 +212,12 @@ const OrdersList = () => {
               <tr>
                 <th style={{ width: '40px' }}>STT</th>
                 <th style={{ width: '40px' }}>Ảnh</th>
-                <th style={{ width: '20%' }}>Mã đơn / Khách hàng</th>
+                <th style={{ width: '15%' }}>Mã đơn / Khách hàng</th>
                 <th style={{ width: '15%' }}>Ngày đặt</th>
                 <th className="admin_order-hide-sm" style={{ width: '20%' }}>Tổng tiền</th>
-                <th style={{ width: '15%' }}>Thanh toán</th>
-                <th style={{ width: '15%' }}>Trạng thái</th>
+                <th style={{ width: '20%' }}>Thanh toán</th>
+                <th style={{ width: '30%' }}>Trạng thái thanh toán</th>
+                <th style={{ width: '25%' }}>Trạng thái</th>
                 <th style={{ width: '80px' }}>Thao tác</th>
               </tr>
             </thead>
@@ -249,6 +249,8 @@ const OrdersList = () => {
                       <td>
                         <span className="admin_order-payment">{order.payment_method}</span>
                       </td>
+                  <td><span className="admin_order-payment1">{order.payment_status}</span></td>
+
                       <td>
                         <span className={`admin_order-status admin_order-status-${normalizeString(order.status)}`}>
                           {order.status}
@@ -365,11 +367,7 @@ const OrdersList = () => {
                       >
                         <option value="Chờ xác nhận">Chờ xác nhận</option>
                         <option value="Đã xác nhận">Đã xác nhận</option>
-                        <option value="Chờ lấy hàng">Chờ lấy hàng</option>
-                        <option value="Đang vận chuyển">Đang vận chuyển</option>
-                        <option value="Đang giao hàng">Đang giao hàng</option>
                         <option value="Đã giao hàng">Đã giao hàng</option>
-                        <option value="Hoàn thành">Hoàn thành</option>
                       </select>
                     </div>
                   </td>
