@@ -136,6 +136,10 @@ const UpdateUser = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (formData.role === "customer") {
+      toast.error("Không được cập nhật tài khoản của vai trò Khách hàng!");
+      return;
+    }
     const formPayload = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
       if (key === "image_file" && value) {
@@ -167,24 +171,65 @@ const UpdateUser = () => {
           <div className="admin-edit-account-grid">
             <div>
               <label className="admin-edit-account-label">Tên tài khoản</label>
-              <input type="text" name="username" value={formData.username} onChange={handleChange} className="admin-edit-account-input" />
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                className="admin-edit-account-input"
+                disabled={formData.role === "customer"}
+              />
 
               <label className="admin-edit-account-label">Email</label>
-              <input type="email" name="email" value={formData.email} onChange={handleChange} className="admin-edit-account-input" />
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="admin-edit-account-input"
+                disabled={formData.role === "customer"}
+              />
 
               <label className="admin-edit-account-label">Họ tên</label>
-              <input type="text" name="full_name" value={formData.full_name} onChange={handleChange} className="admin-edit-account-input" />
+              <input
+                type="text"
+                name="full_name"
+                value={formData.full_name}
+                onChange={handleChange}
+                className="admin-edit-account-input"
+                disabled={formData.role === "customer"}
+              />
 
               <label className="admin-edit-account-label">Số điện thoại</label>
-              <input type="text" name="phone" value={formData.phone} onChange={handleChange} className="admin-edit-account-input" />
+              <input
+                type="text"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                className="admin-edit-account-input"
+                disabled={formData.role === "customer"}
+              />
 
               <label className="admin-edit-account-label">Địa chỉ</label>
-              <input type="text" name="address" value={formData.address} onChange={handleChange} className="admin-edit-account-input" />
+              <input
+                type="text"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                className="admin-edit-account-input"
+                disabled={formData.role === "customer"}
+              />
             </div>
 
             <div>
               <label className="admin-edit-account-label">Thành phố</label>
-              <select name="city" value={formData.city} onChange={handleChange} className="admin-edit-account-select">
+              <select
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+                className="admin-edit-account-select"
+                disabled={formData.role === "customer"}
+              >
                 <option value="">-- Chọn thành phố --</option>
                 {cities.map((city) => (
                   <option key={city.code} value={city.name}>{city.name}</option>
@@ -192,7 +237,13 @@ const UpdateUser = () => {
               </select>
 
               <label className="admin-edit-account-label">Quận</label>
-              <select name="district" value={formData.district} onChange={handleChange} className="admin-edit-account-select">
+              <select
+                name="district"
+                value={formData.district}
+                onChange={handleChange}
+                className="admin-edit-account-select"
+                disabled={formData.role === "customer"}
+              >
                 <option value="">-- Chọn quận --</option>
                 {districts.map((d) => (
                   <option key={d.code} value={d.name}>{d.name}</option>
@@ -200,7 +251,13 @@ const UpdateUser = () => {
               </select>
 
               <label className="admin-edit-account-label">Phường</label>
-              <select name="ward" value={formData.ward} onChange={handleChange} className="admin-edit-account-select">
+              <select
+                name="ward"
+                value={formData.ward}
+                onChange={handleChange}
+                className="admin-edit-account-select"
+                disabled={formData.role === "customer"}
+              >
                 <option value="">-- Chọn phường --</option>
                 {wards.map((w) => (
                   <option key={w.code} value={w.name}>{w.name}</option>
@@ -208,7 +265,13 @@ const UpdateUser = () => {
               </select>
 
               <label className="admin-edit-account-label">Vai trò</label>
-              <select name="role" value={formData.role} onChange={handleChange} className="admin-edit-account-select">
+              <select
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                className="admin-edit-account-select"
+                disabled={formData.role === "customer"}
+              >
                 <option value="">-- Chọn vai trò --</option>
                 <option value="customer">Khách hàng</option>
                 <option value="admin">Quản trị viên</option>
@@ -219,26 +282,26 @@ const UpdateUser = () => {
             </div>
 
             <div className="admin-edit-account-image-upload">
-  <label className="admin-edit-account-label">Ảnh đại diện</label>
-  <input
-    type="file"
-    accept="image/*"
-    onChange={handleImageChange}
-    className="admin-edit-account-input-file"
-  />
-  {imagePreview && (
-    <img
-      src={imagePreview}
-      onError={(e) => {
-        e.target.onerror = null;
-        e.target.src = defaultAvatar;
-      }}
-      alt="Avatar Preview"
-      className="admin-edit-account-image-preview"
-    />
-  )}
-</div>
-
+              <label className="admin-edit-account-label">Ảnh đại diện</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="admin-edit-account-input-file"
+                disabled={formData.role === "customer"}
+              />
+              {imagePreview && (
+                <img
+                  src={imagePreview}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = defaultAvatar;
+                  }}
+                  alt="Avatar Preview"
+                  className="admin-edit-account-image-preview"
+                />
+              )}
+            </div>
           </div>
         </div>
 
@@ -250,11 +313,12 @@ const UpdateUser = () => {
           >
             Hủy
           </button>
-          <button type="submit" className="admin-edit-account-btn-submit" disabled={loading}>
-            {loading ? "Đang cập nhật..." : "Cập nhật"}
-          </button>
+          {formData.role !== "customer" && (
+            <button type="submit" className="admin-edit-account-btn-submit" disabled={loading}>
+              {loading ? "Đang cập nhật..." : "Cập nhật"}
+            </button>
+          )}
         </div>
-
       </form>
     </div>
   );
