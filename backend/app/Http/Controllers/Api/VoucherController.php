@@ -337,8 +337,11 @@ class VoucherController extends Controller
     public function getSavedVouchersForUser(Request $request)
     {
         $user = $request->user();
+
         $savedVouchers = User_vouchers::where('user_id', $user->user_id)
-            ->with('voucher') // cần khai báo quan hệ voucher() trong model User_vouchers
+            ->with(['voucher' => function ($query) {
+                $query->select('id', 'code', 'discount_amount', 'usage_limit', 'used_count', 'expired_at');
+            }])
             ->get();
 
         return response()->json([
