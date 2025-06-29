@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addAttributeValue } from "../../slices/attributeValueSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import "../../assets/admin/Attributes.css";
-
+import { toast } from "react-toastify";
 function AddValuePage() {
   const { attribute_id, name } = useParams();
   const [value, setValue] = useState("");
@@ -12,12 +12,21 @@ function AddValuePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { loading } = useSelector((state) => state.attributeValue);
+  const { loading, attributeValues } = useSelector((state) => state.attributeValue);
+
+  // Lấy danh sách value hiện tại của attribute_id
+  const currentValues = attributeValues && attributeValues[attribute_id]
+    ? attributeValues[attribute_id].map(v => v.value.trim().toLowerCase())
+    : [];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!value.trim()) {
       setError("Value không được để trống!");
+      return;
+    }
+    if (currentValues.includes(value.trim().toLowerCase())) {
+      toast.error("Giá trị này đã tồn tại!");
       return;
     }
 
