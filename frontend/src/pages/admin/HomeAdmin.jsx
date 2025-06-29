@@ -16,6 +16,7 @@ import {
 import Thongbao from "../../assets/sound/thongbaomuahang.mp3";
 import { fetchProfileAdmin } from "../../slices/adminProfile";
 import Swal from "sweetalert2";
+import { FaSmile } from "react-icons/fa";
 const sidebarCollapsedStyles = {
   submenu: {
     position: "absolute",
@@ -219,15 +220,7 @@ const Homeadmin = () => {
 
   const isDropdownActive = (menu) => activeDropdown === menu;
 
-  // const toggleDarkMode = () => {
-  //   setIsDarkMode(!isDarkMode);
-  //   document.body.classList.toggle("dark-mode");
-  // };
-
-  // const clearNotifications = () => {
-  //   setNotificationCount(0);
-  //   setShowNotificationDot(false);
-  // };
+  
 
   const handleNotificationClick = (e) => {
     e.preventDefault();
@@ -282,9 +275,7 @@ const Homeadmin = () => {
     localStorage.setItem("notificationSound", newSoundState);
   };
 
-  // const adminID = localStorage.getItem("adminID");
-  // const users = useSelector((state) => state.adminuser?.users || []);
-  // const currentUser = users.find((u) => String(u.user_id) === String(adminID));
+  
 
   const { adminProfile } = useSelector((state) => state.adminProfile);
 
@@ -344,7 +335,7 @@ const Homeadmin = () => {
                     className={location.pathname === "/admin" ? "active" : ""}
                   >
                     <Link
-                      to="/admin"
+                      to="/admin/chart"
                       className="admin_dh-nav-link"
                       data-title="Dashboard"
                     >
@@ -843,7 +834,7 @@ const Homeadmin = () => {
                   <i className="bi bi-layout-sidebar" />
                 </button>
               </div>
-
+                      <td className="Homeadmin-user123">Xin chào {adminProfile?.user?.username}</td>
               <div className="admin_dh-navbar-right">
                 {checkRole !== "sale" && (
                   <>
@@ -966,6 +957,7 @@ const Homeadmin = () => {
                     role="button"
                     data-bs-toggle="dropdown"
                   >
+
                     <div className="admin_dh-user-avatar">
                       <img
                         src={adminProfile?.user?.image_url}
