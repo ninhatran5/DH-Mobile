@@ -77,8 +77,6 @@
   transform: scale(1.2);
 }
 
-
-
 /* Responsive */
 @media (max-width: 768px) {
   .admin-voucher-ticket {
@@ -98,13 +96,11 @@
   }
 }
 
-
-
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
   margin-top: 24px;
   font-size: 14px;
 }
@@ -133,7 +129,6 @@
   font-weight: 500;
   color: #333;
 }
-
 
 .adminvoucher-search-wrapper {
   position: relative;
@@ -167,7 +162,6 @@
   font-size: 14px;
   pointer-events: none;
 }
-
 
 .adminvoucher-filters-header {
   display: flex;
@@ -457,10 +451,14 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%),
-                    linear-gradient(225deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%),
-                    linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%),
-                    linear-gradient(315deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%);
+  background-image: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1) 25%,
+      transparent 25%
+    ),
+    linear-gradient(225deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%),
+    linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%),
+    linear-gradient(315deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%);
   background-position: 10px 0, 10px 0, 0 0, 0 0;
   background-size: 20px 20px;
   background-repeat: repeat;
@@ -501,7 +499,7 @@
 
 .adminvoucher-card-divider::before,
 .adminvoucher-card-divider::after {
-  content: '';
+  content: "";
   position: absolute;
   left: 50%;
   width: 20px;
@@ -686,7 +684,7 @@
     flex-direction: column;
     gap: 12px;
   }
-  
+
   .adminvoucher-date {
     width: 100%;
   }
@@ -720,5 +718,3 @@
     flex-direction: column;
   }
 }
-
-

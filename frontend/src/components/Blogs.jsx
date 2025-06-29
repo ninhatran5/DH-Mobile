@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import News from "./News";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,7 +7,6 @@ import { useEffect, useState } from "react";
 import { fetchBlogs } from "../slices/blogSlice";
 import Loading from "../components/Loading";
 import Pagination from "../components/Pagination";
-import { perPage } from "../../utils/consts";
 
 export default function Blogs({
   showHeader = true,
@@ -16,22 +16,34 @@ export default function Blogs({
 }) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const { news, loading } = useSelector((state) => state.blog);
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil((news?.length || 0) / perPage);
-
+  const { news, loading, meta } = useSelector((state) => state.blog);
+  const perPage = meta?.per_page || 10;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const pageParam = parseInt(searchParams.get("page")) || 1;
+  const [currentPage, setCurrentPage] = useState(pageParam);
+  const totalPages =
+    meta?.last_page || Math.ceil((news?.length || 0) / perPage);
   useEffect(() => {
     dispatch(fetchBlogs());
   }, [dispatch]);
+  useEffect(() => {
+    if (totalPages > 0 && currentPage > totalPages) setCurrentPage(1);
+  }, [news, totalPages]);
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [news]);
+    setSearchParams((params) => {
+      params.set("page", currentPage);
+      return params;
+    });
+  }, [currentPage, setSearchParams]);
+
+  useEffect(() => {
+    if (currentPage !== pageParam) setCurrentPage(pageParam);
+  }, [pageParam]);
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currentPage]);
-
   const paginatedNews = news
     ? news.slice((currentPage - 1) * perPage, currentPage * perPage)
     : [];

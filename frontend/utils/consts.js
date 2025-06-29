@@ -1,2 +1,2 @@
-const perPage = 5;
+const perPage = 1
 export { perPage };

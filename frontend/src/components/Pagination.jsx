@@ -9,7 +9,7 @@ export default function Pagination({
   const goToPage = (page) => {
     if (page >= 1 && page <= totalPages) {
       onPageChange(page);
-      window.scrollTo({ top: 0, behavior: "smooth" }); // cuộn lên đầu nếu muốn
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
