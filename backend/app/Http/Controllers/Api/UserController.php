@@ -149,7 +149,7 @@ class UserController extends Controller
             'ward' => 'nullable|string|max:100',
             'district' => 'nullable|string|max:100',
             'city' => 'nullable|string|max:100',
-            'image_url' => 'nullable|image|max:5048', // giới hạn 2MB
+            'image_url' => 'nullable|image|max:2048', // đồng bộ 2MB
         ]);
 
         if ($request->hasFile('image_url')) {
@@ -181,7 +181,7 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'Cập nhật người dùng thành công.',
-            'user' => $user
+            'user' => $user->fresh()
         ]);
     }
 
