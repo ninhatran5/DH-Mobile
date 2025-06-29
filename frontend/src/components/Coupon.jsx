@@ -72,9 +72,8 @@ const Coupon = ({ voucher, isMyVoucher }) => {
             <div className="userVoucher-quantity">
               <span>{voucher.quantity}</span>
             </div>
-            <span className="userVoucher-tooltip">{t("voucher.iconCopy")}</span>
             {isMyVoucher ? (
-              <>
+              <div className="userVoucher-icon-wrapper">
                 <HiSave
                   onClick={handleSaveVoucher}
                   className="userVoucher-icon"
@@ -82,9 +81,9 @@ const Coupon = ({ voucher, isMyVoucher }) => {
                 <span className="userVoucher-tooltip">
                   {t("voucher.iconSave")}
                 </span>
-              </>
+              </div>
             ) : (
-              <>
+              <div className="userVoucher-icon-wrapper">
                 <FaCopy
                   onClick={handleCopyVoucher}
                   className="userVoucher-icon"
@@ -92,7 +91,7 @@ const Coupon = ({ voucher, isMyVoucher }) => {
                 <span className="userVoucher-tooltip">
                   {t("voucher.iconCopy")}
                 </span>
-              </>
+              </div>
             )}
           </div>
 

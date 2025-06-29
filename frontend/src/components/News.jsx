@@ -7,6 +7,7 @@ function truncateText(text, maxLength) {
 }
 
 export default function News({ item }) {
+  console.log("🚀 ~ News ~ item:", item);
   const { t } = useTranslation();
 
   return (
@@ -44,7 +45,11 @@ export default function News({ item }) {
                 {item.title}
               </Link>
             </h3>
-            <p>{truncateText(item.content, 170)}</p>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: truncateText(item.content, 170),
+              }}
+            />
           </div>
         </div>
         <div className="card-footer text-end d-flex justify-content-between align-items-center">
