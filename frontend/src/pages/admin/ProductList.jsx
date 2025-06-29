@@ -10,7 +10,7 @@ import {
 } from "../../slices/adminproductsSlice";
 import { fetchCategories } from "../../slices/adminCategories";
 import { toast } from "react-toastify";
-import { fetchProfile } from "../../slices/profileSlice";
+import { fetchProfileAdmin } from "../../slices/adminProfile";
 
 const ProductList = () => {
   const dispatch = useDispatch();
@@ -112,12 +112,12 @@ const ProductList = () => {
     }));
   };
 
-  const { profile } = useSelector((state) => state.profile);
+  const { adminProfile } = useSelector((state) => state.adminProfile);
 
-  const checkRole = profile?.user?.role;
+  const checkRole = adminProfile?.user?.role;
 
   useEffect(() => {
-    dispatch(fetchProfile());
+    dispatch(fetchProfileAdmin());
   }, [dispatch]);
 
   const getFilteredProducts = () => {
