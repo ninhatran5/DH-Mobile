@@ -17,8 +17,8 @@
   content: "";
   position: absolute;
   top: 24px;
-  left: 64px;
-  right: 64px;
+  left: 80px;
+  right: 80px;
   height: 4px;
   background-color: #e0e0e0;
   z-index: 1;
@@ -29,10 +29,10 @@
   content: "";
   position: absolute;
   top: 24px;
-  left: 50px;
+  left: 80px;
   height: 4px;
   background-color: #6400cf;
-  width: calc(var(--progress, 0%) - 100px);
+  width: calc(var(--progress, 0%) - 160px);
   transition: width 0.5s ease-in-out;
   z-index: 2;
   border-radius: 2px;

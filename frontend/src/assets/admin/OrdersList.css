@@ -105,84 +105,79 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
-.adminorder-table {
+.admin_order-table {
   width: 100%;
   border-collapse: collapse;
   min-width: 1000px;
 }
 
-.adminorder-table th,
-.adminorder-table td {
-  padding: 8px 10px;
-  text-align: left;
-  border-bottom: 1px solid #e0e0e0;
-  font-size: 13px;
+.admin_order-table th,
+.admin_order-table td {
+  padding: 10px 10px; /* tăng padding */
+  font-size: 14px;    /* tăng font-size */
 }
 
-.adminorder-table th {
+.admin_order-table th {
   font-weight: 500;
   color: #2c2c2e;
 }
 
-/* Table cell colors */
-.adminorder-table td.adminorder {
-  padding: 14px 8px;
-  vertical-align: middle;
-  line-height: 1.4;
-  transition: background-color 0.2s;
-}
-
-/* STT column */
-.adminorder-table td:first-child.adminorder {
-  color: #007aff;
+.admin_order-stt {
+  font-size: 14px;
   font-weight: 600;
+  color: #007aff;
   text-align: center;
 }
-.adminorder-adminorder-payment_method{
-display: inline-block;
-  padding: 4px 8px;
-  border-radius: 4px;
-  background: #e8f7ff;
-  color: #0071e3;
-  font-size: 10px;
+
+.admin_order-avatar img {
+  width: 44px;   /* to hơn */
+  height: 44px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid #eee;
 }
 
-.adminorder-status-col {
+.admin_order-code {
+  font-size: 14px;
   font-weight: 500;
-  text-transform: capitalize;
+  color: #222;
+  margin-bottom: 2px;
 }
 
-.adminorder-status-cho-xac-nhan {
-  color: #f2994a;
+.admin_order-customer {
+  font-size: 13px;
+  color: #666;
 }
 
-.adminorder-status-da-xac-nhan {
-  color: #2d9cdb;
+.admin_order-amount {
+  font-size: 14px;
+  font-weight: 500;
 }
 
-.adminorder-status-cho-lay-hang {
-  color: #9b51e0;
+.admin_order-items {
+  font-size: 13px;
+  color: #888;
 }
 
-.adminorder-status-dang-van-chuyen {
-  color: #f2c94c;
+.admin_order-payment {
+  font-size: 14px;
 }
 
-.adminorder-status-dang-giao-hang {
-  color: #27ae60;
+.admin_order-status {
+  font-size: 14px;
+  padding: 4px 12px;
+  border-radius: 8px;
+  display: inline-block;
+  min-width: 90px;
+  text-align: center;
 }
 
-.adminorder-status-da-giao-hang {
-  color: #219653;
-}
-
-/* === Action Buttons === */
 .adminorder-action-group {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   justify-content: center;
-  min-width: 60px;
+  min-width: 54px;
 }
 
 .adminorder-icon-btn {
@@ -196,8 +191,8 @@ display: inline-block;
 }
 
 .adminorder-icon-btn svg {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
 }
 
 .adminorder-icon-btn:hover {
@@ -438,4 +433,4 @@ display: inline-block;
   cursor: pointer;
   font-size: 13px;
 }
-  
+
