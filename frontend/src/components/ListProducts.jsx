@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useEffect, useState, useMemo, useRef } from "react";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FaShippingFast } from "react-icons/fa";
 import {
@@ -14,8 +14,8 @@ import Product from "./Product";
 import "../assets/css/products.css";
 import { fetchCategory } from "../slices/categorySlice";
 import Pagination from "../components/Pagination";
-import { perPage } from "../../utils/consts";
 import { addViewProducts } from "../slices/viewProductSlice";
+import { fetchProducts } from "../slices/productSlice";
 
 // Filter helpers
 const filterByCategory = (products, selectedCategoryId) =>
@@ -126,17 +126,20 @@ export default function ListProducts({
   showHeader = true,
   padding,
   filter = true,
-  limit,
-  products,
-  loading,
   productsVariant,
   showPagination = true,
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { viewProducts: _ } = useSelector((state) => state.viewProduct);
+  const { products, loading, totalPage, currentPage } = useSelector(
+    (state) => state.product
+  );
+  const { categorys } = useSelector((state) => state.categorys);
   const userId = localStorage.getItem("userID");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const pageParam = parseInt(searchParams.get("page")) || 1;
+  const [page, setPage] = useState(pageParam);
 
   // Filter states
   const [priceFilter, setPriceFilter] = useState("");
@@ -148,13 +151,12 @@ export default function ListProducts({
   const [ramFilter, setRamFilter] = useState("");
   const [colorFilter, setColorFilter] = useState("");
   const [showFilters, setShowFilters] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
 
-  const { categorys } = useSelector((state) => state.categorys);
-
+  // Parse price from string to integer
   const parsePrice = (priceStr) =>
     parseInt(priceStr?.replace(/[^\d]/g, "")) || 0;
 
+  // Get discount percentage
   const getDiscountPercent = (product) => {
     const original = parsePrice(product.price_original);
     const sale = parsePrice(product.price);
@@ -162,18 +164,30 @@ export default function ListProducts({
     return Math.floor(((original - sale) / original) * 100);
   };
 
+  // Fetch categories on mount
   useEffect(() => {
     dispatch(fetchCategory());
   }, [dispatch]);
+
+  // Fetch products when page changes
+  useEffect(() => {
+    dispatch(fetchProducts(page));
+  }, [dispatch, page]);
 
   // Scroll to top when page/filter changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currentPage]);
 
+  const isFirstFilter = useRef(true);
+
   // Reset page when filter changes
   useEffect(() => {
-    setCurrentPage(1);
+    if (isFirstFilter.current) {
+      isFirstFilter.current = false;
+      return;
+    }
+    setPage(1);
   }, [
     memoryFilter,
     ramFilter,
@@ -184,6 +198,20 @@ export default function ListProducts({
     readyStock,
     searchTerm,
   ]);
+
+  // Update query string when page changes
+  useEffect(() => {
+    setSearchParams((params) => {
+      params.set("page", page);
+      return params;
+    });
+  }, [page, setSearchParams]);
+
+  // Update page state when URL changes
+  useEffect(() => {
+    if (page !== pageParam) setPage(pageParam);
+    // eslint-disable-next-line
+  }, [pageParam]);
 
   // Options
   const ramOptions = useMemo(
@@ -293,22 +321,6 @@ export default function ListProducts({
       )
     );
   }, [productsVariant, filteredProducts]);
-
-  // Limit products if needed
-  const limitedProducts = useMemo(() => {
-    if (limit && Number.isInteger(limit) && limit > 0) {
-      return filteredProducts.slice(0, limit);
-    }
-    return filteredProducts;
-  }, [filteredProducts, limit]);
-
-  // Pagination
-  const totalPages = Math.ceil(limitedProducts.length / perPage);
-  const paginatedProducts = useMemo(
-    () =>
-      limitedProducts.slice((currentPage - 1) * perPage, currentPage * perPage),
-    [limitedProducts, currentPage, perPage]
-  );
 
   return (
     <>
@@ -517,7 +529,7 @@ export default function ListProducts({
                     role="tabpanel"
                     aria-labelledby="nav-all-tab"
                   >
-                    {paginatedProducts.length === 0 ? (
+                    {products.length === 0 ? (
                       <div
                         className="w-100 d-flex justify-content-center align-items-center"
                         style={{ minHeight: 200 }}
@@ -528,7 +540,7 @@ export default function ListProducts({
                       </div>
                     ) : (
                       <div className="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
-                        {paginatedProducts.map((product) => {
+                        {products.map((product) => {
                           const discountPercent = getDiscountPercent(product);
                           return (
                             <Product
@@ -552,11 +564,11 @@ export default function ListProducts({
                       </div>
                     )}
                     {/* PHÂN TRANG */}
-                    {showPagination && totalPages > 1 && (
+                    {showPagination && totalPage > 1 && (
                       <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={setCurrentPage}
+                        currentPage={page}
+                        totalPages={totalPage}
+                        onPageChange={setPage}
                       />
                     )}
                   </div>

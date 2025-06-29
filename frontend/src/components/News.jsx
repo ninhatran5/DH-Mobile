@@ -1,13 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-function truncateText(text, maxLength) {
-  if (!text) return "";
-  if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength) + "...";
-}
 
 export default function News({ item }) {
   const { t } = useTranslation();
+  function truncateText(text, maxLength) {
+    if (!text) return "";
+    if (text.length <= maxLength) return text;
+    return text.slice(0, maxLength) + "...";
+  }
 
   return (
     <div className="card-products col-md-4" key={item.id}>
@@ -44,7 +44,11 @@ export default function News({ item }) {
                 {item.title}
               </Link>
             </h3>
-            <p>{truncateText(item.content, 170)}</p>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: truncateText(item.content, 170),
+              }}
+            />
           </div>
         </div>
         <div className="card-footer text-end d-flex justify-content-between align-items-center">

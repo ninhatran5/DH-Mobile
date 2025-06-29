@@ -1,18 +1,20 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import {  axiosUser } from "../../utils/axiosConfig";
+import { axiosUser } from "../../utils/axiosConfig";
 
 const initialState = {
   products: [],
+  totalPage: 1,
+  currentPage: 1,
   loading: false,
   error: null,
 };
 
-///CALL API BANNER
 export const fetchProducts = createAsyncThunk(
   "product/fetchProducts",
-  async () => {
-    const response = await axiosUser.get("/products");
-    return response.data.data;
+  async (page = 1) => {
+    const response = await axiosUser.get(`/products?page=${page}`);
+    // response.data = { data, totalPage, currentPage, ... }
+    return response.data;
   }
 );
 
@@ -22,17 +24,16 @@ export const productSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // pending(đang call)
       .addCase(fetchProducts.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      // call thành công
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.products = action.payload;
+        state.products = action.payload.data || [];
+        state.totalPage = action.payload.totalPage || 1;
+        state.currentPage = action.payload.currentPage || 1;
       })
-      // call lỗi
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";

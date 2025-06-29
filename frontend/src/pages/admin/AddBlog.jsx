@@ -2,7 +2,7 @@ import { useState } from "react";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import "../../assets/css/ckeditor.css";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addBlog } from "../../slices/blogSlice";
 import Swal from "sweetalert2";
 
@@ -13,6 +13,9 @@ export default function AddBlog() {
   const [imagePreview, setImagePreview] = useState("");
   const dispatch = useDispatch();
 
+  const { adminProfile } = useSelector((state) => state.adminProfile);
+  const user = adminProfile?.user;
+  
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -31,16 +34,15 @@ export default function AddBlog() {
           title: title,
           content: content,
           image_url: imageFile,
+          user_id: user.id,
         })
       );
-      // Nếu addBlog là async thunk, kiểm tra result.meta.requestStatus
       if (result.meta && result.meta.requestStatus === "fulfilled") {
         Swal.fire({
           icon: "success",
           title: "Thành công",
           text: "Thêm bài viết thành công!",
         });
-        // Reset form nếu muốn
         setTitle("");
         setContent("");
         setImageFile(null);
@@ -75,12 +77,11 @@ export default function AddBlog() {
       </div>
       <div className="add-blog-form-group">
         <label htmlFor="imageUpload">
-          <strong>Ảnh đại diện:</strong>
+          <strong>Ảnh bài viết:</strong>
         </label>
         <input
           id="imageUpload"
           type="file"
-          accept="image/*"
           onChange={handleImageChange}
           className="add-blog-input-file"
         />
