@@ -104,6 +104,34 @@ export const fetchReturnOrders = createAsyncThunk(
   }
 );
 
+// Huỷ đơn hàng
+export const cancelOrder = createAsyncThunk(
+  "adminOrder/cancelOrder",
+  async ({ orderId, cancel_reason }, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      const response = await axiosAdmin.post(
+        `/admin/orders/${orderId}/cancel`,
+        { cancel_reason },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.data && response.data.order) {
+        return response.data.order;
+      } else {
+        return rejectWithValue("Không nhận được dữ liệu đơn hàng từ server");
+      }
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Lỗi khi huỷ đơn hàng"
+      );
+    }
+  }
+);
+
 // Slice
 const adminOrderSlice = createSlice({
   name: "adminOrder",
@@ -187,7 +215,7 @@ const adminOrderSlice = createSlice({
 
         // Cập nhật lại completedOrders
         state.completedOrders = state.orders.filter(
-          (order) => order.status?.toLowerCase() === "Hoàn Thành"
+          (order) => order.status?.toLowerCase() === "hoàn thành"
         );
 
         state.order = orderDetails;
@@ -211,6 +239,32 @@ const adminOrderSlice = createSlice({
       .addCase(fetchReturnOrders.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Lỗi khi lấy danh sách đơn hoàn hàng";
+      })
+
+      // Huỷ đơn hàng
+      .addCase(cancelOrder.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(cancelOrder.fulfilled, (state, action) => {
+        state.loading = false;
+        const updatedOrder = action.payload;
+        state.orders = state.orders.map(order =>
+          order?.order_id === updatedOrder.order_id
+            ? { ...order, ...updatedOrder }
+            : order
+        );
+        // Cập nhật lại completedOrders
+        state.completedOrders = state.orders.filter(
+          (order) => order.status?.toLowerCase() === "completed"
+        );
+        if (state.order && state.order.order_id === updatedOrder.order_id) {
+          state.order = { ...state.order, ...updatedOrder };
+        }
+      })
+      .addCase(cancelOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Lỗi khi huỷ đơn hàng";
       });
   },
 });

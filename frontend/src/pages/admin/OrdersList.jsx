@@ -1,15 +1,17 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAdminOrders, updateOrderStatus } from "../../slices/adminOrderSlice";
+import { fetchAdminOrders, updateOrderStatus, cancelOrder } from "../../slices/adminOrderSlice";
 import "../../assets/admin/HomeAdmin.css";
 import "../../assets/admin/order.css";
 import "../../assets/admin/OrdersList.css";
-import { FiEdit, FiEye } from "react-icons/fi";
+import { FiEdit, FiEye, FiX } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 const MySwal = withReactContent(Swal);
 import DefaultImage from "../../assets/images/adminacccount.jpg";
+import Loading from "../../components/Loading";
+
 const OrdersList = () => {
   const dispatch = useDispatch();
   const { orders, pagination, loading, error } = useSelector(
@@ -22,6 +24,10 @@ const OrdersList = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedStatusTab, setSelectedStatusTab] = useState("Tất cả");
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [orderToCancel, setOrderToCancel] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -96,14 +102,42 @@ const OrdersList = () => {
       reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
+        setIsUpdatingStatus(true);
         dispatch(updateOrderStatus({ orderId, status: newStatus }))
           .then(() => {
             setSelectedOrder(null);
             Swal.fire("Thành công", "Trạng thái đơn hàng đã được cập nhật.", "success");
             dispatch(fetchAdminOrders(currentPage));
+          })
+          .finally(() => {
+            setIsUpdatingStatus(false);
           });
       }
     });
+  };
+
+  const handleCancelOrder = (order) => {
+    setOrderToCancel(order);
+    setCancelReason("");
+    setShowCancelModal(true);
+  };
+
+  const handleConfirmCancelOrder = () => {
+    if (!cancelReason.trim()) {
+      Swal.fire("Lý do huỷ không được để trống", "", "warning");
+      return;
+    }
+    setIsUpdatingStatus(true);
+    dispatch(cancelOrder({ orderId: orderToCancel.order_id, cancel_reason: cancelReason }))
+      .then(() => {
+        setShowCancelModal(false);
+        setOrderToCancel(null);
+        Swal.fire("Đã huỷ đơn hàng", "Đơn hàng đã được huỷ thành công.", "success");
+        dispatch(fetchAdminOrders(currentPage));
+      })
+      .finally(() => {
+        setIsUpdatingStatus(false);
+      });
   };
 
   // Format currency
@@ -127,6 +161,7 @@ const OrdersList = () => {
 
   return (
     <div className="admin_order-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      {isUpdatingStatus && <Loading />}
       <div className="admin_order-header">
         <div className="admin_order-title">
           <h1>Danh sách đơn hàng</h1>
@@ -262,9 +297,9 @@ const OrdersList = () => {
                           style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '14px', 
+                            gap: '0px',
                             justifyContent: 'center',
-                            minWidth: 60 
+                            minWidth: 90
                           }}
                         >
                           <button
@@ -277,11 +312,17 @@ const OrdersList = () => {
                               cursor: 'pointer',
                               color: '#007aff',
                               padding: 0,
+                              margin: '0 6px',
+                              width: 32,
+                              height: 32,
                               display: 'flex',
-                              alignItems: 'center'
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              borderRadius: '50%',
+                              transition: 'background 0.2s'
                             }}
                           >
-                            <FiEdit size={16} />
+                            <FiEdit size={18} />
                           </button>
                           <button
                             className="adminorder-icon-btn"
@@ -292,13 +333,43 @@ const OrdersList = () => {
                               border: 'none',
                               cursor: 'pointer',
                               color: '#007aff',
-                              padding: 0, 
+                              padding: 0,
+                              margin: '0 6px',
+                              width: 32,
+                              height: 32,
                               display: 'flex',
-                              alignItems: 'center'
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              borderRadius: '50%',
+                              transition: 'background 0.2s'
                             }}
                           >
-                            <FiEye size={16} />
+                            <FiEye size={18} />
                           </button>
+                          {normalizeString(order.status) === normalizeString("Chờ xác nhận") && (
+                            <button
+                              className="adminorder-icon-btn"
+                              onClick={() => handleCancelOrder(order)}
+                              title="Huỷ đơn hàng"
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                color: '#d33',
+                                padding: 0,
+                                margin: '0 6px',
+                                width: 32,
+                                height: 32,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                borderRadius: '50%',
+                                transition: 'background 0.2s'
+                              }}
+                            >
+                              <FiX size={18} />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -346,7 +417,6 @@ const OrdersList = () => {
         <div className="adminorder-modal-backdrop">
           <div className="adminorder-modal">
             <h2>Chi tiết đơn hàng</h2>
-            
             <table className="adminorder-details-table">
               <tbody>
                 <tr><td><strong>Mã đơn:</strong></td><td>{selectedOrder.order_code}</td></tr>
@@ -357,16 +427,17 @@ const OrdersList = () => {
                   <td><strong>Trạng thái:</strong></td>
                   <td>
                     <div className="adminorder-status-wrapper">
-                     
                       <select
                         value={selectedOrder.status}
                         onChange={(e) =>
                           setSelectedOrder({ ...selectedOrder, status: e.target.value })
                         }
                         className="adminorder-status-select"
+                        disabled={isUpdatingStatus}
                       >
                         <option value="Chờ xác nhận">Chờ xác nhận</option>
                         <option value="Đã xác nhận">Đã xác nhận</option>
+                        <option value="Đang vận chuyển">Đang vận chuyển</option>
                         <option value="Đã giao hàng">Đã giao hàng</option>
                         <option value="Đã huỷ">Đã huỷ</option>
                       </select>
@@ -384,12 +455,11 @@ const OrdersList = () => {
                 )}
               </tbody>
             </table>
-
             <div className="adminorder-modal-actions">
-              
               <button
                 className="adminorder-btn-cancel"
                 onClick={() => setSelectedOrder(null)}
+                disabled={isUpdatingStatus}
               >
                 Hủy
               </button>
@@ -398,8 +468,47 @@ const OrdersList = () => {
                 onClick={() =>
                   handleStatusUpdate(selectedOrder.order_id, selectedOrder.status)
                 }
+                disabled={isUpdatingStatus}
               >
                 Cập nhật
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal huỷ đơn hàng */}
+      {showCancelModal && (
+        <div className="adminorder-modal-backdrop">
+          <div className="adminorder-modal">
+            <h2>Huỷ đơn hàng</h2>
+            <p>Bạn có chắc chắn muốn huỷ đơn hàng <b>{orderToCancel?.order_code}</b>?</p>
+            <div style={{ margin: "12px 0" }}>
+              <label style={{ display: "block", fontWeight: 500, marginBottom: 6 }}>
+                Lý do huỷ đơn hàng:
+              </label>
+              <textarea
+                value={cancelReason}
+                onChange={e => setCancelReason(e.target.value)}
+                rows={3}
+                className="adminorder-cancel-reason-textarea"
+                disabled={isUpdatingStatus}
+              />
+            </div>
+            <div className="adminorder-modal-actions">
+              <button
+                className="adminorder-btn-cancel"
+                onClick={() => setShowCancelModal(false)}
+                disabled={isUpdatingStatus}
+              >
+                Đóng
+              </button>
+              <button
+                className="adminorder-btn-submit"
+                onClick={handleConfirmCancelOrder}
+                disabled={isUpdatingStatus}
+                style={{ background: "#d33" }}
+              >
+                Xác nhận huỷ
               </button>
             </div>
           </div>
