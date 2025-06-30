@@ -3,19 +3,20 @@ import { axiosUser } from "../../utils/axiosConfig";
 
 const initialState = {
   vouchers: [],
+  appliedVoucher: null,
   loading: false,
   error: null,
 };
 
-export const fetchVouhcer = createAsyncThunk(
-  "vouhcer/fetchVouhcer",
+export const fetchVoucher = createAsyncThunk(
+  "voucher/fetchVoucher",
   async () => {
     const response = await axiosUser.get("/voucher");
     return response.data;
   }
 );
 export const saveVoucher = createAsyncThunk(
-  "vouhcer/saveVoucher",
+  "voucher/saveVoucher",
   async (id, thunkAPI) => {
     try {
       const response = await axiosUser.post(`/save-voucher/${id}`);
@@ -27,8 +28,8 @@ export const saveVoucher = createAsyncThunk(
     }
   }
 );
-export const fetchVoucerForUser = createAsyncThunk(
-  "vouhcer/fetchVoucerForUser",
+export const fetchVoucherForUser = createAsyncThunk(
+  "voucher/fetchVoucherForUser",
   async (_, thunkAPI) => {
     try {
       const response = await axiosUser.get(`/list-save-voucher`);
@@ -40,26 +41,39 @@ export const fetchVoucerForUser = createAsyncThunk(
     }
   }
 );
-export const vouhcerSlice = createSlice({
-  name: "vouhcer",
+export const applyVoucher = createAsyncThunk(
+  "voucher/applyVoucher",
+  async (voucherData, thunkAPI) => {
+    try {
+      const response = await axiosUser.post(`/voucher/apply`, voucherData);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Đã có lỗi xảy ra"
+      );
+    }
+  }
+);
+export const voucherSlice = createSlice({
+  name: "voucher",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
       // pending(đang call)
-      .addCase(fetchVouhcer.pending, (state) => {
+      .addCase(fetchVoucher.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       // call thành công
-      .addCase(fetchVouhcer.fulfilled, (state, action) => {
+      .addCase(fetchVoucher.fulfilled, (state, action) => {
         state.loading = false;
         state.vouchers = Array.isArray(action.payload.data)
           ? action.payload.data
           : [];
       })
       // call lỗi
-      .addCase(fetchVouhcer.rejected, (state, action) => {
+      .addCase(fetchVoucher.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
       })
@@ -80,21 +94,33 @@ export const vouhcerSlice = createSlice({
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
       })
-      .addCase(fetchVoucerForUser.pending, (state) => {
+      .addCase(fetchVoucherForUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       // call thành công
-      .addCase(fetchVoucerForUser.fulfilled, (state, action) => {
+      .addCase(fetchVoucherForUser.fulfilled, (state, action) => {
         state.loading = false;
         state.vouchers = action.payload;
       })
       // call lỗi
-      .addCase(fetchVoucerForUser.rejected, (state, action) => {
+      .addCase(fetchVoucherForUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Đã có lỗi xảy ra";
+      })
+      .addCase(applyVoucher.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(applyVoucher.fulfilled, (state, action) => {
+        state.loading = false;
+        state.appliedVoucher = action.payload;
+      })
+      .addCase(applyVoucher.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
       });
   },
 });
 
-export default vouhcerSlice.reducer;
+export default voucherSlice.reducer;

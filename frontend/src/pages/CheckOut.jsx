@@ -9,6 +9,7 @@ import { fetchProfile } from "../slices/profileSlice";
 import Loading from "../components/Loading";
 import numberFormat from "../../utils/numberFormat";
 import { fetchCODCheckout, fetchVnpayCheckout } from "../slices/checkOutSlice";
+import { applyVoucher, fetchVoucherForUser } from "../slices/voucherSlice";
 import { toast } from "react-toastify";
 import { fetchCart } from "../slices/cartSlice";
 import ChangeAddressModal from "../components/ChangeAddressModal";
@@ -17,12 +18,16 @@ import "../assets/css/checkout.css";
 const CheckOut = () => {
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [selectedAddress, setSelectedAddress] = useState(null);
+  const [voucherCode, setVoucherCode] = useState("");
+  const [discountAmount, setDiscountAmount] = useState(0);
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const { profile, loading } = useSelector((state) => state.profile);
+  const { vouchers, loading: voucherLoading } = useSelector((state) => state.voucher || {});
+  console.log("🚀 ~ CheckOut ~ vouchers:", vouchers)
   const location = useLocation();
   const selectedItems = location.state?.selectedItems || [];
   const navigate = useNavigate();
@@ -33,6 +38,39 @@ const CheckOut = () => {
     (sum, item) => sum + item.quantity * item?.variant?.price,
     0
   );
+  const vouchertest = vouchers?.voucher_id
+  console.log("🚀 ~ CheckOut ~ vouchertest:", vouchertest)
+
+  const finalPrice = totalPrice - discountAmount;
+
+  const handleApplyVoucher = async () => {
+    if (!voucherCode.trim()) {
+      toast.error("Vui lòng nhập mã voucher");
+      return;
+    }
+
+   const voucherData = {
+voucher_id: vouchers?.[0]?.voucher?.voucher_id,
+  items: selectedItems.map((item) => ({
+    variant_id: item.variant.variant_id,
+    price_snapshot: item.variant.price.toString(),
+    quantity: item.quantity
+  }))
+};
+
+
+    try {
+      const result = await dispatch(applyVoucher(voucherData)).unwrap();
+      if (result && result.discount_amount) {
+        setDiscountAmount(result.discount_amount);
+        toast.success("Áp dụng voucher thành công!");
+      } else {
+        toast.error("Không thể áp dụng voucher này");
+      }
+    } catch (error) {
+      toast.error(error || "Voucher không hợp lệ");
+    }
+  };
 
   const handleCheckOutCOD = (event) => {
     setPaymentMethod(event.target.value);
@@ -59,7 +97,7 @@ const CheckOut = () => {
         quantity: Number(item.quantity),
         price_snapshot: Number(item.price_snapshot),
       })),
-      total_amount: Number(totalPrice),
+      total_amount: Number(finalPrice),
       address: addressData.address,
       customer: addressData.recipient_name || profile.user.full_name || "",
       email: addressData.email || profile.user.email || "",
@@ -97,6 +135,7 @@ const CheckOut = () => {
 
   useEffect(() => {
     dispatch(fetchProfile());
+    dispatch(fetchVoucherForUser())
   }, [dispatch]);
 
   useEffect(() => {
@@ -303,9 +342,16 @@ const CheckOut = () => {
                         type="text"
                         className="input__discount"
                         placeholder={t("shoppingCart.discountPlaceholder")}
+                        value={voucherCode}
+                        onChange={(e) => setVoucherCode(e.target.value)}
                       />
-                      <button className="btn__discountCode" type="submit">
-                        {t("shoppingCart.apply")}
+                      <button 
+                        className="btn__discountCode" 
+                        type="button"
+                        onClick={handleApplyVoucher}
+                        disabled={voucherLoading}
+                      >
+                        {voucherLoading ? "..." : t("shoppingCart.apply")}
                       </button>
                     </div>
                   </div>
@@ -395,11 +441,11 @@ const CheckOut = () => {
 
                     <ul className="checkout__total__all">
                       <li>
-                        {t("checkout.discount")}: <span>- 0đ</span>
+                        {t("checkout.discount")}: <span>- {numberFormat(discountAmount)}</span>
                       </li>
                       <li>
                         {t("checkout.totalMoney")}:{" "}
-                        <span>{numberFormat(totalPrice)}</span>
+                        <span>{numberFormat(finalPrice)}</span>
                       </li>
                     </ul>
                     <button className="site-btn" onClick={handleCheckout}>
