@@ -17,8 +17,6 @@ class CodController extends Controller
         $user = Auth::user();
         $items = $request->input('items');
 
-
-        // Validate địa chỉ
         $request->validate([
             'address' => 'required|string',
             'ward' => 'required|string',
@@ -28,26 +26,23 @@ class CodController extends Controller
             'email' => 'required|email',
             'customer' => 'required|string',
             'items' => 'required|array|min:1',
+            'voucher_id' => 'nullable|integer',
         ]);
 
         if (empty($items) || !is_array($items)) {
             return response()->json(['message' => 'Không có sản phẩm nào được chọn'], 400);
         }
 
-        // Kiểm tra người dùng đã có giỏ hàng chưa
         $cart = DB::table('carts')->where('user_id', $user->user_id)->first();
         if (!$cart) {
             return response()->json(['message' => 'Giỏ hàng không tồn tại'], 400);
         }
 
-        // Kiểm tra tồn kho và dữ liệu từng item
         foreach ($items as $item) {
             if (!is_array($item) || !isset($item['variant_id'], $item['quantity'], $item['price_snapshot'])) {
                 return response()->json(['message' => 'Dữ liệu sản phẩm không hợp lệ'], 400);
             }
-            $variant = DB::table('product_variants')
-                ->where('variant_id', $item['variant_id'])
-                ->first();
+            $variant = DB::table('product_variants')->where('variant_id', $item['variant_id'])->first();
             if (!$variant || $variant->stock < $item['quantity']) {
                 return response()->json([
                     'message' => 'Sản phẩm đã hết hàng hoặc không đủ số lượng',
@@ -56,7 +51,6 @@ class CodController extends Controller
             }
         }
 
-
         DB::beginTransaction();
         try {
             $orderCode = $this->generateOrderCode();
@@ -64,7 +58,7 @@ class CodController extends Controller
                 'user_id' => $user->user_id,
                 'order_code' => $orderCode,
                 'method_id' => 2,
-                'total_amount' => 0,
+                'total_amount' => 0, // sẽ cập nhật lại sau khi tính
                 'status' => 'Chờ xác nhận',
                 'payment_status' => 'Chưa thanh toán',
                 'address' => $request->address,
@@ -75,16 +69,17 @@ class CodController extends Controller
                 'email' => $request->email,
                 'customer' => $request->customer,
                 'voucher_id' => null,
+                'voucher_discount' => 0,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
             $total = 0;
             $paidVariantIds = [];
+
             foreach ($items as $item) {
-                $variant = DB::table('product_variants')
-                    ->where('variant_id', $item['variant_id'])
-                    ->first();
+                $variant = DB::table('product_variants')->where('variant_id', $item['variant_id'])->first();
+
                 DB::table('order_items')->insert([
                     'order_id' => $orderId,
                     'product_id' => $variant->product_id,
@@ -94,26 +89,49 @@ class CodController extends Controller
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
+
                 $total += $item['price_snapshot'] * $item['quantity'];
-                DB::table('product_variants')
-                    ->where('variant_id', $item['variant_id'])
-                    ->decrement('stock', $item['quantity']);
+
+                DB::table('product_variants')->where('variant_id', $item['variant_id'])->decrement('stock', $item['quantity']);
+
                 $paidVariantIds[] = $item['variant_id'];
             }
 
+            // ==============================
+            // Áp dụng voucher nếu có
+            $voucherId = $request->input('voucher_id');
+            $discount = 0;
+
+            if ($voucherId) {
+                $voucher = DB::table('vouchers')
+                    ->where('voucher_id', $voucherId)
+                    ->where('is_active', 1)
+                    ->where('start_date', '<=', now())
+                    ->where('end_date', '>=', now())
+                    ->where('quantity', '>', 0)
+                    ->first();
+
+                if ($voucher && $total >= $voucher->min_order_value) {
+                    $discount = $voucher->discount_amount;
+                    DB::table('vouchers')->where('voucher_id', $voucherId)->decrement('quantity');
+                } else {
+                    $voucherId = null; // không hợp lệ
+                }
+            }
+            // ==============================
 
             DB::table('orders')->where('order_id', $orderId)->update([
-                'total_amount' => $total,
+                'total_amount' => max($total - $discount, 0),
+                'voucher_id' => $voucherId,
+                'voucher_discount' => $discount,
                 'updated_at' => now(),
             ]);
 
-            // Xóa các item đã mua khỏi giỏ hàng (chỉ xóa các item có variant_id đã đặt hàng)
             DB::table('cart_items')
                 ->where('cart_id', $cart->cart_id)
                 ->whereIn('variant_id', $paidVariantIds)
                 ->delete();
 
-            // Gửi email
             $order = DB::table('orders')->where('order_id', $orderId)->first();
             $userData = DB::table('users')->where('user_id', $user->user_id)->first();
             Mail::to($order->email)->send(new PaymentSuccessMail($order, $userData));
@@ -146,6 +164,7 @@ class CodController extends Controller
         }
     }
 
+
     private function generateOrderCode()
     {
         $prefix = 'DH'; // Prefix cho mã đơn hàng (DH = Đơn Hàng)
@@ -159,5 +178,52 @@ class CodController extends Controller
         $sequence = str_pad($orderCount + 1, 4, '0', STR_PAD_LEFT); // Số thứ tự 4 chữ số
 
         return $prefix . $timestamp . $sequence . $randomStr;
+    }
+    // add voucher vào đơn hàng nhưngh chưa trừ tiền
+    public function applyVoucher(Request $request)
+    {
+        $request->validate([
+            'voucher_id' => 'required|integer',
+            'items' => 'required|array|min:1',
+        ]);
+
+        // Tính tổng tiền từ items[]
+        $totalAmount = 0;
+        foreach ($request->items as $item) {
+            if (!isset($item['variant_id'], $item['quantity'], $item['price_snapshot'])) {
+                return response()->json(['message' => 'Dữ liệu sản phẩm không hợp lệ'], 400);
+            }
+
+            // Có thể kiểm tra thêm tồn kho nếu muốn
+            $totalAmount += $item['price_snapshot'] * $item['quantity'];
+        }
+
+        $voucher = DB::table('vouchers')
+            ->where('voucher_id', $request->voucher_id)
+            ->where('is_active', 1)
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->where('quantity', '>', 0)
+            ->first();
+
+        if (!$voucher) {
+            return response()->json([
+                'message' => 'Voucher không hợp lệ hoặc đã hết hạn/số lượng.'
+            ], 404);
+        }
+
+        if ($totalAmount < $voucher->min_order_value) {
+            return response()->json([
+                'message' => 'Đơn hàng không đủ điều kiện sử dụng voucher.'
+            ], 422);
+        }
+
+        return response()->json([
+            'message' => 'Áp dụng voucher thành công',
+            'voucher_id' => $voucher->voucher_id,
+            'discount_amount' => $voucher->discount_amount,
+            'total_amount' => $totalAmount,
+            'new_total' => $totalAmount - $voucher->discount_amount
+        ]);
     }
 }

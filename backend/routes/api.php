@@ -39,6 +39,7 @@ use App\Http\Controllers\Api\SupportChatController;
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/vnpay/checkout', [VnpayController::class, 'createPayment']);
     Route::post('/codpay/checkout', [CodController::class, 'createCodOrder']);
+    Route::post('/voucher/apply', [CodController::class, 'applyVoucher']);
 });
 
 Route::get('/vnpay/return', [VnpayController::class, 'handleReturn']);
