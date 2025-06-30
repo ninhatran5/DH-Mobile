@@ -5,7 +5,7 @@ import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { fetchVouhcer } from "../slices/voucherSlice";
+import { fetchVoucher } from "../slices/voucherSlice";
 import Loading from "../components/Loading";
 import Pagination from "../components/Pagination";
 import { useSearchParams } from "react-router-dom"; // Thêm dòng này
@@ -21,7 +21,7 @@ const Voucher = () => {
   const pageParam = parseInt(searchParams.get("page")) || 1;
   const [currentPage, setCurrentPage] = useState(pageParam);
   useEffect(() => {
-    dispatch(fetchVouhcer());
+    dispatch(fetchVoucher());
   }, [dispatch]);
   useEffect(() => {
     if (totalPages > 0 && currentPage > totalPages) setCurrentPage(1);

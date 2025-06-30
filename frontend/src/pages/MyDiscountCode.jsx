@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchVoucerForUser } from "../slices/voucherSlice";
+import { fetchVoucherForUser } from "../slices/voucherSlice";
 import Breadcrumb from "../components/Breadcrumb";
 import Coupon from "../components/Coupon";
 import Loading from "../components/Loading";
@@ -11,9 +11,9 @@ export default function MyDiscountCode() {
   const dispatch = useDispatch();
   const { vouchers, loading } = useSelector((state) => state.voucher);
   useEffect(() => {
-    dispatch(fetchVoucerForUser());
+    dispatch(fetchVoucherForUser());
     const handleFocus = () => {
-      dispatch(fetchVoucerForUser());
+      dispatch(fetchVoucherForUser());
     };
     window.addEventListener("focus", handleFocus);
 
