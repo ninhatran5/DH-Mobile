@@ -434,3 +434,28 @@
   font-size: 13px;
 }
 
+.adminorder-cancel-reason-textarea {
+  width: 550px;
+  max-width: 100%;
+  min-width: 320px;
+  margin-top: 6px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1.5px solid #ccc;
+  font-size: 15px;
+  min-height: 80px;
+  resize: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  background: #fafbfc;
+  color: #222;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.adminorder-cancel-reason-textarea:focus {
+  border-color: #007aff;
+  box-shadow: 0 0 0 2px rgba(0,122,255,0.08);
+  background: #fff;
+}
+
