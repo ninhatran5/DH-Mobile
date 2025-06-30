@@ -42,59 +42,14 @@ class VnpayController extends Controller
             }
         }
 
-        $voucherId = $request->input('voucher_id');
-        $voucher = null;
-        $voucherDiscount = 0;
-        // Kiểm tra voucher nếu có
-        if ($voucherId) {
-            $voucher = DB::table('vouchers')
-                ->where('voucher_id', $voucherId)
-                ->where('is_active', 1)
-                ->whereNull('deleted_at')
-                ->where('start_date', '<=', now())
-                ->where('end_date', '>=', now())
-                ->first();
-            if ($voucher) {
-                // Kiểm tra số lượng còn lại
-                if ($voucher->quantity > 0) {
-                    // Kiểm tra user đã dùng voucher này chưa
-                    $userVoucher = DB::table('user_vouchers')
-                        ->where('user_id', $user->user_id)
-                        ->where('voucher_id', $voucher->voucher_id)
-                        ->where('is_used', 1)
-                        ->first();
-                    if (!$userVoucher) {
-                        // Sẽ áp dụng ở bước handleReturn nếu thanh toán thành công
-                    } else {
-                        $voucher = null;
-                        $voucherId = null;
-                    }
-                } else {
-                    $voucher = null;
-                    $voucherId = null;
-                }
-            } else {
-                $voucherId = null;
-            }
-        }
 
         // Chỉ tính toán thông tin cần thiết
         $orderCode = $this->generateOrderCode();
-        // Tính tổng tiền
+
         $total = 0;
         foreach ($items as $item) {
             if (isset($item['price_snapshot'])) {
                 $total += $item['price_snapshot'] * $item['quantity'];
-            }
-        }
-        // Áp dụng voucher nếu hợp lệ
-        if ($voucher) {
-            if ($total >= $voucher->min_order_value) {
-                $voucherDiscount = min($voucher->discount_amount, $total);
-                $total -= $voucherDiscount;
-            } else {
-                $voucherId = null;
-                $voucherDiscount = 0;
             }
         }
 
@@ -110,8 +65,6 @@ class VnpayController extends Controller
             'city' => $request->city,
             'phone' => $request->phone,
             'email' => $request->email,
-            'voucher_id' => $voucherId,
-            'voucher_discount' => $voucherDiscount,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -166,8 +119,6 @@ class VnpayController extends Controller
         return response()->json([
             'payment_url' => $vnpUrl,
             'order_code' => $orderCode,
-            'voucher_discount' => $voucherDiscount,
-            'voucher_id' => $voucherId
         ]);
     }
 
@@ -187,8 +138,6 @@ class VnpayController extends Controller
             $user_id = $pending->user_id;
             $items = json_decode($pending->items, true);
             $totalAmount = $pending->total_amount;
-            $voucherId = $pending->voucher_id ?? null;
-            $voucherDiscount = $pending->voucher_discount ?? 0;
 
             // Kiểm tra xem đơn hàng với mã này đã tồn tại chưa
             $existingOrder = DB::table('orders')->where('order_code', $orderCode)->first();
@@ -205,7 +154,7 @@ class VnpayController extends Controller
                 'total_amount' => $totalAmount,
                 'status' => 'Chờ xác nhận',
                 'payment_status' => 'Đã thanh toán',
-                'voucher_id' => $voucherId,
+                'voucher_id' => null,
                 'address' => $pending->address,
                 'ward' => $pending->ward,
                 'district' => $pending->district,
@@ -281,21 +230,6 @@ class VnpayController extends Controller
                     'message' => 'Đơn hàng mới #' . $orderCode . ' vừa được tạo.',
                     'is_read' => 0,
                     'created_at' => now()
-                ]);
-            }
-
-            // Áp dụng voucher cho user nếu có
-            if ($voucherId && $voucherDiscount > 0) {
-                // Trừ số lượng voucher
-                DB::table('vouchers')->where('voucher_id', $voucherId)->decrement('quantity', 1);
-                // Đánh dấu user đã dùng voucher
-                DB::table('user_vouchers')->insert([
-                    'user_id' => $user_id,
-                    'voucher_id' => $voucherId,
-                    'is_used' => 1,
-                    'used_at' => now(),
-                    'created_at' => now(),
-                    'updated_at' => now(),
                 ]);
             }
 

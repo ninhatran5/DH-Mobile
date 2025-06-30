@@ -24,8 +24,6 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
-            $table->unsignedBigInteger('voucher_id')->nullable(); // Thêm dòng này
-            $table->decimal('voucher_discount', 10, 2)->default(0);
             $table->timestamps();
         });
     }
