@@ -20,14 +20,17 @@ const CheckOut = () => {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [voucherCode, setVoucherCode] = useState("");
   const [discountAmount, setDiscountAmount] = useState(0);
+  const [showVoucherDropdown, setShowVoucherDropdown] = useState(false);
+  const [selectedVoucher, setSelectedVoucher] = useState(null);
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const { profile, loading } = useSelector((state) => state.profile);
-  const { vouchers, loading: voucherLoading } = useSelector((state) => state.voucher || {});
-  console.log("🚀 ~ CheckOut ~ vouchers:", vouchers)
+  const { vouchers, loading: voucherLoading } = useSelector(
+    (state) => state.voucher || {}
+  );
   const location = useLocation();
   const selectedItems = location.state?.selectedItems || [];
   const navigate = useNavigate();
@@ -38,38 +41,41 @@ const CheckOut = () => {
     (sum, item) => sum + item.quantity * item?.variant?.price,
     0
   );
-  const vouchertest = vouchers?.voucher_id
-  console.log("🚀 ~ CheckOut ~ vouchertest:", vouchertest)
-
   const finalPrice = totalPrice - discountAmount;
 
   const handleApplyVoucher = async () => {
-    if (!voucherCode.trim()) {
-      toast.error("Vui lòng nhập mã voucher");
+    if (!selectedVoucher) {
+      toast.error("Vui lòng chọn voucher");
       return;
     }
 
-   const voucherData = {
-voucher_id: vouchers?.[0]?.voucher?.voucher_id,
-  items: selectedItems.map((item) => ({
-    variant_id: item.variant.variant_id,
-    price_snapshot: item.variant.price.toString(),
-    quantity: item.quantity
-  }))
-};
-
+    const voucherData = {
+      voucher_id: selectedVoucher.voucher_id || selectedVoucher.voucher?.voucher_id,
+      items: selectedItems.map((item) => ({
+        variant_id: item.variant.variant_id,
+        price_snapshot: item.variant.price.toString(),
+        quantity: item.quantity,
+      })),
+    };
 
     try {
       const result = await dispatch(applyVoucher(voucherData)).unwrap();
       if (result && result.discount_amount) {
         setDiscountAmount(result.discount_amount);
         toast.success("Áp dụng voucher thành công!");
+        setShowVoucherDropdown(false);
       } else {
         toast.error("Không thể áp dụng voucher này");
       }
     } catch (error) {
       toast.error(error || "Voucher không hợp lệ");
     }
+  };
+
+  const handleSelectVoucher = (voucher) => {
+    setSelectedVoucher(voucher);
+    setVoucherCode(voucher.code || voucher.voucher?.code || "");
+    setShowVoucherDropdown(false);
   };
 
   const handleCheckOutCOD = (event) => {
@@ -95,9 +101,11 @@ voucher_id: vouchers?.[0]?.voucher?.voucher_id,
       items: selectedItems.map((item) => ({
         variant_id: Number(item.variant.variant_id),
         quantity: Number(item.quantity),
-        price_snapshot: Number(item.price_snapshot),
+        price_snapshot: Number(item.variant.price),
       })),
       total_amount: Number(finalPrice),
+      voucher_id: selectedVoucher ? (selectedVoucher.voucher_id || selectedVoucher.voucher?.voucher_id) : null,
+      discount_amount: Number(discountAmount),
       address: addressData.address,
       customer: addressData.recipient_name || profile.user.full_name || "",
       email: addressData.email || profile.user.email || "",
@@ -135,7 +143,7 @@ voucher_id: vouchers?.[0]?.voucher?.voucher_id,
 
   useEffect(() => {
     dispatch(fetchProfile());
-    dispatch(fetchVoucherForUser())
+    dispatch(fetchVoucherForUser());
   }, [dispatch]);
 
   useEffect(() => {
@@ -145,6 +153,20 @@ voucher_id: vouchers?.[0]?.voucher?.voucher_id,
       }
     });
   }, [dispatch, navigate]);
+
+  // Đóng dropdown khi click bên ngoài
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showVoucherDropdown && !event.target.closest('.checkout-voucher-apply-container')) {
+        setShowVoucherDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showVoucherDropdown]);
 
   return (
     <>
@@ -337,22 +359,55 @@ voucher_id: vouchers?.[0]?.voucher?.voucher_id,
                 <div className="col-lg-4 col-md-6">
                   <div className="cart__discount" style={{ marginBottom: 30 }}>
                     <h6>{t("shoppingCart.discountCode")}</h6>
-                    <div className="discount__input-btn">
+                    <div className="discount__input-btn checkout-voucher-apply-container">
                       <input
                         type="text"
-                        className="input__discount"
-                        placeholder={t("shoppingCart.discountPlaceholder")}
+                        className="input__discount checkout-voucher-apply-input"
+                        placeholder={selectedVoucher ? (selectedVoucher.code || selectedVoucher.voucher?.code) : t("shoppingCart.discountPlaceholder")}
                         value={voucherCode}
                         onChange={(e) => setVoucherCode(e.target.value)}
+                        onClick={() => setShowVoucherDropdown(!showVoucherDropdown)}
+                        readOnly
                       />
-                      <button 
-                        className="btn__discountCode" 
+                      <button
+                        className="btn__discountCode"
                         type="button"
                         onClick={handleApplyVoucher}
                         disabled={voucherLoading}
                       >
-                        {voucherLoading ? "..." : t("shoppingCart.apply")}
+                        {t("shoppingCart.apply")}
                       </button>
+                      
+                      {showVoucherDropdown && (
+                        <div className="checkout-voucher-apply-dropdown">
+                          {vouchers && vouchers.length > 0 ? (
+                            vouchers.map((voucher, index) => {
+                              const voucherData = voucher.voucher || voucher;
+                              return (
+                                <div
+                                  key={voucherData.voucher_id || index}
+                                  onClick={() => handleSelectVoucher(voucher)}
+                                  className="checkout-voucher-apply-item"
+                                >
+                                  <div className="checkout-voucher-apply-code">
+                                    {voucherData.code}
+                                  </div>
+                                  <div className="checkout-voucher-apply-title">
+                                    {voucherData.title}
+                                  </div>
+                                  <div className="checkout-voucher-apply-details">
+                                    Giảm: {numberFormat(voucherData.discount_amount)} - Tối thiểu: {numberFormat(voucherData.min_order_value)}
+                                  </div>
+                                </div>
+                              );
+                            })
+                          ) : (
+                            <div className="checkout-voucher-apply-empty">
+                              Không có voucher nào
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="checkout__order">
@@ -441,7 +496,8 @@ voucher_id: vouchers?.[0]?.voucher?.voucher_id,
 
                     <ul className="checkout__total__all">
                       <li>
-                        {t("checkout.discount")}: <span>- {numberFormat(discountAmount)}</span>
+                        {t("checkout.discount")}:{" "}
+                        <span>- {numberFormat(discountAmount)}</span>
                       </li>
                       <li>
                         {t("checkout.totalMoney")}:{" "}
