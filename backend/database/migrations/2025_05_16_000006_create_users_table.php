@@ -20,7 +20,10 @@ return new class extends Migration
             $table->string('ward', 100)->nullable();
             $table->string('district', 100)->nullable();
             $table->string('city', 100)->nullable();
-            $table->enum('role', ['customer', 'admin', 'sale', 'shipper', 'checker'])->default('customer');
+            $table->enum('role', ['customer', 'admin', 'sale'])->default('customer');
+            $table->unsignedBigInteger('tier_id')->nullable();
+            $table->integer('loyalty_points')->default(0);
+            $table->foreign('tier_id')->references('tier_id')->on('loyalty_tiers')->nullOnDelete();
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->dateTime('deleted_at')->nullable();

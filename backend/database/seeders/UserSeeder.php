@@ -13,12 +13,12 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Admin và các role mặc định
-        $roles = ['admin', 'customer', 'sale', 'shipper', 'checker'];
+        $roles = ['admin', 'customer', 'sale'];
 
         foreach ($roles as $index => $role) {
             DB::table('users')->insert([
                 'username'    => $role . '_user',
-                'password_hash' => Hash::make('12345678'),
+                'password_hash' => Hash::make( 'Admin@123'),
                 'email'       => $role . '@gmail.com',
                 'full_name'   => ucfirst($role) . ' User',
                 'phone'       => '012345678' . $index,
@@ -43,7 +43,7 @@ class UserSeeder extends Seeder
                 'district' => 'Huyện An Lão',
                 'city' => 'Thành phố Hải Phòng',
                 'image_url' => 'https://www.shutterstock.com/image-vector/man-inscription-admin-icon-outline-600nw-1730974153.jpg',
-                'role' => 'customer',
+                'role' => 'sale',
                 'created_at' => '2025-05-22 03:42:09',
                 'updated_at' => '2025-05-22 08:11:55'
             ],
