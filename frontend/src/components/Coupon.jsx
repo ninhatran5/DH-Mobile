@@ -15,6 +15,7 @@ const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
   const inputRef = useRef(null);
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const checkQuantityVoucher = voucher?.quantity;
   const handleCopyVoucher = () => {
     inputRef.current.select();
     inputRef.current.setSelectionRange(0, 99999);
@@ -77,15 +78,21 @@ const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
               )}
             </div>
             {isMyVoucher ? (
-              <div className="userVoucher-icon-wrapper">
-                <HiSave
-                  onClick={handleSaveVoucher}
-                  className="userVoucher-icon"
-                />
-                <span className="userVoucher-tooltip">
-                  {t("voucher.iconSave")}
-                </span>
-              </div>
+              checkQuantityVoucher > 0 ? (
+                <div className="userVoucher-icon-wrapper">
+                  <HiSave
+                    onClick={handleSaveVoucher}
+                    className="userVoucher-icon"
+                  />
+                  <span className="userVoucher-tooltip">
+                    {t("voucher.iconSave")}
+                  </span>
+                </div>
+              ) : (
+                <div className="userVoucher-out-of-stock">
+                  <span>Đã hết mã</span>
+                </div>
+              )
             ) : (
               <div className="userVoucher-icon-wrapper">
                 <FaCopy

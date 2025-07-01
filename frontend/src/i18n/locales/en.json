@@ -487,7 +487,11 @@
     "expiry": "Expiry",
     "minOrder": "Minimum order",
     "discountAmount": "Discount amount",
-    "saveError": "You have saved this coupon code"
+    "saveError": "You have saved this coupon code",
+    "selectError": "Please select a voucher",
+    "applySuccess": "Voucher applied successfully!",
+    "applyFail": "Failed to apply this voucher",
+    "invalid": "Invalid voucher"
   },
   "toast": {
     "errorMin": "Minimum quantity is 1",
