@@ -11,10 +11,11 @@ import { fetchVoucher, saveVoucher } from "../slices/voucherSlice";
 import Swal from "sweetalert2";
 import numberFormat from "../../utils/numberFormat";
 
-const Coupon = ({ voucher, isMyVoucher }) => {
+const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
   const inputRef = useRef(null);
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const checkQuantityVoucher = voucher?.quantity;
   const handleCopyVoucher = () => {
     inputRef.current.select();
     inputRef.current.setSelectionRange(0, 99999);
@@ -70,18 +71,28 @@ const Coupon = ({ voucher, isMyVoucher }) => {
         <div className="userVoucher-content">
           <div className="userVoucher-copyBtn">
             <div className="userVoucher-quantity">
-              <span>{voucher.quantity}</span>
+              {showItemQuantity ? (
+                <span>{item.quantity}</span>
+              ) : (
+                <span>{voucher.quantity}</span>
+              )}
             </div>
             {isMyVoucher ? (
-              <div className="userVoucher-icon-wrapper">
-                <HiSave
-                  onClick={handleSaveVoucher}
-                  className="userVoucher-icon"
-                />
-                <span className="userVoucher-tooltip">
-                  {t("voucher.iconSave")}
-                </span>
-              </div>
+              checkQuantityVoucher > 0 ? (
+                <div className="userVoucher-icon-wrapper">
+                  <HiSave
+                    onClick={handleSaveVoucher}
+                    className="userVoucher-icon"
+                  />
+                  <span className="userVoucher-tooltip">
+                    {t("voucher.iconSave")}
+                  </span>
+                </div>
+              ) : (
+                <div className="userVoucher-out-of-stock">
+                  <span>Đã hết mã</span>
+                </div>
+              )
             ) : (
               <div className="userVoucher-icon-wrapper">
                 <FaCopy

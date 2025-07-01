@@ -118,7 +118,10 @@ const OrderDetail = () => {
     },
     {
       label: t("orderDetail.order_date"),
-      value: orderDetail?.order_date || t("toast.pending_update"),
+      value:
+        orderDetail?.order_date && dayjs(orderDetail.order_date).isValid()
+          ? dayjs(orderDetail.order_date).format("HH:mm - DD/MM/YYYY")
+          : t("toast.pending_update"),
     },
     {
       label: t("orderDetail.order_status_note"),
@@ -183,7 +186,7 @@ const OrderDetail = () => {
             <p className="mb-0">
               {t("orderDetail.orderDate")}:{" "}
               <span>
-                {orderDetail?.order_date
+                {dayjs(orderDetail?.order_date).isValid()
                   ? dayjs(orderDetail.order_date).format("HH:mm - DD/MM/YYYY")
                   : t("toast.pending_update")}
               </span>
@@ -285,12 +288,15 @@ const OrderDetail = () => {
                     <RiArrowGoBackFill />
                     <span>{t("orderDetail.back")}</span>
                   </Link>
-                  <button
-                    className="btn-cancel-order"
-                    onClick={() => handleCancelOrder(orderDetail.order_id)}
-                  >
-                    {t("orderHistory.cancel")}
-                  </button>
+                  {(orderDetail?.status === "Chờ xác nhận" ||
+                    orderDetail?.status === "Đã xác nhận") && (
+                    <button
+                      className="btn-cancel-order"
+                      onClick={() => handleCancelOrder(orderDetail.order_id)}
+                    >
+                      {t("orderHistory.cancel")}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

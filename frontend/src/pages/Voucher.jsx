@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { fetchVoucher } from "../slices/voucherSlice";
 import Loading from "../components/Loading";
 import Pagination from "../components/Pagination";
-import { useSearchParams } from "react-router-dom"; // Thêm dòng này
+import { useSearchParams } from "react-router-dom";
 
 const Voucher = () => {
   const { t } = useTranslation();

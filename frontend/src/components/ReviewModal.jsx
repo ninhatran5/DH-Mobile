@@ -69,7 +69,6 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
           timer: 1500,
         });
 
-        // Cập nhật localStorage
         const reviewed = JSON.parse(
           localStorage.getItem("reviewedVariants") || "[]"
         );
@@ -78,21 +77,17 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
           localStorage.setItem("reviewedVariants", JSON.stringify(reviewed));
         }
 
-        // Cập nhật danh sách sản phẩm chưa đánh giá
         const updated = reviewableProducts.filter(
           (p) => p.variant_id !== selectedVariantId
         );
         setReviewableProducts(updated);
 
-        // Gọi callback về OrderHistory
         if (onSuccess) onSuccess(selectedVariantId);
 
-        // Reset state
         setComment("");
         setRating(0);
         setSelectedVariantId(undefined);
 
-        // Đóng nếu hết sản phẩm cần đánh giá
         if (updated.length === 0) {
           handleClose();
         }
