@@ -926,6 +926,8 @@ class OrderController extends Controller
         ]);
     }
 
+
+
     // luồng xử lý đơn hàng hoàn thành thì được cộng điểm 
     public function markAsCompleted(Request $request, $orderId)
     {
@@ -971,7 +973,7 @@ class OrderController extends Controller
             DB::commit();
 
             return response()->json([
-                'message' => 'Đã hoàn thành đơn hàng và cộng điểm (nếu chưa)',
+                'message' => 'Đã hoàn thành đơn hàng và cộng điểm',
                 'earned_points' => $points,
             ]);
         } catch (\Exception $e) {
