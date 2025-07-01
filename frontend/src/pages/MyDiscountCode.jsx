@@ -42,7 +42,9 @@ export default function MyDiscountCode() {
                   item.user_voucher_id
                 }
                 voucher={item.voucher ? item.voucher : item}
+                item={item}
                 isMyVoucher={false}
+                showItemQuantity={true} // Thêm dòng này
               />
             ))}
           </div>

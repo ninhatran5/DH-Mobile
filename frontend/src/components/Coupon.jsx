@@ -11,7 +11,7 @@ import { fetchVoucher, saveVoucher } from "../slices/voucherSlice";
 import Swal from "sweetalert2";
 import numberFormat from "../../utils/numberFormat";
 
-const Coupon = ({ voucher, isMyVoucher }) => {
+const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
   const inputRef = useRef(null);
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -70,7 +70,11 @@ const Coupon = ({ voucher, isMyVoucher }) => {
         <div className="userVoucher-content">
           <div className="userVoucher-copyBtn">
             <div className="userVoucher-quantity">
-              <span>{voucher.quantity}</span>
+              {showItemQuantity ? (
+                <span>{item.quantity}</span>
+              ) : (
+                <span>{voucher.quantity}</span>
+              )}
             </div>
             {isMyVoucher ? (
               <div className="userVoucher-icon-wrapper">
