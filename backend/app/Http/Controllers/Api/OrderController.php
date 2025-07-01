@@ -927,57 +927,40 @@ class OrderController extends Controller
     }
 
 
-
     // luồng xử lý đơn hàng hoàn thành thì được cộng điểm 
     public function markAsCompleted(Request $request, $orderId)
     {
-        $order = Orders::where('order_id', $orderId)->first();
+        $order = Orders::find($orderId);
+        if (!$order) return response()->json(['message' => 'Không tìm thấy đơn hàng'], 404);
 
-        if (!$order) {
-            return response()->json(['message' => 'Không tìm thấy đơn hàng'], 404);
-        }
-
-        // Kiểm tra đã từng cộng điểm chưa
         $alreadyRewarded = LoyaltyPoint::where('user_id', $order->user_id)
             ->where('type', 'order')
             ->where('description', 'like', '%#' . $order->order_code . '%')
             ->exists();
 
-        // Nếu đơn đã hoàn thành và đã cộng điểm thì dừng
         if ($order->status === 'Hoàn thành' && $alreadyRewarded) {
             return response()->json(['message' => 'Đơn hàng đã hoàn thành và đã được cộng điểm trước đó'], 400);
         }
 
-        DB::beginTransaction();
-
         try {
-            // Nếu chưa hoàn thành thì cập nhật trạng thái
-            if ($order->status !== 'Hoàn thành') {
-                $order->status = 'Hoàn thành';
-                $order->save();
-            }
+            DB::transaction(function () use ($order, $alreadyRewarded, &$points) {
+                if ($order->status !== 'Hoàn thành') $order->update(['status' => 'Hoàn thành']);
 
-            // Tính điểm
-            $points = floor($order->total_amount / 10000);
-
-            // Nếu chưa từng cộng thì cộng
-            if ($points > 0 && !$alreadyRewarded) {
-                LoyaltyPoint::create([
-                    'user_id' => $order->user_id,
-                    'points' => $points,
-                    'type' => 'order',
-                    'description' => 'Tích điểm từ đơn hàng #' . $order->order_code,
-                ]);
-            }
-
-            DB::commit();
+                if (!$alreadyRewarded && ($points = floor($order->total_amount / 10000)) > 0) {
+                    LoyaltyPoint::create([
+                        'user_id' => $order->user_id,
+                        'points' => $points,
+                        'type' => 'order',
+                        'description' => 'Tích điểm từ đơn hàng #' . $order->order_code,
+                    ]);
+                }
+            });
 
             return response()->json([
                 'message' => 'Đã hoàn thành đơn hàng và cộng điểm',
-                'earned_points' => $points,
+                'earned_points' => $points ?? 0,
             ]);
         } catch (\Exception $e) {
-            DB::rollBack();
             return response()->json([
                 'message' => 'Lỗi trong quá trình hoàn tất đơn hàng',
                 'error' => $e->getMessage(),
