@@ -1,21 +1,49 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
-import { fetchorderdetails } from "../../slices/adminOrderSlice";
+import { fetchorderdetails, updateOrderStatus } from "../../slices/adminOrderSlice";
 import "../../assets/admin/OrderDetail.css";
 import OrderStatusSteps from "../../components/AdminOrderDetail";
+
+const ORDER_STATUS_OPTIONS = [
+  "Chờ xác nhận",
+  "Đã xác nhận",
+  "Đang vận chuyển",
+  "Đã giao hàng",
+  "Đã hủy"
+];
+
+const getNextStatus = (current) => {
+  const idx = ORDER_STATUS_OPTIONS.indexOf(current);
+  // Nếu đã là trạng thái cuối cùng hoặc không tìm thấy, không có trạng thái tiếp theo
+  if (idx === -1 || idx === ORDER_STATUS_OPTIONS.length - 1) return null;
+  // Nếu trạng thái hiện tại là "Đã hủy" thì không cho chuyển tiếp
+  if (current === "Đã hủy") return null;
+  // Chỉ cho phép cập nhật đến "Đã giao hàng"
+  const next = ORDER_STATUS_OPTIONS[idx + 1];
+  if (next === "Đã hủy") return null;
+  return next;
+};
 
 const OrderDetails = () => {
   const { orderId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { order, loading, error } = useSelector((state) => state.adminOrder);
+  const [newStatus, setNewStatus] = useState("");
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     if (orderId) {
       dispatch(fetchorderdetails(orderId));
     }
   }, [dispatch, orderId]);
+
+  useEffect(() => {
+    if (order && order.status) {
+      setNewStatus(order.status);
+    }
+  }, [order]);
 
   if (error) return <p className="adminorderdetail-error">{error}</p>;
   if (!order) return null;
@@ -26,6 +54,36 @@ const OrderDetails = () => {
       style: "currency",
       currency: "VND",
     }).format(amount);
+  };
+
+  const nextStatus = getNextStatus(order?.status);
+
+  const handleUpdateStatus = async () => {
+    if (!order || !order.order_id || !nextStatus || nextStatus === order.status) return;
+    setUpdating(true);
+    try {
+      await dispatch(updateOrderStatus({ orderId: order.order_id, status: nextStatus })).unwrap();
+    } catch (e) {
+      // Có thể hiển thị thông báo lỗi nếu muốn
+    }
+    setUpdating(false);
+  };
+
+  // Thêm hàm huỷ đơn hàng
+  const handleCancelOrder = async () => {
+    if (!order || !order.order_id) return;
+    const reason = window.prompt("Nhập lý do huỷ đơn hàng:");
+    if (!reason) return;
+    setUpdating(true);
+    try {
+      await dispatch(
+        // Đảm bảo import cancelOrder từ slice
+        require("../../slices/adminOrderSlice").cancelOrder({ orderId: order.order_id, cancel_reason: reason })
+      ).unwrap();
+    } catch (e) {
+      // Có thể hiển thị thông báo lỗi nếu muốn
+    }
+    setUpdating(false);
   };
 
   return (
@@ -128,6 +186,29 @@ const OrderDetails = () => {
 
       <OrderStatusSteps status={order.status} />
 
+      {/* Đưa sang phải, bỏ khung ngoài */}
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
+        {nextStatus && (
+          <button
+            className="adminorderdetail-status-btn"
+            disabled={updating || loading}
+            onClick={handleUpdateStatus}
+            style={{ marginRight: order.status === "Chờ xác nhận" ? 12 : 0 }}
+          >
+            {updating ? "Đang cập nhật..." : `Cập nhật sang "${nextStatus}"`}
+          </button>
+        )}
+        {order.status === "Chờ xác nhận" && (
+          <button
+            className="adminorderdetail-cancel-btn"
+            disabled={updating || loading}
+            onClick={handleCancelOrder}
+          >
+            Huỷ đơn hàng
+          </button>
+        )}
+      </div>
+
       <h3 className="adminorderdetail-subtitle">Chi tiết sản phẩm</h3>
       <table className="adminorderdetail-table product">
         <thead>
@@ -185,3 +266,4 @@ const OrderDetails = () => {
 };
 
 export default OrderDetails;
+
