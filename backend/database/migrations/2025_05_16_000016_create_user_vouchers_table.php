@@ -16,7 +16,7 @@ return new class extends Migration
             $table->dateTime('used_at')->nullable();
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
-
+            $table->integer('quantity')->default(1);
             $table->foreign('user_id')->references('user_id')->on('users');
             $table->foreign('voucher_id')->references('voucher_id')->on('vouchers');
         });
