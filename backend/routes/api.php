@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Controllers\Api\ProductsViewsController;
 use App\Http\Controllers\Api\AttributevalueController;
+use App\Http\Controllers\Api\LoyaltyPointController;
 use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
 use App\Http\Controllers\Api\VariantAttributeValuesController;
@@ -341,4 +342,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/save-voucher/{id}', [VoucherController::class, 'saveVoucherForUser']);
     // Lấy danh sách voucher đã lưu
     Route::get('/list-save-voucher', [VoucherController::class, 'getSavedVouchersForUser']);
+});
+// tích điểm khi mua hàng thành công
+Route::middleware('auth:sanctum')->group(function () {
+    // Lấy lịch sử điểm và tổng điểm người dùng
+    Route::get('/loyalty-points', [LoyaltyPointController::class, 'index']);
+    Route::get('/loyalty-points/summary', [LoyaltyPointController::class, 'summary']);
+    // API đánh dấu đơn hàng hoàn thành + tự động cộng điểm
+    Route::put('/orders/{order_id}/complete', [OrderController::class, 'markAsCompleted']);
 });

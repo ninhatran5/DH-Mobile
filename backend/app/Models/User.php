@@ -55,4 +55,15 @@ class User extends Authenticatable
     {
         return $this->hasMany(ProductsViews::class, 'user_id', 'user_id');
     }
+
+    // quan hệ với bảng tích điểm 
+    public function loyaltyPoints()
+    {
+        return $this->hasMany(LoyaltyPoint::class, 'user_id', 'user_id');
+    }
+
+    public function getTotalPointsAttribute()
+    {
+        return $this->loyaltyPoints()->sum('points');
+    }
 }
