@@ -22,6 +22,7 @@ const CheckOut = () => {
   const [discountAmount, setDiscountAmount] = useState(0);
   const [showVoucherDropdown, setShowVoucherDropdown] = useState(false);
   const [selectedVoucher, setSelectedVoucher] = useState(null);
+  const [loadingCOD, setLoadingCOD] = useState(false);
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const [show, setShow] = useState(false);
@@ -45,12 +46,13 @@ const CheckOut = () => {
 
   const handleApplyVoucher = async () => {
     if (!selectedVoucher) {
-      toast.error("Vui lòng chọn voucher");
+      toast.error(t("voucher.selectError"));
       return;
     }
 
     const voucherData = {
-      voucher_id: selectedVoucher.voucher_id || selectedVoucher.voucher?.voucher_id,
+      voucher_id:
+        selectedVoucher.voucher_id || selectedVoucher.voucher?.voucher_id,
       items: selectedItems.map((item) => ({
         variant_id: item.variant.variant_id,
         price_snapshot: item.variant.price.toString(),
@@ -62,13 +64,13 @@ const CheckOut = () => {
       const result = await dispatch(applyVoucher(voucherData)).unwrap();
       if (result && result.discount_amount) {
         setDiscountAmount(result.discount_amount);
-        toast.success("Áp dụng voucher thành công!");
+        toast.success(t("voucher.applySuccess"));
         setShowVoucherDropdown(false);
       } else {
-        toast.error("Không thể áp dụng voucher này");
+        toast.error(t("voucher.applyFail"));
       }
     } catch (error) {
-      toast.error(error || "Voucher không hợp lệ");
+      toast.error(t("voucher.invalid"));
     }
   };
 
@@ -104,7 +106,9 @@ const CheckOut = () => {
         price_snapshot: Number(item.variant.price),
       })),
       total_amount: Number(finalPrice),
-      voucher_id: selectedVoucher ? (selectedVoucher.voucher_id || selectedVoucher.voucher?.voucher_id) : null,
+      voucher_id: selectedVoucher
+        ? selectedVoucher.voucher_id || selectedVoucher.voucher?.voucher_id
+        : null,
       discount_amount: Number(discountAmount),
       address: addressData.address,
       customer: addressData.recipient_name || profile.user.full_name || "",
@@ -116,12 +120,15 @@ const CheckOut = () => {
     };
 
     if (paymentMethod === "cod") {
+      setLoadingCOD(true);
       try {
         await dispatch(fetchCODCheckout(payloadBase)).unwrap();
         await dispatch(fetchCart());
         navigate("/waiting-for-payment");
       } catch (error) {
         toast.error(t("toast.paymentError"));
+      } finally {
+        setLoadingCOD(false);
       }
       return;
     }
@@ -157,14 +164,17 @@ const CheckOut = () => {
   // Đóng dropdown khi click bên ngoài
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (showVoucherDropdown && !event.target.closest('.checkout-voucher-apply-container')) {
+      if (
+        showVoucherDropdown &&
+        !event.target.closest(".checkout-voucher-apply-container")
+      ) {
         setShowVoucherDropdown(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showVoucherDropdown]);
 
@@ -363,10 +373,17 @@ const CheckOut = () => {
                       <input
                         type="text"
                         className="input__discount checkout-voucher-apply-input"
-                        placeholder={selectedVoucher ? (selectedVoucher.code || selectedVoucher.voucher?.code) : t("shoppingCart.discountPlaceholder")}
+                        placeholder={
+                          selectedVoucher
+                            ? selectedVoucher.code ||
+                              selectedVoucher.voucher?.code
+                            : t("shoppingCart.discountPlaceholder")
+                        }
                         value={voucherCode}
                         onChange={(e) => setVoucherCode(e.target.value)}
-                        onClick={() => setShowVoucherDropdown(!showVoucherDropdown)}
+                        onClick={() =>
+                          setShowVoucherDropdown(!showVoucherDropdown)
+                        }
                         readOnly
                       />
                       <button
@@ -377,7 +394,7 @@ const CheckOut = () => {
                       >
                         {t("shoppingCart.apply")}
                       </button>
-                      
+
                       {showVoucherDropdown && (
                         <div className="checkout-voucher-apply-dropdown">
                           {vouchers && vouchers.length > 0 ? (
@@ -396,7 +413,10 @@ const CheckOut = () => {
                                     {voucherData.title}
                                   </div>
                                   <div className="checkout-voucher-apply-details">
-                                    Giảm: {numberFormat(voucherData.discount_amount)} - Tối thiểu: {numberFormat(voucherData.min_order_value)}
+                                    Giảm:{" "}
+                                    {numberFormat(voucherData.discount_amount)}{" "}
+                                    - Tối thiểu:{" "}
+                                    {numberFormat(voucherData.min_order_value)}
                                   </div>
                                 </div>
                               );
@@ -504,8 +524,20 @@ const CheckOut = () => {
                         <span>{numberFormat(finalPrice)}</span>
                       </li>
                     </ul>
-                    <button className="site-btn" onClick={handleCheckout}>
+                    <button
+                      className="site-btn"
+                      onClick={handleCheckout}
+                      disabled={loadingCOD}
+                      style={{ position: "relative" }}
+                    >
                       {t("checkout.payNow")}
+                      {loadingCOD && (
+                        <span
+                          style={{ marginLeft: 10, verticalAlign: "middle" }}
+                        >
+                          <Loading size={18} />
+                        </span>
+                      )}
                     </button>
                   </div>
                 </div>

@@ -99,7 +99,6 @@ const OrderTable = () => {
           padding: "1.5rem",
         }}
       >
-        {/* Icon filter */}
         <div
           style={{
             marginBottom: 18,

@@ -166,6 +166,22 @@
   border: 2px solid #fff;
   transition: background 0.2s;
 }
+.userVoucher-out-of-stock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: rgb(255, 94, 0);
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 6px 16px;
+  margin-left: 8px;
+  min-width: 90px;
+  min-height: 36px;
+  box-shadow: 0 2px 8px #ff4d4f22;
+  letter-spacing: 0.5px;
+}
 @media (max-width: 1200px) {
   .userVoucher-card {
     height: 130px;
