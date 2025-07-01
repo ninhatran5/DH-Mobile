@@ -1,0 +1,81 @@
+
+/* Đẹp, nổi bật, bo tròn, bóng nhẹ */
+
+/* Trạng thái: hiển thị inline, không xuống dòng, căn giữa */
+.admin_order-status-pending {
+  background: #fffbe6;
+  color: #b8860b;
+  border-radius: 16px;
+  font-weight: 600;
+  padding: 4px 18px;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.admin_order-status-confirmed {
+  background: #e3f0ff;
+  color: #1565c0;
+  border-radius: 16px;
+  font-weight: 600;
+  padding: 4px 18px;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.admin_order-status-shipping {
+  background: #fff3e0;
+  color: #e65100;
+  border-radius: 16px;
+  font-weight: 600;
+  padding: 4px 18px;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.admin_order-status-delivered {
+  background: #e8f5e9;
+  color: #1b5e20;
+  border-radius: 16px;
+  font-weight: 600;
+  padding: 4px 18px;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.admin_order-status-success {
+  background: #e0f7fa;
+  color: #00695c;
+  border-radius: 16px;
+  font-weight: 600;
+  padding: 4px 18px;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.admin_order-status-cancel {
+  background: #ffebee;
+  color: #b71c1c;
+  border-radius: 16px;
+  font-weight: 600;
+  padding: 4px 18px;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.admin_order-status-default {
+  background: #f1f1f1;
+  color: #222;
+  border-radius: 16px;
+  font-weight: 600;
+  padding: 4px 18px;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  white-space: nowrap;
+  vertical-align: middle;
+}
