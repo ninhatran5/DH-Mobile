@@ -1601,3 +1601,35 @@
     font-size: 0.8rem;
   }
 }
+.admin_thongke-chart-container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.admin_thongke-dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.admin_thongke-chart-period-selector {
+  display: flex;
+  gap: 10px;
+}
+
+.admin_thongke-chart-period-btn {
+  padding: 6px 14px;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.admin_thongke-chart-period-btn-active {
+  background-color: #007bff;
+  color: #fff;
+}
