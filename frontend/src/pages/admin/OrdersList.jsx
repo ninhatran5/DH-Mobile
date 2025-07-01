@@ -4,12 +4,15 @@ import { fetchAdminOrders, updateOrderStatus, cancelOrder } from "../../slices/a
 import "../../assets/admin/HomeAdmin.css";
 import "../../assets/admin/order.css";
 import "../../assets/admin/OrdersList.css";
+import "../../assets/admin/order-status-colors.css";
 import { FiEdit, FiEye, FiX } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 const MySwal = withReactContent(Swal);
 import DefaultImage from "../../assets/images/adminacccount.jpg";
+import CodImage from "../../assets/images/COD.webp";
+import VnpayImage from "../../assets/images/vnpay.jpg";
 import Loading from "../../components/Loading";
 
 const OrdersList = () => {
@@ -154,9 +157,25 @@ const OrdersList = () => {
   };
 
   // Get color class for status
+
+  // Hàm lấy class màu theo trạng thái
   const getStatusColorClass = (status) => {
-    const normalized = normalizeString(status);
-    return `admin_order-status-${normalized}`;
+    switch (normalizeString(status)) {
+      case 'cho-xac-nhan':
+        return 'admin_order-status-pending'; // vàng
+      case 'đa-xac-nhan':
+        return 'admin_order-status-confirmed'; // xanh dương
+      case 'đang-van-chuyen':
+        return 'admin_order-status-shipping'; // cam
+      case 'đa-giao-hang':
+        return 'admin_order-status-delivered'; // xanh lá
+      case 'hoan-thanh':
+        return 'admin_order-status-success'; // xanh đậm
+      case 'đa-huy':
+        return 'admin_order-status-cancel'; // đỏ
+      default:
+        return 'admin_order-status-default';
+    }
   };
 
   return (
@@ -250,7 +269,7 @@ const OrdersList = () => {
                 <th style={{ width: '15%' }}>Mã đơn / Khách hàng</th>
                 <th style={{ width: '15%' }}>Ngày đặt</th>
                 <th className="admin_order-hide-sm" style={{ width: '20%' }}>Tổng tiền</th>
-                <th style={{ width: '20%' }}>Thanh toán</th>
+                <th style={{ width: '20%' }}>Phương thức</th>
                 <th style={{ width: '30%' }}>Trạng thái thanh toán</th>
                 <th style={{ width: '25%' }}>Trạng thái</th>
                 <th style={{ width: '80px' }}>Thao tác</th>
@@ -282,12 +301,22 @@ const OrdersList = () => {
                         <div className="admin_order-items">{order.totalProduct || 0} sản phẩm</div>
                       </td>
                       <td>
-                        <span className="admin_order-payment">{order.payment_method}</span>
+                        {order.payment_method === 'COD' ? (
+                          <span className="">
+                            <img src={CodImage} alt="COD" style={{ width: 70, height: 70, verticalAlign: 'middle' }} />
+                          </span>
+                        ) : order.payment_method === 'VNPay' ? (
+                          <span className="">
+                            <img src={VnpayImage} alt="VNPay" style={{ width: 70, height: 52, verticalAlign: 'middle' }} />
+                          </span>
+                        ) : (
+                          <span className="admin_order-payment">{order.payment_method}</span>
+                        )}
                       </td>
                   <td><span className="admin_order-payment1">{order.payment_status}</span></td>
 
                       <td>
-                        <span className={`admin_order-status admin_order-status-${normalizeString(order.status)}`}>
+                        <span className={`admin_order-status ${getStatusColorClass(order.status)}`}>
                           {order.status}
                         </span>
                       </td>
