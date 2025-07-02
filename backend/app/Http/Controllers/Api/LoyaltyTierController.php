@@ -28,4 +28,31 @@ class LoyaltyTierController extends Controller
             'data' => $LoyaltyTier
         ]);
     }
+
+    public function update(Request $request, $id)
+    {
+        $tier = LoyaltyTier::find($id);
+        if (!$tier) {
+            return response()->json([
+                'message' => 'Cấp bậc thành viên này không tồn tại.',
+            ], 404);
+        }
+
+        $data = $request->validate([
+            'min_points' => 'nullable|integer|min:0',
+            'discount_percent' => 'nullable|numeric|min:0|max:100',
+        ]);
+
+        // Loại bỏ các trường có giá trị null để tránh lỗi NOT NULL
+        $data = array_filter($data, function($value) {
+            return !is_null($value);
+        });
+
+        $tier->update($data);
+
+        return response()->json([
+            'message' => 'Cập nhật cấp bậc thành viên thành công.',
+            'data' => $tier
+        ]);
+    }
 }

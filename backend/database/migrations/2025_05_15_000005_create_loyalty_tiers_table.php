@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('discount_percent', 5, 2)->default(0.00); // Giảm giá ưu đãi (nếu có)
             $table->text('description')->nullable();
             $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->nullable();
         });
     }
 
