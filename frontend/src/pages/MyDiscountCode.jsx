@@ -44,7 +44,7 @@ export default function MyDiscountCode() {
                 voucher={item.voucher ? item.voucher : item}
                 item={item}
                 isMyVoucher={false}
-                showItemQuantity={true} // Thêm dòng này
+                showItemQuantity={true}
               />
             ))}
           </div>
