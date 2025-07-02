@@ -44,7 +44,7 @@ class LoyaltyTierController extends Controller
         ]);
 
         // Loại bỏ các trường có giá trị null để tránh lỗi NOT NULL
-        $data = array_filter($data, function($value) {
+        $data = array_filter($data, function ($value) {
             return !is_null($value);
         });
 
@@ -54,5 +54,42 @@ class LoyaltyTierController extends Controller
             'message' => 'Cập nhật cấp bậc thành viên thành công.',
             'data' => $tier
         ]);
+    }
+
+    public function loyaltySummary(Request $request)
+    {
+        $user = $request->user();
+        $points = $user->loyalty_points;
+
+        // Lấy tất cả tier, sắp xếp theo min_points tăng dần
+        $tiers = LoyaltyTier::orderBy('min_points')->get();
+
+        $currentTier = null;
+        $nextTier = null;
+
+        foreach ($tiers as $tier) {
+            if ($points >= $tier->min_points) {
+                $currentTier = $tier;
+            } elseif (!$nextTier) {
+                $nextTier = $tier;
+            }
+        }
+
+        $result = [
+            'loyalty_points' => $points,
+            'current_tier' => $currentTier ? [
+                'name' => $currentTier->name,
+                'discount_percent' => rtrim(rtrim(number_format($currentTier->discount_percent, 2, '.', ''), '0'), '.') . '%',
+
+                'min_points' => $currentTier->min_points,
+            ] : null,
+            'next_tier' => $nextTier ? [
+                'name' => $nextTier->name,
+                'min_points' => $nextTier->min_points,
+                'points_needed' => max(0, $nextTier->min_points - $points),
+            ] : null,
+        ];
+
+        return response()->json($result);
     }
 }
