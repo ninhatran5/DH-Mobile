@@ -83,7 +83,20 @@
   },
   "chatBot": {
     "chat": "Chat",
-    "message": "Type your message..."
+    "message": "Type your message...",
+    "chatWithAdmin": "Chat with Admin",
+    "chatWithBot": "Chat with Bot",
+    "selectMode": "Select chat mode",
+    "whoToChat": "Who would you like to chat with?",
+    "botDescription": "Chat Bot: Automatic replies, 24/7 support",
+    "adminDescription": "Chat Admin: Connect directly with support staff",
+    "backToMode": "Back to mode selection",
+    "shrink": "Shrink",
+    "expand": "Expand",
+    "adminWelcome": "Hello! Please send a message to start a conversation with Admin.",
+    "adminResponse": "Thank you for contacting us! Your message has been received. Admin will respond as soon as possible.",
+    "adminPlaceholder": "Type a message for Admin...",
+    "closeModal": "Close"
   },
   "breadcrumbProductDetail": {
     "breadcrumbHeader": "Product Details",
