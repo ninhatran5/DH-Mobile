@@ -18,17 +18,18 @@ use App\Http\Controllers\Api\VoucherController;
 use App\Http\Controllers\Api\CartItemController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\AttributeController;
+use App\Http\Controllers\Api\LoyaltyTierController;
 use App\Http\Controllers\Api\ProductLikeController;
+use App\Http\Controllers\Api\SupportChatController;
 use App\Http\Controllers\Api\UserAddressController;
+use App\Http\Controllers\Api\LoyaltyPointController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Controllers\Api\ProductsViewsController;
 use App\Http\Controllers\Api\AttributevalueController;
-use App\Http\Controllers\Api\LoyaltyPointController;
 use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
 use App\Http\Controllers\Api\VariantAttributeValuesController;
-use App\Http\Controllers\Api\SupportChatController;
 
 
 
@@ -351,3 +352,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // API đánh dấu đơn hàng hoàn thành + tự động cộng điểm
     Route::put('/orders/{order_id}/complete', [OrderController::class, 'markAsCompleted']);
 });
+
+
+Route::get('loyalty-tiers/', [LoyaltyTierController::class, 'index']);
+Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('loyalty-tiers')->group(function () {
+    Route::put('{id}', [LoyaltyTierController::class, 'update']);
+});
+Route::middleware('auth:sanctum')->get('/loyalty-summary', [LoyaltyTierController::class, 'loyaltySummary']);
