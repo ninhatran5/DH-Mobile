@@ -132,6 +132,15 @@ class CodController extends Controller
                 ->whereIn('variant_id', $paidVariantIds)
                 ->delete();
 
+            // Cập nhật used_at cho voucher nếu có
+            if ($voucherId) {
+                DB::table('user_vouchers')
+                    ->where('user_id', $user->user_id)
+                    ->where('voucher_id', $voucherId)
+                    ->update(['used_at' => now()]);
+            }
+
+
             $order = DB::table('orders')->where('order_id', $orderId)->first();
             $userData = DB::table('users')->where('user_id', $user->user_id)->first();
             Mail::to($order->email)->send(new PaymentSuccessMail($order, $userData));
