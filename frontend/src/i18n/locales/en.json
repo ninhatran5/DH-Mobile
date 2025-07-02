@@ -230,7 +230,8 @@
     "discount": "Discount",
     "totalPrice": "Total Price",
     "checkout": "Proceed to Checkout",
-    "selectProductToCheckout": "Please select products to proceed to checkout"
+    "selectProductToCheckout": "Please select products to proceed to checkout",
+    "noVoucher": "No discount codes"
   },
   "tableHeaders": {
     "product": "Product",

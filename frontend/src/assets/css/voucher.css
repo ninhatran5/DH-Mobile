@@ -151,20 +151,21 @@
 .userVoucher-quantity {
   position: absolute;
   top: 20px;
-  left: -455px;
+  right: 450px;
   width: 30px;
   height: 30px;
   background-color: #f0881f;
   color: #fff;
   border-radius: 50%;
-  font-size: 14px;
+  font-size: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px #0001;
-  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 3;
   border: 2px solid #fff;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  font-weight: 600;
 }
 .userVoucher-out-of-stock {
   display: flex;
@@ -181,6 +182,10 @@
   min-height: 36px;
   box-shadow: 0 2px 8px #ff4d4f22;
   letter-spacing: 0.5px;
+}
+.userVoucher-icon-wrapper {
+  position: relative;
+  display: inline-block;
 }
 @media (max-width: 1200px) {
   .userVoucher-card {
@@ -210,6 +215,14 @@
 
   .userVoucher-date {
     font-size: 12px;
+  }
+
+  .userVoucher-quantity {
+    top: 25px;
+    right: 840px;
+    width: 25px;
+    height: 25px;
+    font-size: 11px;
   }
 }
 .swal2-padding-custom {
@@ -249,5 +262,90 @@
 
   .userVoucher-icon {
     font-size: 18px;
+  }
+
+  .userVoucher-quantity {
+    top: 23px;
+    right: 625px;
+    width: 20px;
+    height: 20px;
+    font-size: 9px;
+  }
+}
+@media (max-width: 480px) {
+  .userVoucher-card {
+    height: 100px;
+    border-radius: 12px;
+  }
+
+  .userVoucher-leftSide {
+    width: 50px;
+    padding: 8px;
+  }
+
+  .userVoucher-icon-bag {
+    font-size: 20px;
+  }
+
+  .userVoucher-content {
+    padding: 10px 25px 10px 12px;
+  }
+
+  .userVoucher-code {
+    font-size: 11px;
+    margin-bottom: 3px;
+  }
+
+  .userVoucher-title {
+    font-size: 13px;
+    margin-bottom: 3px;
+  }
+
+  .userVoucher-date {
+    font-size: 10px;
+  }
+
+  .userVoucher-info-item,
+  .userVoucher-info-item2 {
+    font-size: 12px;
+  }
+
+  .userVoucher-date-right {
+    font-size: 9px;
+    padding: 2px 8px;
+    top: 70%;
+    right: 10px;
+  }
+
+  .userVoucher-icon {
+    font-size: 16px;
+  }
+
+  .userVoucher-quantity {
+    top: 13px;
+    right: 334px;
+    width: 18px;
+    height: 18px;
+    font-size: 8px;
+  }
+
+  .userVoucher-out-of-stock {
+    font-size: 10px;
+    padding: 3px 8px;
+    min-width: 60px;
+    min-height: 24px;
+  }
+
+  .userVoucher-circle {
+    width: 16px;
+    height: 16px;
+  }
+
+  .userVoucher-topCircle {
+    top: -8px;
+  }
+
+  .userVoucher-bottomCircle {
+    bottom: -8px;
   }
 }
