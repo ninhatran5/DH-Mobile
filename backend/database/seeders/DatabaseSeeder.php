@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
             // VoucherSeeder::class,
             ChatbotSeeder::class,
             PaymentMethodSeeder::class,
+            LoyaltyTierSeeder::class,
            
         ]);
     }
