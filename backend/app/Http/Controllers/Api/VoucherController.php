@@ -337,10 +337,15 @@ class VoucherController extends Controller
     public function getSavedVouchersForUser(Request $request)
     {
         $user = $request->user();
+
         $savedVouchers = User_vouchers::where('user_id', $user->user_id)
-            ->whereNull('used_at') // chỉ lấy voucher chưa dùng
-            ->with('voucher') // cần khai báo quan hệ voucher() trong model User_vouchers
-            ->get();
+            ->whereNull('used_at')
+            ->with('voucher')
+            ->get()
+            ->map(function ($item) {
+                $item->quantity = 1; // Thêm trường quantity
+                return $item;
+            });
 
         return response()->json([
             'message' => 'Lấy danh sách voucher đã lưu thành công',
