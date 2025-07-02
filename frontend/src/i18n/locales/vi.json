@@ -83,7 +83,20 @@
   },
   "chatBot": {
     "chat": "Trò chuyện",
-    "message": "Gõ tin nhắn của bạn..."
+    "message": "Gõ tin nhắn của bạn...",
+    "chatWithAdmin": "Chat với Admin",
+    "chatWithBot": "Chat với Bot",
+    "selectMode": "Chọn loại chat",
+    "whoToChat": "Bạn muốn chat với ai?",
+    "botDescription": "Chat Bot: Trả lời tự động, hỗ trợ 24/7",
+    "adminDescription": "Chat Admin: Kết nối trực tiếp với nhân viên hỗ trợ",
+    "backToMode": "Quay lại chọn mode",
+    "shrink": "Thu nhỏ",
+    "expand": "Mở rộng",
+    "adminWelcome": "Chào bạn! Hãy gửi tin nhắn để bắt đầu cuộc trò chuyện với Admin.",
+    "adminResponse": "Cảm ơn bạn đã liên hệ! Tin nhắn của bạn đã được ghi nhận. Admin sẽ phản hồi trong thời gian sớm nhất.",
+    "adminPlaceholder": "Nhập tin nhắn cho Admin...",
+    "closeModal": "Đóng"
   },
   "breadcrumbProductDetail": {
     "breadcrumbHeader": "Chi Tiết Sản Phẩm",
@@ -229,7 +242,8 @@
     "discount": "Mã giảm giá",
     "totalPrice": "Tổng tiền",
     "checkout": "Tiến hành thanh toán",
-    "selectProductToCheckout": "Vui lòng chọn sản phẩm để tiến hành thanh toán"
+    "selectProductToCheckout": "Vui lòng chọn sản phẩm để tiến hành thanh toán",
+    "noVoucher": "Không có mã giảm giá nào"
   },
   "tableHeaders": {
     "product": "Sản Phẩm",

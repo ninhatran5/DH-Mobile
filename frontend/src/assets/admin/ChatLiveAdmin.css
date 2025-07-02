@@ -401,45 +401,52 @@
 .admin_chatbot-back-btn i {
   font-size: 1.2rem;
 }
+.back-btn-chat {
+  background-color: none;
+  border: none;
+  color: #666;
+  font-size: 18px;
+  cursor: pointer;
+}
 
 /* Mobile responsiveness */
 @media (max-width: 768px) {
   .admin_chatbot-message-bubble {
     max-width: 85%;
   }
-  
+
   .admin_chatbot-contacts {
     max-height: 80vh;
   }
-  
+
   .admin_chatbot-messages {
     max-height: 70vh;
   }
-  
+
   .admin_chatbot-actions {
     gap: 5px;
   }
-  
+
   /* Full height container on mobile */
   .admin_chatbot-container .container {
     padding: 0;
     height: calc(100vh - 60px);
     max-height: 100vh;
   }
-  
+
   .admin_chatbot-container .row {
     height: 100%;
     margin: 0;
   }
-  
+
   /* Make column take full width on mobile */
   .admin_chatbot-container .col-md-6 {
     padding: 0;
     height: 100%;
   }
-  
+
   /* Animation for mobile view transitions */
   .admin_chatbot-container .col-md-6 {
     transition: all 0.3s ease-in-out;
   }
-} 
+}

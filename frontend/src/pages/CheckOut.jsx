@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { TbExchange } from "react-icons/tb";
+import { TbExchange, TbTicketOff } from "react-icons/tb";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,6 +13,7 @@ import { applyVoucher, fetchVoucherForUser } from "../slices/voucherSlice";
 import { toast } from "react-toastify";
 import { fetchCart } from "../slices/cartSlice";
 import ChangeAddressModal from "../components/ChangeAddressModal";
+import VoucherDropdown from "../components/VoucherDropdown";
 import "../assets/css/checkout.css";
 
 const CheckOut = () => {
@@ -70,7 +71,7 @@ const CheckOut = () => {
         toast.error(t("voucher.applyFail"));
       }
     } catch (error) {
-      toast.error(t("voucher.invalid"));
+      toast.error(error || t("voucher.invalid"));
     }
   };
 
@@ -161,7 +162,6 @@ const CheckOut = () => {
     });
   }, [dispatch, navigate]);
 
-  // Đóng dropdown khi click bên ngoài
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -398,32 +398,21 @@ const CheckOut = () => {
                       {showVoucherDropdown && (
                         <div className="checkout-voucher-apply-dropdown">
                           {vouchers && vouchers.length > 0 ? (
-                            vouchers.map((voucher, index) => {
-                              const voucherData = voucher.voucher || voucher;
-                              return (
-                                <div
-                                  key={voucherData.voucher_id || index}
-                                  onClick={() => handleSelectVoucher(voucher)}
-                                  className="checkout-voucher-apply-item"
-                                >
-                                  <div className="checkout-voucher-apply-code">
-                                    {voucherData.code}
-                                  </div>
-                                  <div className="checkout-voucher-apply-title">
-                                    {voucherData.title}
-                                  </div>
-                                  <div className="checkout-voucher-apply-details">
-                                    Giảm:{" "}
-                                    {numberFormat(voucherData.discount_amount)}{" "}
-                                    - Tối thiểu:{" "}
-                                    {numberFormat(voucherData.min_order_value)}
-                                  </div>
-                                </div>
-                              );
-                            })
+                            vouchers.map((voucher, index) => (
+                              <VoucherDropdown
+                                key={
+                                  voucher.voucher?.voucher_id ||
+                                  voucher.voucher_id ||
+                                  index
+                                }
+                                voucher={voucher}
+                                handleSelectVoucher={handleSelectVoucher}
+                              />
+                            ))
                           ) : (
                             <div className="checkout-voucher-apply-empty">
-                              Không có voucher nào
+                              <TbTicketOff />
+                              {t("shoppingCart.noVoucher")}
                             </div>
                           )}
                         </div>
