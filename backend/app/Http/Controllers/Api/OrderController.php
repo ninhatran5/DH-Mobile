@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\User;
 use App\Models\Orders;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Mail\OrderStatusUpdatedMail;
-use App\Mail\OrderCancelledByAdminMail;
 use App\Models\LoyaltyPoint;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+
+use App\Mail\OrderStatusUpdatedMail;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderCancelledByAdminMail;
 use App\Models\OrderStatusHistory; // Thêm dòng này để sử dụng model OrderStatusHistory
 
 class OrderController extends Controller
@@ -942,11 +944,13 @@ class OrderController extends Controller
             return response()->json(['message' => 'Đơn hàng đã hoàn thành và đã được cộng điểm trước đó'], 400);
         }
 
+        $points = 0;
         try {
             DB::transaction(function () use ($order, $alreadyRewarded, &$points) {
                 if ($order->status !== 'Hoàn thành') $order->update(['status' => 'Hoàn thành']);
 
-                if (!$alreadyRewarded && ($points = floor($order->total_amount / 10000)) > 0) {
+                $points = floor($order->total_amount / 10000);
+                if (!$alreadyRewarded && $points > 0) {
                     LoyaltyPoint::create([
                         'user_id' => $order->user_id,
                         'points' => $points,
@@ -954,11 +958,19 @@ class OrderController extends Controller
                         'description' => 'Tích điểm từ đơn hàng #' . $order->order_code,
                     ]);
                 }
+
+                // Luôn đồng bộ lại tổng điểm LoyaltyPoint vào user (kể cả khi đã có LoyaltyPoint trước đó)
+                $totalPoints = LoyaltyPoint::where('user_id', $order->user_id)->sum('points');
+                $user = User::where('user_id', $order->user_id)->first();
+                if ($user) {
+                    $user->loyalty_points = $totalPoints;
+                    $user->save();
+                }
             });
 
             return response()->json([
                 'message' => 'Đã hoàn thành đơn hàng và cộng điểm',
-                'earned_points' => $points ?? 0,
+                'earned_points' => $points,
             ]);
         } catch (\Exception $e) {
             return response()->json([
