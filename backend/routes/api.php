@@ -354,9 +354,8 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
-
+Route::get('loyalty-tiers/', [LoyaltyTierController::class, 'index']);
 Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('loyalty-tiers')->group(function () {
-
-    Route::get('/', [LoyaltyTierController::class, 'index']);
     Route::put('{id}', [LoyaltyTierController::class, 'update']);
 });
+Route::middleware('auth:sanctum')->get('/loyalty-summary', [LoyaltyTierController::class, 'loyaltySummary']);
