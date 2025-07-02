@@ -18,6 +18,7 @@ class User extends Authenticatable
     protected $keyType = 'int';
 
     protected $fillable = [
+
         'username',
         'email',
         'password_hash',
@@ -28,6 +29,8 @@ class User extends Authenticatable
         'ward',
         'district',
         'city',
+        'tier_id', // khóa ngoại tới bảng loyalty_tiers
+        'loyalty_points', // tổng điểm tích lũy của người dùng
         'image_url',
     ];
 
