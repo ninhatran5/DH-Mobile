@@ -11,8 +11,8 @@ const initialState = {
 
 export const fetchProducts = createAsyncThunk(
   "product/fetchProducts",
-  async (page = 1) => {
-    const response = await axiosUser.get(`/products?page=${page}`);
+  async () => {
+    const response = await axiosUser.get(`/products`);
     // response.data = { data, totalPage, currentPage, ... }
     return response.data;
   }
