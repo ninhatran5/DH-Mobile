@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useEffect, useState, useRef } from "react";
 import "../assets/css/chatbot.css";
 import { FaPaperPlane } from "react-icons/fa";
