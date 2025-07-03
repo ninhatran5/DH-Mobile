@@ -109,13 +109,11 @@ const Homeadmin = () => {
     ).matches;
     setIsDarkMode(prefersDarkMode);
 
-    // Get saved sound preference
     const savedSoundPreference = localStorage.getItem("notificationSound");
     if (savedSoundPreference !== null) {
       setSoundEnabled(savedSoundPreference === "true");
     }
 
-    // Listen for changes in dark mode preference
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = (e) => {
       setIsDarkMode(e.matches);
@@ -635,6 +633,21 @@ const Homeadmin = () => {
             <div className="admin_dh-nav-section">
               <div className="admin_dh-nav-section-title">Tiếp thị</div>
               <div className="admin_dh-components">
+                 <div
+                  className={
+                    location.pathname === "/admin/membership" ? "active" : ""
+                  }
+                >
+                  <Link
+                    to="/admin/membership"
+                    className="admin_dh-nav-link"
+                    data-title="Dashboard"
+                  >
+                   <i className="bi bi-person-vcard" style={{ color: "#ff9f0a" }} />
+
+                    <span>Thẻ thành viên</span>
+                  </Link>
+                </div>
                 <div
                   className={
                     location.pathname.includes("/admin/banners") ? "active" : ""
@@ -834,7 +847,7 @@ const Homeadmin = () => {
                   <i className="bi bi-layout-sidebar" />
                 </button>
               </div>
-                      <td className="Homeadmin-user123">Xin chào {adminProfile?.user?.username}</td>
+              <div className="Homeadmin-user123">Xin chào {adminProfile?.user?.username}</div>
               <div className="admin_dh-navbar-right">
                 {checkRole !== "sale" && (
                   <>

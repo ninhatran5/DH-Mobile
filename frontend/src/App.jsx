@@ -69,6 +69,8 @@ import CommentsList from "./pages/admin/CommentsList";
 import AddBlog from "./pages/admin/AddBlog";
 import RequireNotSaleRole from "./components/RequireNotSaleRole";
 import AdminRouteRedirector from "./components/AdminRouteRedirector";
+import Membership from "./pages/admin/AdminMembership";
+
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -424,6 +426,14 @@ const routerConfig = [
         element: (
           <RequireNotSaleRole>
             <AdminOrderDetail />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "membership",
+        element: (
+          <RequireNotSaleRole>
+            <Membership/>
           </RequireNotSaleRole>
         ),
       },
