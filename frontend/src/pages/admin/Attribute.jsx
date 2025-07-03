@@ -4,6 +4,9 @@ import { fetchAttributes, deleteAttribute } from "../../slices/Attribute";
 import { fetchAttributeValues, deleteAttributeValue } from "../../slices/attributeValueSlice";
 import { Link } from "react-router-dom";
 import "../../assets/admin/Attributes.css";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 
 function AttributePage() {
   const dispatch = useDispatch();
@@ -22,9 +25,31 @@ function AttributePage() {
     });
   }, [attributes, dispatch]);
 
-  const handleDelete = (id) => {
-    if (window.confirm("Bạn có chắc chắn muốn xoá Attribute này?")) {
+  const handleDelete = async (id) => {
+    const values = attributeValues[id] || [];
+    if (values.length > 0) {
+      toast.error("Không thể xoá thuộc tính này vì vẫn còn giá trị bên trong.");
+      return;
+    }
+    const result = await Swal.fire({
+      title: "Bạn có chắc chắn muốn xoá thuộc tính này?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Xác nhận",
+      cancelButtonText: "Huỷ",
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#e5e7eb",
+      reverseButtons: true
+
+    });
+    if (result.isConfirmed) {
       dispatch(deleteAttribute(id));
+      Swal.fire({
+        icon: "success",
+        title: "Đã xoá thành công!",
+        showConfirmButton: false,
+        timer: 1500
+      });
     }
   };
 
@@ -36,6 +61,7 @@ function AttributePage() {
 
   return (
     <div className="adminattributes">
+      <ToastContainer />
       <h1>Danh sách thuộc tính </h1>
 
       {error && <p className="error">{error}</p>}
@@ -141,5 +167,6 @@ function AttributePage() {
     </div>
   );
 }
+
 
 export default AttributePage;

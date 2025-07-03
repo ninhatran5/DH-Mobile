@@ -11,6 +11,7 @@ import {
 import { fetchCategories } from "../../slices/adminCategories";
 import { toast } from "react-toastify";
 import { fetchProfileAdmin } from "../../slices/adminProfile";
+import Swal from "sweetalert2";
 
 const ProductList = () => {
   const dispatch = useDispatch();
@@ -39,7 +40,6 @@ const ProductList = () => {
     }
   }, [dispatch, error]);
 
-  // Khi currentPage thay đổi, cập nhật query param
   useEffect(() => {
     setSearchParams((params) => {
       params.set("page", currentPage);
@@ -47,10 +47,8 @@ const ProductList = () => {
     });
   }, [currentPage, setSearchParams]);
 
-  // Khi page trên URL thay đổi, cập nhật state
   useEffect(() => {
     if (pageParam !== currentPage) setCurrentPage(pageParam);
-    // eslint-disable-next-line
   }, [pageParam]);
 
   const handleSelectAll = (e) => {
@@ -70,11 +68,18 @@ const ProductList = () => {
   };
 
   const handleDeleteSelected = async () => {
-    if (
-      window.confirm(
-        `Bạn có chắc muốn xóa ${selectedProducts.length} sản phẩm đã chọn?`
-      )
-    ) {
+    const result = await Swal.fire({
+      title: `Bạn có chắc muốn xóa ${selectedProducts.length} sản phẩm đã chọn?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Xác nhận",
+      cancelButtonText: "Huỷ",
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#e5e7eb",
+      reverseButtons: true
+
+    });
+    if (result.isConfirmed) {
       try {
         for (const productId of selectedProducts) {
           const resultAction = await dispatch(deleteAdminProduct(productId));
@@ -85,6 +90,12 @@ const ProductList = () => {
           }
         }
         setSelectedProducts([]);
+        Swal.fire({
+          icon: "success",
+          title: "Đã xoá thành công!",
+          showConfirmButton: false,
+          timer: 1500
+        });
       } catch (error) {
         toast.error(`Lỗi từ server: ${error.message}`);
       }
@@ -92,13 +103,29 @@ const ProductList = () => {
   };
 
   const handleDeleteSingle = async (productId) => {
-    if (window.confirm("Bạn có chắc muốn xóa sản phẩm này?")) {
+    const result = await Swal.fire({
+      title: "Bạn có chắc muốn xóa sản phẩm này?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Xác nhận",
+      cancelButtonText: "Huỷ",
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#e5e7eb",
+      reverseButtons: true
+    });
+    if (result.isConfirmed) {
       try {
         const resultAction = await dispatch(deleteAdminProduct(productId));
         if (deleteAdminProduct.rejected.match(resultAction)) {
           toast.error(`Lỗi khi xóa sản phẩm: ${resultAction.error.message}`);
         }
         setSelectedProducts(selectedProducts.filter((id) => id !== productId));
+        Swal.fire({
+          icon: "success",
+          title: "Đã xoá thành công!",
+          showConfirmButton: false,
+          timer: 1500
+        });
       } catch (error) {
         toast.error(`Lỗi từ server: ${error.message}`);
       }
