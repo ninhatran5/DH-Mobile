@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('loyalty_tiers', function (Blueprint $table) {
             $table->id('tier_id');
             $table->string('name', 50)->unique(); // Tên cấp (Bạc, Vàng, Kim cương)
+            $table->string('image_url')->nullable(); // URL hình ảnh đại diện cho cấp độ
             $table->integer('min_points'); // Từ bao nhiêu điểm thì đạt cấp này
             $table->decimal('discount_percent', 5, 2)->default(0.00); // Giảm giá ưu đãi (nếu có)
             $table->text('description')->nullable();
