@@ -930,7 +930,7 @@ class OrderController extends Controller
 
 
     // luồng xử lý đơn hàng hoàn thành thì được cộng điểm 
-    public function markAsCompleted(Request $request, $orderId)
+    public function markAsCompleted($orderId)
     {
         $order = Orders::find($orderId);
         if (!$order) return response()->json(['message' => 'Không tìm thấy đơn hàng'], 404);
@@ -949,7 +949,7 @@ class OrderController extends Controller
             DB::transaction(function () use ($order, $alreadyRewarded, &$points) {
                 if ($order->status !== 'Hoàn thành') $order->update(['status' => 'Hoàn thành']);
 
-                $points = floor($order->total_amount / 10000);
+                $points = floor($order->total_amount / 100);
                 if (!$alreadyRewarded && $points > 0) {
                     LoyaltyPoint::create([
                         'user_id' => $order->user_id,
