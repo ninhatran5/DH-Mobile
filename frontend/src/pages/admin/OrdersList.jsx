@@ -107,13 +107,19 @@ const OrdersList = () => {
       if (result.isConfirmed) {
         setIsUpdatingStatus(true);
         dispatch(updateOrderStatus({ orderId, status: newStatus }))
-          .then(() => {
-            setSelectedOrder(null);
-            Swal.fire("Thành công", "Trạng thái đơn hàng đã được cập nhật.", "success");
-            dispatch(fetchAdminOrders(currentPage));
-          })
-          .finally(() => {
+          .then((action) => {
             setIsUpdatingStatus(false);
+            if (action?.type?.endsWith("/fulfilled")) {
+              setSelectedOrder(null);
+              Swal.fire("Thành công", "Trạng thái đơn hàng đã được cập nhật.", "success");
+              dispatch(fetchAdminOrders(currentPage));
+            } else {
+              Swal.fire("Lỗi", "Cập nhật trạng thái đơn hàng thất bại.", "error");
+            }
+          })
+          .catch(() => {
+            setIsUpdatingStatus(false);
+            Swal.fire("Lỗi", "Cập nhật trạng thái đơn hàng thất bại.", "error");
           });
       }
     });
