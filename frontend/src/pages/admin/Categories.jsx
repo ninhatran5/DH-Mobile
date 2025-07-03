@@ -53,13 +53,18 @@ const CategoryList = () => {
       confirmButtonText: "Xóa",
       cancelButtonText: "Hủy",
       reverseButtons: true
-
     });
     if (result.isConfirmed) {
       setIsProcessing(true);
       dispatch(deleteCategory(id)).then(() => {
         dispatch(fetchCategories());
         dispatch(fetchTrashedCategories());
+        Swal.fire({
+          icon: "success",
+          title: "Đã xóa danh mục thành công!",
+          showConfirmButton: false,
+          timer: 1500
+        });
       }).finally(() => setIsProcessing(false));
     }
   };
@@ -72,13 +77,18 @@ const CategoryList = () => {
       confirmButtonText: "Khôi phục",
       cancelButtonText: "Hủy",
       reverseButtons: true
-
     });
     if (result.isConfirmed) {
       setIsProcessing(true);
       dispatch(restoreCategory(id)).then(() => {
         dispatch(fetchCategories());
         dispatch(fetchTrashedCategories());
+        Swal.fire({
+          icon: "success",
+          title: "Khôi phục danh mục thành công!",
+          showConfirmButton: false,
+          timer: 1500
+        });
       }).finally(() => setIsProcessing(false));
     }
   };
@@ -97,12 +107,17 @@ const CategoryList = () => {
       confirmButtonText: "Xóa vĩnh viễn",
       cancelButtonText: "Hủy",
       reverseButtons: true
-
     });
     if (result.isConfirmed) {
       setIsProcessing(true);
       dispatch(forceDeleteCategory(id)).then(() => {
         dispatch(fetchTrashedCategories());
+        Swal.fire({
+          icon: "success",
+          title: "Xóa vĩnh viễn danh mục thành công!",
+          showConfirmButton: false,
+          timer: 1500
+        });
       }).finally(() => setIsProcessing(false));
     }
   };

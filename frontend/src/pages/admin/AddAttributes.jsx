@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addAttribute } from "../../slices/Attribute";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 function AddAttributePage() {
@@ -16,17 +18,20 @@ function AddAttributePage() {
       dispatch(addAttribute({ name }))
         .unwrap()
         .then(() => {
-          alert("Thêm thành công!");
-          navigate("/admin/attribute"); 
+          toast.success("Thêm thành công!");
+          setTimeout(() => {
+            navigate("/admin/attribute");
+          }, 500);
         })
         .catch((err) => {
-          alert(err || "Lỗi khi thêm attribute!");
+          toast.error(err || "Lỗi khi thêm attribute!");
         });
     }
   };
 
   return (
     <div className="adminattributes">
+      <ToastContainer />
       <h1>Thêm mới thuộc tính </h1>
 
       <form onSubmit={handleSubmit} style={{ marginTop: "1rem" }}>
