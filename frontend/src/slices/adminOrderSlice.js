@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { axiosAdmin } from "../../utils/axiosConfig";
 
-// Fetch danh sách đơn hàng (kèm completedOrders)
 export const fetchAdminOrders = createAsyncThunk(
   "adminOrder/fetchAdminOrders",
   async (page = 1, { rejectWithValue }) => {

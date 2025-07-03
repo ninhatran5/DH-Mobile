@@ -18,15 +18,16 @@ const AddCategory = () => {
     setImageFile(e.target.files[0]);
   };
 
+  const handleBack = () => {
+    navigate("/admin/categories");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     setShowValidation(true);
-
     if (!name.trim() || !description.trim() || !imageFile) {
       return;
     }
-
     const formData = new FormData();
     formData.append("name", name);
     formData.append("description", description);
@@ -34,9 +35,8 @@ const AddCategory = () => {
     if (imageFile) {
       formData.append("image_url", imageFile);
     }
-
     try {
-      await dispatch(addCategory(formData));
+      await dispatch(addCategory(formData)).unwrap();
       toast.success("Thêm danh mục thành công!");
       navigate("/admin/categories");
     } catch (error) {
@@ -46,6 +46,21 @@ const AddCategory = () => {
 
   return (
     <div className="addcategories-container">
+      <button
+        type="button"
+        onClick={handleBack}
+        style={{
+          marginBottom: "16px",
+          padding: "8px 16px",
+          borderRadius: "4px",
+          border: "none",
+          background: "#eee",
+          color: "#333",
+          cursor: "pointer"
+        }}
+      >
+        ← Quay lại
+      </button>
       <h2 className="addcategories-title">Thêm danh mục mới</h2>
       <form onSubmit={handleSubmit} className="addcategories-form">
         <div className="addcategories-group">

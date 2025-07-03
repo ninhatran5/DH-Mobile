@@ -53,9 +53,25 @@ function AttributePage() {
     }
   };
 
-  const handleDeleteValue = (valueId) => {
-    if (window.confirm("Bạn có chắc chắn muốn xoá Value này?")) {
+  const handleDeleteValue = async (valueId) => {
+    const result = await Swal.fire({
+      title: "Bạn có chắc chắn muốn xoá Value này?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Xác nhận",
+      cancelButtonText: "Huỷ",
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#e5e7eb",
+      reverseButtons: true
+    });
+    if (result.isConfirmed) {
       dispatch(deleteAttributeValue(valueId));
+      Swal.fire({
+        icon: "success",
+        title: "Đã xoá Value thành công!",
+        showConfirmButton: false,
+        timer: 1500
+      });
     }
   };
 
