@@ -44,6 +44,7 @@ import adminCommentsReducer from "../slices/adminComments";
 
 import chatBotReducer from "../slices/chatBotSlice";
 import adminProfileReducer from "../slices/adminProfile";
+import chatLiveReducer from "../slices/chatLiveSlice";
 
 export const store = configureStore({
   reducer: {
@@ -72,6 +73,7 @@ export const store = configureStore({
     viewProduct: viewProductReducer,
     voucher: voucherReducer,
     chatBot: chatBotReducer,
+    chatLive: chatLiveReducer,
     category: categoryReducer,
     payment: paymentReducer,
     attribute: attributeReducer,

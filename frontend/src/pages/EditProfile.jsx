@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import "../assets/css/editprofile.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Breadcrumb from "../components/Breadcrumb";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchEditProfile, fetchProfile } from "../slices/updateProfileSlice";
@@ -23,7 +23,7 @@ const EditProfile = () => {
     handleSubmit,
     watch,
     formState: { errors },
-    reset, // thêm reset
+    reset,
   } = useForm({
     mode: "onTouched",
   });
@@ -37,44 +37,22 @@ const EditProfile = () => {
   const watchCity = watch("city");
   const watchDistrict = watch("district");
 
-  // Lọc districts theo city được chọn
-  const filteredDistricts =
-    data.find((province) => province.name === watchCity)?.districts || [];
+  // Lọc districts theo city được chọn - sử dụng useMemo để tối ưu
+  const filteredDistricts = useMemo(() => {
+    const selectedCity = watchCity;
+    return (
+      data.find((province) => province.name === selectedCity)?.districts || []
+    );
+  }, [data, watchCity]);
 
-  // Lọc wards theo district được chọn
-  const filteredWards =
-    filteredDistricts.find((district) => district.name === watchDistrict)
-      ?.wards || [];
-
-  useEffect(() => {
-    // Chỉ reset khi profile và data đã có, và data có đủ tỉnh/thành
-    if (
-      profile?.user &&
-      data.length > 0 &&
-      profile.user.city &&
-      profile.user.district &&
-      profile.user.ward
-    ) {
-      // Kiểm tra xem city, district, ward có trong data không
-      const province = data.find((p) => p.name === profile.user.city);
-      const district = province?.districts?.find(
-        (d) => d.name === profile.user.district
-      );
-      const ward = district?.wards?.find((w) => w.name === profile.user.ward);
-
-      if (province && district && ward) {
-        reset({
-          full_name: profile.user.full_name || "",
-          phone: profile.user.phone || "",
-          email: profile.user.email || "",
-          city: profile.user.city || "",
-          district: profile.user.district || "",
-          ward: profile.user.ward || "",
-          address: profile.user.address || "",
-        });
-      }
-    }
-  }, [profile, data, reset]);
+  // Lọc wards theo district được chọn - sử dụng useMemo để tối ưu
+  const filteredWards = useMemo(() => {
+    const selectedDistrict = watchDistrict;
+    return (
+      filteredDistricts.find((district) => district.name === selectedDistrict)
+        ?.wards || []
+    );
+  }, [filteredDistricts, watchDistrict]);
 
   useEffect(() => {
     dispatch(fetchAddress());
@@ -83,6 +61,57 @@ const EditProfile = () => {
   useEffect(() => {
     dispatch(fetchProfile());
   }, [dispatch]);
+
+  // Chỉ một useEffect duy nhất để reset form
+  useEffect(() => {
+    if (profile?.user && data.length > 0) {
+      const user = profile.user;
+
+      console.log("🔄 Resetting form with user data:", user);
+
+      reset({
+        full_name: user.full_name || "",
+        phone: user.phone || "",
+        email: user.email || "",
+        city: user.city || "",
+        district: user.district || "",
+        ward: user.ward || "",
+        address: user.address || "",
+      });
+    }
+  }, [profile, data, reset]);
+
+  // useEffect để reset district và ward khi thay đổi city/district
+  useEffect(() => {
+    if (watchCity) {
+      const currentDistrict = watch("district");
+      const existDistrict = filteredDistricts.some(
+        (d) => d.name === currentDistrict
+      );
+
+      if (!existDistrict && currentDistrict) {
+        reset((formValues) => ({
+          ...formValues,
+          district: "",
+          ward: "",
+        }));
+      }
+    }
+  }, [watchCity, filteredDistricts, reset, watch]);
+
+  useEffect(() => {
+    if (watchDistrict) {
+      const currentWard = watch("ward");
+      const existWard = filteredWards.some((w) => w.name === currentWard);
+
+      if (!existWard && currentWard) {
+        reset((formValues) => ({
+          ...formValues,
+          ward: "",
+        }));
+      }
+    }
+  }, [watchDistrict, filteredWards, reset, watch]);
 
   const onSubmit = async (dataForm) => {
     const dataToSend = new FormData();
@@ -125,36 +154,30 @@ const EditProfile = () => {
     navigate(`/profile/${id}`);
   };
 
+  const getAvatarUrl = () => {
+    if (previewImage) return previewImage;
+
+    const userImageUrl = profile?.user?.image_url;
+    if (userImageUrl && userImageUrl.trim() !== "" && userImageUrl !== "null") {
+      return userImageUrl;
+    }
+
+    return "https://bootdey.com/img/Content/avatar/avatar1.png";
+  };
+
   useEffect(() => {
-    if (watchCity && filteredDistricts.length > 0) {
-      const existDistrict = filteredDistricts.some(
-        (d) => d.name === watchDistrict
-      );
-      if (!existDistrict) {
-        reset((formValues) => ({
-          ...formValues,
-          district: "",
-          ward: "",
-        }));
-      }
-    }
-    if (watchDistrict && filteredWards.length > 0) {
-      const existWard = filteredWards.some((w) => w.name === watch("ward"));
-      if (!existWard) {
+    if (watchDistrict) {
+      const currentWard = watch("ward");
+      const existWard = filteredWards.some((w) => w.name === currentWard);
+
+      if (!existWard && currentWard) {
         reset((formValues) => ({
           ...formValues,
           ward: "",
         }));
       }
     }
-  }, [
-    watchCity,
-    watchDistrict,
-    filteredDistricts,
-    filteredWards,
-    reset,
-    watch,
-  ]);
+  }, [watchDistrict, filteredWards, reset, watch]);
 
   return (
     <>
@@ -333,7 +356,7 @@ const EditProfile = () => {
                               "editProfile.validate.districtRequired"
                             ),
                           })}
-                          disabled={!watchCity && !profile?.user?.city}
+                          disabled={!watchCity}
                         >
                           <option value="">
                             {t("editProfile.selectDistrict")}
@@ -365,7 +388,7 @@ const EditProfile = () => {
                           {...register("ward", {
                             required: t("editProfile.validate.wardRequired"),
                           })}
-                          disabled={!watchDistrict && !profile?.user?.district}
+                          disabled={!watchDistrict}
                         >
                           <option value="">
                             {t("editProfile.selectWard")}
@@ -419,7 +442,7 @@ const EditProfile = () => {
                       <div className="text-center">
                         <div className="square-custom position-relative display-2 mb-3">
                           <img
-                            src={previewImage || profile?.user?.image_url}
+                            src={getAvatarUrl()}
                             onError={(e) => {
                               e.target.onerror = null;
                               e.target.src =

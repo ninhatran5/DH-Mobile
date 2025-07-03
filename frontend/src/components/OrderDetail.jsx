@@ -119,8 +119,8 @@ const OrderDetail = () => {
     {
       label: t("orderDetail.order_date"),
       value:
-        orderDetail?.order_date && dayjs(orderDetail.order_date).isValid()
-          ? dayjs(orderDetail.order_date).format("HH:mm - DD/MM/YYYY")
+        orderDetail?.order_date && dayjs(orderDetail?.order_date).isValid()
+          ? dayjs(orderDetail?.order_date).format("HH:mm - DD/MM/YYYY")
           : t("toast.pending_update"),
     },
     {
@@ -186,7 +186,8 @@ const OrderDetail = () => {
             <p className="mb-0">
               {t("orderDetail.orderDate")}:{" "}
               <span>
-                {dayjs(orderDetail?.order_date).isValid()
+                {orderDetail?.order_date &&
+                dayjs(orderDetail.order_date).isValid()
                   ? dayjs(orderDetail.order_date).format("HH:mm - DD/MM/YYYY")
                   : t("toast.pending_update")}
               </span>
