@@ -14,7 +14,6 @@ function AddValuePage() {
 
   const { loading, attributeValues } = useSelector((state) => state.attributeValue);
 
-  // Lấy danh sách value hiện tại của attribute_id
   const currentValues = attributeValues && attributeValues[attribute_id]
     ? attributeValues[attribute_id].map(v => v.value.trim().toLowerCase())
     : [];
@@ -30,16 +29,19 @@ function AddValuePage() {
       return;
     }
 
+   
+
     try {
       await dispatch(addAttributeValue({
         attribute_id,
         name,
         value,
       })).unwrap();
-      alert("Thêm Value thành công!");
+      toast.success("Thêm Value thành công!");
       navigate("/admin/attribute");
     } catch (err) {
       setError(err || "Lỗi không xác định!");
+      toast.error(err || "Lỗi không xác định!");
     }
   };
 

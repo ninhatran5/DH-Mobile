@@ -5,6 +5,8 @@ import { fetchAdminProducts } from "../../slices/adminproductsSlice";
 import "../../assets/admin/Categories.css";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import Loading from "../../components/Loading";
+import Swal from "sweetalert2";
 
 const CategoryList = () => {
   const dispatch = useDispatch();
@@ -13,6 +15,7 @@ const CategoryList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showTrash, setShowTrash] = useState(false);
   const [productCounts, setProductCounts] = useState({});
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -36,41 +39,71 @@ const CategoryList = () => {
     setSearchTerm(e.target.value);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     const productCount = getProductCount(id);
     if (productCount > 0) {
       toast.error(`Không thể xóa danh mục này vì còn ${productCount} sản phẩm thuộc danh mục này. Vui lòng xóa hoặc chuyển các sản phẩm sang danh mục khác trước.`);
       return;
     }
-    
-    if (window.confirm("Bạn có chắc muốn xóa danh mục này không? Danh mục sẽ được chuyển vào thùng rác.")) {
+    const result = await Swal.fire({
+      title: "Bạn có chắc muốn xóa danh mục này không?",
+      text: "Danh mục sẽ được chuyển vào thùng rác.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Xóa",
+      cancelButtonText: "Hủy",
+      reverseButtons: true
+
+    });
+    if (result.isConfirmed) {
+      setIsProcessing(true);
       dispatch(deleteCategory(id)).then(() => {
         dispatch(fetchCategories());
         dispatch(fetchTrashedCategories());
-      });
+      }).finally(() => setIsProcessing(false));
     }
   };
 
-  const handleRestore = (id) => {
-    if (window.confirm("Bạn có chắc muốn khôi phục danh mục này không?")) {
+  const handleRestore = async (id) => {
+    const result = await Swal.fire({
+      title: "Bạn có chắc muốn khôi phục danh mục này không?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Khôi phục",
+      cancelButtonText: "Hủy",
+      reverseButtons: true
+
+    });
+    if (result.isConfirmed) {
+      setIsProcessing(true);
       dispatch(restoreCategory(id)).then(() => {
         dispatch(fetchCategories());
         dispatch(fetchTrashedCategories());
-      });
+      }).finally(() => setIsProcessing(false));
     }
   };
 
-  const handleForceDelete = (id) => {
+  const handleForceDelete = async (id) => {
     const productCount = getProductCount(id);
     if (productCount > 0) {
       toast.error(`Không thể xóa vĩnh viễn danh mục này vì còn ${productCount} sản phẩm thuộc danh mục này. Vui lòng xóa hoặc chuyển các sản phẩm sang danh mục khác trước.`);
       return;
     }
+    const result = await Swal.fire({
+      title: "Bạn có chắc muốn xóa vĩnh viễn danh mục này không?",
+      text: "Hành động này không thể hoàn tác!",
+      icon: "error",
+      showCancelButton: true,
+      confirmButtonText: "Xóa vĩnh viễn",
+      cancelButtonText: "Hủy",
+      reverseButtons: true
 
-    if (window.confirm("Bạn có chắc muốn xóa vĩnh viễn danh mục này không? Hành động này không thể hoàn tác!")) {
+    });
+    if (result.isConfirmed) {
+      setIsProcessing(true);
       dispatch(forceDeleteCategory(id)).then(() => {
         dispatch(fetchTrashedCategories());
-      });
+      }).finally(() => setIsProcessing(false));
     }
   };
 
@@ -84,6 +117,7 @@ const CategoryList = () => {
 
   return (
     <div className="admin_dh-categories-container">
+      {isProcessing && <Loading />}
       <div className="admin_dh-categories-header">
         <h2 className="admin_dh-categories-title">
           {showTrash ? "Thùng rác danh mục" : "Danh sách danh mục"}
