@@ -1,0 +1,77 @@
+.admin-membership-tier-cards {
+  padding: 2rem 1rem;
+}
+
+.tier-card {
+  background: white;
+  border-radius: 1rem;
+  text-align: center;
+  padding: 2rem 1rem;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.tier-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+.tier-header {
+  margin-bottom: 1.5rem;
+}
+
+.tier-icon {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  margin-bottom: 1rem;
+}
+
+.tier-points {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.tier-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #555;
+  margin: 0.5rem 0;
+}
+
+.tier-discount {
+  font-size: 0.95rem;
+  color: #888;
+  margin-bottom: 1rem;
+}
+
+.tier-benefits {
+  list-style: none;
+  padding: 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.tier-benefits li {
+  padding: 0.5rem 0;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* Màu riêng từng tier */
+.tier-gold .tier-header {
+  color: #bfa100;
+}
+
+.tier-silver .tier-header {
+  color: #888;
+}
+
+.tier-platinum .tier-header {
+  color: #1f1f1f;
+}
+
+.tier-executive .tier-header {
+  color: #444;
+}
