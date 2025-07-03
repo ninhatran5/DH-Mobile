@@ -27,7 +27,7 @@ class UserController extends Controller
                 'required',
                 'string',
                 'max:50',
-                'regex:/^[a-zA-Z0-9_]+$/',
+                'regex:/^[a-zA-Z0-9_.-]+$/',
                 'unique:users,username'
             ],
             'full_name' => [
@@ -35,7 +35,6 @@ class UserController extends Controller
                 'string',
                 'max:100',
                 'regex:/^[\pL\s\-]+$/u',
-                'unique:users,full_name'
             ],
             'email' => 'required|email|unique:users,email',
             'password' => [
@@ -55,7 +54,7 @@ class UserController extends Controller
             'ward' => 'string|max:100',
             'district' => 'string|max:100',
             'city' => 'string|max:100',
-            'image_url' => 'nullable|image|max:2048', // giới hạn 2MB
+            'image_url' => 'nullable',
             'role' => 'required|in:admin,customer,sale,shipper,checker', // Chỉ cho phép giá trị 'admin' hoặc 'user'
         ]);
 
@@ -128,15 +127,16 @@ class UserController extends Controller
                 'nullable',
                 'string',
                 'max:50',
-                'regex:/^[a-zA-Z0-9_]+$/',
+                // Cho phép chữ, số, gạch dưới, gạch ngang, dấu chấm, không dấu cách
+                'regex:/^[a-zA-Z0-9_.-]+$/',
                 'unique:users,username,' . $user->user_id . ',user_id'
             ],
             'full_name' => [
                 'nullable',
                 'string',
                 'max:100',
+                // Cho phép tên trùng, bỏ unique
                 'regex:/^[\pL\s\-]+$/u',
-                'unique:users,full_name,' . $user->user_id . ',user_id'
             ],
             'email' => 'nullable|email|unique:users,email,' . $user->user_id . ',user_id',
             'phone' => [
@@ -149,7 +149,8 @@ class UserController extends Controller
             'ward' => 'nullable|string|max:100',
             'district' => 'nullable|string|max:100',
             'city' => 'nullable|string|max:100',
-            'image_url' => 'nullable|image|max:2048', // đồng bộ 2MB
+            // Cho phép image_url là file hoặc string URL
+            'image_url' => 'nullable',
         ]);
 
         if ($request->hasFile('image_url')) {
