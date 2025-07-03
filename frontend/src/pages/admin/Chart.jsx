@@ -5,8 +5,8 @@ import { fetchUsers } from "../../slices/adminuserSlice";
 import { fetchAdminProducts } from "../../slices/adminproductsSlice";
 import { fetchAdminOrders } from "../../slices/adminOrderSlice";
 import {
-  BarChart,
-  Bar,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -28,6 +28,41 @@ const Chart = () => {
     (sum, order) => sum + Number(order.total_amount || 0),
     0
   );
+
+  // Tính doanh thu trong ngày
+  const today = new Date();
+  const todayRevenue = completedOrders && completedOrders.length > 0
+    ? completedOrders.reduce((sum, order) => {
+        const orderDate = new Date(order.created_at);
+        if (
+          orderDate.getFullYear() === today.getFullYear() &&
+          orderDate.getMonth() === today.getMonth() &&
+          orderDate.getDate() === today.getDate()
+        ) {
+          return sum + Number(order.total_amount || 0);
+        }
+        return sum;
+      }, 0)
+    : 0;
+
+  // Tính doanh thu trong tháng hiện tại
+  const monthRevenue = completedOrders && completedOrders.length > 0
+    ? completedOrders.reduce((sum, order) => {
+        const orderDate = new Date(order.created_at);
+        if (
+          orderDate.getFullYear() === today.getFullYear() &&
+          orderDate.getMonth() === today.getMonth()
+        ) {
+          return sum + Number(order.total_amount || 0);
+        }
+        return sum;
+      }, 0)
+    : 0;
+
+  // Log doanh thu hôm nay và doanh thu tháng này
+  
+  console.log("Doanh thu hôm nay:", todayRevenue);
+  console.log("Doanh thu tháng này:", monthRevenue);
 
   useEffect(() => {
     dispatch(fetchUsers());
@@ -91,6 +126,53 @@ const Chart = () => {
     }));
   };
 
+  const getDailyRevenueData = () => {
+    const today = new Date();
+    const hours = Array.from({ length: 24 }, (_, i) => i);
+    const hourlyData = {};
+    completedOrders.forEach((order) => {
+      const date = new Date(order.created_at);
+      if (
+        date.getFullYear() === today.getFullYear() &&
+        date.getMonth() === today.getMonth() &&
+        date.getDate() === today.getDate()
+      ) {
+        const hour = date.getHours();
+        if (!hourlyData[hour]) hourlyData[hour] = 0;
+        hourlyData[hour] += Number(order.total_amount || 0);
+      }
+    });
+    return hours.map((h) => ({
+      hour: h,
+      revenue: hourlyData[h] || 0,
+      label: `${h.toString().padStart(2, "0")}:00`,
+    }));
+  };
+
+  const getMonthRevenueData = () => {
+    // Doanh thu từng ngày trong tháng hiện tại
+    const today = new Date();
+    const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    const dailyData = {};
+    completedOrders.forEach((order) => {
+      const date = new Date(order.created_at);
+      if (
+        date.getFullYear() === today.getFullYear() &&
+        date.getMonth() === today.getMonth()
+      ) {
+        const day = date.getDate();
+        if (!dailyData[day]) dailyData[day] = 0;
+        dailyData[day] += Number(order.total_amount || 0);
+      }
+    });
+    return days.map((d) => ({
+      day: d,
+      revenue: dailyData[d] || 0,
+      label: d.toString(),
+    }));
+  };
+
   return (
     <div className="container admin_thongke-dashboard">
       <div className="admin_thongke-dashboard-header">
@@ -115,7 +197,7 @@ const Chart = () => {
         </div>
       </div>
 
-      <div className="row stats-row">
+      <div className="row stats-row" style={{ marginBottom: 30 }}>
         <div className="col-md-3 col-sm-6">
           <div className="admin_thongke-card admin_thongke-stat-card admin_thongke-users-card">
             <div className="admin_thongke-card-icon admin_thongke-icon-larger">
@@ -165,13 +247,113 @@ const Chart = () => {
             </div>
           </div>
         </div>
+
+       
       </div>
 
-      {/* Biểu đồ doanh thu */}
-      <div className="admin_thongke-chart-container">
+      {/* Biểu đồ doanh thu trong ngày */}
+      <div className="admin_thongke-chart-container" style={{ marginBottom: 40 }}>
+        <h5 className="mt-4 mb-3">
+          Biểu đồ doanh thu hôm nay
+          {todayRevenue > 0 && (
+            <span style={{ marginLeft: 16, color: "#1976d2", fontWeight: 500 }}>
+              ({todayRevenue.toLocaleString("vi-VN")} đ)
+            </span>
+          )}
+        </h5>
+        <ResponsiveContainer width="100%" height={isMobile ? 320 : 220}>
+          <AreaChart
+            data={getDailyRevenueData()}
+            margin={{
+              top: 20,
+              right: isMobile ? 10 : 30,
+              left: isMobile ? 0 : 0,
+              bottom: isMobile ? 60 : 30,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="label"
+              interval={isMobile ? 2 : 0}
+              angle={isMobile ? -45 : 0}
+              textAnchor={isMobile ? "end" : "middle"}
+              height={isMobile ? 80 : 30}
+              tick={{ fontSize: isMobile ? 10 : 12 }}
+              minTickGap={0}
+              allowDataOverflow={true}
+            />
+            <YAxis tickFormatter={(value) => `${(value / 1_000_000).toFixed(1)}tr`} />
+            <Tooltip
+              content={({ active, payload, label }) => {
+                if (active && payload && payload.length) {
+                  return (
+                    <div style={{ background: "#fff", border: "1px solid #ccc", padding: 10 }}>
+                      <div><strong>Giờ: {label}</strong></div>
+                      <div style={{ color: "red" }}>Doanh thu: {Number(payload[0].value).toLocaleString('vi-VN')} đ</div>
+                    </div>
+                  );
+                }
+                return null;
+              }}
+            />
+            <Area
+              type="monotone"
+              dataKey="revenue"
+              stroke="#1976d2"
+              fill="#bbdefb"
+              strokeWidth={3}
+              dot={{ r: 3, stroke: "#1976d2", strokeWidth: 2, fill: "#fff" }}
+              activeDot={{ r: 5 }}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="admin_thongke-chart-container" style={{ marginBottom: 40 }}>
+        <h5 className="mt-4 mb-3">
+          Biểu đồ doanh thu tháng này
+          {monthRevenue > 0 && (
+            <span style={{ marginLeft: 16, color: "#ff9800", fontWeight: 500 }}>
+              ({monthRevenue.toLocaleString("vi-VN")} đ)
+            </span>
+          )}
+        </h5>
+        <ResponsiveContainer width="100%" height={220}>
+          <AreaChart data={getMonthRevenueData()} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="label" />
+            <YAxis tickFormatter={(value) => `${(value / 1_000_000).toFixed(1)}tr`} />
+            <Tooltip 
+              content={({ active, payload, label }) => {
+                if (active && payload && payload.length) {
+                  return (
+                    <div style={{ background: "#fff", border: "1px solid #ccc", padding: 10 }}>
+                      <div><strong>Ngày: {label}</strong></div>
+                      <div style={{color:"red"}}>Doanh thu: {Number(payload[0].value).toLocaleString('vi-VN')} đ</div>
+                    </div>
+                  );
+                }
+                return null;
+              }}
+            />
+            <Area
+              type="monotone"
+              dataKey="revenue"
+              stroke="#ff9800"
+              fill="#ffe0b2"
+              strokeWidth={3}
+              dot={{ r: 3, stroke: "#ff9800", strokeWidth: 2, fill: "#fff" }}
+              activeDot={{ r: 5 }}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Biểu đồ doanh thu theo tháng (12 tháng) */}
+      <div className="admin_thongke-chart-container" style={{ marginBottom: 40 }}>
         <h5 className="mt-4 mb-3">Biểu đồ doanh thu theo tháng</h5>
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={getMonthlyRevenueData()} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+          <AreaChart data={getMonthlyRevenueData()} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="label" />
             <YAxis tickFormatter={(value) => `${(value / 1_000_000).toFixed(1)}tr`} />
@@ -188,10 +370,17 @@ const Chart = () => {
                 return null;
               }}
             />
-            <Bar dataKey="revenue" fill="#4caf50" radius={[4, 4, 0, 0]} />
-          </BarChart>
+            <Area
+              type="monotone"
+              dataKey="revenue"
+              stroke="#4caf50"
+              fill="#c8e6c9"
+              strokeWidth={3}
+              dot={{ r: 4, stroke: "#388e3c", strokeWidth: 2, fill: "#fff" }}
+              activeDot={{ r: 6 }}
+            />
+          </AreaChart>
         </ResponsiveContainer>
-        {/* Thêm doanh thu cao nhất và thấp nhất */}
         {(() => {
           const data = getMonthlyRevenueData();
           if (!data.length) return null;
