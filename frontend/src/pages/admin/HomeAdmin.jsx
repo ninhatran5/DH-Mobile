@@ -645,7 +645,7 @@ const Homeadmin = () => {
                   >
                    <i className="bi bi-person-vcard" style={{ color: "#ff9f0a" }} />
 
-                    <span>Thẻ thành viên</span>
+                    <span>Cấp bậc hạng</span>
                   </Link>
                 </div>
                 <div

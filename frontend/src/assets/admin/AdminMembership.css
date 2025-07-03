@@ -1,19 +1,20 @@
 .admin-membership-tier-cards {
-  padding: 2rem 1rem;
+  padding: 1rem 1rem;
 }
 
 .tier-card {
   background: white;
   border-radius: 1rem;
   text-align: center;
-  padding: 2rem 1rem;
+  padding: 5rem 0rem;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
   height: 100%;
   transition: all 0.3s ease;
+  margin-top: 4rem;
 }
 
 .tier-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(1px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
 }
 
@@ -22,8 +23,8 @@
 }
 
 .tier-icon {
-  width: 48px;
-  height: 48px;
+  width: 100px;
+  height: 100px;
   object-fit: contain;
   margin-bottom: 1rem;
 }
