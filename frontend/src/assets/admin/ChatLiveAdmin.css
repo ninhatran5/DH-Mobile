@@ -402,11 +402,12 @@
   font-size: 1.2rem;
 }
 .back-btn-chat {
-  background-color: none;
+  background: none;
   border: none;
-  color: #666;
-  font-size: 18px;
+  font-size: 20px;
+  color: #6f7070;
   cursor: pointer;
+  margin-right: -13px;
 }
 
 /* Mobile responsiveness */

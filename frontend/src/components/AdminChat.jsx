@@ -1,10 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import "../assets/css/chatbot.css";
 import { FaPaperPlane } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import { marked } from "marked";
+import { sendChatMessage } from "../slices/chatLiveSlice";
 
 export default function AdminChat() {
   const { profile } = useSelector((state) => state.profile);
@@ -12,26 +13,9 @@ export default function AdminChat() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [sending, setSending] = useState(false);
+  const dispatch = useDispatch();
 
   const messagesEndRef = useRef(null);
-
-  useEffect(() => {
-    const savedMessages = localStorage.getItem("admin-chat-messages");
-    if (savedMessages) {
-      try {
-        const parsedMessages = JSON.parse(savedMessages);
-        if (Array.isArray(parsedMessages)) {
-          setMessages(parsedMessages);
-        }
-      } catch (error) {
-        console.error("Error parsing admin chat messages:", error);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("admin-chat-messages", JSON.stringify(messages));
-  }, [messages]);
 
   const handleSendMessage = async () => {
     if (message.trim() === "") return;
@@ -41,22 +25,32 @@ export default function AdminChat() {
     const userMsg = {
       sender: "user",
       message,
-      created_at: new Date().toISOString(),
     };
 
     setMessages((prev) => [...prev, userMsg]);
     setMessage("");
 
-    // Simulate admin response (có thể thay bằng API thực)
-    setTimeout(() => {
-      const adminMsg = {
-        sender: "admin",
-        message: t("chatBot.adminResponse"),
-        created_at: new Date().toISOString(),
-      };
-      setMessages((prev) => [...prev, adminMsg]);
+    try {
+      await dispatch(
+        sendChatMessage({
+          customer_id: profile?.user?.id,
+          message,
+          sender: "customer",
+        })
+      ).unwrap();
+
+      // Giả lập phản hồi admin
+      setTimeout(() => {
+        const adminMsg = {
+          sender: "admin",
+          message: t("chatBot.adminResponse"),
+        };
+        setMessages((prev) => [...prev, adminMsg]);
+        setSending(false);
+      }, 1000);
+    } catch (error) {
       setSending(false);
-    }, 1500);
+    }
   };
 
   const handleKeyDown = (e) => {
