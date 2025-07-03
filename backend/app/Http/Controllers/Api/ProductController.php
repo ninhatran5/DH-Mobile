@@ -23,7 +23,7 @@ class ProductController extends Controller
     public function index()
     {
         //
-        $products = Product::with('category')->orderBy('created_at', 'desc')->paginate(10);
+        $products = Product::with('category')->orderBy('created_at', 'desc')->get();
         $formattedProducts = $products->map(function ($product) {
             $product->price = number_format($product->price, 0, '', '');
             $product->price_original = number_format($product->price_original, 0, '', '');
@@ -32,10 +32,7 @@ class ProductController extends Controller
 
         return response()->json([
             'message' => 'Lấy danh sách sản phẩm thành công',
-            'totalPage' => $products->lastPage(),
-            'currentPage' => $products->currentPage(),
             'data' => $formattedProducts,
-            'status' => $products->currentPage() <= $products->lastPage() ? 200 : 'Hết trang',
         ])->setStatusCode(200, 'OK');
     }
 
