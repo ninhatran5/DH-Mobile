@@ -461,21 +461,10 @@ const OrdersList = () => {
                 <tr>
                   <td><strong>Trạng thái:</strong></td>
                   <td>
-                    <div className="adminorder-status-wrapper">
-                      <select
-                        value={selectedOrder.status}
-                        onChange={(e) =>
-                          setSelectedOrder({ ...selectedOrder, status: e.target.value })
-                        }
-                        className="adminorder-status-select"
-                        disabled={isUpdatingStatus}
-                      >
-                        <option value="Chờ xác nhận">Chờ xác nhận</option>
-                        <option value="Đã xác nhận">Đã xác nhận</option>
-                        <option value="Đang vận chuyển">Đang vận chuyển</option>
-                        <option value="Đã giao hàng">Đã giao hàng</option>
-                        <option value="Đã huỷ">Đã huỷ</option>
-                      </select>
+                    <div className="adminorder-status-wrapper" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <span className={`admin_order-status ${getStatusColorClass(selectedOrder.status)}`}>
+                        {selectedOrder.status}
+                      </span>
                     </div>
                   </td>
                 </tr>
@@ -490,7 +479,7 @@ const OrdersList = () => {
                 )}
               </tbody>
             </table>
-            <div className="adminorder-modal-actions">
+            <div className="adminorder-modal-actions" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <button
                 className="adminorder-btn-cancel"
                 onClick={() => setSelectedOrder(null)}
@@ -498,15 +487,65 @@ const OrdersList = () => {
               >
                 Hủy
               </button>
-              <button
-                className="adminorder-btn-submit"
-                onClick={() =>
-                  handleStatusUpdate(selectedOrder.order_id, selectedOrder.status)
+              {(() => {
+                const statusFlow = [
+                  "Chờ xác nhận",
+                  "Đã xác nhận",
+                  "Đang vận chuyển",
+                  "Đã giao hàng"
+                ];
+                const currentIdx = statusFlow.indexOf(selectedOrder.status);
+                const nextStatus = currentIdx !== -1 && currentIdx < statusFlow.length - 1
+                  ? statusFlow[currentIdx + 1]
+                  : null;
+                if (
+                  nextStatus &&
+                  selectedOrder.status !== "Đã huỷ"
+                ) {
+                  return (
+                    <button
+                      className="adminorder-btn-submit"
+                      style={{
+                        background: "#007aff",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: 8,
+                        padding: "6px 12px",
+                        fontWeight: 500,
+                        cursor: "pointer"
+                      }}
+                      onClick={() => handleStatusUpdate(selectedOrder.order_id, nextStatus)}
+                      disabled={isUpdatingStatus}
+                    >
+                      Cập nhật sang "{nextStatus}"
+                    </button>
+                  );
                 }
-                disabled={isUpdatingStatus}
-              >
-                Cập nhật
-              </button>
+                if (
+                  selectedOrder.status === "Đã giao hàng" ||
+                  selectedOrder.status === "Hoàn thành"
+                ) {
+                  return (
+                    <button
+                      className="adminorder-btn-submit"
+                      style={{
+                        background: "#007afe",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: 8,
+                        padding: "6px 24px",
+                        fontWeight: 500,
+                        cursor: "pointer"
+                      }}
+                      onClick={() => setSelectedOrder(null)}
+                      disabled={isUpdatingStatus}
+                    >
+                      OK
+                    </button>
+                  );
+                }
+                return null;
+              })()}
             </div>
           </div>
         </div>
