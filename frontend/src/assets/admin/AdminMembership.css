@@ -62,17 +62,163 @@
 
 /* Màu riêng từng tier */
 .tier-gold .tier-header {
-  color: #bfa100;
+  color: #2196f3;
 }
 
 .tier-silver .tier-header {
-  color: #888;
+  color: #64b5f6;
 }
 
 .tier-platinum .tier-header {
-  color: #1f1f1f;
+  color: #1565c0;
 }
 
 .tier-executive .tier-header {
+  color: #1976d2;
+}
+
+.admin-membership-modal-backdrop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(30, 30, 30, 0.45);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1050;
+  animation: fadeInBackdrop 0.25s;
+}
+
+@keyframes fadeInBackdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.admin-membership-modal-dialog {
+  margin: 0;
+  max-width: 480px;
+  width: 100%;
+  animation: popupAppear 0.25s;
+}
+
+@keyframes popupAppear {
+  from { transform: translateY(-40px) scale(0.97); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.admin-membership-modal-content {
+  border-radius: 18px;
+  box-shadow: 0 12px 40px rgba(33,150,243,0.18);
+  padding: 32px 28px 20px 28px;
+  border: none;
+  background: #fff;
+  position: relative;
+  min-width: 320px;
+}
+
+.admin-membership-modal-header {
+  border: none;
+  padding-bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.admin-membership-modal-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1976d2;
+  letter-spacing: 0.5px;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 1.7rem;
+  color: #888;
+  opacity: 0.7;
+  cursor: pointer;
+  transition: color 0.2s, opacity 0.2s;
+  margin-left: 8px;
+  margin-top: -4px;
+}
+.btn-close:hover {
+  color: #e74c3c;
+  opacity: 1;
+}
+
+.admin-membership-modal-body {
+  padding: 0;
+  margin-top: 18px;
+}
+
+.admin-membership-modal-body .form-label {
+  font-weight: 500;
   color: #444;
+  margin-bottom: 4px;
+}
+
+.admin-membership-modal-body .form-control {
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  padding: 9px 12px;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+.admin-membership-modal-body .form-control:focus {
+  border-color: #2196f3;
+  outline: none;
+  box-shadow: 0 0 0 2px #e3f2fd;
+}
+
+.admin-membership-modal-footer {
+  border: none;
+  padding-top: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.admin-membership-modal-footer .btn {
+  min-width: 90px;
+  border-radius: 7px;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 7px 0;
+  transition: background 0.2s, color 0.2s;
+}
+
+.admin-membership-modal-footer .btn-primary {
+  background: #2196f3;
+  border: none;
+  color: #fff;
+}
+.admin-membership-modal-footer .btn-primary:disabled {
+  background: #90caf9;
+  color: #fff;
+  opacity: 0.7;
+}
+.admin-membership-modal-footer .btn-secondary {
+  background: #f5f5f5;
+  border: none;
+  color: #444;
+}
+.admin-membership-modal-footer .btn-secondary:hover {
+  background: #ececec;
+}
+
+/* Preview image style in popup */
+.admin-membership-modal-body img[alt="Preview"] {
+  display: block;
+  margin: 0 auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-radius: 10px;
+  border: 1.5px solid #bbdefb;
+  background: #e3f2fd;
+  padding: 4px;
 }
