@@ -55,20 +55,38 @@ const AdminMembership = () => {
     e.preventDefault();
     if (!editTier) return;
 
-    
+    let updateData = {
+      name: form.name,
+      min_points: form.min_points,
+      discount_percent: form.discount_percent,
+    };
 
-    await dispatch(
-      updateAdminLoyaltyTier({
-        id: editTier.tier_id || editTier.id,
-        data: {
-          name: form.name,
-          image_url: imageFile ? imagePreview : form.image_url, 
-          min_points: form.min_points,
-          discount_percent: form.discount_percent,
-        },
-      })
-    );
+    // Nếu có file ảnh mới, dùng FormData để upload file
+    if (imageFile) {
+      const formData = new FormData();
+      formData.append('name', form.name);
+      formData.append('min_points', form.min_points);
+      formData.append('discount_percent', form.discount_percent);
+      formData.append('image', imageFile);
+      await dispatch(
+        updateAdminLoyaltyTier({
+          id: editTier.tier_id || editTier.id,
+          data: formData,
+          isFormData: true,
+        })
+      );
+    } else {
+      updateData.image_url = form.image_url;
+      await dispatch(
+        updateAdminLoyaltyTier({
+          id: editTier.tier_id || editTier.id,
+          data: updateData,
+        })
+      );
+    }
+
     setShowEdit(false);
+    dispatch(fetchAdminLoyaltyTiers());
   };
 
   if (loading) return <div className="text-center my-5">Đang tải dữ liệu...</div>;
