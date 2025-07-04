@@ -4,7 +4,7 @@ import "../assets/css/chatbot.css";
 import chatbotLogo2 from "../assets/images/logochat.png";
 import { FaTimes } from "react-icons/fa";
 import { ImEnlarge2 } from "react-icons/im";
-import { MdOutlineZoomInMap } from "react-icons/md";
+import { MdCloseFullscreen, MdOutlineZoomInMap } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import BotChat from "./BotChat";
 import AdminChat from "./AdminChat";
@@ -61,7 +61,8 @@ export default function ChatWindow() {
                 onClick={() => setIsFullScreen((v) => !v)}
               >
                 {isFullScreen ? (
-                  <MdOutlineZoomInMap className="icon-zoomout" />
+                  <MdCloseFullscreen className="icon-zoomout"/>
+
                 ) : (
                   <ImEnlarge2 className="icon-enlarge" />
                 )}
