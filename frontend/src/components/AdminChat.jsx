@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState, useRef } from "react";
 import "../assets/css/chatbot.css";
 import { FaPaperPlane } from "react-icons/fa";
@@ -5,7 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import { marked } from "marked";
+import { Modal } from "react-bootstrap";
 import { sendChatMessage } from "../slices/chatLiveSlice";
+import { GoPaperclip } from "react-icons/go";
 
 export default function AdminChat() {
   const { profile } = useSelector((state) => state.profile);
@@ -13,22 +16,27 @@ export default function AdminChat() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [sending, setSending] = useState(false);
+  const [pastedImages, setPastedImages] = useState([]); // array base64
+  const [showModal, setShowModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
   const dispatch = useDispatch();
-
   const messagesEndRef = useRef(null);
 
   const handleSendMessage = async () => {
-    if (message.trim() === "") return;
+    if (message.trim() === "" && pastedImages.length === 0) return;
 
     setSending(true);
 
     const userMsg = {
       sender: "user",
       message,
+      images: pastedImages,
+      created_at: new Date().toISOString(),
     };
 
     setMessages((prev) => [...prev, userMsg]);
     setMessage("");
+    setPastedImages([]);
 
     try {
       await dispatch(
@@ -36,14 +44,15 @@ export default function AdminChat() {
           customer_id: profile?.user?.id,
           message,
           sender: "customer",
+          images_base64: pastedImages, // backend cần hỗ trợ mảng ảnh
         })
       ).unwrap();
 
-      // Giả lập phản hồi admin
       setTimeout(() => {
         const adminMsg = {
           sender: "admin",
           message: t("chatBot.adminResponse"),
+          created_at: new Date().toISOString(),
         };
         setMessages((prev) => [...prev, adminMsg]);
         setSending(false);
@@ -60,7 +69,48 @@ export default function AdminChat() {
     }
   };
 
-  // Auto scroll đến cuối khi có tin nhắn mới
+  const handlePaste = (e) => {
+    const items = e.clipboardData.items;
+    const imageItems = Array.from(items).filter((item) =>
+      item.type.includes("image")
+    );
+    imageItems.forEach((item) => {
+      const blob = item.getAsFile();
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setPastedImages((prev) => [...prev, event.target.result]);
+      };
+      reader.readAsDataURL(blob);
+    });
+
+    if (imageItems.length > 0) e.preventDefault();
+  };
+
+  const handlePreviewClick = (img) => {
+    setSelectedImage(img);
+    setShowModal(true);
+  };
+
+  const handleFileSelect = (e) => {
+    const files = Array.from(e.target.files);
+    const imageFiles = files.filter((file) => file.type.startsWith("image/"));
+    
+    imageFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setPastedImages((prev) => [...prev, event.target.result]);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Reset input value để có thể chọn cùng file lần sau
+    e.target.value = "";
+  };
+
+  const handleRemoveImage = (index) => {
+    setPastedImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
   useEffect(() => {
     if (messages.length > 0 && messagesEndRef.current) {
       setTimeout(() => {
@@ -71,7 +121,7 @@ export default function AdminChat() {
 
   return (
     <>
-      <div className="messages">
+       <div className="messages">
         {messages.length === 0 && (
           <div
             style={{
@@ -117,14 +167,36 @@ export default function AdminChat() {
                 color: "white",
               }}
             >
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: marked.parse(msg.message || ""),
-                }}
-              />
+              {msg.message && (
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: marked.parse(msg.message || ""),
+                  }}
+                />
+              )}
+
+              {Array.isArray(msg.images) &&
+                msg.images.map((img, i) => (
+                  <img
+                    key={i}
+                    src={img}
+                    alt="chat"
+                    onClick={() => handlePreviewClick(img)}
+                    style={{
+                      maxWidth: 160,
+                      maxHeight: 160,
+                      borderRadius: 8,
+                      marginTop: 8,
+                      marginRight: 5,
+                      cursor: "pointer",
+                      border: "1px solid white",
+                    }}
+                  />
+                ))}
+
               <div
                 className="timestamp"
-                style={{ color: "rgba(255,255,255,0.8)" }}
+                style={{ color: "rgba(255,255,255,0.8)", marginTop: 4 }}
               >
                 {dayjs(msg.created_at).format("HH:mm")}
               </div>
@@ -171,6 +243,21 @@ export default function AdminChat() {
         <div ref={messagesEndRef} />
       </div>
 
+      {pastedImages.length > 0 && (
+        <div className="pasted-preview">
+          {pastedImages.map((img, index) => (
+            <div className="preview-container" key={index}>
+              <img
+                src={img}
+                alt="preview"
+                onClick={() => handlePreviewClick(img)}
+              />
+              <button onClick={() => handleRemoveImage(index)}>×</button>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="input-container">
         <input
           type="text"
@@ -178,8 +265,24 @@ export default function AdminChat() {
           value={message}
           onKeyDown={handleKeyDown}
           onChange={(e) => setMessage(e.target.value)}
+          onPaste={handlePaste}
           disabled={sending}
         />
+          <input
+              type="file"
+              id="file-input"
+              className="file-input"
+              accept="image/*"
+              multiple
+              onChange={handleFileSelect}
+            />
+            <label
+              htmlFor="file-input"
+              className="btn_message2"
+              style={{ cursor: "pointer" }}
+            >
+              <GoPaperclip />
+            </label>
         <button
           className="btn_message"
           onClick={handleSendMessage}
@@ -188,6 +291,16 @@ export default function AdminChat() {
           {sending ? <span className="chat_spinner" /> : <FaPaperPlane />}
         </button>
       </div>
+
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg">
+        <Modal.Body style={{ padding: 0 }}>
+          <img
+            src={selectedImage}
+            alt="Large preview"
+            style={{ width: "100%", height: "auto", objectFit: "contain" }}
+          />
+        </Modal.Body>
+      </Modal>
     </>
   );
 }
