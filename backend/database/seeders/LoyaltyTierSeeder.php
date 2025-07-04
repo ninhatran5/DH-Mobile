@@ -19,7 +19,7 @@ class LoyaltyTierSeeder extends Seeder
                 'min_points' => 0,
                 'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1751509515/%C4%90o%CC%82%CC%80ng_kc0kio.png', 
                 'discount_percent' => 0,
-                'description' => 'Thành viên Bạc',
+                'description' => 'Thành viên Đồng',
                 'created_at' => Carbon::now(),
             ],
             [

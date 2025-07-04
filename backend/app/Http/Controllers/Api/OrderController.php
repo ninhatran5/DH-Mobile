@@ -112,6 +112,8 @@ class OrderController extends Controller
             'payment_status' => $order->payment_status,
             'status' => $order->status,
             'cancel_reason' => $order->cancel_reason,
+            'voucher' => $order->voucher_id,
+            'voucher_discount' => number_format($order->voucher_discount, 0, ".", ""),
             'total_amount' => number_format($order->total_amount, 0, ".", ""),
             'products' => $orderItems,
         ];
@@ -223,6 +225,8 @@ class OrderController extends Controller
             'payment_status' => $order->payment_status,
             'status' => $order->status,
             'cancel_reason' => $order->cancel_reason,
+            'voucher' => $order->voucher_id,
+            'voucher_discount' => number_format($order->voucher_discount, 0, ".", ""),
             'total_amount' => number_format($order->total_amount, 0, '.', ''),
             'products' => $orderItems
         ];
