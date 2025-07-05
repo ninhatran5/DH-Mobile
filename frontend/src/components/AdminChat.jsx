@@ -9,6 +9,7 @@ import { marked } from "marked";
 import { Modal } from "react-bootstrap";
 import { sendChatMessage } from "../slices/chatLiveSlice";
 import { GoPaperclip } from "react-icons/go";
+import { FaSearchPlus, FaSearchMinus } from "react-icons/fa"; // Thêm ở đầu file
 
 export default function AdminChat() {
   const { profile } = useSelector((state) => state.profile);
@@ -19,6 +20,7 @@ export default function AdminChat() {
   const [pastedImages, setPastedImages] = useState([]); // array base64
   const [showModal, setShowModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [zoom, setZoom] = useState(1);
   const dispatch = useDispatch();
   const messagesEndRef = useRef(null);
 
@@ -44,7 +46,7 @@ export default function AdminChat() {
           customer_id: profile?.user?.id,
           message,
           sender: "customer",
-          images_base64: pastedImages, // backend cần hỗ trợ mảng ảnh
+          images_base64: pastedImages,
         })
       ).unwrap();
 
@@ -88,13 +90,14 @@ export default function AdminChat() {
 
   const handlePreviewClick = (img) => {
     setSelectedImage(img);
+    setZoom(1);
     setShowModal(true);
   };
 
   const handleFileSelect = (e) => {
     const files = Array.from(e.target.files);
     const imageFiles = files.filter((file) => file.type.startsWith("image/"));
-    
+
     imageFiles.forEach((file) => {
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -121,7 +124,7 @@ export default function AdminChat() {
 
   return (
     <>
-       <div className="messages">
+      <div className="messages">
         {messages.length === 0 && (
           <div
             style={{
@@ -268,21 +271,21 @@ export default function AdminChat() {
           onPaste={handlePaste}
           disabled={sending}
         />
-          <input
-              type="file"
-              id="file-input"
-              className="file-input"
-              accept="image/*"
-              multiple
-              onChange={handleFileSelect}
-            />
-            <label
-              htmlFor="file-input"
-              className="btn_message2"
-              style={{ cursor: "pointer" }}
-            >
-              <GoPaperclip />
-            </label>
+        <input
+          type="file"
+          id="file-input"
+          className="file-input"
+          accept="image/*"
+          multiple
+          onChange={handleFileSelect}
+        />
+        <label
+          htmlFor="file-input"
+          className="btn_message2"
+          style={{ cursor: "pointer" }}
+        >
+          <GoPaperclip />
+        </label>
         <button
           className="btn_message"
           onClick={handleSendMessage}
@@ -292,13 +295,85 @@ export default function AdminChat() {
         </button>
       </div>
 
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg">
-        <Modal.Body style={{ padding: 0 }}>
-          <img
-            src={selectedImage}
-            alt="Large preview"
-            style={{ width: "100%", height: "auto", objectFit: "contain" }}
-          />
+      <Modal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        centered
+        size="lg"
+      >
+        <Modal.Body
+          style={{ padding: 0, position: "relative", textAlign: "center" }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              top: 24,
+              right: 32,
+              zIndex: 10,
+              display: "flex",
+              gap: 12,
+            }}
+          >
+            <button
+              onClick={() => setZoom((z) => Math.max(1, z - 0.2))}
+              style={{
+                border: "none",
+                background: "#222",
+                borderRadius: "50%",
+                width: 20,
+                height: 50,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 22,
+                transition: "background 0.2s, box-shadow 0.2s",
+                color: "#fff",
+              }}
+              disabled={zoom <= 1}
+              title="Thu nhỏ"
+              className="zoom-btn"
+            >
+              -
+            </button>
+            <button
+              onClick={() => setZoom((z) => Math.min(3, z + 0.2))}
+              style={{
+                border: "none",
+                background: "#222",
+                borderRadius: "50%",
+                width: 20,
+                height: 50,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 22,
+                transition: "background 0.2s, box-shadow 0.2s",
+                color: "#fff",
+              }}
+              className="zoom-btn"
+            >
+              +
+            </button>
+          </div>
+          <div style={{ overflow: "auto" }}>
+            <img
+              src={selectedImage}
+              alt="Large preview"
+              style={{
+                width: "auto",
+                height: "auto",
+                maxWidth: "100%",
+                maxHeight: "70vh",
+                transform: `scale(${zoom})`,
+                transition: "transform 0.2s",
+                display: "inline-block",
+                boxShadow: "0 4px 32px #0002",
+                borderRadius: 8,
+              }}
+            />
+          </div>
         </Modal.Body>
       </Modal>
     </>

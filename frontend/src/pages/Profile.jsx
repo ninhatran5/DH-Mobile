@@ -10,11 +10,14 @@ import { fetchProfile } from "../slices/profileSlice";
 import Loading from "../components/Loading";
 import { fetchListFavorite } from "../slices/favoriteProductsSlice";
 import { fetchOrder } from "../slices/orderSlice";
+import { fetchRank } from "../slices/rankSlice";
+import { FaCrown } from "react-icons/fa";
 
 const Profile = () => {
   const dispatch = useDispatch();
   const { profile, loading } = useSelector((state) => state.profile);
-  console.log("🚀 ~ Profile ~ profile:", profile)
+  const { ranks } = useSelector((state) => state.rank);
+  console.log("🚀 ~ Profile ~ ranks:", ranks);
   const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -25,6 +28,7 @@ const Profile = () => {
     dispatch(fetchListFavorite());
     dispatch(fetchProfile());
     dispatch(fetchOrder());
+    dispatch(fetchRank());
   }, [dispatch]);
 
   const personalInformations = [
@@ -141,8 +145,18 @@ const Profile = () => {
                       />
                     </span>
                     <div className="profile-user-info">
-                      <h4 className="profile-username">
+                      <h4
+                        className="profile-username"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 6,
+                        }}
+                      >
                         {profile?.user?.full_name}
+                        <span className="profile-rank-beauty">
+                          {ranks?.current_tier?.name}
+                        </span>
                       </h4>
                       <p className="profile-location">
                         @{profile?.user?.username}
