@@ -535,7 +535,11 @@
 .typing-dot:nth-child(3) {
   animation-delay: 0s;
 }
-
+.zoom-btn:hover:not(:disabled) {
+  background: #1877f2 !important;
+  color: #fff !important;
+  box-shadow: 0 4px 16px #1877f255;
+}
 @keyframes typing-bounce {
   0%,
   80%,

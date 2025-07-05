@@ -288,3 +288,28 @@
   display: inline-block;
   cursor: pointer;
 }
+
+.profile-rank-beauty {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #f1556c;
+  color: #fff;
+  padding: 3px 16px 3px 10px;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 13px;
+  box-shadow: 0 2px 8px #ffb30033;
+  margin-left: 10px;
+  letter-spacing: 0.5px;
+  position: relative;
+  min-width: 110px;
+  justify-content: center;
+}
+
+.profile-rank-crown {
+  color: #fff;
+  font-size: 1.1em;
+  margin-right: 4px;
+  filter: drop-shadow(0 1px 2px #bfa100);
+}
