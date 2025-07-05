@@ -80,11 +80,12 @@ class LoyaltyTierController extends Controller
             'current_tier' => $currentTier ? [
                 'name' => $currentTier->name,
                 'discount_percent' => rtrim(rtrim(number_format($currentTier->discount_percent, 2, '.', ''), '0'), '.') . '%',
-                'image_url' => $currentTier->Image_url,
+                'image_url' => $currentTier->image_url,
                 'min_points' => $currentTier->min_points,
             ] : null,
             'next_tier' => $nextTier ? [
                 'name' => $nextTier->name,
+                'image_url' => $nextTier->image_url,
                 'min_points' => $nextTier->min_points,
                 'points_needed' => max(0, $nextTier->min_points - $points),
             ] : null,
