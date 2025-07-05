@@ -331,7 +331,6 @@ export default function AdminChat() {
                 color: "#fff",
               }}
               disabled={zoom <= 1}
-              title="Thu nhỏ"
               className="zoom-btn"
             >
               -
