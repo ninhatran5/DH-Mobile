@@ -64,6 +64,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(LoyaltyPoint::class, 'user_id', 'user_id');
     }
+    public function tier()
+    {
+        return $this->belongsTo(LoyaltyTier::class, 'tier_id', 'tier_id');
+    }
 
     public function getTotalPointsAttribute()
     {
