@@ -116,6 +116,14 @@ const OrderDetail = () => {
       label: t("orderDetail.payment_status_note"),
       value: orderDetail?.payment_status || t("toast.pending_update"),
     },
+    ...(Number(orderDetail?.voucher_discount) > 0
+    ? [{
+        label: t("orderDetail.amountIsReduced"),
+        value:
+          numberFormat(orderDetail?.voucher_discount) ||
+          t("toast.pending_update"),
+      }]
+    : []),
     {
       label: t("orderDetail.order_date"),
       value:
@@ -132,6 +140,11 @@ const OrderDetail = () => {
       ),
     },
   ];
+  const totalAmount = Number(orderDetail?.total_amount) || 0;
+  const discount = Number(orderDetail?.voucher_discount) || 0;
+  const priceBeforeDiscount = totalAmount + discount;
+  const totalBeforeDiscount = numberFormat(priceBeforeDiscount);
+
   const handleCancelOrder = async (orderId) => {
     const result = await MySwal.fire({
       title: t("orderHistory.cancelOrder"),
@@ -276,9 +289,16 @@ const OrderDetail = () => {
                       <td colSpan="6" className="text-end fw-bold">
                         {t("orderDetail.total")}
                       </td>
-                      <td className="fw-bold" style={{ color: "#ff8800" }}>
-                        {numberFormat(orderDetail?.total_amount) ||
-                          t("toast.pending_update")}
+                      <td className="d-flex" style={{ gap: "7px" }}>
+                        <span className="fw-bold" style={{ color: "#ff8800" }}>
+                          {numberFormat(totalAmount) ||
+                            t("toast.pending_update")}
+                        </span>
+                        {discount > 0 && (
+                          <small className="total_before_discount fw-bold">
+                            {totalBeforeDiscount}
+                          </small>
+                        )}
                       </td>
                     </tr>
                   </tfoot>

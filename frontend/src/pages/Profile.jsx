@@ -14,6 +14,7 @@ import { fetchOrder } from "../slices/orderSlice";
 const Profile = () => {
   const dispatch = useDispatch();
   const { profile, loading } = useSelector((state) => state.profile);
+  console.log("🚀 ~ Profile ~ profile:", profile)
   const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();

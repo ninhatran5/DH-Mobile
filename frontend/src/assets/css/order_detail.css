@@ -15,7 +15,11 @@ body {
   padding-left: 13% !important;
   padding-right: 13% !important;
 }
-
+.total_before_discount{
+  font-size: 13px;
+  text-decoration: line-through;
+  margin-top: 1px;
+}
 /*Icon progressbar*/
 #progressbar {
   margin: 30px 0;
