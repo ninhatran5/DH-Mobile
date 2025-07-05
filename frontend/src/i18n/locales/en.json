@@ -419,6 +419,7 @@
     "unitPrice": "Unit Price",
     "totalPrice": "Total Price",
     "back": "Back to Purchase History",
+    "amountIsReduced": "Amount Discounted",
     "total": "Total:",
     "order_status": {
       "pending": "Pending Confirmation",

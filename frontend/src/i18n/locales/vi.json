@@ -415,6 +415,7 @@
     "totalPrice": "Tổng tiền",
     "total": "Tổng cộng:",
     "back": "Quay lại lịch sử mua hàng ",
+    "amountIsReduced" : "Số tiền đã giảm",
     "order_status": {
       "pending": "Chờ xác nhận",
       "confirmed": "Đã xác nhận",

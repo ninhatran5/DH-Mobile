@@ -110,7 +110,7 @@ const CheckOut = () => {
       voucher_id: selectedVoucher
         ? selectedVoucher.voucher_id || selectedVoucher.voucher?.voucher_id
         : null,
-      discount_amount: Number(discountAmount),
+      voucher_discount: Number(discountAmount),
       address: addressData.address,
       customer: addressData.recipient_name || profile.user.full_name || "",
       email: addressData.email || profile.user.email || "",
