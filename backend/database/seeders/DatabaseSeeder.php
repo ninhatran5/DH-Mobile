@@ -19,7 +19,8 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
         //  $this->call(UserSeeder::class);
-        $this->call([
+        $this->call([ 
+             LoyaltyTierSeeder::class,
             AttributeSeeder::class,
             AttributeValueSeeder::class,
             CategorySeeder::class,
@@ -33,7 +34,7 @@ class DatabaseSeeder extends Seeder
             // VoucherSeeder::class,
             ChatbotSeeder::class,
             PaymentMethodSeeder::class,
-            LoyaltyTierSeeder::class,
+          
            
         ]);
     }

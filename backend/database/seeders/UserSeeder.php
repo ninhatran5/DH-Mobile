@@ -17,6 +17,7 @@ class UserSeeder extends Seeder
 
         foreach ($roles as $index => $role) {
             DB::table('users')->insert([
+                'tier_id' => 1,
                 'username'    => $role . '_user',
                 'password_hash' => Hash::make( 'Admin@123'),
                 'email'       => $role . '@gmail.com',
@@ -33,6 +34,7 @@ class UserSeeder extends Seeder
         // Thêm các user khách hàng
         $customers = [
             [
+                'tier_id' => 1,
                 'username' => 'x$ng',
                 'password_hash' => '$2y$12$j1mxQPpakSgOLWWQ8BrxMuM5eMqtAUC1p0uwBkotNCUMAqH73z4Ie',
                 'email' => 'tungnguyenle0909@gmail.com',
@@ -48,6 +50,7 @@ class UserSeeder extends Seeder
                 'updated_at' => '2025-05-22 08:11:55'
             ],
             [
+                'tier_id' => 1,
                 'username' => 'dfsf',
                 'password_hash' => '$2y$12$O0lIXtzms1DtdllWKJvdWed7SSmI45JCnQeUKwkrItWLtjn9kmwtK',
                 'email' => 'tung.ln@mor.com.vn',
@@ -63,6 +66,7 @@ class UserSeeder extends Seeder
                 'updated_at' => '2025-05-22 04:34:03'
             ],
             [
+                'tier_id' => 1,
                 'username' => 'xengne',
                 'password_hash' => '$2y$12$9AlfJ2A5uOS6oWwrLutkxur1Ru4ygx3OG8uLhyK5iMjIoFlmkdaeK',
                 'email' => 'tunglnph49038@gmail.com',
@@ -78,6 +82,7 @@ class UserSeeder extends Seeder
                 'updated_at' => '2025-05-22 06:29:00'
             ],
             [
+                'tier_id' => 1,
                 'username' => 'hquan12323',
                 'password_hash' => Hash::make('Quanhp@123'),
                 'email' => 'hquan12323@gmail.com',
@@ -93,6 +98,7 @@ class UserSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
+                'tier_id' => 1,
                 'username' => 'duyhung05',
                 'password_hash' => Hash::make('Hunghp@123'),
                 'email' => 'duyhung05@gmail.com',
@@ -108,6 +114,7 @@ class UserSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
+                'tier_id' => 1,
                 'username' => 'ninhatran',
                 'password_hash' => Hash::make('Ninh@123'),
                 'email' => 'ninhtnph49084@gmail.com',
@@ -123,6 +130,7 @@ class UserSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
+                'tier_id' => 1,
                 'username' => 'ninhatran5',
                 'password_hash' => Hash::make('Ninh@123'),
                 'email' => 'tnnpalk@gmail.com',

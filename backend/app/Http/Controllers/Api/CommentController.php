@@ -13,6 +13,7 @@ class CommentController extends Controller
     public function index($id)
     {
         $comments = Comment::with([
+            'user.tier',
             'user',
             'product',
             'repliedBy',
@@ -23,6 +24,18 @@ class CommentController extends Controller
             ->get();
         $comments = $comments->map(function ($comment) {
             $arr = $comment->toArray();
+
+            // Gộp thông tin tier của user nếu có
+            if ($comment->user && $comment->user->tier) {
+                $arr['user']['tier'] = [
+                    'name' => $comment->user->tier->name,
+                    'image_url' => $comment->user->tier->image_url,
+                ];
+            } else {
+                $arr['user']['tier'] = null;
+            }
+// dd($comment->user->tier);
+
             // Tối ưu variant chỉ lấy trường chính
             if ($comment->variant) {
                 $arr['variant'] = [
