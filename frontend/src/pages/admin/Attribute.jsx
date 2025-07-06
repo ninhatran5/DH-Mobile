@@ -2,21 +2,24 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAttributes, deleteAttribute } from "../../slices/Attribute";
 import { fetchAttributeValues, deleteAttributeValue } from "../../slices/attributeValueSlice";
+import { fetchAdminProductVariants } from "../../slices/AdminProductVariants";
 import { Link } from "react-router-dom";
-import "../../assets/admin/Attributes.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
+import "../../assets/admin/Attributes.css";
 
 function AttributePage() {
   const dispatch = useDispatch();
   const { attributes, loading, error } = useSelector((state) => state.attribute);
   const { attributeValues } = useSelector((state) => state.attributeValue);
+  const { productVariants } = useSelector((state) => state.adminProductVariants);
 
-  const [newValues, setNewValues] = useState({});
+  const [valueUsageMap, setValueUsageMap] = useState({});
 
   useEffect(() => {
     dispatch(fetchAttributes());
+    dispatch(fetchAdminProductVariants());
   }, [dispatch]);
 
   useEffect(() => {
@@ -24,6 +27,24 @@ function AttributePage() {
       dispatch(fetchAttributeValues(attr.attribute_id));
     });
   }, [attributes, dispatch]);
+
+  useEffect(() => {
+    const usageMap = {};
+    productVariants.forEach((variant) => {
+      if (Array.isArray(variant.attributes)) {
+        variant.attributes.forEach((attr) => {
+          if (Array.isArray(attr.values)) {
+            attr.values.forEach((val) => {
+              if (val?.value_id) {
+                usageMap[val.value_id] = (usageMap[val.value_id] || 0) + 1;
+              }
+            });
+          }
+        });
+      }
+    });
+    setValueUsageMap(usageMap);
+  }, [productVariants]);
 
   const handleDelete = async (id) => {
     const values = attributeValues[id] || [];
@@ -39,21 +60,27 @@ function AttributePage() {
       cancelButtonText: "Huỷ",
       confirmButtonColor: "#dc2626",
       cancelButtonColor: "#e5e7eb",
-      reverseButtons: true
-
+      reverseButtons: true,
     });
+
     if (result.isConfirmed) {
       dispatch(deleteAttribute(id));
       Swal.fire({
         icon: "success",
         title: "Đã xoá thành công!",
         showConfirmButton: false,
-        timer: 1500
+        timer: 1500,
       });
     }
   };
 
   const handleDeleteValue = async (valueId) => {
+    const isUsed = valueUsageMap[valueId] > 0;
+    if (isUsed) {
+      toast.error("Không thể xoá giá trị này vì đang được sử dụng trong biến thể sản phẩm.");
+      return;
+    }
+
     const result = await Swal.fire({
       title: "Bạn có chắc chắn muốn xoá Value này?",
       icon: "warning",
@@ -62,23 +89,28 @@ function AttributePage() {
       cancelButtonText: "Huỷ",
       confirmButtonColor: "#dc2626",
       cancelButtonColor: "#e5e7eb",
-      reverseButtons: true
+      reverseButtons: true,
     });
+
     if (result.isConfirmed) {
-      dispatch(deleteAttributeValue(valueId));
-      Swal.fire({
-        icon: "success",
-        title: "Đã xoá Value thành công!",
-        showConfirmButton: false,
-        timer: 1500
-      });
+      try {
+        await dispatch(deleteAttributeValue(valueId)).unwrap();
+        Swal.fire({
+          icon: "success",
+          title: "Đã xoá Value thành công!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } catch (err) {
+        toast.error("Lỗi khi xoá Value.");
+      }
     }
   };
 
   return (
     <div className="adminattributes">
       <ToastContainer />
-      <h1>Danh sách thuộc tính </h1>
+      <h1>Danh sách thuộc tính</h1>
 
       {error && <p className="error">{error}</p>}
       {loading && <p className="loading">Đang tải...</p>}
@@ -98,6 +130,7 @@ function AttributePage() {
                 <span className="attribute-label">Tên thuộc tính:</span>
                 <span className="attribute-data">{attr.name}</span>
               </div>
+
               {values.length > 0 && (
                 <div className="attribute-row">
                   <span className="attribute-label">Giá trị:</span>
@@ -113,11 +146,7 @@ function AttributePage() {
                         </button>
 
                         <Link to={`/admin/EditAttributevalues/${value.value_id}`}>
-                          <button
-                            className="btn-edit-value"
-                            title="Sửa Value"
-                            type="button"
-                          >
+                          <button className="btn-edit-value" title="Sửa Value" type="button">
                             &#9998;
                           </button>
                         </Link>
@@ -131,49 +160,49 @@ function AttributePage() {
 
               <div className="action-buttons">
                 <Link to={`/admin/Editattribute/${attr.attribute_id}`}>
-                
-                  <button className="btn-edit"
-                  style={{
-              padding: "8px 16px",
-              border: "1px solid #eab308",
-              borderRadius: "6px",
-              backgroundColor: "#fef9c3",
-              color: "#854d0e",
-              fontSize: "15px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "4px",
-              textDecoration: "none"
-            }}>
-                     <i className="bi bi-pencil"></i>
+                  <button
+                    className="btn-edit"
+                    style={{
+                      padding: "8px 16px",
+                      border: "1px solid #eab308",
+                      borderRadius: "6px",
+                      backgroundColor: "#fef9c3",
+                      color: "#854d0e",
+                      fontSize: "15px",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
+                      textDecoration: "none",
+                    }}
+                  >
+                    <i className="bi bi-pencil"></i>
                     Cập nhật thuộc tính
-                    </button>
+                  </button>
                 </Link>
+
                 <button
                   className="btn-delete-attibute"
                   onClick={() => handleDelete(attr.attribute_id)}
                   style={{
-              padding: "5px 10px",
-              border: "1px solid #dc2626",
-              borderRadius: "8px",
-              backgroundColor: "#fee2e2",
-              color: "#991b1b",
-              fontSize: "15px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "4px"
-            }}
+                    padding: "5px 10px",
+                    border: "1px solid #dc2626",
+                    borderRadius: "8px",
+                    backgroundColor: "#fee2e2",
+                    color: "#991b1b",
+                    fontSize: "15px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                  }}
                 >
-                   <i className="bi bi-trash"></i> 
+                  <i className="bi bi-trash"></i>
                   Xoá thuộc tính
                 </button>
+
                 <Link to={`/admin/AddAttributevalues/${attr.attribute_id}`}>
-                  <button className="btn-add-value ml" 
-                  >
-                    
-                    + Thêm giá trị thuộc tính</button>
+                  <button className="btn-add-value ml">+ Thêm giá trị thuộc tính</button>
                 </Link>
               </div>
             </li>
@@ -183,6 +212,5 @@ function AttributePage() {
     </div>
   );
 }
-
 
 export default AttributePage;
