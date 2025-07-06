@@ -112,7 +112,8 @@
     "parameter": "Specifications",
     "comment": "Comments",
     "quantity": "Quantity",
-    "product": "Products"
+    "product": "Products",
+    "coinReward": "Earn <b>{{coins}}</b> coins when you complete this order"
   },
   "breadcrumbVoucher": {
     "breadcrumbHeader": "Vouchers",

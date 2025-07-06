@@ -6,22 +6,41 @@ import numberFormat from "../../utils/numberFormat";
 import { toast } from "react-toastify";
 import checkLogin from "../../utils/checkLogin";
 import { useDispatch, useSelector } from "react-redux";
+import coins from "../assets/images/coins.png";
 import {
   deleteFavoriteProduct,
   fetchFavoriteProduct,
   fetchListFavorite,
 } from "../slices/favoriteProductsSlice";
 import ProductModal from "./ProductModal";
+import numberFormatCoins from "../../utils/numberFormatCoins";
+import "../assets/admin/product.css";
 
-const Product = ({ product, discountPercent, onClick }) => {
+const Product = ({
+  product,
+  discountPercent,
+  onClick,
+  coinsAccumulatePoints: coinsFromProps,
+}) => {
   const dispatch = useDispatch();
   const { listFavorite } = useSelector((state) => state.favoriteProduct);
   const { t } = useTranslation();
   const [show, setShow] = useState(false);
-  // Kiểm tra sản phẩm này có trong listFavorite không
+
+  // Tính xu nếu không được truyền từ props
+  const priceValue =
+    typeof product.price === "string"
+      ? parseInt(product.price.replace(/[^\d]/g, "")) || 0
+      : product.price || 0;
+
+  const coinsAccumulatePoints = coinsFromProps ?? priceValue / 100;
+
   const isFavorite = listFavorite?.some(
-    (item) => item.product_id === product?.product_id || item.product?.product_id === product?.product_id
+    (item) =>
+      item.product_id === product?.product_id ||
+      item.product?.product_id === product?.product_id
   );
+
   const handleUnFavorites = async () => {
     if (!checkLogin()) return;
     try {
@@ -49,6 +68,7 @@ const Product = ({ product, discountPercent, onClick }) => {
       setShow(true);
     }
   };
+
   return (
     <>
       <div className="col" key={product.product_id}>
@@ -102,11 +122,7 @@ const Product = ({ product, discountPercent, onClick }) => {
 
           <div
             className="price_products_sale"
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 7,
-            }}
+            style={{ display: "flex", flexWrap: "wrap", gap: 7 }}
           >
             <span
               className="price"
@@ -143,9 +159,16 @@ const Product = ({ product, discountPercent, onClick }) => {
               {t("products.addToCart")}
               <iconify-icon icon="uil:shopping-cart" />
             </a>
+            <div className="card-coins-products d-flex align-items-center">
+              <img style={{ width: 20 }} src={coins} alt="" />
+              <p className="coins-products fw-bold">
+                {numberFormatCoins(coinsAccumulatePoints)}
+              </p>
+            </div>
           </div>
         </div>
       </div>
+
       <ProductModal
         show={show}
         onHide={() => setShow(false)}
@@ -154,4 +177,5 @@ const Product = ({ product, discountPercent, onClick }) => {
     </>
   );
 };
+
 export default Product;

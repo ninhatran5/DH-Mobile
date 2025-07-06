@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from 'react-toastify';
@@ -19,7 +19,6 @@ import { deleteAdminProductVariant } from "../../slices/AdminProductVariants";
 
 import {
   fetchVariantAttributeValues,
-  deleteVariantAttributeValue,
 } from "../../slices/variantAttributeValueSlice";
 import { 
   fetchAttributeValues,
@@ -27,7 +26,6 @@ import {
 import "../../assets/admin/EditProducts.css";
 
 const VariantDisplay = ({ variant, onEdit, onDelete, attributeValues }) => {
-  console.log("variant:", variant);
 
   const handleDelete = () => {
     onDelete(variant.variant_id);

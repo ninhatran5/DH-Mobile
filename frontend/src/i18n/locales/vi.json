@@ -111,7 +111,8 @@
     "parameter": "Thông số kỹ thuật",
     "comment": "Bình luận",
     "quantity": "Số lượng",
-    "product": "Sản Phẩm"
+    "product": "Sản Phẩm",
+    "coinReward": "Nhận thêm <b>{{coins}}</b> xu khi hoàn tất đơn hàng này"
   },
   "breadcrumbVoucher": {
     "breadcrumbHeader": "Mã Giảm Giá",
@@ -415,7 +416,7 @@
     "totalPrice": "Tổng tiền",
     "total": "Tổng cộng:",
     "back": "Quay lại lịch sử mua hàng ",
-    "amountIsReduced" : "Số tiền đã giảm",
+    "amountIsReduced": "Số tiền đã giảm",
     "order_status": {
       "pending": "Chờ xác nhận",
       "confirmed": "Đã xác nhận",

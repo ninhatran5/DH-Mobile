@@ -165,8 +165,6 @@ const AddVariant = () => {
           value_id: parseInt(attr.value_id, 10)
         }))
       };
-
-      console.log('Adding attributes for variant:', attributeData);
       
       for (const attr of formData.attributes) {
         const singleAttributeData = {

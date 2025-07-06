@@ -59,11 +59,7 @@ const Chart = () => {
       }, 0)
     : 0;
 
-  // Log doanh thu hôm nay và doanh thu tháng này
-  
-  console.log("Doanh thu hôm nay:", todayRevenue);
-  console.log("Doanh thu tháng này:", monthRevenue);
-
+ 
   useEffect(() => {
     dispatch(fetchUsers());
     dispatch(fetchAdminProducts());

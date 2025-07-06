@@ -732,3 +732,9 @@ tr:hover .admin_dh-product-name {
   cursor: not-allowed;
   color: #999;
 }
+.coins-products{
+  margin-top: 17px;
+}
+.card-coins-products{
+  gap: 5px;
+}

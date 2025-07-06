@@ -11,13 +11,11 @@ import Loading from "../components/Loading";
 import { fetchListFavorite } from "../slices/favoriteProductsSlice";
 import { fetchOrder } from "../slices/orderSlice";
 import { fetchRank } from "../slices/rankSlice";
-import { FaCrown } from "react-icons/fa";
 
 const Profile = () => {
   const dispatch = useDispatch();
   const { profile, loading } = useSelector((state) => state.profile);
   const { ranks } = useSelector((state) => state.rank);
-  console.log("🚀 ~ Profile ~ ranks:", ranks);
   const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -150,13 +148,23 @@ const Profile = () => {
                         style={{
                           display: "flex",
                           alignItems: "center",
-                          gap: 6,
+                          gap: 10,
                         }}
                       >
                         {profile?.user?.full_name}
-                        <span className="profile-rank-beauty">
-                          {ranks?.current_tier?.name}
-                        </span>
+                        {ranks?.current_tier?.image_url && (
+                          <span className="profile-rank-badge">
+                            <img
+                              src={ranks?.current_tier?.image_url}
+                              alt={ranks?.current_tier?.name}
+                              title={ranks?.current_tier?.name}
+                              className="profile-rank-img"
+                            />
+                            <span className="profile-rank-name">
+                              {ranks?.current_tier?.name}
+                            </span>
+                          </span>
+                        )}
                       </h4>
                       <p className="profile-location">
                         @{profile?.user?.username}
@@ -260,23 +268,25 @@ const Profile = () => {
                     </h4>
                   </Link>
                 </div>
-                <table className="profile-table">
-                  <thead>
-                    <tr>
-                      <th>{t("orderHistory.orderCode")}</th>
-                      <th>{t("orderHistory.orderName")}</th>
-                      <th>{t("orderHistory.paymentMethod")}</th>
-                      <th>{t("orderHistory.payment_status")}</th>
-                      <th>{t("orderHistory.address")}</th>
-                      <th>{t("orderHistory.price")}</th>
-                      <th>{t("orderHistory.status")}</th>
-                      <th>{t("orderHistory.detail")}</th>
-                    </tr>
-                  </thead>
-                  {orders?.orders?.slice(0, 2).map((order) => (
-                    <OrderHistory key={order?.order_id} order={order} />
-                  ))}
-                </table>
+                <div className="profile-table-wrapper">
+                  <table className="profile-table">
+                    <thead>
+                      <tr>
+                        <th>{t("orderHistory.orderCode")}</th>
+                        <th>{t("orderHistory.orderName")}</th>
+                        <th>{t("orderHistory.paymentMethod")}</th>
+                        <th>{t("orderHistory.payment_status")}</th>
+                        <th>{t("orderHistory.address")}</th>
+                        <th>{t("orderHistory.price")}</th>
+                        <th>{t("orderHistory.status")}</th>
+                        <th>{t("orderHistory.detail")}</th>
+                      </tr>
+                    </thead>
+                    {orders?.orders?.slice(0, 2).map((order) => (
+                      <OrderHistory key={order?.order_id} order={order} />
+                    ))}
+                  </table>
+                </div>
               </div>
             </div>
           </div>

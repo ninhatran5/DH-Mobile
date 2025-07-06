@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import checkLogin from "../../utils/checkLogin";
 import numberFormat from "../../utils/numberFormat";
+import numberFormatCoins from "../../utils/numberFormatCoins";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteFavoriteProduct,
@@ -13,6 +14,7 @@ import {
 } from "../slices/favoriteProductsSlice";
 import { addViewProducts } from "../slices/viewProductSlice";
 import ProductModal from "./ProductModal";
+import coins from "../assets/images/coins.png";
 
 const ProductCard = ({ discountPercent, product }) => {
   const navigate = useNavigate();
@@ -24,7 +26,9 @@ const ProductCard = ({ discountPercent, product }) => {
 
   // Kiểm tra sản phẩm này có trong listFavorite không
   const isFavorite = listFavorite?.some(
-    (item) => item.product_id === product?.product_id || item.product?.product_id === product?.product_id
+    (item) =>
+      item.product_id === product?.product_id ||
+      item.product?.product_id === product?.product_id
   );
 
   const handleUnFavorites = async () => {
@@ -56,6 +60,8 @@ const ProductCard = ({ discountPercent, product }) => {
       setShow(true);
     }
   };
+
+  const coinsAccumulatePoints = (product?.price || 0) / 100;
 
   return (
     <>
@@ -168,6 +174,12 @@ const ProductCard = ({ discountPercent, product }) => {
             {t("products.addToCart")}
             <iconify-icon icon="uil:shopping-cart" />
           </a>
+          <div className="card-coins-products d-flex align-items-center">
+            <img style={{ width: 20 }} src={coins} alt="" />
+            <p className="coins-products fw-bold">
+              {numberFormatCoins(coinsAccumulatePoints)}
+            </p>
+          </div>
         </div>
       </div>
       <ProductModal
