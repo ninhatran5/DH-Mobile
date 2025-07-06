@@ -1,6 +1,5 @@
 <?php
 
-use GuzzleHttp\Client;
 use App\Http\Middleware\CheckAdmin;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CodController;
@@ -43,7 +42,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/codpay/checkout', [CodController::class, 'createCodOrder']);
     Route::post('/voucher/apply', [CodController::class, 'applyVoucher']);
 });
-
 Route::get('/vnpay/return', [VnpayController::class, 'handleReturn']);
 
 
@@ -308,6 +306,7 @@ Route::get('/comments/{id}', [CommentController::class, 'index']);
 Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(function () {
     Route::get('/comments', [CommentController::class, 'getAllComments']);
     Route::post('/comments/rely/{id}', [CommentController::class, 'relyComments']);
+    Route::post('/comments/hidden/{id}', [CommentController::class, 'hiddenComment']);
 });
 
 // chatbot

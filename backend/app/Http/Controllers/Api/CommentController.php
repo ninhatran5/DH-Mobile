@@ -34,7 +34,7 @@ class CommentController extends Controller
             } else {
                 $arr['user']['tier'] = null;
             }
-// dd($comment->user->tier);
+            // dd($comment->user->tier);
 
             // Tối ưu variant chỉ lấy trường chính
             if ($comment->variant) {
@@ -203,6 +203,27 @@ class CommentController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Trả lời bình luận thành công.',
+            'data' => $comment
+        ]);
+    }
+
+
+    public function hiddenComment($id)
+    {
+        $comment = Comment::find($id);
+        if (!$comment) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Bình luận không tồn tại.',
+            ], 404);
+        }
+
+        $comment->is_visible = !$comment->is_visible;
+        $comment->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => $comment->is_visible ? 'Đã hiển thị bình luận.' : 'Đã ẩn bình luận.',
             'data' => $comment
         ]);
     }
