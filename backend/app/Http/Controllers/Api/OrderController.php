@@ -953,7 +953,7 @@ class OrderController extends Controller
             DB::transaction(function () use ($order, $alreadyRewarded, &$points) {
                 if ($order->status !== 'Hoàn thành') $order->update(['status' => 'Hoàn thành']);
 
-                $points = floor($order->total_amount / 100);
+             $points = ceil(ceil($order->total_amount / 100) / 1000) * 1000;
                 if (!$alreadyRewarded && $points > 0) {
                     LoyaltyPoint::create([
                         'user_id' => $order->user_id,
