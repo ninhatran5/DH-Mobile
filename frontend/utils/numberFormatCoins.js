@@ -8,8 +8,7 @@ export default function formatXu(number) {
     return "0";
   }
 
-  const xu = validNumber / 100; // chia đúng 100
-  const roundedXu = Math.ceil(xu / 1000) * 1000; // làm tròn lên đến 1.000
+  const roundedXu = Math.ceil(validNumber / 1000) * 1000;
 
   return new Intl.NumberFormat("vi-VN").format(roundedXu);
 }
