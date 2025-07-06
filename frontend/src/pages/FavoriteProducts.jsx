@@ -26,6 +26,7 @@ const FavoriteProducts = () => {
     if (!original || !sale || sale >= original) return null;
     return Math.floor(((original - sale) / original) * 100);
   };
+  
 
   return (
     <>
@@ -44,7 +45,7 @@ const FavoriteProducts = () => {
               <Product
                 key={item.product_id}
                 product={item.product}
-                discountPercent={getDiscountPercent(item)}
+                discountPercent={getDiscountPercent(item.product)}
                 status={item.status}
                 nextProductDetail={() => {}}
               />

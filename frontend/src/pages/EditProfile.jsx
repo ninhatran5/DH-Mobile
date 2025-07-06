@@ -64,11 +64,9 @@ const EditProfile = () => {
 
   // Chỉ một useEffect duy nhất để reset form
   useEffect(() => {
-    if (profile?.user && data.length > 0) {
+    // Nếu không lấy được data thành phố, vẫn reset form với thông tin user
+    if (profile?.user) {
       const user = profile.user;
-
-      console.log("🔄 Resetting form with user data:", user);
-
       reset({
         full_name: user.full_name || "",
         phone: user.phone || "",
@@ -79,7 +77,7 @@ const EditProfile = () => {
         address: user.address || "",
       });
     }
-  }, [profile, data, reset]);
+  }, [profile?.user, reset]);
 
   // useEffect để reset district và ward khi thay đổi city/district
   useEffect(() => {

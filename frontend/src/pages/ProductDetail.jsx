@@ -24,6 +24,9 @@ import { fetchSpecification } from "../slices/specificationsSlice";
 import ListProductCard from "../components/ListProductCard";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchComments } from "../slices/reviewSlice";
+import coins from "../assets/images/coins.png";
+import numberFormatCoins from "../../utils/numberFormatCoins";
+import "../assets/admin/product.css";
 
 function getAllAttributes(variants) {
   const attrMap = {};
@@ -438,7 +441,10 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
             >
               <Modal.Header closeButton className="border-0"></Modal.Header>
               <Modal.Body className="text-center p-0">
-                <div {...handlers} className="carousel-swipeable-container-fluid">
+                <div
+                  {...handlers}
+                  className="carousel-swipeable-container-fluid"
+                >
                   <Carousel
                     data-bs-theme="dark"
                     interval={null}
@@ -490,8 +496,25 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
                   {t("productDetail.product")}
                 </p>
               )}
-
               <p className="text-muted">{productDetails.data?.description}</p>
+              <div
+                className="card-coins-products d-flex align-items-center"
+                style={{ marginTop: "-15px", marginBottom: "-13px" }}
+              >
+                <img style={{ width: 20 }} src={coins} />
+                <p
+                  className="coins-products"
+                  dangerouslySetInnerHTML={{
+                    __html: t("productDetail.coinReward", {
+                      coins: `<span class="fw-bold">${numberFormatCoins(
+                        (selectedVariant?.price ||
+                          productDetails?.data?.price ||
+                          0) / 100
+                      )}</span>`,
+                    }),
+                  }}
+                />
+              </div>
             </div>
 
             <div className="mb-3">

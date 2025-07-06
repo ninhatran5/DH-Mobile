@@ -60,7 +60,7 @@ const ProductsCarousel = ({ item, discountPercent }) => {
               >
                 {item?.product?.name}
               </h5>
-              <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginTop: "-15px" }}>
                 <h6
                   style={{
                     color: "#e40303",

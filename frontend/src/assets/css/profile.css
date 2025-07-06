@@ -261,11 +261,12 @@
 
 .profile-table-wrapper {
   overflow-x: auto;
+  width: 100%;
 }
 
 .profile-table {
-  width: 100%;
-  border-collapse: collapse;
+  min-width: 700px;
+  /* hoặc lớn hơn nếu nhiều cột */
 }
 
 .profile-table th,
@@ -289,27 +290,37 @@
   cursor: pointer;
 }
 
-.profile-rank-beauty {
+.profile-rank-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background-color: #f1556c;
-  color: #fff;
-  padding: 3px 16px 3px 10px;
-  border-radius: 16px;
-  font-weight: 700;
-  font-size: 13px;
-  box-shadow: 0 2px 8px #ffb30033;
-  margin-left: 10px;
-  letter-spacing: 0.5px;
-  position: relative;
-  min-width: 110px;
-  justify-content: center;
+  gap: 2px;
+  background: linear-gradient(90deg, #fffbe7 60%, #ffe5b4 100%);
+  border-radius: 20px;
+  box-shadow: 0 2px 8px #0001, 0 0 0 2px #fff3 inset;
+  padding: 2px 12px 2px 6px;
+  margin-left: 6px;
+  min-height: 32px;
+  transition: box-shadow 0.2s;
+  border: 1.5px solid #ffe082;
 }
 
-.profile-rank-crown {
-  color: #fff;
-  font-size: 1.1em;
-  margin-right: 4px;
-  filter: drop-shadow(0 1px 2px #bfa100);
+.profile-rank-badge:hover {
+  box-shadow: 0 4px 16px #ffd70055, 0 0 0 2px #ffe082 inset;
+}
+
+.profile-rank-img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+  margin-right: 2px;
+}
+
+.profile-rank-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #b8860b;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 0 #fff8;
+  margin-left: 2px;
 }
