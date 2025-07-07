@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { fetchOrderDetail } from "../slices/orderSlice";
 import numberFormat from "../../utils/numberFormat";
 import { commentsPost } from "../slices/reviewSlice";
+import { accumulatePoints } from "../slices/rankSlice";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -61,13 +62,26 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
     )
       .unwrap()
       .then(() => {
-        Swal.fire({
-          icon: "success",
-          title: t("review.successTitle"),
-          text: t("review.successText"),
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        dispatch(accumulatePoints(orderId))
+          .unwrap()
+          .then(() => {
+            Swal.fire({
+              icon: "success",
+              title: t("review.successTitle"),
+              text: t("review.successTextWithPoints"),
+              showConfirmButton: false,
+              timer: 2000,
+            });
+          })
+          .catch(() => {
+            Swal.fire({
+              icon: "success",
+              title: t("review.successTitle"),
+              text: t("review.successText"),
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          });
 
         const reviewed = JSON.parse(
           localStorage.getItem("reviewedVariants") || "[]"

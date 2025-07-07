@@ -106,7 +106,6 @@ export default function AdminChat() {
       reader.readAsDataURL(file);
     });
 
-    // Reset input value để có thể chọn cùng file lần sau
     e.target.value = "";
   };
 
