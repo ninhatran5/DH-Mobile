@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -165,5 +166,57 @@ class ChatLiveController extends Controller
         }
 
         return response()->json(['success' => true]);
+    }
+    public function getCustomersChatList()
+    {
+        $staff = Auth::user();
+
+        // Kiểm tra quyền truy cập (chỉ admin hoặc sale mới được xem danh sách này)
+        if (!in_array($staff->role, ['admin', 'sale'])) {
+            return response()->json(['message' => 'Bạn không có quyền truy cập danh sách này.'], 403);
+        }
+
+        // Lấy danh sách ID của các customer đã từng gửi tin nhắn
+        $customerIds = SupportChat::where('sender', 'customer')
+            ->select('customer_id')
+            ->distinct()
+            ->pluck('customer_id');
+
+        // Lấy thông tin chi tiết từng customer
+        $customers = User::whereIn('user_id', $customerIds)
+            ->get()
+            ->map(function ($customer) use ($staff) {
+                // Lấy tin nhắn cuối cùng giữa customer và staff bất kỳ
+                $lastChat = SupportChat::where('customer_id', $customer->user_id)
+                    ->orderBy('sent_at', 'desc')
+                    ->first();
+
+                // Đếm số tin nhắn chưa đọc của nhân viên này từ customer đó
+                $unreadCount = SupportChatNotification::where('user_id', $staff->user_id)
+                    ->whereHas('chat', function ($q) use ($customer) {
+                        $q->where('customer_id', $customer->user_id);
+                    })
+                    ->where('is_read', false)
+                    ->count();
+
+                // Xử lý ảnh đại diện
+                $avatarUrl = $customer->image_url
+                    ? asset('storage/' . $customer->image_url)
+                    : asset('images/default-avatar.png');
+
+                return [
+                    'customer_id' => $customer->user_id,
+                    'customer_name' => $customer->full_name ?? $customer->username,
+                    'avatar_url' => $avatarUrl,
+                    'last_message' => $lastChat->message ?? '',
+                    'last_message_time' => $lastChat->sent_at ?? null,
+                    'unread_count' => $unreadCount,
+                ];
+            });
+
+        return response()->json([
+            'success' => true,
+            'customers' => $customers,
+        ]);
     }
 }
