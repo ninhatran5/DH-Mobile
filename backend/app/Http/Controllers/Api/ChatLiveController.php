@@ -167,6 +167,7 @@ class ChatLiveController extends Controller
 
         return response()->json(['success' => true]);
     }
+    // danh sách user nhắn tin cho admin và sale
     public function getCustomersChatList()
     {
         $staff = Auth::user();
