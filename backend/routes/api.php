@@ -27,6 +27,7 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Controllers\Api\ProductsViewsController;
 use App\Http\Controllers\Api\AttributevalueController;
+use App\Http\Controllers\Api\ChatLiveController;
 use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
 use App\Http\Controllers\Api\VariantAttributeValuesController;
@@ -305,11 +306,11 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(f
 // chatlive
 // Tất cả route yêu cầu đăng nhập (auth:sanctum)
 Route::middleware('auth:sanctum')->prefix('support-chats')->group(function () {
-    Route::post('/send', [SupportChatController::class, 'sendMessage']); // customer gửi
-    Route::post('/reply', [SupportChatController::class, 'replyToCustomer']); // staff trả lời
-    Route::get('/history/{customerId}', [SupportChatController::class, 'getChatHistory']);
-    Route::get('/unread-count', [SupportChatController::class, 'getUnreadCount']);
-    Route::post('/mark-as-read/{chatId}', [SupportChatController::class, 'markAsRead']);
+    Route::post('/send', [ChatLiveController::class, 'sendMessage']); // customer gửi
+    Route::post('/reply', [ChatLiveController::class, 'replyToCustomer']); // staff trả lời
+    Route::get('/history/{customerId}', [ChatLiveController::class, 'getChatHistory']);
+    Route::get('/unread-count', [ChatLiveController::class, 'getUnreadCount']);
+    Route::post('/mark-as-read/{chatId}', [ChatLiveController::class, 'markAsRead']);
 });
 // voucher dành cho user
 Route::middleware('auth:sanctum')->group(function () {

@@ -14,7 +14,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 
-class SupportChatController extends Controller
+class ChatLiveController extends Controller
 {
     //  CUSTOMER gửi tin nhắn (1 chiều)
     public function sendMessage(Request $request)
