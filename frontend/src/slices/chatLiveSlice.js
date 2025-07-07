@@ -13,7 +13,7 @@ export const sendChatMessage = createAsyncThunk(
   "chatLive/sendMessage",
   async ({ customer_id, message, sender }, thunkAPI) => {
     try {
-      const response = await axiosUser.post("/support-chat/send", {
+      const response = await axiosUser.post("/support-chats/send", {
         customer_id,
         message,
         sender,
@@ -27,12 +27,14 @@ export const sendChatMessage = createAsyncThunk(
   }
 );
 
-export const fetchChatHistory = createAsyncThunk(
-  "chatLive/fetchHistory",
-  async (_, thunkAPI) => {
+export const fetchChatMessage = createAsyncThunk(
+  "chatLive/fetchChatMessage",
+  async (customer_id, thunkAPI) => {
     try {
-      const response = await axiosUser.get("/public/chatbot/conversation");
-      return response.data.conversation;
+      const response = await axiosUser.get(
+        `/support-chats/history/${customer_id}`
+      );
+      return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Đã có lỗi xảy ra"
@@ -60,15 +62,15 @@ export const chatLiveSlice = createSlice({
         state.error = action.payload || "Đã có lỗi xảy ra";
       })
       // Fetch history cases
-      .addCase(fetchChatHistory.pending, (state) => {
+      .addCase(fetchChatMessage.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchChatHistory.fulfilled, (state, action) => {
+      .addCase(fetchChatMessage.fulfilled, (state, action) => {
         state.loading = false;
-        state.messages = action.payload || [];
+        state.messages = action.payload?.data || [];
       })
-      .addCase(fetchChatHistory.rejected, (state, action) => {
+      .addCase(fetchChatMessage.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
       });
