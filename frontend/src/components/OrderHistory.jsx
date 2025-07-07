@@ -4,7 +4,7 @@ import NumberFormat from "../../utils/numberFormat";
 import { FaTimes, FaEye } from "react-icons/fa";
 import { PiKeyReturnFill } from "react-icons/pi";
 import { FaDiagramSuccessor } from "react-icons/fa6";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { MdReviews } from "react-icons/md";
 import ReturnReasonModal from "./ReturnReasonModal";
@@ -12,7 +12,7 @@ import ReturnRequestModal from "./ReturnRequestModal";
 import ReviewModal from "./ReviewModal";
 import { useDispatch } from "react-redux";
 import "../assets/css/order-history.css";
-import { fetchOrder, receivedOrder } from "../slices/orderSlice";
+import { fetchOrder, fetchOrderDetail, receivedOrder } from "../slices/orderSlice";
 import TooltipIcon from "./TooltipIcon";
 import dayjs from "dayjs";
 
@@ -26,16 +26,25 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [caseType, setCaseType] = useState(1);
-  const [isReviewed, setIsReviewed] = useState(false);
+  const [hasReviewableProduct, setHasReviewableProduct] = useState(false);
+  const [refreshFlag, setRefreshFlag] = useState(0); // NEW
 
   useEffect(() => {
-    const reviewed = JSON.parse(
-      localStorage.getItem("reviewedVariants") || "[]"
-    );
-    const products = order?.products || [];
-    const allReviewed = products.every((p) => reviewed.includes(p.variant_id));
-    setIsReviewed(allReviewed);
-  }, [order]);
+    const reviewedVariants = JSON.parse(localStorage.getItem("reviewedVariants") || "[]");
+
+    dispatch(fetchOrderDetail(order.order_id))
+      .unwrap()
+      .then((data) => {
+        const products = data.products || [];
+        const hasReviewables = products.some(
+          (p) => !reviewedVariants.includes(p.variant_id)
+        );
+        setHasReviewableProduct(hasReviewables);
+      })
+      .catch(() => {
+        setHasReviewableProduct(true); // fallback: hiển thị nếu lỗi
+      });
+  }, [order.order_id, dispatch, refreshFlag]); // <- THÊM refreshFlag
 
   const handleNextPageOrderDetail = (id) => {
     navigate(`/order-detail/${id}`);
@@ -150,15 +159,15 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
               />
             )}
 
-            {["hoàn thành"].includes(order?.status?.trim().toLowerCase()) &&
-              isReviewed && (
-                <>
-                  <TooltipIcon
-                    icon={PiKeyReturnFill}
-                    tooltip={t("orderHistory.returnRequest")}
-                    className="icon-circle"
-                    onClick={handleOpenReasonModal}
-                  />
+            {["hoàn thành"].includes(order?.status?.trim().toLowerCase()) && (
+              <>
+                <TooltipIcon
+                  icon={PiKeyReturnFill}
+                  tooltip={t("orderHistory.returnRequest")}
+                  className="icon-circle"
+                  onClick={handleOpenReasonModal}
+                />
+                {hasReviewableProduct && (
                   <TooltipIcon
                     icon={MdReviews}
                     tooltip={t("orderHistory.reviewOrder")}
@@ -168,8 +177,9 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
                       setShowReviewModal(true);
                     }}
                   />
-                </>
-              )}
+                )}
+              </>
+            )}
           </td>
         </tr>
       </tbody>
@@ -198,7 +208,6 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
             const reviewed = JSON.parse(
               localStorage.getItem("reviewedVariants") || "[]"
             );
-
             if (!reviewed.includes(variantId)) {
               reviewed.push(variantId);
               localStorage.setItem(
@@ -206,13 +215,8 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
                 JSON.stringify(reviewed)
               );
             }
-
-            const products = order?.products || [];
-            const allReviewed = products.every((p) =>
-              reviewed.includes(p.variant_id)
-            );
-            setIsReviewed(allReviewed);
             setShowReviewModal(false);
+            setRefreshFlag((prev) => prev + 1);
           }}
         />
       )}
