@@ -308,9 +308,10 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(f
 Route::middleware('auth:sanctum')->prefix('support-chats')->group(function () {
     Route::post('/send', [ChatLiveController::class, 'sendMessage']); // customer gửi
     Route::post('/reply', [ChatLiveController::class, 'replyToCustomer']); // staff trả lời
-    Route::get('/history/{customerId}', [ChatLiveController::class, 'getChatHistory']);
-    Route::get('/unread-count', [ChatLiveController::class, 'getUnreadCount']);
-    Route::post('/mark-as-read/{chatId}', [ChatLiveController::class, 'markAsRead']);
+    Route::get('/history/{customerId}', [ChatLiveController::class, 'getChatHistory']);     // Lấy lịch sử giữa customer và staff (2 chiều)
+    Route::get('/unread-count', [ChatLiveController::class, 'getUnreadCount']);     //  Đếm số tin nhắn chưa đọc
+    Route::post('/mark-as-read/{chatId}', [ChatLiveController::class, 'markAsRead']);     //  Đánh dấu một tin nhắn là đã đọc
+    Route::get('/chat-user-list', [ChatLiveController::class, 'getCustomersChatList']); // danh sách user nhắn tin cho admin và sale 
 });
 // voucher dành cho user
 Route::middleware('auth:sanctum')->group(function () {
