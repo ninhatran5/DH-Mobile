@@ -16,7 +16,6 @@ const FavoriteProducts = () => {
     dispatch(fetchListFavorite());
   }, [dispatch]);
 
-  // Hàm tính phần trăm giảm giá
   const parsePrice = (priceStr) =>
     parseInt(priceStr?.replace(/[^\d]/g, "")) || 0;
 
@@ -26,7 +25,6 @@ const FavoriteProducts = () => {
     if (!original || !sale || sale >= original) return null;
     return Math.floor(((original - sale) / original) * 100);
   };
-  
 
   return (
     <>
@@ -40,21 +38,23 @@ const FavoriteProducts = () => {
       />
       <div className="container-fluid">
         <div className="row row-cols-1 row-cols-sm-2 row-cols-md-5 row-cols-lg-5 row-cols-xl-5">
-          {listFavorite.length > 0 ? (
-            listFavorite.map((item) => (
+          {listFavorite.map((item) => {
+            const parsePrice = (priceStr) =>
+              parseFloat(priceStr?.replace(/,/g, "")) || 0;
+
+            const coinsAccumulate = parsePrice(item.product.price) / 100;
+
+            return (
               <Product
                 key={item.product_id}
                 product={item.product}
                 discountPercent={getDiscountPercent(item.product)}
                 status={item.status}
                 nextProductDetail={() => {}}
+                coinsAccumulatePoints={coinsAccumulate}
               />
-            ))
-          ) : (
-            <h6 className="text-center text-muted fw-bold my-5 w-100">
-              {t("products.noProductFound")}
-            </h6>
-          )}
+            );
+          })}
         </div>
       </div>
     </>

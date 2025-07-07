@@ -31,16 +31,7 @@ const OrderTable = () => {
     { label: t("orderHistory.refunded"), value: "đã hoàn tiền" },
   ];
 
-  const PAYMENT_METHODS = [
-    { label: t("orderHistory.all"), value: "all" },
-    { label: "COD", value: "cod" },
-    { label: "VNPAY", value: "vnpay" },
-  ];
-  const PAYMENT_STATUS = [
-    { label: t("orderHistory.all"), value: "all" },
-    { label: t("orderHistory.paid"), value: "đã thanh toán" },
-    { label: t("orderHistory.unpaid"), value: "chưa thanh toán" },
-  ];
+
 
   const handleCancelOrder = async (orderId) => {
     const result = await MySwal.fire({

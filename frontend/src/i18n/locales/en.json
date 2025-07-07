@@ -548,6 +548,7 @@
     "noProductSelected": "You haven't selected a product!",
     "successTitle": "Review submitted successfully",
     "successText": "Thank you for reviewing the product!",
+    "successTextWithPoints": "Thank you for reviewing the product! You have earned bonus points!",
     "errorTitle": "Error",
     "errorText": "Unable to submit review",
     "selectProduct": "Select a product to review",

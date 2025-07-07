@@ -80,7 +80,6 @@ const OrderDetail = () => {
         "pending",
         "confirmed",
         "shipping",
-        "delivering",
         "shipped",
         "delivered",
       ];
