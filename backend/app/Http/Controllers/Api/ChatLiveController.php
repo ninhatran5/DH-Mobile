@@ -10,10 +10,9 @@ use App\Models\SupportChatNotification;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
-
 class ChatLiveController extends Controller
 {
-    //  CUSTOMER gửi tin nhắn (1 chiều)
+    //  user gửi tin nhắn (1 chiều)
     public function sendMessage(Request $request)
     {
         $request->validate([
@@ -21,12 +20,10 @@ class ChatLiveController extends Controller
             'attachments.*' => 'file|mimes:jpg,png,pdf,docx,txt|max:2048'
         ]);
 
-
         $user = Auth::user();
         if ($user->role !== 'customer') {
             return response()->json(['message' => 'Bạn không có quyền gửi tin nhắn.'], 403);
         }
-
 
         $chat = SupportChat::create([
             'customer_id' => $user->user_id,
@@ -35,7 +32,6 @@ class ChatLiveController extends Controller
             'sent_at' => now(),
             'is_read' => false,
         ]);
-
 
         // File đính kèm
         if ($request->hasFile('attachments')) {
@@ -49,7 +45,6 @@ class ChatLiveController extends Controller
             }
         }
 
-
         // Gửi noti đến tất cả staff
         $staffList = User::whereIn('role', ['admin', 'sale'])->pluck('user_id');
         foreach ($staffList as $staffId) {
@@ -59,14 +54,11 @@ class ChatLiveController extends Controller
                 'is_read' => false,
             ]);
         }
-
-
+        // realtime 
         broadcast(new SupportChatSent($chat->load('attachments')))->toOthers();
-
 
         return response()->json(['success' => true, 'chat' => $chat->load('attachments')]);
     }
-
 
     //  (admin/sale) trả lời theo customer_id
     public function replyToCustomer(Request $request)
@@ -116,7 +108,6 @@ class ChatLiveController extends Controller
         // 6. Gửi realtime qua Pusher
         broadcast(new SupportChatSent($chat->load('attachments')))->toOthers();
 
-
         return response()->json([
             'success' => true,
             'chat' => $chat->load('attachments'),
@@ -144,7 +135,6 @@ class ChatLiveController extends Controller
             'chats' => $chats
         ]);
     }
-
 
     //  Đếm số tin nhắn chưa đọc
     public function getUnreadCount()
