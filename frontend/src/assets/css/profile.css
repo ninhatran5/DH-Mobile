@@ -265,7 +265,7 @@
 }
 
 .profile-table {
-  min-width: 700px;
+  min-width: 100%;
   /* hoặc lớn hơn nếu nhiều cột */
 }
 

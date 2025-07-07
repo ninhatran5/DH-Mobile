@@ -544,6 +544,7 @@
     "noProductSelected": "Bạn chưa chọn sản phẩm!",
     "successTitle": "Đánh giá thành công",
     "successText": "Cảm ơn bạn đã đánh giá sản phẩm!",
+    "successTextWithPoints": "Cảm ơn bạn đã đánh giá sản phẩm! Bạn đã nhận được điểm thưởng!",
     "errorTitle": "Lỗi",
     "errorText": "Không thể gửi đánh giá",
     "selectProduct": "Chọn sản phẩm để đánh giá",
