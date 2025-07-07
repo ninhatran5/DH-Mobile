@@ -387,7 +387,10 @@
     "noOrder": "Không có đơn hàng nào.",
     "confirmReceived": "Xác nhận đã nhận hàng",
     "returnRequest": "Yêu cầu trả hàng",
-    "reviewOrder": "Đánh giá đơn hàng"
+    "reviewOrder": "Đánh giá đơn hàng",
+    "returnOrder": "Yêu cầu trả hàng",
+    "review": "Đánh giá",
+    "orderConfirmation": "Xác nhận đơn hàng"
   },
   "breadcrumbOrder": {
     "breadcrumbHeader": "Lịch Sử Mua Hàng"

@@ -4,8 +4,12 @@ import Breadcrumb from "./Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { RiArrowGoBackFill } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
-import { cancelOrder, fetchOrderDetail } from "../slices/orderSlice";
+import { useEffect, useState } from "react";
+import {
+  cancelOrder,
+  fetchOrderDetail,
+  receivedOrder,
+} from "../slices/orderSlice";
 import Loading from "./Loading";
 import numberFormat from "../../utils/numberFormat";
 import OrderProductRow from "./OrderProductRow";
@@ -13,6 +17,10 @@ import dayjs from "dayjs";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import withReactContent from "sweetalert2-react-content";
+
+import ReturnReasonModal from "./ReturnReasonModal";
+import ReturnRequestModal from "./ReturnRequestModal";
+import ReviewModal from "./ReviewModal";
 
 const removeVietnameseTones = (str) => {
   return String(str)
@@ -30,16 +38,33 @@ const OrderDetail = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
   const { orderDetail, loading } = useSelector((state) => state.order);
+
+  const [showReasonModal, setShowReasonModal] = useState(false);
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [caseType, setCaseType] = useState(1);
+  const [refreshFlag, setRefreshFlag] = useState(0);
+  const [hasReviewableProduct, setHasReviewableProduct] = useState(false);
+
   useEffect(() => {
     if (!id) return;
     dispatch(fetchOrderDetail(id));
-
     const interval = setInterval(() => {
       dispatch(fetchOrderDetail(id));
     }, 5000);
-
     return () => clearInterval(interval);
   }, [id, dispatch]);
+
+  useEffect(() => {
+    const reviewedVariants = JSON.parse(
+      localStorage.getItem("reviewedVariants") || "[]"
+    );
+    const products = orderDetail?.products || [];
+    const hasReviewables = products.some(
+      (p) => !reviewedVariants.includes(p.variant_id)
+    );
+    setHasReviewableProduct(hasReviewables);
+  }, [orderDetail?.products, refreshFlag]);
 
   const statusMap = {
     "cho xac nhan": "pending",
@@ -49,6 +74,7 @@ const OrderDetail = () => {
     "hoan thanh": "delivered",
     "da huy": "canceled",
   };
+
   const getStatusClass = (status) => {
     const s = status?.trim().toLowerCase();
     switch (s) {
@@ -71,19 +97,10 @@ const OrderDetail = () => {
 
   const normalizedStatus = removeVietnameseTones(orderDetail?.status || "");
   const currentStatusKey = statusMap[normalizedStatus] || "pending";
-
   const isCanceled = currentStatusKey === "canceled";
-
   const statusOrder = isCanceled
     ? ["pending", "confirmed", "canceled"]
-    : [
-        "pending",
-        "confirmed",
-        "shipping",
-        "shipped",
-        "delivered",
-      ];
-
+    : ["pending", "confirmed", "shipping", "shipped", "delivered"];
   const currentStatusIndex = statusOrder.indexOf(currentStatusKey);
 
   const statusSteps = statusOrder.map((key, idx) => ({
@@ -116,13 +133,13 @@ const OrderDetail = () => {
       value: orderDetail?.payment_status || t("toast.pending_update"),
     },
     ...(Number(orderDetail?.voucher_discount) > 0
-    ? [{
-        label: t("orderDetail.amountIsReduced"),
-        value:
-          numberFormat(orderDetail?.voucher_discount) ||
-          t("toast.pending_update"),
-      }]
-    : []),
+      ? [
+          {
+            label: t("orderDetail.amountIsReduced"),
+            value: numberFormat(orderDetail?.voucher_discount),
+          },
+        ]
+      : []),
     {
       label: t("orderDetail.order_date"),
       value:
@@ -139,6 +156,7 @@ const OrderDetail = () => {
       ),
     },
   ];
+
   const totalAmount = Number(orderDetail?.total_amount) || 0;
   const discount = Number(orderDetail?.voucher_discount) || 0;
   const priceBeforeDiscount = totalAmount + discount;
@@ -164,12 +182,42 @@ const OrderDetail = () => {
       try {
         await dispatch(cancelOrder({ id: orderId, reason })).unwrap();
         toast.success(t("orderHistory.cancelSuccess"));
-        dispatch(fetchOrderDetail());
+        dispatch(fetchOrderDetail(orderId));
       } catch (error) {
         toast.error(error || t("orderHistory.cancelFailed"));
       }
     }
   };
+
+  const handleConfirmReceived = async () => {
+    try {
+      await dispatch(receivedOrder({ id: orderDetail.order_id })).unwrap();
+      Swal.fire({
+        title: t("order.confirmReceivedSuccessTitle"),
+        icon: "success",
+        confirmButtonText: t("order.confirmReceivedSuccessBtn"),
+      });
+      dispatch(fetchOrderDetail(orderDetail.order_id));
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: t("order.confirmReceivedErrorTitle"),
+        text: error || t("order.confirmReceivedErrorText"),
+      });
+    }
+  };
+
+  const handleOpenReasonModal = () => setShowReasonModal(true);
+  const handleCloseReasonModal = () => setShowReasonModal(false);
+  const handleOpenRequestModal = (type) => {
+    setShowReasonModal(false);
+    setCaseType(type);
+    setShowRequestModal(true);
+  };
+  const handleCloseRequestModal = () => setShowRequestModal(false);
+  const handleOpenReviewModal = () => setShowReviewModal(true);
+  const handleCloseReviewModal = () => setShowReviewModal(false);
+
   return (
     <>
       {loading && <Loading />}
@@ -182,10 +230,11 @@ const OrderDetail = () => {
         linkMainItem2={"/order-history"}
       />
       <div className="card_order_detail container-fluid px-1 px-md-4 py-5 mx-auto">
+        {/* Header */}
         <div className="row d-flex justify-content-between px-3">
           <div className="d-flex">
             <h5>
-              {t("orderDetail.order")}:
+              {t("orderDetail.order")}:{" "}
               <span
                 style={{ color: "#ff8800" }}
                 className="font-weight-bold ms-2"
@@ -197,27 +246,24 @@ const OrderDetail = () => {
           <div className="d-flex flex-column text-sm-right">
             <p className="mb-0">
               {t("orderDetail.orderDate")}:{" "}
-              <span>
-                {orderDetail?.order_date &&
-                dayjs(orderDetail.order_date).isValid()
-                  ? dayjs(orderDetail.order_date).format("HH:mm - DD/MM/YYYY")
-                  : t("toast.pending_update")}
-              </span>
+              {orderDetail?.order_date &&
+              dayjs(orderDetail.order_date).isValid()
+                ? dayjs(orderDetail.order_date).format("HH:mm - DD/MM/YYYY")
+                : t("toast.pending_update")}
             </p>
           </div>
         </div>
 
+        {/* Progress */}
         <div className="row d-flex justify-content-center">
           <div className="col-12">
             <ul id="progressbar">
               {statusSteps.map((step, index) => (
                 <li
                   key={index}
-                  className={`step0 
-                    ${step.active ? "active" : ""} 
+                  className={`step0 ${step.active ? "active" : ""} 
                     ${index === currentStatusIndex ? "current" : ""} 
-                    ${currentStatusKey === "canceled" ? "canceled" : ""}
-                  `}
+                    ${currentStatusKey === "canceled" ? "canceled" : ""}`}
                 >
                   <span className="step-label">{step.label}</span>
                 </li>
@@ -226,8 +272,10 @@ const OrderDetail = () => {
           </div>
         </div>
 
+        {/* Info */}
         <div className="row px-3 mt-3">
           <div className="col-12">
+            {/* Receiver Info */}
             <div className="order-info-table mb-4">
               <h5 className="mb-3">{t("orderDetail.receiverInfo")}</h5>
               <table className="table table-bordered">
@@ -243,6 +291,8 @@ const OrderDetail = () => {
                 </tbody>
               </table>
             </div>
+
+            {/* Order Info */}
             <div className="order-info-table mb-4 mt-5">
               <h5 className="mb-3">{t("orderDetail.orderInfo")}</h5>
               <table className="table table-bordered">
@@ -261,6 +311,7 @@ const OrderDetail = () => {
           </div>
         </div>
 
+        {/* Product List */}
         <div className="row px-3 mt-4">
           <div className="col-12">
             <div className="product-table">
@@ -303,26 +354,90 @@ const OrderDetail = () => {
                   </tfoot>
                 </table>
 
+                {/* Actions */}
                 <div className="d-flex justify-content-between align-items-center mt-4">
                   <Link to="/order-history" className="btn-back fw-bold">
                     <RiArrowGoBackFill />
                     <span>{t("orderDetail.back")}</span>
                   </Link>
-                  {(orderDetail?.status === "Chờ xác nhận" ||
-                    orderDetail?.status === "Đã xác nhận") && (
-                    <button
-                      className="btn-cancel-order"
-                      onClick={() => handleCancelOrder(orderDetail.order_id)}
-                    >
-                      {t("orderHistory.cancel")}
-                    </button>
-                  )}
+                  <div className="d-flex gap-2">
+                    {["Chờ xác nhận", "Đã xác nhận"].includes(
+                      orderDetail?.status
+                    ) && (
+                      <button
+                        className="btn-cancel-order"
+                        onClick={() => handleCancelOrder(orderDetail.order_id)}
+                      >
+                        {t("orderHistory.cancel")}
+                      </button>
+                    )}
+                    {orderDetail?.status === "Đã giao hàng" && (
+                      <button
+                        className="btn-review-order"
+                        onClick={handleConfirmReceived}
+                      >
+                        {t("orderHistory.orderConfirmation")}
+                      </button>
+                    )}
+                    {orderDetail?.status === "Hoàn thành" && (
+                      <>
+                        <button
+                          className="btn-return-order"
+                          onClick={handleOpenReasonModal}
+                        >
+                          {t("orderHistory.returnOrder")}
+                        </button>
+                        {hasReviewableProduct && (
+                          <button
+                            className="btn-review-order"
+                            onClick={handleOpenReviewModal}
+                          >
+                            {t("orderHistory.review")}
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <ReturnReasonModal
+        show={showReasonModal}
+        handleClose={handleCloseReasonModal}
+        handleOpenSubModal={handleOpenRequestModal}
+      />
+      {showRequestModal && (
+        <ReturnRequestModal
+          show={true}
+          handleClose={handleCloseRequestModal}
+          orderId={orderDetail.order_id}
+          caseType={caseType}
+        />
+      )}
+      {showReviewModal && (
+        <ReviewModal
+          show={true}
+          handleClose={handleCloseReviewModal}
+          orderId={orderDetail.order_id}
+          onSuccess={(variantId) => {
+            const reviewed = JSON.parse(
+              localStorage.getItem("reviewedVariants") || "[]"
+            );
+            if (!reviewed.includes(variantId)) {
+              reviewed.push(variantId);
+              localStorage.setItem(
+                "reviewedVariants",
+                JSON.stringify(reviewed)
+              );
+            }
+            handleCloseReviewModal();
+            setRefreshFlag((prev) => prev + 1);
+          }}
+        />
+      )}
     </>
   );
 };

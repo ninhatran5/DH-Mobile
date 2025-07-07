@@ -391,7 +391,10 @@
     "noOrder": "No orders found.",
     "confirmReceived": "Confirm received",
     "returnRequest": "Request return",
-    "reviewOrder": "Review order"
+    "reviewOrder": "Review order",
+    "returnOrder": "Request Return",
+    "review": "Review",
+    "orderConfirmation": "Order Confirmation"
   },
   "breadcrumbOrder": {
     "breadcrumbHeader": "Purchase History"

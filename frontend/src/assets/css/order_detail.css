@@ -241,3 +241,43 @@ body {
   color: #fff;
   outline: none;
 }
+
+.btn-return-order {
+  background: #0075cf;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 28px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px #ff4d4f22;
+  margin-left: 12px;
+}
+
+.btn-return-order:hover,
+.btn-return-order:focus {
+  background: #045ea2;
+  color: #fff;
+  outline: none;
+}
+
+.btn-review-order {
+  background: #00cf19;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 28px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px #ff4d4f22;
+  margin-left: 12px;
+}
+
+.btn-review-order:hover,
+.btn-review-order:focus {
+  background: #00a313;
+  color: #fff;
+  outline: none;
+}
