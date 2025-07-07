@@ -1,5 +1,6 @@
 <?php
 
+
 use App\Http\Middleware\CheckAdmin;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CodController;
@@ -32,10 +33,6 @@ use App\Http\Controllers\Api\VariantAttributeValuesController;
 
 
 
-
-
-
-
 // API thanh toán
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/vnpay/checkout', [VnpayController::class, 'createPayment']);
@@ -43,7 +40,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/voucher/apply', [CodController::class, 'applyVoucher']);
 });
 Route::get('/vnpay/return', [VnpayController::class, 'handleReturn']);
-
 
 
 
@@ -58,8 +54,8 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 Route::post('/refresh', [AuthController::class, 'refreshToken']);
 
-// API User
 
+// API User
 // Admin
 Route::middleware('auth:sanctum')->group(function () {
     Route::middleware(CheckAdmin::class)->group(function () {
@@ -77,7 +73,6 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::put('/update-profile', [UserController::class, 'updateProfile']);
     Route::get('/profile', [UserController::class, 'profile']);
-
     // User addresses
     Route::get('/user-addresses', [UserAddressController::class, 'index']);
     Route::post('/user-addresses', [UserAddressController::class, 'store']);
@@ -228,7 +223,6 @@ Route::middleware('auth:sanctum')->group(function () {
 // cart and cart item
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('cart', [CartController::class, 'Cart']);
-
     // // thêm sản phẩm vào giỏ hàng
     Route::post('cart/add/{id}', [CartItemController::class, 'addProductToCart']);
     // // cập nhật số lượng sản phẩm trong giỏ hàng
@@ -239,25 +233,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('cart/remove/{id}', [CartItemController::class, 'removeProductFromCart']);
     // // xóa toàn bộ giỏ hàng
     Route::delete('cart/clear', [CartItemController::class, 'clearCart']);
-
-
-
-
     // payment
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('getPaymentMethods', [PaymentMethodController::class, 'getPaymentMethods']);
-
         Route::middleware(CheckAdmin::class)->group(function () {
             Route::post('addPayment', [PaymentMethodController::class, 'addPayment']);
         });
     });
-
     // đơn hàng
     Route::middleware('auth:sanctum')->group(function () {
         // Client
         Route::get('getOrder', [OrderController::class, 'getOrder']);
         Route::get('getDetailOrder/{id}', [OrderController::class, 'getDetailOrder']);
-
 
         // Client gửi yêu cầu hoàn hàng cho đơn hàng (kèm lý do hoàn hàng)
         Route::post('/orders/{id}/request-return', [OrderController::class, 'clientRequestReturn']);
@@ -266,7 +253,6 @@ Route::middleware('auth:sanctum')->group(function () {
         // Client hủy đơn hàng khi đang ở trạng thái Chờ lấy hàng
         Route::post('/orders/{id}/cancel', [OrderController::class, 'clientCancelOrder']);
     });
-
 
     // Thông báo
     Route::get('admin/notifications', [NotificationController::class, 'index']);
@@ -280,12 +266,11 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(f
     Route::get('orders/{id}', [OrderController::class, 'adminShow']); // Chi tiết đơn hàng
     Route::put('orders/{id}/status', [OrderController::class, 'adminUpdateStatus']); // Cập nhật trạng thái đơn hàng
 
-
     // Admin duyệt hoặc từ chối yêu cầu hoàn hàng của đơn hàng
     Route::put('/orders/{id}/handle-return', [OrderController::class, 'adminHandleReturnRequest']);
-    // danh sách hoàn hàng 
+    // danh sách hoàn hàng
     Route::get('return-orders', [OrderController::class, 'getReturnOrdersByStatus']);
-    // chi tiết hoàn hàng 
+    // chi tiết hoàn hàng
     Route::get('orders/return-orders/{order_id}', [OrderController::class, 'getReturnOrderDetail']);
     // lấy danh sách lịch sử cập nhật đơn hàng (theo order_id)
     Route::get('orders/{order_id}/status-history', [OrderController::class, 'getOrderStatusHistory']);
@@ -293,12 +278,9 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(f
     Route::get('/status-histories', [OrderController::class, 'getAllOrderStatusHistories']);
     // Danh sách tất cả yêu cầu hoàn hàng (admin)
     Route::get('/return-requests', [OrderController::class, 'getReturnRequestList']);
-    // admin hủy đơn hàng 
+    // admin hủy đơn hàng
     Route::post('/orders/{id}/cancel', [OrderController::class, 'adminCancelOrder']);
 });
-
-
-
 
 // comment
 Route::middleware('auth:sanctum')->post('/comments', [CommentController::class, 'store']);
@@ -309,32 +291,25 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(f
     Route::post('/comments/hidden/{id}', [CommentController::class, 'hiddenComment']);
 });
 
+
 // chatbot
 Route::post('/public/chatbot', [ChatbotController::class, 'handle']);
 Route::middleware('auth:sanctum')->get('/public/chatbot/conversation', [ChatbotController::class, 'getConversation']);
 Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(function () {
     Route::get('/chatbots', [ChatbotController::class, 'index']);
 
+
     Route::post('/chatbots/toggle/{id}', [ChatbotController::class, 'toggle']);
 });
 
-
-
 // chatlive
 // Tất cả route yêu cầu đăng nhập (auth:sanctum)
-Route::middleware('auth:sanctum')->prefix('support-chat')->group(function () {
-
-    // Gửi tin nhắn mới (có thể kèm file)
-    Route::post('/send', [SupportChatController::class, 'sendMessage']);
-
-    // Lấy lịch sử chat giữa người dùng hiện tại và user khác
-    Route::get('/history/{user_id}', [SupportChatController::class, 'getChatHistory']);
-
-    // Đếm số tin nhắn chưa đọc (dựa trên bảng support_chat_notifications)
+Route::middleware('auth:sanctum')->prefix('support-chats')->group(function () {
+    Route::post('/send', [SupportChatController::class, 'sendMessage']); // customer gửi
+    Route::post('/reply', [SupportChatController::class, 'replyToCustomer']); // staff trả lời
+    Route::get('/history/{customerId}', [SupportChatController::class, 'getChatHistory']);
     Route::get('/unread-count', [SupportChatController::class, 'getUnreadCount']);
-
-    // Đánh dấu 1 tin nhắn là đã đọc
-    Route::patch('/mark-as-read/{chat_id}', [SupportChatController::class, 'markAsRead']);
+    Route::post('/mark-as-read/{chatId}', [SupportChatController::class, 'markAsRead']);
 });
 // voucher dành cho user
 Route::middleware('auth:sanctum')->group(function () {
@@ -351,6 +326,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // API đánh dấu đơn hàng hoàn thành + tự động cộng điểm
     Route::put('/orders/{order_id}/complete', [OrderController::class, 'markAsCompleted']);
 });
+
+
 
 
 Route::get('loyalty-tiers/', [LoyaltyTierController::class, 'index']);
