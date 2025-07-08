@@ -96,6 +96,12 @@
     "adminWelcome": "Chào bạn! Hãy gửi tin nhắn để bắt đầu cuộc trò chuyện với Admin.",
     "adminResponse": "Cảm ơn bạn đã liên hệ! Tin nhắn của bạn đã được ghi nhận. Admin sẽ phản hồi trong thời gian sớm nhất.",
     "adminPlaceholder": "Nhập tin nhắn cho Admin...",
+    "messageSent": "Tin nhắn đã được gửi thành công!",
+    "messageError": "Có lỗi khi cập nhật tin nhắn",
+    "sendError": "Có lỗi khi gửi tin nhắn",
+    "historyLoaded": "Đã tải lịch sử chat",
+    "loadError": "Có lỗi khi tải lịch sử chat",
+    "loadingHistory": "Đang tải lịch sử chat...",
     "closeModal": "Đóng"
   },
   "breadcrumbProductDetail": {
@@ -387,10 +393,7 @@
     "noOrder": "Không có đơn hàng nào.",
     "confirmReceived": "Xác nhận đã nhận hàng",
     "returnRequest": "Yêu cầu trả hàng",
-    "reviewOrder": "Đánh giá đơn hàng",
-    "returnOrder": "Yêu cầu trả hàng",
-    "review": "Đánh giá",
-    "orderConfirmation": "Xác nhận đơn hàng"
+    "reviewOrder": "Đánh giá đơn hàng"
   },
   "breadcrumbOrder": {
     "breadcrumbHeader": "Lịch Sử Mua Hàng"

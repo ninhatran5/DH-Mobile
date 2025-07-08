@@ -7,9 +7,9 @@ import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import { marked } from "marked";
 import { Modal } from "react-bootstrap";
-import { sendChatMessage } from "../slices/chatLiveSlice";
+import { fetchChatMessage, sendChatMessage } from "../slices/chatLiveSlice";
 import { GoPaperclip } from "react-icons/go";
-import { FaSearchPlus, FaSearchMinus } from "react-icons/fa"; // Thêm ở đầu file
+import { toast } from "react-toastify";
 
 export default function AdminChat() {
   const { profile } = useSelector((state) => state.profile);
@@ -17,7 +17,8 @@ export default function AdminChat() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [sending, setSending] = useState(false);
-  const [pastedImages, setPastedImages] = useState([]); // array base64
+  const [loading, setLoading] = useState(false);
+  const [pastedImages, setPastedImages] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [zoom, setZoom] = useState(1);
@@ -29,14 +30,9 @@ export default function AdminChat() {
 
     setSending(true);
 
-    const userMsg = {
-      sender: "user",
-      message,
-      images: pastedImages,
-      created_at: new Date().toISOString(),
-    };
-
-    setMessages((prev) => [...prev, userMsg]);
+    const currentMessage = message;
+    const currentImages = [...pastedImages];
+    
     setMessage("");
     setPastedImages([]);
 
@@ -44,23 +40,36 @@ export default function AdminChat() {
       await dispatch(
         sendChatMessage({
           customer_id: profile?.user?.id,
-          message,
+          message: currentMessage,
           sender: "customer",
-          images_base64: pastedImages,
+          images_base64: currentImages,
         })
       ).unwrap();
 
       setTimeout(() => {
-        const adminMsg = {
-          sender: "admin",
-          message: t("chatBot.adminResponse"),
-          created_at: new Date().toISOString(),
-        };
-        setMessages((prev) => [...prev, adminMsg]);
-        setSending(false);
-      }, 1000);
+        dispatch(fetchChatMessage(profile?.user?.id))
+          .unwrap()
+          .then((data) => {
+            if (data.success && data.chats) {
+              const formattedMessages = data.chats.map((chat) => ({
+                sender: chat.sender === 'customer' ? 'user' : 'admin',
+                message: chat.message,
+                images: chat.attachments?.map(att => att.file_url) || [],
+                created_at: chat.sent_at,
+              }));
+              
+              setMessages(formattedMessages);
+            }
+            setSending(false);
+          })
+          .catch((error) => {
+            toast.error(t("chatBot.messageError"));
+            setSending(false);
+          });
+      }, 500);
     } catch (error) {
       setSending(false);
+      toast.error(t("chatBot.sendError"));
     }
   };
 
@@ -121,10 +130,50 @@ export default function AdminChat() {
     }
   }, [messages]);
 
+  useEffect(() => {
+    if (profile?.user?.id) {
+      setLoading(true);
+      dispatch(fetchChatMessage(profile?.user?.id))
+        .unwrap()
+        .then((data) => {
+          if (data.success && data.chats) {
+            const formattedMessages = data.chats.map((chat) => ({
+              sender: chat.sender === 'customer' ? 'user' : 'admin',
+              message: chat.message,
+              images: chat.attachments?.map(att => att.file_url) || [],
+              created_at: chat.sent_at,
+            }));
+            
+            setMessages(formattedMessages);
+          }
+          setLoading(false);
+        })
+        .catch((error) => {
+          toast.error(t("chatBot.loadError"));
+          setLoading(false);
+        });
+    }
+  }, [dispatch, profile?.user?.id, t]);
+
   return (
     <>
+      {loading && (
+        <div
+          style={{
+            padding: "20px",
+            textAlign: "center",
+            color: "#666",
+          }}
+        >
+          <div className="chat_spinner" />
+          <p style={{ marginTop: "10px", fontSize: "14px" }}>
+            {t("chatBot.loadingHistory")}
+          </p>
+        </div>
+      )}
+      
       <div className="messages">
-        {messages.length === 0 && (
+        {!loading && messages.length === 0 && (
           <div
             style={{
               padding: "20px",
