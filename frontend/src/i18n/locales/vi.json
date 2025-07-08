@@ -102,6 +102,8 @@
     "historyLoaded": "Đã tải lịch sử chat",
     "loadError": "Có lỗi khi tải lịch sử chat",
     "loadingHistory": "Đang tải lịch sử chat...",
+    "sent": "Đã gửi",
+    "seen": "Đã xem",
     "closeModal": "Đóng"
   },
   "breadcrumbProductDetail": {
