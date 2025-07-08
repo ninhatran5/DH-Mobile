@@ -79,7 +79,9 @@
   "blog": {
     "poster": "Người đăng",
     "date": "Ngày đăng:",
-    "update": "Cập nhật:"
+    "update": "Cập nhật:",
+    "previous": "Trước đó",
+    "next": "Tiếp theo"
   },
   "chatBot": {
     "chat": "Trò chuyện",

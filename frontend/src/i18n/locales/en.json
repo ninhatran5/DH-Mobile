@@ -79,7 +79,9 @@
   "blog": {
     "poster": "Posted by",
     "date": "Published on:",
-    "update": "Last updated:"
+    "update": "Last updated:",
+    "previous": "Previous",
+    "next": "Next"
   },
   "chatBot": {
     "chat": "Chat",
