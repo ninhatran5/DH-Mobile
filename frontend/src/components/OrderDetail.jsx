@@ -376,7 +376,7 @@ const OrderDetail = () => {
                         className="btn-review-order"
                         onClick={handleConfirmReceived}
                       >
-                        {t("orderHistory.orderConfirmation")}
+                        {t("orderHistory.confirmReceived")}
                       </button>
                     )}
                     {orderDetail?.status === "Hoàn thành" && (
@@ -385,14 +385,14 @@ const OrderDetail = () => {
                           className="btn-return-order"
                           onClick={handleOpenReasonModal}
                         >
-                          {t("orderHistory.returnOrder")}
+                          {t("orderHistory.returnRequest")}
                         </button>
                         {hasReviewableProduct && (
                           <button
                             className="btn-review-order"
                             onClick={handleOpenReviewModal}
                           >
-                            {t("orderHistory.review")}
+                            {t("orderHistory.reviewOrder")}
                           </button>
                         )}
                       </>
