@@ -6,18 +6,27 @@ import { useEffect } from "react";
 import Loading from "../components/Loading";
 import dayjs from "dayjs";
 import { fetchBlogDetail } from "../slices/blogDetailSlice";
-import { useParams } from "react-router-dom";
+import { fetchBlogs } from "../slices/blogSlice";
+import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 const BlogDetail = () => {
   const { id } = useParams();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
   const { blogDetails, loading } = useSelector((state) => state.blogDetail);
+  const { news } = useSelector((state) => state.blog);
+
+  // Tìm blog trước và sau
+  const currentIndex = news.findIndex(blog => blog.news_id === parseInt(id));
+  const previousBlog = currentIndex > 0 ? news[currentIndex - 1] : null;
+  const nextBlog = currentIndex < news.length - 1 ? news[currentIndex + 1] : null;
 
   useEffect(() => {
     dispatch(fetchBlogDetail(id));
+    dispatch(fetchBlogs());
   }, [id, dispatch]);
   return (
     <>
@@ -94,39 +103,56 @@ const BlogDetail = () => {
                 </div>
                 <div className="blog__details__btns">
                   <div className="row">
-                    <div className="col-lg-6 col-md-6 col-sm-6">
-                      <a
-                        style={{ textDecoration: "none" }}
-                        className="blog__details__btns__item"
-                      >
-                        <p style={{ cursor: "pointer" }}>
-                          <span className="arrow_left">
-                            <GrFormPreviousLink style={{ marginBottom: 9 }} />
-                          </span>
-                          Trước đó
-                        </p>
-                        <h5 style={{ cursor: "pointer" }}>
-                          It S Classified How To Utilize Free Classified Ad
-                          Sites
-                        </h5>
-                      </a>
-                    </div>
-                    <div className="col-lg-6 col-md-6 col-sm-6">
-                      <a
-                        style={{ textDecoration: "none" }}
-                        className="blog__details__btns__item blog__details__btns__item--next"
-                      >
-                        <p style={{ cursor: "pointer" }}>
-                          Tiếp theo
-                          <span className="arrow_right">
-                            <GrFormNextLink style={{ marginBottom: 11 }} />
-                          </span>
-                        </p>
-                        <h5 style={{ cursor: "pointer" }}>
-                          Tips For Choosing The Perfect Gloss For Your Lips
-                        </h5>
-                      </a>
-                    </div>
+                    {previousBlog && (
+                      <div className={nextBlog ? "col-lg-6 col-md-6 col-sm-6" : "col-lg-12 col-md-12 col-sm-12"}>
+                        <a
+                          style={{ textDecoration: "none" }}
+                          className="blog__details__btns__item"
+                          onClick={() => navigate(`/blog-detail/${previousBlog.news_id}`)}
+                        >
+                          <p style={{ cursor: "pointer" }}>
+                            <span className="arrow_left">
+                              <GrFormPreviousLink style={{ marginBottom: 9 }} />
+                            </span>
+                            {t("blog.previous")}
+                          </p>
+                          <h5 style={{ 
+                            cursor: "pointer",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            maxWidth: "100%"
+                          }}>
+                            {previousBlog.title}
+                          </h5>
+                        </a>
+                      </div>
+                    )}
+                    {nextBlog && (
+                      <div className={previousBlog ? "col-lg-6 col-md-6 col-sm-6" : "col-lg-12 col-md-12 col-sm-12"}>
+                        <a
+                          style={{ textDecoration: "none" }}
+                          className="blog__details__btns__item blog__details__btns__item--next"
+                          onClick={() => navigate(`/blog-detail/${nextBlog.news_id}`)}
+                        >
+                          <p style={{ cursor: "pointer" }}>
+                            {t("blog.next")}
+                            <span className="arrow_right">
+                              <GrFormNextLink style={{ marginBottom: 11 }} />
+                            </span>
+                          </p>
+                          <h5 style={{ 
+                            cursor: "pointer",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            maxWidth: "100%"
+                          }}>
+                            {nextBlog.title}
+                          </h5>
+                        </a>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
