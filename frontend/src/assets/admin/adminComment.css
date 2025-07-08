@@ -289,3 +289,18 @@
   margin-top: 2px;
   font-weight: 500;
 }
+.comment-toggle-btn {
+  background: none;
+  border: none;
+  margin-left: 6px;
+  cursor: pointer;
+  color: #007bff;
+}
+
+.comment-toggle-btn.hidden {
+  opacity: 0.6;
+}
+
+.comment-toggle-btn:hover {
+  color: #0056b3;
+}

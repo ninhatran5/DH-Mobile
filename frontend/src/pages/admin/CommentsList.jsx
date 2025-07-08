@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector }  from "react-redux";
-import { fetchAdminComments, deleteComment, clearError, fetchCommentReplyById } from "../../slices/adminComments";
+import { fetchAdminComments, deleteComment, clearError, fetchCommentReplyById ,toggleCommentVisibility} from "../../slices/adminComments";
 import { FiTrash2, FiEye, FiSearch } from "react-icons/fi";
 import { AiFillStar } from "react-icons/ai";
 import Swal from "sweetalert2";
@@ -59,10 +59,16 @@ const CommentsList = () => {
       comment.product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleViewComment = (comment) => {
-    setSelectedComment(comment);
-    setShowModal(true);
-  };
+ const handleToggleVisibility = async (commentId) => {
+  try {
+    await dispatch(toggleCommentVisibility(commentId)).unwrap();
+    MySwal.fire("Thành công", "Đã cập nhật trạng thái hiển thị", "success");
+  } catch (err) {
+    console.error("Toggle visibility error:", err);
+    MySwal.fire("Lỗi", err?.message || "Đã xảy ra lỗi", "error");
+  }
+};
+
 
   const handleDeleteComment = (commentId) => {
     MySwal.fire({
@@ -93,15 +99,12 @@ const CommentsList = () => {
     if (!replyInput.trim() || !selectedComment) return;
     setReplySubmitting(true);
     try {
-      // Gửi phản hồi lên server
       await dispatch(
         fetchCommentReplyById({ commentId: selectedComment.comment_id, reply: replyInput })
       ).unwrap();
       setReplyInput("");
-      // Có thể reload lại bình luận nếu muốn cập nhật giao diện
       dispatch(fetchAdminComments());
     } catch (err) {
-      // Xử lý lỗi nếu cần
     }
     setReplySubmitting(false);
   };
@@ -300,19 +303,55 @@ const CommentsList = () => {
                         </div>
                       </td>
                       <td className="comment-date">{formatDate(comment.created_at)}</td>
-                      <td>
-                        <div className="comment-actions">
-                          <button
-                            className="comment-delete-btn"
-                            onClick={() => handleDeleteComment(comment.comment_id)}
-                            disabled={deleteLoading}
-                          >
-                            <FiTrash2 size={18} />
-                          </button>
-                        </div>
-                      </td>
+                  <td>
+  <div className="comment-actions" style={{ display: "flex", gap: "6px" }}>
+    <button
+      className="comment-delete-btn"
+      onClick={() => handleDeleteComment(comment.comment_id)}
+      disabled={deleteLoading}
+      title="Xoá bình luận"
+      style={{
+        padding: "4px",
+        borderRadius: "4px",
+        border: "none",
+        backgroundColor: "#fff",
+        color: "#dc3545",
+        cursor: "pointer",
+        fontSize: "0.9em",
+        display: "flex",
+        alignItems: "center"
+      }}
+    >
+      <FiTrash2 size={14} />
+    </button>
+
+    <button
+      className={`comment-toggle-btn ${!comment.is_visible ? "hidden" : "visible"}`}
+      onClick={() => handleToggleVisibility(comment.comment_id)}
+      title={comment.is_visible ? "Ẩn bình luận" : "Hiện bình luận"}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "4px",
+        padding: "3px 6px",
+        fontSize: "0.75em",
+        border: "1px solid #cce5cc",
+        borderRadius: "4px",
+        backgroundColor: "#e6f5e6",
+        color: "#28a745",
+        cursor: "pointer"
+      }}
+    >
+      <FiEye size={13} style={{ opacity: comment.is_visible ? 1 : 0.4, color: "#28a745" }} />
+      <span style={{ fontWeight: 500 }}>
+        {comment.is_visible ? "Hiện" : "Ẩn"}
+      </span>
+    </button>
+  </div>
+</td>
+
                     </tr>
-                  </React.Fragment>
+                 </React.Fragment>
                 ))
               ) : (
                 <tr>

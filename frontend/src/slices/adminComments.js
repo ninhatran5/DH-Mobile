@@ -79,6 +79,30 @@ export const deleteComment = createAsyncThunk(
   }
 );
 
+export const toggleCommentVisibility = createAsyncThunk(
+  "adminComments/toggleCommentVisibility",
+  async (commentId, { rejectWithValue, dispatch }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
+
+      const response = await axiosAdmin.post(
+        `/admin/comments/hidden/${commentId}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      dispatch(fetchAdminComments());
+      return { commentId, data: response.data };
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Lỗi khi ẩn/hiện bình luận");
+    }
+  }
+);
+
+
+
 const adminCommentsSlice = createSlice({
   name: "adminComments",
   initialState,
@@ -133,6 +157,18 @@ const adminCommentsSlice = createSlice({
         state.replyDetail = action.payload; // Lưu dữ liệu reply vào state
       })
       .addCase(fetchCommentReplyById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+            .addCase(toggleCommentVisibility.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(toggleCommentVisibility.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(toggleCommentVisibility.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
