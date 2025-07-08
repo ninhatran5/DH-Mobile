@@ -7,9 +7,12 @@ import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import { marked } from "marked";
 import { Modal } from "react-bootstrap";
-import { fetchChatMessage, sendChatMessage } from "../slices/chatLiveSlice";
+import { fetchChatMessage, sendChatMessage, markMessageAsRead } from "../slices/chatLiveSlice";
 import { GoPaperclip } from "react-icons/go";
 import { toast } from "react-toastify";
+import { LuCheck } from "react-icons/lu";
+import { LuCheckCheck } from "react-icons/lu";
+
 
 export default function AdminChat() {
   const { profile } = useSelector((state) => state.profile);
@@ -56,6 +59,7 @@ export default function AdminChat() {
                 message: chat.message,
                 images: chat.attachments?.map(att => att.file_url) || [],
                 created_at: chat.sent_at,
+                is_read: chat.is_read,
               }));
               
               setMessages(formattedMessages);
@@ -142,9 +146,13 @@ export default function AdminChat() {
               message: chat.message,
               images: chat.attachments?.map(att => att.file_url) || [],
               created_at: chat.sent_at,
+              is_read: chat.is_read,
             }));
             
             setMessages(formattedMessages);
+            
+            // Đánh dấu đã xem tất cả tin nhắn khi load
+            dispatch(markMessageAsRead({ customer_id: profile.user.id }));
           }
           setLoading(false);
         })
@@ -214,7 +222,7 @@ export default function AdminChat() {
               className="bubble"
               style={{
                 backgroundColor: msg.sender === "user" ? "#54b4d3" : "#28a745",
-                textAlign: "left",
+                textAlign: msg.sender === "user" ? "right" : "left",
                 color: "white",
               }}
             >
@@ -247,9 +255,45 @@ export default function AdminChat() {
 
               <div
                 className="timestamp"
-                style={{ color: "rgba(255,255,255,0.8)", marginTop: 4 }}
+                style={{ 
+                  color: "rgba(255,255,255,0.8)", 
+                  marginTop: 4,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: "12px"
+                }}
               >
-                {dayjs(msg.created_at).format("HH:mm")}
+                {/* Hiển thị trạng thái gửi/xem cho tin nhắn của user - bên trái */}
+                {msg.sender === "user" && (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
+                      fontSize: "12px",
+                      flexShrink: 0
+                    }}
+                  >
+                    {/* Hiển thị icon tùy theo trạng thái */}
+                    {msg.is_read === 1 ? (
+                      <LuCheckCheck style={{ color: "rgba(255,255,255,0.9)" }} />
+                    ) : (
+                      <LuCheck style={{ color: "rgba(255,255,255,0.7)" }} />
+                    )}
+                    
+                    {/* Text trạng thái */}
+                    <span style={{ 
+                      fontSize: "10px", 
+                      opacity: 0.8,
+                      whiteSpace: "nowrap"
+                    }}>
+                      {msg.is_read === 1 ? t("chatBot.seen") : t("chatBot.sent")}
+                    </span>
+                  </div>
+                )}
+                
+                <span>{dayjs(msg.created_at).format("HH:mm")}</span>
               </div>
             </div>
           </div>

@@ -43,6 +43,22 @@ export const fetchChatMessage = createAsyncThunk(
   }
 );
 
+export const markMessageAsRead = createAsyncThunk(
+  "chatLive/markMessageAsRead",
+  async ({ customer_id }, thunkAPI) => {
+    try {
+      const response = await axiosUser.post("/support-chats/mark-as-read", {
+        customer_id,
+      });
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Đã có lỗi xảy ra"
+      );
+    }
+  }
+);
+
 export const chatLiveSlice = createSlice({
   name: "chatLive",
   initialState,
@@ -72,6 +88,17 @@ export const chatLiveSlice = createSlice({
       })
       .addCase(fetchChatMessage.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload || "Đã có lỗi xảy ra";
+      })
+      // Mark as read cases
+      .addCase(markMessageAsRead.pending, (state) => {
+        state.error = null;
+      })
+      // eslint-disable-next-line no-unused-vars
+      .addCase(markMessageAsRead.fulfilled, (state, action) => {
+        // Có thể cập nhật trạng thái messages nếu cần
+      })
+      .addCase(markMessageAsRead.rejected, (state, action) => {
         state.error = action.payload || "Đã có lỗi xảy ra";
       });
   },

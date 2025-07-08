@@ -102,6 +102,8 @@
     "historyLoaded": "Chat history loaded",
     "loadError": "Error loading chat history",
     "loadingHistory": "Loading chat history...",
+    "sent": "Sent",
+    "seen": "Seen",
     "closeModal": "Close"
   },
   "breadcrumbProductDetail": {
