@@ -194,7 +194,14 @@ export default function AdminChat() {
           </div>
         )}
 
-        {messages.map((msg, index) => (
+        {messages.map((msg, index) => {
+          // Tìm tin nhắn cuối cùng của user
+          const lastUserMessageIndex = messages.map((m, i) => m.sender === 'user' ? i : -1)
+            .filter(i => i !== -1)
+            .pop();
+          const isLastUserMessage = msg.sender === 'user' && index === lastUserMessageIndex;
+          
+          return (
           <div
             className={`message ${msg.sender}`}
             key={index}
@@ -260,12 +267,12 @@ export default function AdminChat() {
                   marginTop: 4,
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "space-between",
+                  justifyContent: isLastUserMessage ? "space-between" : "flex-end",
                   gap: "12px"
                 }}
               >
-                {/* Hiển thị trạng thái gửi/xem cho tin nhắn của user - bên trái */}
-                {msg.sender === "user" && (
+                {/* Hiển thị trạng thái gửi/xem cho tin nhắn cuối cùng của user */}
+                {isLastUserMessage && (
                   <div
                     style={{
                       display: "flex",
@@ -297,7 +304,8 @@ export default function AdminChat() {
               </div>
             </div>
           </div>
-        ))}
+        );
+        })}
 
         {sending && (
           <div
