@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Comment;
+use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
 use App\Models\ProductVariant;
 use Illuminate\Support\Facades\DB;
@@ -70,14 +71,38 @@ class CommentController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validatedData =  $request->validate([
             'variant_id' => 'required|integer|exists:product_variants,variant_id',
             'rating' => 'required|integer|min:1|max:5',
             'content' => 'nullable|string|max:1000',
+            'upload_url' => 'nullable|array|max:5',
+            'upload_url.*' => 'image|max:5120',
         ]);
 
+        $imageUrls = [];
+        logger('Ảnh upload:', $imageUrls);
+        if ($request->hasFile('upload_url')) {
+            try {
+                $cloudinary = app(Cloudinary::class);
+                $uploadApi = $cloudinary->uploadApi();
+
+                foreach ($request->file('upload_url') as $imageFile) {
+                    $result = $uploadApi->upload($imageFile->getRealPath(), [
+                        'folder' => 'comments_img'
+                    ]);
+                    $imageUrls[] = $result['secure_url'];
+                }
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Lỗi khi upload ảnh: ' . $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ], 500);
+            }
+        }
+
         $user = $request->user();
-        $variantId = $request->variant_id;
+        $variantId = $validatedData['variant_id'];
         // Lấy product_id từ variant_id
         $variant = ProductVariant::find($variantId);
         if (!$variant) {
@@ -103,17 +128,23 @@ class CommentController extends Controller
             ], 403);
         }
 
-        // Nếu đã từng đánh giá biến thể này rồi -> cập nhật
+        $commentData = [
+            'rating' => $validatedData['rating'],
+            'content' => $validatedData['content'] ?? null,
+        ];
+
+        if (!empty($imageUrls)) {
+            $commentData['upload_urls'] = $imageUrls;
+        }
+logger('Dữ liệu comment:', $commentData);
+
         $comment = Comment::updateOrCreate(
             [
                 'user_id' => $user->user_id,
                 'variant_id' => $variantId,
-                'product_id' => $productId
+                'product_id' => $productId,
             ],
-            [
-                'rating' => $request->rating,
-                'content' => $request->content
-            ]
+            $commentData
         );
 
         return response()->json([
