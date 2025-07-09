@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
@@ -148,10 +149,16 @@ const AddAccount = () => {
     const file = e.target.files[0];
     if (file) {
       setFormData((prev) => ({ ...prev, image_url: file }));
-      const reader = new FileReader();
-      reader.onloadend = () => setImagePreview(reader.result);
-      reader.readAsDataURL(file);
+      setImagePreview(URL.createObjectURL(file));
     }
+  };
+
+  const removeAvatar = () => {
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setFormData((prev) => ({ ...prev, image_url: null }));
+    setImagePreview(null);
   };
 
   const handleSubmit = async (e) => {
@@ -411,29 +418,41 @@ const AddAccount = () => {
               <Col md={4} className="admin-add-account-right">
                 <Form.Group className="admin-add-account-group mb-3">
                   <Form.Label className="admin-add-account-label">Ảnh đại diện</Form.Label>
-                  <div className="admin-add-account-image-upload-container">
-                    <div className="admin-add-account-image-preview-container mb-3">
-                      {imagePreview ? (
-                        <img
-                          src={imagePreview}
-                          alt="adminavatar"
-                          className="img-thumbnail admin-add-account-img-thumbnail"
-                          style={{ maxHeight: '200px', width: 'auto' }}
-                        />
-                      ) : (
-                        <div className="admin-add-account-image-placeholder">
-                          <i className="bi bi-person" style={{ fontSize: '2rem' }}></i>
-                          <p>Chọn ảnh đại diện</p>
-                        </div>
-                      )}
-                    </div>
-                    <Form.Control
-                      type="file"
-                      accept="image/*"
-                      onChange={handleAvatarChange}
-                      className="mb-2 admin-add-account-input-file"
-                    />
-                    <small className="text-muted">Định dạng: JPG, PNG. Tối đa 2MB</small>
+                  
+                  <div className="image-upload-container">
+                    <label className="custom-file-upload">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarChange}
+                        style={{ display: 'none' }}
+                      />
+                      <div className="upload-button">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M17 8L12 3L7 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M12 3V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        <span>Chọn ảnh đại diện</span>
+                      </div>
+                    </label>
+                    
+                    {imagePreview && (
+                      <div className="image-preview-single">
+                        <img src={imagePreview} alt="Avatar Preview" />
+                        <button 
+                          type="button"
+                          className="remove-image-btn"
+                          onClick={removeAvatar}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    )}
+                    
+                    <p className="upload-hint">
+                      Định dạng: JPG, PNG. Tối đa 2MB
+                    </p>
                   </div>
                 </Form.Group>
               </Col>

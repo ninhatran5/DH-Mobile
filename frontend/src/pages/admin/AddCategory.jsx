@@ -9,13 +9,26 @@ const AddCategory = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [is_active, setIsActive] = useState(true);
   const [showValidation, setShowValidation] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleFileChange = (e) => {
-    setImageFile(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const removeImage = () => {
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImageFile(null);
+    setImagePreview(null);
   };
 
   const handleBack = () => {
@@ -39,6 +52,7 @@ const AddCategory = () => {
       await dispatch(addCategory(formData)).unwrap();
       toast.success("Thêm danh mục thành công!");
       navigate("/admin/categories");
+      // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast.error("Có lỗi xảy ra khi thêm danh mục!");
     }
@@ -99,21 +113,47 @@ const AddCategory = () => {
             Hình ảnh
             {showValidation && !imageFile && <span className="required">*</span>}
           </label>
-          <input 
-            type="file" 
-            accept="image/*" 
-            onChange={handleFileChange}
-          />
+          
+          <div className="image-upload-container">
+            <label className="custom-file-upload">
+              <input 
+                type="file" 
+                accept="image/*" 
+                onChange={handleFileChange}
+                style={{ display: 'none' }}
+              />
+              <div className="upload-button">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M17 8L12 3L7 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M12 3V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span>Chọn hình ảnh</span>
+              </div>
+            </label>
+            
+            {imagePreview && (
+              <div className="image-preview-single">
+                <img src={imagePreview} alt="Preview" />
+                <button 
+                  type="button"
+                  className="remove-image-btn"
+                  onClick={removeImage}
+                >
+                  ×
+                </button>
+              </div>
+            )}
+            
+            <p className="upload-hint">
+              Chọn hình ảnh cho danh mục (JPG, PNG, GIF)
+            </p>
+          </div>
+          
           {showValidation && !imageFile && (
             <span className="validation-message">Hình ảnh là bắt buộc</span>
           )}
         </div>
-
-        {imageFile && (
-          <div className="addcategories-image-preview">
-            <img src={URL.createObjectURL(imageFile)} alt="Preview" />
-          </div>
-        )}
 
         <div className="addcategories-group">
           <label>
