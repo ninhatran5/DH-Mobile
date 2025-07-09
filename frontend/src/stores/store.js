@@ -40,6 +40,7 @@ import adminChatReducer from "../slices/AdminChatSlice";
 import reviewReducer from "../slices/reviewSlice";
 import adminReturnOrderReducer from "../slices/AdminReturnOrderSlice";
 import adminMembershipReducer from "../slices/adminMembership";
+import adminchatLiveReducer from "../slices/AdminChatLive";
 
 import adminCommentsReducer from "../slices/adminComments";
 
@@ -96,5 +97,6 @@ export const store = configureStore({
     adminComments: adminCommentsReducer,
     adminProfile: adminProfileReducer,
     adminMembership: adminMembershipReducer,
+    adminchatLive: adminchatLiveReducer,
   },
 });

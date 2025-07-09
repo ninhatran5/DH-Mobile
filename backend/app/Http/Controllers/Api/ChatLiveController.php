@@ -211,7 +211,9 @@ class ChatLiveController extends Controller
                     'last_message_time' => $lastChat->sent_at ?? null,
                     'unread_count' => $unreadCount,
                 ];
-            });
+            })
+            ->sortByDesc('last_message_time') // ✅ Sắp xếp theo người nhắn gần nhất
+            ->values(); // ✅ Reset lại index của mảng
 
         return response()->json([
             'success' => true,
