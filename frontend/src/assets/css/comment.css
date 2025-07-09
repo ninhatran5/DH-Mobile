@@ -55,6 +55,24 @@
   color: #ccc;
 }
 
+/* Comment Image Styling */
+.comment-image {
+  max-width: 100px;
+  max-height: 100px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 12px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  object-fit: cover;
+  border: 2px solid #f0f0f0;
+}
+
+.comment-image:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  border-color: #007aff;
+}
+
 @media (max-width: 576px) {
   .hr_comment {
     padding: 12px 8px 10px 10px;
@@ -67,5 +85,11 @@
   }
   .hr_comment .d-flex.flex-start {
     gap: 10px;
+  }
+  
+  .comment-image {
+    max-width: 80px;
+    max-height: 80px;
+    margin-top: 8px;
   }
 }

@@ -69,18 +69,6 @@ const BlogDetail = () => {
                     __html: blogDetails?.content || "",
                   }}
                 ></div>
-                {/* <div className="blog__details__quote">
-                  <i>
-                    <BiSolidQuoteAltLeft style={{ fontSize: 22 }} />
-                  </i>
-                  <p>
-                    “When designing an advertisement for a particular product
-                    many things should be researched like where it should be
-                    displayed.”
-                  </p>
-                  <h6>_ John Smith _</h6>
-                </div> */}
-
                 <div className="blog__details__option">
                   <div className="row">
                     <div className="col-lg-6 col-md-6 col-sm-6">

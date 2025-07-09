@@ -66,7 +66,12 @@ const ArticlesList = () => {
             <div className="article-text">
               <h2 className="article-main-title">{news.title}</h2>
               <p className="article-description">
-                {news.description || news.content}
+                {news?.content 
+                  ? news.content.replace(/<[^>]*>/g, '').length > 1000
+                    ? news.content.replace(/<[^>]*>/g, '').substring(0, 1000) + '...'
+                    : news.content.replace(/<[^>]*>/g, '')
+                  : ""
+                }
               </p>
             </div>
           </div>
