@@ -2,6 +2,7 @@ import { FaStar, FaRegStar } from "react-icons/fa";
 import "../assets/css/comment.css";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
+import img1 from "../assets/images/avtchatbot.jpg"; 
 
 const Comment = ({ reviews }) => {
   const { t } = useTranslation();
@@ -76,6 +77,9 @@ const Comment = ({ reviews }) => {
                             </div>
                           )}
                         <p className="mt-2">{item?.content}</p>
+                       <div className="mb-3" style={{marginTop: "-10px"}}>
+                         <img src={img1} className="comment-image" />
+                       </div>
                       </div>
                     </div>
                     {item.reply && (
