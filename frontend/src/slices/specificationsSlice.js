@@ -7,11 +7,10 @@ const initialState = {
   error: null,
 };
 
-///CALL API BANNER
 export const fetchSpecification = createAsyncThunk(
   "specification/fetchSpecification",
-  async (id) => {
-    const response = await axiosUser.get(`/productspecifications/${id}`);
+  async (userId) => {
+    const response = await axiosUser.get(`/productspecifications/${userId}`);
     return response.data.data;
   }
 );

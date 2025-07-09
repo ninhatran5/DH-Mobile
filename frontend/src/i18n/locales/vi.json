@@ -125,7 +125,9 @@
     "coinReward": "Nhận thêm <b>{{coins}}</b> xu khi hoàn tất đơn hàng này"
   },
   "comment": {
-    "replied_to": "đã trả lời"
+    "replied_to": "đã trả lời",
+    "showMore": "Xem thêm",
+    "showLess": "Ẩn bớt"
   },
   "breadcrumbVoucher": {
     "breadcrumbHeader": "Mã Giảm Giá",
