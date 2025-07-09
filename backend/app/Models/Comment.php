@@ -15,6 +15,7 @@ class Comment extends Model
         'variant_id',
         'rating',
         'content',
+        'upload_urls',
         'created_at',
         'replied_at'
     ];
@@ -25,6 +26,11 @@ class Comment extends Model
             $comment->created_at = now();
         });
     }
+
+    protected $casts = [
+    'upload_urls' => 'array',
+];
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'user_id');

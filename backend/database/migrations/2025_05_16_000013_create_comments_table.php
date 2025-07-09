@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('replied_by')->nullable();
             $table->text('content')->nullable();
             $table->integer('rating')->nullable();
+            $table->json('upload_urls')->nullable();
             $table->text('reply')->nullable();
             $table->dateTime('replied_at')->nullable();
             $table->boolean('is_visible')->default(true);
