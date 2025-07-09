@@ -111,6 +111,7 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
   const { productVariationDetails } = useSelector(
     (state) => state.productVariationDetail
   );
+  const userID = localStorage.getItem("userID");
   const { reviews } = useSelector((state) => state.review);
   const { specifications } = useSelector((state) => state.specification);
   const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
@@ -290,6 +291,12 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
       dispatch(fetchComments(id));
     }
   }, [dispatch, id]);
+
+useEffect(() => {
+    if (userID) {
+      dispatch(fetchSpecification(userID));
+    }
+  }, [dispatch, userID]);
 
   useEffect(() => {
     if (productImages.length > 0) {
