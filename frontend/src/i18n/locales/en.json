@@ -126,7 +126,9 @@
     "coinReward": "Earn <b>{{coins}}</b> coins when you complete this order"
   },
   "comment": {
-    "replied_to": "replied to"
+    "replied_to": "replied to",
+    "showMore": "Show more",
+    "showLess": "Show less"
   },
   "breadcrumbVoucher": {
     "breadcrumbHeader": "Vouchers",
