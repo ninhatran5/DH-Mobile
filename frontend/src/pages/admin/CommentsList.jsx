@@ -253,50 +253,77 @@ const CommentsList = () => {
                             : comment.content}
                         </div>
                       </td>
-                      <td>
-                        {comment.reply && (
-                          <div className="comment-reply-bubble">
-                            <span className="comment-reply-label">Phản hồi:</span>
-                            <span>{comment.reply}</span>
-                          </div>
-                        )}
-                        {!comment.reply && activeReplyId === comment.comment_id && (
-                          <form
-                            className="comment-reply-form"
-                            onSubmit={async e => {
-                              e.preventDefault();
-                              if (!replyInput.trim()) return;
-                              setReplySubmitting(true);
-                              try {
-                                await dispatch(
-                                  fetchCommentReplyById({ commentId: comment.comment_id, reply: replyInput })
-                                ).unwrap();
-                                setReplyInput("");
-                                setActiveReplyId(null);
-                                dispatch(fetchAdminComments());
-                              } catch (err) {}
-                              setReplySubmitting(false);
-                            }}
-                          >
-                            <input
-                              type="text"
-                              placeholder="Nhập phản hồi..."
-                              value={replyInput}
-                              onChange={e => setReplyInput(e.target.value)}
-                              className="comment-reply-input"
-                              disabled={replySubmitting}
-                              autoFocus
-                            />
-                            <button
-                              type="submit"
-                              className="comment-reply-btn"
-                              disabled={replySubmitting || !replyInput.trim()}
-                            >
-                              {replySubmitting ? "..." : "Gửi"}
-                            </button>
-                          </form>
-                        )}
-                      </td>
+                    <td>
+  {comment.reply ? (
+    // Đã có phản hồi
+    <div className="comment-reply-bubble">
+      <span className="comment-reply-label">Phản hồi:</span>
+      <span>{comment.reply}</span>
+    </div>
+  ) : (
+    // Chưa có phản hồi
+    <div>
+      {activeReplyId === comment.comment_id ? (
+        <form
+          className="comment-reply-form"
+          onSubmit={async e => {
+            e.preventDefault();
+            if (!replyInput.trim()) return;
+            setReplySubmitting(true);
+            try {
+              await dispatch(
+                fetchCommentReplyById({ commentId: comment.comment_id, reply: replyInput })
+              ).unwrap();
+              setReplyInput("");
+              setActiveReplyId(null);
+              dispatch(fetchAdminComments());
+            } catch (err) {}
+            setReplySubmitting(false);
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Nhập phản hồi..."
+            value={replyInput}
+            onChange={e => setReplyInput(e.target.value)}
+            className="comment-reply-input"
+            disabled={replySubmitting}
+            autoFocus
+          />
+          <button
+            type="submit"
+            className="comment-reply-btn"
+            disabled={replySubmitting || !replyInput.trim()}
+          >
+            {replySubmitting ? "..." : "Gửi"}
+          </button>
+        </form>
+      ) : (
+        // Nút "Phản hồi" khi chưa có phản hồi và chưa mở form
+        <button
+          className="comment-reply-toggle-btn"
+          onClick={() => {
+            setActiveReplyId(comment.comment_id);
+            setReplyInput("");
+          }}
+          style={{
+            fontSize: "0.8em",
+            padding: "4px 8px",
+            backgroundColor: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer"
+          }}
+        >
+          Bình luận 
+        </button>
+      )}
+    </div>
+  )}
+</td>
+
+
                       <td>
                         <div className="comment-rating-stars">
                           {renderStars(comment.rating)}
