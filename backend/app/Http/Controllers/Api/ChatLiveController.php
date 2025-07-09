@@ -201,9 +201,7 @@ class ChatLiveController extends Controller
                     ->count();
 
                 // Xử lý ảnh đại diện
-                $avatarUrl = $customer->image_url
-                    ? asset('storage/' . $customer->image_url)
-                    : asset('images/default-avatar.png');
+                $avatarUrl = $customer->image_url;
 
                 return [
                     'customer_id' => $customer->user_id,
