@@ -4,6 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchAdminLoyaltyTiers, updateAdminLoyaltyTier } from '../../slices/adminMembership';
 import '../../assets/admin/AdminMembership.css';
 import coinIcon from '../../assets/images/icons8-coin.gif';
+import cancel from '../../assets/images/cancel-close-svgrepo-com.svg';
+
+
 
 const AdminMembership = () => {
   const dispatch = useDispatch();
@@ -77,9 +80,19 @@ const AdminMembership = () => {
                   <div className="flip-card-front tier-card tier-${tier.slug} position-relative">
                     <button
                       className="btn btn-link p-0 position-absolute"
-                      style={{ top: 10, right: 10 }}
+                      style={{ top: 15, right: -10 }}
                       onClick={() => handleEditClick(tier)}
-                    >✎</button>
+                    ><svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24" style={{ width: 20 }} >
+                        <title />
+                        <g id="Complete">
+                          <g id="edit">
+                            <g>
+                              <path d="M20,16v4a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V6A2,2,0,0,1,4,4H8" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                              <polygon fill="none" points="12.5 15.8 22 6.2 17.8 2 8.3 11.5 8 16 12.5 15.8" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                            </g>
+                          </g>
+                        </g>
+                      </svg></button>
                     <div className="tier-header text-center p-3">
                       <img src={tier.image_url} alt={tier.name} className="tier-icon" />
                       <h4 className="tier-points">
@@ -87,7 +100,7 @@ const AdminMembership = () => {
                         <img src={coinIcon} alt="coin" style={{ width: 20 }} />
                       </h4>
                       <h5 className="tier-name mt-3">Hạng: {tier.name}</h5>
-                      <p className="tier-discount">Ưu đãi: {tier.discount_percent}%</p>
+                      <p className="tier-discount">Ưu đãi: {tier.discount_percent}</p>
                       <p className="tier-description">{tier.description}</p>
                     </div>
                     <div className="tier-footer text-muted">
@@ -98,29 +111,34 @@ const AdminMembership = () => {
                   {/* BACK */}
                   <div className="flip-card-back">
                     <form onSubmit={handleSubmit}>
-                      <div className="mb-2">
-                        <label className="form-label">Tên hạng</label>
-                        <input className="form-control" name="name" value={form.name} onChange={handleChange} required />
-                      </div>
-                      <div className="mb-2">
-                        <label className="form-label">Ảnh đại diện</label>
-                        <input className="form-control" type="file" accept="image/*" onChange={handleChange} />
-                        {imagePreview && <img src={imagePreview} alt="Preview" style={{ width: 80, marginTop: 10 }} />}
-                      </div>
-                      <div className="mb-2">
-                        <label className="form-label">Điểm tối thiểu</label>
-                        <input type="number" className="form-control" name="min_points" value={form.min_points} onChange={handleChange} required />
-                      </div>
-                      <div className="mb-2">
-                        <label className="form-label">Ưu đãi (%)</label>
-                        <input type="number" className="form-control" name="discount_percent" value={form.discount_percent} onChange={handleChange} required />
-                      </div>
+                       <button
+                      className="btn btn-link p-0 position-absolute"
+                      style={{ top: 15, right: -10 }}
+                      type="button"  onClick={() => setEditTier(null)}
+                    >
+                      <img src={cancel} alt="cancel" style={{ width: 20 }} />
+                      </button>
+                      <div className="tier-header text-center p-3 mt-5">
+
+                        <img src={tier.image_url} alt={tier.name} className="tier-icon" />
+                        <div className="mb-2">
+                          <h5 className="tier-name mt-3">Hạng: {tier.name}</h5>
+                        </div>
+                        <div className="mb-2">
+                          <label className="form-label">Điểm tối thiểu</label>
+                          <input type="number" className="form-control" name="min_points" value={form.min_points} onChange={handleChange} required />
+                        </div>
+                        <div className="mb-2">
+                          <label className="form-label">Ưu đãi (%)</label>
+                          <input type="number" className="form-control" name="discount_percent" value={form.discount_percent} onChange={handleChange} required />
+                        </div>
+                      
                       {updateError && <div className="text-danger">{updateError}</div>}
-                      <div className="d-flex justify-content-between">
-                        <button type="button" className="btn btn-secondary" onClick={() => setEditTier(null)}>Hủy</button>
+                      <div className="mt-5">
                         <button type="submit" className="btn btn-primary" disabled={updateLoading}>
                           {updateLoading ? 'Đang lưu...' : 'Lưu'}
                         </button>
+                      </div>
                       </div>
                     </form>
                   </div>
