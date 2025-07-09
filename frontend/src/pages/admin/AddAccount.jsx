@@ -141,7 +141,6 @@ const AddAccount = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Validate realtime
     setFormErrors((prev) => ({ ...prev, [name]: validateField(name, value) }));
   };
 

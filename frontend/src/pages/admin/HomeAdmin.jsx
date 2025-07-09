@@ -169,12 +169,10 @@ const Homeadmin = () => {
     const newState = !isSidebarCollapsed;
     setIsSidebarCollapsed(newState);
 
-    // Đồng bộ trạng thái với mobile sidebar
     if (window.innerWidth > 768) {
       setIsSidebarActive(!newState);
     }
 
-    // Thêm hiệu ứng khi click vào nút
     if (sidebarCollapseRef.current) {
       sidebarCollapseRef.current.classList.add("admin_dh-active");
       setTimeout(() => {
@@ -189,12 +187,10 @@ const Homeadmin = () => {
     const newState = !isSidebarActive;
     setIsSidebarActive(newState);
 
-    // Đồng bộ trạng thái với desktop sidebar
     if (window.innerWidth <= 768) {
       setIsSidebarCollapsed(!newState);
     }
 
-    // Thêm hiệu ứng khi click vào nút
     if (sidebarOpenRef.current) {
       sidebarOpenRef.current.classList.add("admin_dh-active");
       setTimeout(() => {
@@ -847,7 +843,6 @@ const Homeadmin = () => {
                   <i className="bi bi-layout-sidebar" />
                 </button>
               </div>
-              <div className="Homeadmin-user123">Xin chào {adminProfile?.user?.username}</div>
               <div className="admin_dh-navbar-right">
                 {checkRole !== "sale" && (
                   <>
@@ -989,6 +984,8 @@ const Homeadmin = () => {
                     <li>
                       <div className="menu-divider" />
                     </li>
+              <div className="Homeadmin-user123">Xin chào {adminProfile?.user?.username}</div>
+                    
 
                     <li>
                       <button
@@ -996,7 +993,9 @@ const Homeadmin = () => {
                         onClick={handleLogout}
                         style={{ textAlign: "left", width: "100%" }}
                       >
-                        <i className="bi bi-box-arrow-right me-2"></i>
+                      <i className="bi bi-box-arrow-right me-2" style={{ color: "red" }}></i>
+
+
                         Đăng xuất
                       </button>
                     </li>
@@ -1005,14 +1004,12 @@ const Homeadmin = () => {
               </div>
             </div>
           </nav>
-          {/* Main Content */}
           <div className="admin_dh-main-content">
             <Outlet />
             <div className="admin_dh-footer-space"></div>
           </div>
         </div>
 
-        {/* Scroll to top button */}
         {showScrollTop && (
           <button
             className="admin_dh-scroll-to-top"
