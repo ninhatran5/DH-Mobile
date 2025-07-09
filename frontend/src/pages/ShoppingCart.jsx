@@ -167,7 +167,7 @@ const ShoppingCart = () => {
 
   useEffect(() => {
     dispatch(fetchCart());
-  }, []);
+  }, [dispatch]);
   return (
     <>
       {loading && <Loading />}

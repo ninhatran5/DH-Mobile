@@ -568,7 +568,12 @@
     "writeReviewPlaceholder": "Share your thoughts about this product",
     "characters": "characters",
     "closeBtn": "Close",
-    "submitBtn": "Submit review"
+    "submitBtn": "Submit review",
+    "uploadImages": "Add images",
+    "chooseImages": "Choose images",
+    "uploadHint": "You can upload up to 5 images",
+    "tooManyImages": "Too many images",
+    "maxImagesText": "You can only upload up to 5 images"
   },
   "address": {
     "selectAddressTitle": "Select delivery address",

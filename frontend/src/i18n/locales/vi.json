@@ -564,7 +564,12 @@
     "writeReviewPlaceholder": "Hãy chia sẻ cảm nhận của bạn về sản phẩm này",
     "characters": "ký tự",
     "closeBtn": "Đóng",
-    "submitBtn": "Gửi đánh giá"
+    "submitBtn": "Gửi đánh giá",
+    "uploadImages": "Thêm hình ảnh",
+    "chooseImages": "Chọn hình ảnh",
+    "uploadHint": "Bạn có thể tải lên tối đa 5 hình ảnh",
+    "tooManyImages": "Quá nhiều hình ảnh",
+    "maxImagesText": "Bạn chỉ có thể tải lên tối đa 5 hình ảnh"
   },
   "address": {
     "selectAddressTitle": "Chọn địa chỉ nhận hàng",

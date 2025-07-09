@@ -121,3 +121,142 @@
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
+
+/* Custom File Upload Styles for Admin */
+.image-upload-container {
+  margin-top: 10px;
+}
+
+.custom-file-upload {
+  display: block;
+  cursor: pointer;
+}
+
+.upload-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 20px;
+  border: 2px dashed #007aff;
+  border-radius: 12px;
+  background-color: #f8f9ff;
+  color: #007aff;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  min-height: 70px;
+}
+
+.upload-button:hover {
+  border-color: #005ecb;
+  background-color: #f0f4ff;
+  color: #005ecb;
+  transform: translateY(-1px);
+}
+
+.upload-button svg {
+  transition: transform 0.3s ease;
+}
+
+.upload-button:hover svg {
+  transform: translateY(-2px);
+}
+
+.image-preview-single {
+  position: relative;
+  margin-top: 15px;
+  display: inline-block;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 3px solid #e8e8e8;
+  background-color: #f9f9f9;
+  max-width: 200px;
+}
+
+.image-preview-single img {
+  width: 100%;
+  height: auto;
+  max-height: 150px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.image-preview-single:hover img {
+  transform: scale(1.05);
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #ff4757;
+  color: white;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.remove-image-btn:hover {
+  background-color: #ff3838;
+  transform: scale(1.1);
+}
+
+.upload-hint {
+  font-size: 12px;
+  color: #8e8e93;
+  margin-top: 8px;
+  margin-bottom: 0;
+  text-align: center;
+  font-style: italic;
+}
+
+/* Animation for image preview */
+.image-preview-single {
+  animation: fadeInScale 0.3s ease-out;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Focus styles for accessibility */
+.custom-file-upload:focus-within .upload-button {
+  outline: 2px solid #007aff;
+  outline-offset: 2px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .upload-button {
+    padding: 12px 16px;
+    font-size: 13px;
+    min-height: 60px;
+  }
+  
+  .image-preview-single {
+    max-width: 150px;
+  }
+  
+  .remove-image-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+  }
+}

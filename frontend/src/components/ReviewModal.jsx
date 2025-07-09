@@ -11,6 +11,8 @@ import { accumulatePoints } from "../slices/rankSlice";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import "../assets/css/reviewModal.css";
+import { SlCloudUpload } from "react-icons/sl";
 
 const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
   const { t } = useTranslation();
@@ -22,8 +24,38 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
   const [comment, setComment] = useState("");
   const [selectedVariantId, setSelectedVariantId] = useState();
   const [reviewableProducts, setReviewableProducts] = useState([]);
+  const [selectedImages, setSelectedImages] = useState([]);
   const maxLength = 200;
 
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length + selectedImages.length > 5) {
+      Swal.fire({
+        icon: "warning",
+        title: t("review.tooManyImages"),
+        text: t("review.maxImagesText"),
+      });
+      return;
+    }
+
+    const newImages = files.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+      id: Date.now() + Math.random(),
+    }));
+
+    setSelectedImages((prev) => [...prev, ...newImages]);
+  };
+
+  const removeImage = (imageId) => {
+    setSelectedImages((prev) => {
+      const imageToRemove = prev.find((img) => img.id === imageId);
+      if (imageToRemove?.preview) {
+        URL.revokeObjectURL(imageToRemove.preview);
+      }
+      return prev.filter((img) => img.id !== imageId);
+    });
+  };
 
   const handleNextPageOrderDetail = (id) => {
     handleClose();
@@ -101,6 +133,7 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
         setComment("");
         setRating(0);
         setSelectedVariantId(undefined);
+        setSelectedImages([]);
 
         if (updated.length === 0) {
           handleClose();
@@ -123,9 +156,7 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
         localStorage.getItem("reviewedVariants") || "[]"
       );
       const products = action.payload?.products || [];
-      const filtered = products.filter(
-        (p) => !reviewed.includes(p.variant_id)
-      );
+      const filtered = products.filter((p) => !reviewed.includes(p.variant_id));
 
       setReviewableProducts(filtered);
 
@@ -149,9 +180,7 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
               <div className="border_image_return">
                 <img
                   style={{ cursor: "pointer" }}
-                  onClick={() =>
-                    handleNextPageOrderDetail(product.product_id)
-                  }
+                  onClick={() => handleNextPageOrderDetail(product.product_id)}
                   className="image_return"
                   src={product.product_image || ""}
                   alt={product.product_name}
@@ -160,9 +189,7 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
               <div style={{ flex: 1 }}>
                 <p
                   style={{ cursor: "pointer" }}
-                  onClick={() =>
-                    handleNextPageOrderDetail(product.product_id)
-                  }
+                  onClick={() => handleNextPageOrderDetail(product.product_id)}
                   className="title_return_product"
                 >
                   {product.product_name}
@@ -173,9 +200,7 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
                       ?.map((attr) => attr.attribute_value)
                       .join(", ") || "Không rõ"}
                   </p>
-                  <p className="quantity_return_product">
-                    x{product.quantity}
-                  </p>
+                  <p className="quantity_return_product">x{product.quantity}</p>
                 </div>
                 <p className="price_return_product">
                   {numberFormat(product.price || 0)}
@@ -189,19 +214,12 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
               <p className="title_return">{t("review.selectProduct")}</p>
               <Form.Select
                 value={selectedVariantId || ""}
-                onChange={(e) =>
-                  setSelectedVariantId(Number(e.target.value))
-                }
+                onChange={(e) => setSelectedVariantId(Number(e.target.value))}
                 required
               >
-                <option value="">
-                  {t("review.selectProductPlaceholder")}
-                </option>
+                <option value="">{t("review.selectProductPlaceholder")}</option>
                 {reviewableProducts.map((p) => (
-                  <option
-                    key={p.variant_id}
-                    value={p.variant_id}
-                  >
+                  <option key={p.variant_id} value={p.variant_id}>
                     {p.product_name} -{" "}
                     {p.variant_attributes
                       ?.map((attr) => attr.attribute_value)
@@ -224,11 +242,7 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
                   key={index}
                   size={28}
                   style={{ cursor: "pointer", marginRight: 5 }}
-                  color={
-                    starValue <= (hover || rating)
-                      ? "#ffc107"
-                      : "#e4e5e9"
-                  }
+                  color={starValue <= (hover || rating) ? "#ffc107" : "#e4e5e9"}
                   onClick={() => setRating(starValue)}
                   onMouseEnter={() => setHover(starValue)}
                   onMouseLeave={() => setHover(null)}
@@ -238,6 +252,46 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
           </div>
 
           <hr className="hr_return" style={{ marginTop: "30px" }} />
+
+          <div className="mb-3">
+            <p className="title_return">{t("review.uploadImages")}</p>
+            <div className="image-upload-container">
+              <label className="custom-file-upload">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  style={{ display: "none" }}
+                />
+                <div className="upload-button">
+                  <SlCloudUpload style={{ fontSize: 25 }} />
+                  <span>{t("review.chooseImages")}</span>
+                </div>
+              </label>
+
+              {selectedImages.length > 0 && (
+                <div className="image-preview-grid">
+                  {selectedImages.map((image) => (
+                    <div key={image.id} className="image-preview-item">
+                      <img src={image.preview} alt="Preview" />
+                      <button
+                        type="button"
+                        className="remove-image-btn"
+                        onClick={() => removeImage(image.id)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <p className="upload-hint">
+                {t("review.uploadHint")} ({selectedImages.length}/5)
+              </p>
+            </div>
+          </div>
 
           <Form.Group className="mb-3">
             <p className="title_return">{t("review.writeReview")}</p>
