@@ -9,12 +9,21 @@ const initialState = {
 
 export const commentsPost = createAsyncThunk(
   "review/commentsPost",
-  async ({ variant_id, rating, content }, thunkAPI) => {
+  async ({ variant_id, rating, content, images }, thunkAPI) => {
     try {
-      const response = await axiosUser.post("/comments", {
-        variant_id,
-        rating,
-        content,
+      const formData = new FormData();
+      formData.append("variant_id", variant_id);
+      formData.append("rating", rating);
+      formData.append("content", content);
+      if (images && images.length > 0) {
+        images.forEach((image) => {
+          formData.append("upload_url[]", image.file);
+        });
+      }
+      const response = await axiosUser.post("/comments", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
       return response.data;
     } catch (error) {

@@ -90,6 +90,7 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
         variant_id: selectedVariantId,
         rating,
         content: comment,
+        images: selectedImages,
       })
     )
       .unwrap()
