@@ -2,10 +2,21 @@ import { FaStar, FaRegStar } from "react-icons/fa";
 import "../assets/css/comment.css";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
-import img1 from "../assets/images/avtchatbot.jpg"; 
+import { useState } from "react";
+import ImageViewModal from "./ImageViewModal"; 
 
 const Comment = ({ reviews }) => {
   const { t } = useTranslation();
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  const handleImageClick = (images, index) => {
+    setSelectedImages(images);
+    setSelectedImageIndex(index);
+    setShowImageModal(true);
+  };
+
   return (
     <section>
       <div className="container-fluid">
@@ -52,7 +63,7 @@ const Comment = ({ reviews }) => {
                       />
                       <div>
                         <h6 className="fw-bold">{item?.user?.full_name}</h6>
-                        <p style={{ fontSize: 12 }}>
+                        <p style={{ fontSize: 11, color: "#8a8d91", marginTop: "-4px"}}>
                           {dayjs(item?.created_at).format("HH:mm / DD-MM-YYYY")}
                         </p>
                         <div className="d-flex">
@@ -77,16 +88,34 @@ const Comment = ({ reviews }) => {
                             </div>
                           )}
                         <p className="mt-2">{item?.content}</p>
-                       <div className="mb-3" style={{marginTop: "-10px"}}>
-                         <img src={img1} className="comment-image" />
-                       </div>
+                        {item.upload_urls && item.upload_urls.length > 0 && (
+                          <div className="mb-3" style={{marginTop: "10px"}}>
+                            <div className="comment-images-grid">
+                              {item.upload_urls.map((imageUrl, imgIndex) => (
+                                <img 
+                                  key={imgIndex}
+                                  src={imageUrl} 
+                                  className="comment-image" 
+                                  alt={`Review image ${imgIndex + 1}`}
+                                  onClick={() => handleImageClick(item.upload_urls, imgIndex)}
+                                  onError={(e) => {
+                                    e.target.style.display = 'none';
+                                  }}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                     {item.reply && (
-                      <div className="admin-comment mt-4 ms-5">
+                      <div className="admin-comment mt-3">
+                        <div className="reply-indicator-fb ms-3">
+                          <span className="reply-to">{item?.replied_by?.full_name || "Admin"}</span> {t("comment.replied_to")} <span className="reply-to">{item?.user?.full_name}</span>
+                        </div>
                         <div className="d-flex flex-start">
                           <img
-                            className="rounded-circle shadow-1-strong me-3"
+                            className="rounded-circle shadow-1-strong ms-3 me-3"
                             src={
                               item?.replied_by?.image_url ||
                               "https://bootdey.com/img/Content/avatar/avatar1.png"
@@ -101,37 +130,42 @@ const Comment = ({ reviews }) => {
                             height={60}
                           />
                           <div>
-                            <div className="d-flex flex-start align-items-center">
-                              <h6
-                                className="fw-bold mb-0"
-                                style={{ lineHeight: "1.5" }}
-                              >
-                                {item?.replied_by?.full_name || "Admin"}
-                              </h6>
-                              <span
-                                style={{
-                                  fontSize: 13,
-                                  color: "#6c757d",
-                                  marginLeft: 8,
-                                  display: "inline-block",
-                                  lineHeight: "0.8",
-                                  verticalAlign: "middle",
-                                }}
-                              >
-                                -{" "}
-                                {item?.replied_by?.role === "admin"
-                                  ? t("role.admin")
-                                  : item?.replied_by?.role === "staff"
-                                  ? t("role.staff")
-                                  : t("role.Customer")}
-                              </span>
+                            <div className="d-flex flex-column">
+                              <div className="d-flex flex-start align-items-center flex-wrap">
+                                <h6
+                                  className="fw-bold mb-0 me-2"
+                                  style={{ lineHeight: "1.3", fontSize: "14px" }}
+                                >
+                                  {item?.replied_by?.full_name || "Admin"}
+                                </h6>
+                                <span
+                                  className="role-badge"
+                                  style={{
+                                    fontSize: 11,
+                                    color: "#8a8d91",
+                                    backgroundColor: "#ededed",
+                                    padding: "2px 6px",
+                                    borderRadius: "8px",
+                                    display: "inline-block",
+                                    lineHeight: "1.2",
+                                  }}
+                                >
+                                  {item?.replied_by?.role === "admin"
+                                    ? t("role.admin")
+                                    : item?.replied_by?.role === "staff"
+                                    ? t("role.staff")
+                                    : t("role.Customer")}
+                                </span>
+                              </div>
                             </div>
-                            <p style={{ fontSize: 12 }}>
+                            <p style={{ fontSize: 11, color: "#8a8d91", marginBottom: "8px", marginTop: 2 }}>
                               {dayjs(item?.replied_by?.created_at).format(
                                 "HH:mm / DD-MM-YYYY"
                               )}
                             </p>
-                            <p className="mt-1">{item?.reply}</p>
+                            <p className="mb-0" style={{ fontSize: "14px", color: "#1c1e21", lineHeight: "1.4" }}>
+                              {item?.reply}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -143,6 +177,13 @@ const Comment = ({ reviews }) => {
           </div>
         </div>
       </div>
+      
+      <ImageViewModal
+        show={showImageModal}
+        handleClose={() => setShowImageModal(false)}
+        images={selectedImages}
+        initialIndex={selectedImageIndex}
+      />
     </section>
   );
 };

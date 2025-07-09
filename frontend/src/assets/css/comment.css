@@ -56,21 +56,79 @@
 }
 
 /* Comment Image Styling */
+.comment-images-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
 .comment-image {
   max-width: 100px;
   max-height: 100px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 12px;
   transition: all 0.3s ease;
   cursor: pointer;
   object-fit: cover;
   border: 2px solid #f0f0f0;
+  flex-shrink: 0;
 }
 
 .comment-image:hover {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   border-color: #007aff;
+  transform: scale(1.05);
+}
+
+/* Responsive adjustments for comment images */
+@media (max-width: 768px) {
+  .comment-images-grid {
+    gap: 6px;
+  }
+  
+  .comment-image {
+    max-width: 80px;
+    max-height: 80px;
+  }
+}
+
+
+
+
+/* Facebook-style Reply Indicator */
+.reply-indicator-fb {
+  font-size: 12px;
+  color: #8a8d91;
+  font-weight: 400;
+  margin-bottom: 10px;
+  padding-left: 2px;
+}
+
+.reply-indicator-fb .reply-to {
+  color: #365899;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+
+/* Admin comment styling with connecting line */
+.admin-comment {
+  position: relative;
+  margin-left: 30px;
+  padding-left: 15px;
+}
+
+.admin-comment::before {
+  content: '';
+  position: absolute;
+  left: -3px;
+  top: -200px;
+  width: 20px;
+  height: 263px;
+  border-left: 2px solid #dddfe2;
+  border-bottom: 2px solid #dddfe2;
+  border-bottom-left-radius: 12px;
 }
 
 @media (max-width: 576px) {
@@ -91,5 +149,41 @@
     max-width: 80px;
     max-height: 80px;
     margin-top: 8px;
+  }
+
+  .admin-comment {
+    margin-left: 20px;
+    padding-left: 10px;
+  }
+
+  .admin-comment::before {
+    left: -2px;
+    top: -150px;
+    width: 15px;
+    height: 185px;
+    border-left: 2px solid #dddfe2;
+    border-bottom: 2px solid #dddfe2;
+    border-bottom-left-radius: 10px;
+  }
+
+  .reply-indicator-fb {
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+
+  .role-badge {
+    font-size: 10px !important;
+    padding: 1px 4px !important;
+    margin-top: 2px;
+  }
+}
+
+/* Specific adjustments for Samsung Galaxy S20 Ultra size */
+@media (max-width: 415px) and (max-height: 920px) {
+  .admin-comment::before {
+    left: -1px;
+    top: -140px;
+    width: 14px;
+    height: 175px;
   }
 }
