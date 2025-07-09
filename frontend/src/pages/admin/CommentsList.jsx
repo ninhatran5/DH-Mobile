@@ -165,7 +165,6 @@ const CommentsList = () => {
                 <th>Bình luận</th>
                 <th>Phản Hồi</th>
                 <th>Đánh giá</th>
-                <th>Ngày tạo</th>
                 <th>Thao tác</th>
               </tr>
             </thead>
@@ -261,7 +260,6 @@ const CommentsList = () => {
       <span>{comment.reply}</span>
     </div>
   ) : (
-    // Chưa có phản hồi
     <div>
       {activeReplyId === comment.comment_id ? (
         <form
@@ -299,7 +297,6 @@ const CommentsList = () => {
           </button>
         </form>
       ) : (
-        // Nút "Phản hồi" khi chưa có phản hồi và chưa mở form
         <button
           className="comment-reply-toggle-btn"
           onClick={() => {
@@ -313,10 +310,11 @@ const CommentsList = () => {
             color: "white",
             border: "none",
             borderRadius: "4px",
-            cursor: "pointer"
+            cursor: "pointer",
+            textAlign: "center",
           }}
         >
-          Bình luận 
+          Trả lời bình luận 
         </button>
       )}
     </div>
@@ -329,7 +327,6 @@ const CommentsList = () => {
                           {renderStars(comment.rating)}
                         </div>
                       </td>
-                      <td className="comment-date">{formatDate(comment.created_at)}</td>
                   <td>
   <div className="comment-actions" style={{ display: "flex", gap: "6px" }}>
     <button
