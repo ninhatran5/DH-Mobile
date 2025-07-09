@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal from "react-bootstrap/Modal";
 import { FaSearchPlus, FaSearchMinus, FaTimes, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import "../assets/css/imageViewModal.css";
@@ -9,6 +9,10 @@ const ImageViewModal = ({ show, handleClose, images, initialIndex = 0 }) => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    setCurrentIndex(initialIndex);
+  }, [initialIndex]);
 
   const zoomIn = () => {
     setZoomLevel(prev => Math.min(prev + 0.3, 3));
