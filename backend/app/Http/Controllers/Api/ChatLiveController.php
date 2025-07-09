@@ -201,7 +201,9 @@ class ChatLiveController extends Controller
                     ->count();
 
                 // Xử lý ảnh đại diện
-                $avatarUrl = $customer->image_url;
+                $avatarUrl = $customer->image_url
+                    ? asset('storage/' . $customer->image_url)
+                    : asset('images/default-avatar.png');
 
                 return [
                     'customer_id' => $customer->user_id,
@@ -211,7 +213,9 @@ class ChatLiveController extends Controller
                     'last_message_time' => $lastChat->sent_at ?? null,
                     'unread_count' => $unreadCount,
                 ];
-            });
+            })
+            ->sortByDesc('last_message_time') // ✅ Sắp xếp theo người nhắn gần nhất
+            ->values(); // ✅ Reset lại index của mảng
 
         return response()->json([
             'success' => true,
