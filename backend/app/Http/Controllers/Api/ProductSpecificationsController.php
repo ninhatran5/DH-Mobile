@@ -75,7 +75,7 @@ class ProductSpecificationsController extends Controller
      */
     public function show(string $id)
     {
-        $productSpecification = ProductSpecifications::find($id);
+        $productSpecification = ProductSpecifications::where('product_id', $id)->get();
         if (!$productSpecification) {
             return response()->json([
                 'message' => 'Không tìm thấy thông tin sản phẩm !',
