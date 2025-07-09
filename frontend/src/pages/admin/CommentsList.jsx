@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector }  from "react-redux";
-import { fetchAdminComments, deleteComment, clearError, fetchCommentReplyById ,toggleCommentVisibility} from "../../slices/adminComments";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAdminComments, deleteComment, clearError, fetchCommentReplyById, toggleCommentVisibility } from "../../slices/adminComments";
 import { FiTrash2, FiEye, FiSearch } from "react-icons/fi";
 import { AiFillStar } from "react-icons/ai";
 import Swal from "sweetalert2";
@@ -59,15 +59,15 @@ const CommentsList = () => {
       comment.product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
- const handleToggleVisibility = async (commentId) => {
-  try {
-    await dispatch(toggleCommentVisibility(commentId)).unwrap();
-    MySwal.fire("Thành công", "Đã cập nhật trạng thái hiển thị", "success");
-  } catch (err) {
-    console.error("Toggle visibility error:", err);
-    MySwal.fire("Lỗi", err?.message || "Đã xảy ra lỗi", "error");
-  }
-};
+  const handleToggleVisibility = async (commentId) => {
+    try {
+      await dispatch(toggleCommentVisibility(commentId)).unwrap();
+      MySwal.fire("Thành công", "Đã cập nhật trạng thái hiển thị", "success");
+    } catch (err) {
+      console.error("Toggle visibility error:", err);
+      MySwal.fire("Lỗi", err?.message || "Đã xảy ra lỗi", "error");
+    }
+  };
 
 
   const handleDeleteComment = (commentId) => {
@@ -192,11 +192,13 @@ const CommentsList = () => {
                         <div className="comment-product-info comment-product-flex" style={{ fontSize: "0.92em" }}>
                           {comment.variant ? (
                             <>
-                              <img
-                                src={comment.variant.image_url}
-                                alt={comment.variant.sku}
-                                className="comment-product-image"
-                              />
+                              <a href={`/product-detail/${comment.product_id}`} target="_blank" rel="noopener noreferrer">
+                                <img
+                                  src={comment.variant.image_url}
+                                  alt={comment.variant.sku}
+                                  className="comment-product-image"
+                                />
+                              </a>
                               <div className="comment-product-name" style={{ fontSize: "0.95em" }}>
                                 <p>{comment?.product?.name}</p>
                                 {comment.variant_attributes && comment.variant_attributes.length > 0 && (
@@ -214,7 +216,7 @@ const CommentsList = () => {
                                     }}
                                   >
                                     {comment.variant_attributes.map((attr, idx) => (
-                                      
+
                                       <span key={idx} style={{ whiteSpace: "nowrap" }}>
                                         {attr.attribute_name}: {attr.attribute_value}
                                       </span>
@@ -252,130 +254,128 @@ const CommentsList = () => {
                             : comment.content}
                         </div>
                       </td>
-                    <td>
-  {comment.reply ? (
-    // Đã có phản hồi
-    <div className="comment-reply-bubble">
-      <span className="comment-reply-label">Phản hồi:</span>
-      <span>{comment.reply}</span>
-    </div>
-  ) : (
-    <div>
-      {activeReplyId === comment.comment_id ? (
-        <form
-          className="comment-reply-form"
-          onSubmit={async e => {
-            e.preventDefault();
-            if (!replyInput.trim()) return;
-            setReplySubmitting(true);
-            try {
-              await dispatch(
-                fetchCommentReplyById({ commentId: comment.comment_id, reply: replyInput })
-              ).unwrap();
-              setReplyInput("");
-              setActiveReplyId(null);
-              dispatch(fetchAdminComments());
-            } catch (err) {}
-            setReplySubmitting(false);
-          }}
-        >
-          <input
-            type="text"
-            placeholder="Nhập phản hồi..."
-            value={replyInput}
-            onChange={e => setReplyInput(e.target.value)}
-            className="comment-reply-input"
-            disabled={replySubmitting}
-            autoFocus
-          />
-          <button
-            type="submit"
-            className="comment-reply-btn"
-            disabled={replySubmitting || !replyInput.trim()}
-          >
-            {replySubmitting ? "..." : "Gửi"}
-          </button>
-        </form>
-      ) : (
-        <button
-          className="comment-reply-toggle-btn"
-          onClick={() => {
-            setActiveReplyId(comment.comment_id);
-            setReplyInput("");
-          }}
-          style={{
-            fontSize: "0.8em",
-            padding: "4px 8px",
-            backgroundColor: "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            textAlign: "center",
-          }}
-        >
-          Trả lời bình luận 
-        </button>
-      )}
-    </div>
-  )}
-</td>
-
-
+                      <td>
+                        {comment.reply ? (
+                          // Đã có phản hồi
+                          <div className="comment-reply-bubble">
+                            <span className="comment-reply-label">Phản hồi:</span>
+                            <span>{comment.reply}</span>
+                          </div>
+                        ) : (
+                          <div>
+                            {activeReplyId === comment.comment_id ? (
+                              <form
+                                className="comment-reply-form"
+                                onSubmit={async e => {
+                                  e.preventDefault();
+                                  if (!replyInput.trim()) return;
+                                  setReplySubmitting(true);
+                                  try {
+                                    await dispatch(
+                                      fetchCommentReplyById({ commentId: comment.comment_id, reply: replyInput })
+                                    ).unwrap();
+                                    setReplyInput("");
+                                    setActiveReplyId(null);
+                                    dispatch(fetchAdminComments());
+                                  } catch (err) { }
+                                  setReplySubmitting(false);
+                                }}
+                              >
+                                <input
+                                  type="text"
+                                  placeholder="Nhập phản hồi..."
+                                  value={replyInput}
+                                  onChange={e => setReplyInput(e.target.value)}
+                                  className="comment-reply-input"
+                                  disabled={replySubmitting}
+                                  autoFocus
+                                />
+                                <button
+                                  type="submit"
+                                  className="comment-reply-btn"
+                                  disabled={replySubmitting || !replyInput.trim()}
+                                >
+                                  {replySubmitting ? "..." : "Gửi"}
+                                </button>
+                              </form>
+                            ) : (
+                              <button
+                                className="comment-reply-toggle-btn"
+                                onClick={() => {
+                                  setActiveReplyId(comment.comment_id);
+                                  setReplyInput("");
+                                }}
+                                style={{
+                                  fontSize: "0.8em",
+                                  padding: "4px 8px",
+                                  backgroundColor: "#007bff",
+                                  color: "white",
+                                  border: "none",
+                                  borderRadius: "4px",
+                                  cursor: "pointer",
+                                  textAlign: "center",
+                                }}
+                              >
+                                Trả lời bình luận
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </td>
                       <td>
                         <div className="comment-rating-stars">
                           {renderStars(comment.rating)}
                         </div>
                       </td>
-                  <td>
-  <div className="comment-actions" style={{ display: "flex", gap: "6px" }}>
-    <button
-      className="comment-delete-btn"
-      onClick={() => handleDeleteComment(comment.comment_id)}
-      disabled={deleteLoading}
-      title="Xoá bình luận"
-      style={{
-        padding: "4px",
-        borderRadius: "4px",
-        border: "none",
-        backgroundColor: "#fff",
-        color: "#dc3545",
-        cursor: "pointer",
-        fontSize: "0.9em",
-        display: "flex",
-        alignItems: "center"
-      }}
-    >
-      <FiTrash2 size={14} />
-    </button>
+                      <td>
+                        <div className="comment-actions" style={{ display: "flex", gap: "6px" }}>
+                          <button
+                            className="comment-delete-btn"
+                            onClick={() => handleDeleteComment(comment.comment_id)}
+                            disabled={deleteLoading}
+                            title="Xoá bình luận"
+                            style={{
+                              padding: "4px",
+                              borderRadius: "4px",
+                              border: "none",
+                              backgroundColor: "#fff",
+                              color: "#dc3545",
+                              cursor: "pointer",
+                              fontSize: "0.9em",
+                              display: "flex",
+                              alignItems: "center"
+                            }}
+                          >
+                            <FiTrash2 size={14} />
+                          </button>
 
-    <button
-      className={`comment-toggle-btn ${!comment.is_visible ? "hidden" : "visible"}`}
-      onClick={() => handleToggleVisibility(comment.comment_id)}
-      title={comment.is_visible ? "Ẩn bình luận" : "Hiện bình luận"}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "4px",
-        padding: "3px 6px",
-        fontSize: "0.75em",
-        border: "1px solid #cce5cc",
-        borderRadius: "4px",
-        backgroundColor: "#e6f5e6",
-        color: "#28a745",
-        cursor: "pointer"
-      }}
-    >
-      <FiEye size={13} style={{ opacity: comment.is_visible ? 1 : 0.4, color: "#28a745" }} />
-      <span style={{ fontWeight: 500 }}>
-        {comment.is_visible ? "Hiện" : "Ẩn"}
-      </span>
-    </button>
-  </div>
-</td>
+                          <button
+                            className={`comment-toggle-btn ${!comment.is_visible ? "hidden" : "visible"}`}
+                            onClick={() => handleToggleVisibility(comment.comment_id)}
+                            title={comment.is_visible ? "Ẩn bình luận" : "Hiện bình luận"}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "4px",
+                              padding: "3px 6px",
+                              fontSize: "0.75em",
+                              border: "1px solid #cce5cc",
+                              borderRadius: "4px",
+                              backgroundColor: "#e6f5e6",
+                              color: "#28a745",
+                              cursor: "pointer"
+                            }}
+                          >
+                            <FiEye size={13} style={{ opacity: comment.is_visible ? 1 : 0.4, color: "#28a745" }} />
+                            <span style={{ fontWeight: 500 }}>
+                              {comment.is_visible ? "Hiện" : "Ẩn"}
+                            </span>
+                          </button>
+                        </div>
+                      </td>
 
                     </tr>
-                 </React.Fragment>
+                  </React.Fragment>
                 ))
               ) : (
                 <tr>
