@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import '../../assets/admin/ChatLiveAdmin.css';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -25,13 +25,21 @@ const ChatBotAdmin = () => {
     dispatch(fetchChatUserList());
   }, [dispatch]);
 
+  // 👉 Gọi fetchChatHistory khi activeUser thay đổi
+  useEffect(() => {
+    if (activeUser) {
+      console.log('🟢 Chọn user:', activeUser.customer_id);
+      dispatch(fetchChatHistory(activeUser.customer_id));
+    }
+  }, [activeUser, dispatch]);
+
+  // 👉 Scroll to bottom khi có tin nhắn
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatHistory, activeUser]);
 
   const handleSelectUser = (user) => {
-    setActiveUser(user);
-    dispatch(fetchChatHistory(user.customer_id));
+    setActiveUser(user); // không fetch ở đây nữa
   };
 
   const handleSend = async () => {
@@ -51,7 +59,12 @@ const ChatBotAdmin = () => {
     }
   };
 
-  const chatMessages = chatHistory?.[activeUser?.customer_id] || [];
+  const chatMessages = useMemo(() => {
+    if (!activeUser) return [];
+    const messages = chatHistory?.[activeUser.customer_id] || [];
+    console.log('💬 Chat messages:', messages);
+    return messages;
+  }, [chatHistory, activeUser]);
 
   return (
     <section className="admin_chatbot-container">
@@ -120,53 +133,57 @@ const ChatBotAdmin = () => {
                 </div>
 
                 <div className="admin_chatbot-messages">
-                  {chatHistoryLoading && <p className="text-muted text-center">Đang tải tin nhắn...</p>}
-
-                  {chatMessages.map((msg, idx) => (
-                    <div
-                      key={idx}
-                      className={`admin_chatbot-message-item ${
-                        msg.sender === 'admin'
-                          ? 'admin_chatbot-message-sent'
-                          : 'admin_chatbot-message-received'
-                      }`}
-                    >
-                      {msg.sender !== 'admin' && (
-                        <img
-                          src={activeUser.avatar_url}
-                          alt="avatar"
-                          className="admin_chatbot-avatar me-3"
-                        />
-                      )}
-                      <div className="admin_chatbot-message-bubble">
-                        <div className="admin_chatbot-message-header">
-                          <p className="admin_chatbot-message-sender">{msg.sender}</p>
-                          <p className="admin_chatbot-message-time">
-                            {new Date(msg.timestamp).toLocaleTimeString()}
-                          </p>
+                  {chatHistoryLoading ? (
+                    <p className="text-muted text-center">Đang tải tin nhắn...</p>
+                  ) : chatMessages.length === 0 ? (
+                    <p className="text-center text-muted">Chưa có tin nhắn nào.</p>
+                  ) : (
+                    chatMessages.map((msg, idx) => (
+                      <div
+                        key={idx}
+                        className={`admin_chatbot-message-item ${
+                          msg.sender === 'admin'
+                            ? 'admin_chatbot-message-sent'
+                            : 'admin_chatbot-message-received'
+                        }`}
+                      >
+                        {msg.sender !== 'admin' && (
+                          <img
+                            src={activeUser.avatar_url}
+                            alt="avatar"
+                            className="admin_chatbot-avatar me-3"
+                          />
+                        )}
+                        <div className="admin_chatbot-message-bubble">
+                          <div className="admin_chatbot-message-header">
+                            <p className="admin_chatbot-message-sender">{msg.sender}</p>
+                            <p className="admin_chatbot-message-time">
+                              {new Date(msg.timestamp).toLocaleTimeString()}
+                            </p>
+                          </div>
+                          <div className="admin_chatbot-message-body">
+                            <p className="admin_chatbot-message-text">{msg.message}</p>
+                            {msg.attachments?.length > 0 &&
+                              msg.attachments.map((url, i) => (
+                                <img
+                                  key={i}
+                                  src={url}
+                                  alt={`attachment-${i}`}
+                                  className="chat-attachment"
+                                />
+                              ))}
+                          </div>
                         </div>
-                        <div className="admin_chatbot-message-body">
-                          <p className="admin_chatbot-message-text">{msg.message}</p>
-                          {msg.attachments?.length > 0 &&
-                            msg.attachments.map((url, i) => (
-                              <img
-                                key={i}
-                                src={url}
-                                alt={`attachment-${i}`}
-                                className="chat-attachment"
-                              />
-                            ))}
-                        </div>
+                        {msg.sender === 'admin' && (
+                          <img
+                            src="/admin-avatar.png"
+                            alt="avatar"
+                            className="admin_chatbot-avatar ms-3"
+                          />
+                        )}
                       </div>
-                      {msg.sender === 'admin' && (
-                        <img
-                          src="/admin-avatar.png"
-                          alt="avatar"
-                          className="admin_chatbot-avatar ms-3"
-                        />
-                      )}
-                    </div>
-                  ))}
+                    ))
+                  )}
                   <div ref={messageEndRef}></div>
                 </div>
 
