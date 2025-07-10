@@ -75,11 +75,14 @@ export const fetchChatHistory = createAsyncThunk(
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const messages = (response.data || []).map(msg => ({
+      console.log("📥 Server trả về lịch sử chat:", response.data);
+
+      const rawChats = response.data?.chats || []; 
+      const messages = rawChats.map(msg => ({
         chat_id: msg.chat_id,
         sender: msg.sender,
         message: msg.message,
-        timestamp: new Date(msg.sent_at).getTime(), // chuẩn hóa thời gian
+        timestamp: new Date(msg.sent_at).getTime(),
         is_read: msg.is_read,
         attachments: msg.attachments || [],
       }));
