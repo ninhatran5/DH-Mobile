@@ -1,8 +1,7 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "../assets/css/order_detail.css";
 import Breadcrumb from "./Breadcrumb";
 import { useTranslation } from "react-i18next";
-import { RiArrowGoBackFill } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { IoChevronBackOutline } from "react-icons/io5";
@@ -19,11 +18,9 @@ import dayjs from "dayjs";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import withReactContent from "sweetalert2-react-content";
-
 import ReturnReasonModal from "./ReturnReasonModal";
 import ReturnRequestModal from "./ReturnRequestModal";
 import ReviewModal from "./ReviewModal";
-
 const removeVietnameseTones = (str) => {
   return String(str)
     .normalize("NFD")
@@ -362,9 +359,10 @@ const OrderDetail = () => {
 
                 {/* Actions */}
                 <div className="d-flex justify-content-between align-items-center mt-4">
-                  <button  onClick={handleNextOrderHistory} className="btn-back">
-                    <IoChevronBackOutline/>
-                    {t("orderDetail.back")}</button>
+                  <button onClick={handleNextOrderHistory} className="btn-back">
+                    <IoChevronBackOutline />
+                    {t("orderDetail.back")}
+                  </button>
                   <div className="d-flex gap-2">
                     {["Chờ xác nhận", "Đã xác nhận"].includes(
                       orderDetail?.status
