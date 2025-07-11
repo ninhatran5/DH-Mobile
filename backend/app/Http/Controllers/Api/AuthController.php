@@ -151,6 +151,7 @@ class AuthController extends Controller
             'password_hash' => Hash::make($request->password),
             'phone' => $request->phone,
             'address' => $request->address,
+            'tier_id' => 1, 
         ]);
 
 
