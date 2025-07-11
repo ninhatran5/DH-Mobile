@@ -88,6 +88,7 @@ class UserController extends Controller
             'city' => $validatedData['city'],
             'image_url' => $validatedData['image_url'] ?? null,
             'role' => $validatedData['role'],
+            'tier_id' => 1, // Mặc định gán tier_id là 1 (có thể thay đổi sau)
         ]);
 
         return response()->json([
