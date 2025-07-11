@@ -964,19 +964,8 @@ class OrderController extends Controller
                     ]);
                 }
 
-                // Luôn đồng bộ lại tổng điểm LoyaltyPoint vào user (kể cả khi đã có LoyaltyPoint trước đó)
-                $totalPoints = LoyaltyPoint::where('user_id', $order->user_id)->sum('points');
-                $user = User::where('user_id', $order->user_id)->first();
-                if ($user) {
-                    // Tìm tier phù hợp nhất dựa trên điểm
-                    $tier = LoyaltyTier::where('min_point', '<=', $totalPoints)
-                        ->orderByDesc('min_point')
-                        ->first();
+                $this->updateUserLoyalty($order->user_id);
 
-                    $user->loyalty_points = $totalPoints;
-                    $user->tier_id = $tier ? $tier->id : null;
-                    $user->save();
-                }
             });
 
             return response()->json([
@@ -990,4 +979,28 @@ class OrderController extends Controller
             ], 500);
         }
     }
+
+
+
+protected function updateUserLoyalty($userId)
+{
+    $totalPoints = LoyaltyPoint::where('user_id', $userId)->sum('points');
+    $user = User::where('user_id', $userId)->first();
+
+    if ($user) {
+        $tier = LoyaltyTier::where('min_points', '<=', $totalPoints)
+            ->orderByDesc('min_points')
+            ->first();
+
+        $user->loyalty_points = $totalPoints;
+        $user->tier_id = $tier ? $tier->id : null;
+        $user->save();
+    }
 }
+
+
+
+    
+}
+
+
