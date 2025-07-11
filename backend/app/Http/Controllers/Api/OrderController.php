@@ -965,7 +965,6 @@ class OrderController extends Controller
                 }
 
                 $this->updateUserLoyalty($order->user_id);
-
             });
 
             return response()->json([
@@ -982,25 +981,19 @@ class OrderController extends Controller
 
 
 
-protected function updateUserLoyalty($userId)
-{
-    $totalPoints = LoyaltyPoint::where('user_id', $userId)->sum('points');
-    $user = User::where('user_id', $userId)->first();
+    protected function updateUserLoyalty($userId)
+    {
+        $totalPoints = LoyaltyPoint::where('user_id', $userId)->sum('points');
+        $user = User::where('user_id', $userId)->first();
 
-    if ($user) {
-        $tier = LoyaltyTier::where('min_points', '<=', $totalPoints)
-            ->orderByDesc('min_points')
-            ->first();
+        if ($user) {
+            $tier = LoyaltyTier::where('min_points', '<=', $totalPoints)
+                ->orderByDesc('min_points')
+                ->first();
 
-        $user->loyalty_points = $totalPoints;
-        $user->tier_id = $tier ? $tier->id : null;
-        $user->save();
+            $user->loyalty_points = $totalPoints;
+            $user->tier_id = $tier ? $tier->tier_id : null;
+            $user->save();
+        }
     }
 }
-
-
-
-    
-}
-
-
