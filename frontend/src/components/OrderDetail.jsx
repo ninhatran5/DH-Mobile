@@ -1,10 +1,12 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import "../assets/css/order_detail.css";
 import Breadcrumb from "./Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { RiArrowGoBackFill } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import { IoChevronBackOutline } from "react-icons/io5";
+
 import {
   cancelOrder,
   fetchOrderDetail,
@@ -38,7 +40,7 @@ const OrderDetail = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
   const { orderDetail, loading } = useSelector((state) => state.order);
-
+  const navigate = useNavigate();
   const [showReasonModal, setShowReasonModal] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
@@ -65,6 +67,10 @@ const OrderDetail = () => {
     );
     setHasReviewableProduct(hasReviewables);
   }, [orderDetail?.products, refreshFlag]);
+
+  const handleNextOrderHistory = () => {
+    navigate("/order-history");
+  };
 
   const statusMap = {
     "cho xac nhan": "pending",
@@ -356,10 +362,9 @@ const OrderDetail = () => {
 
                 {/* Actions */}
                 <div className="d-flex justify-content-between align-items-center mt-4">
-                  <Link to="/order-history" className="btn-back fw-bold">
-                    <RiArrowGoBackFill />
-                    <span>{t("orderDetail.back")}</span>
-                  </Link>
+                  <button  onClick={handleNextOrderHistory} className="btn-back">
+                    <IoChevronBackOutline/>
+                    {t("orderDetail.back")}</button>
                   <div className="d-flex gap-2">
                     {["Chờ xác nhận", "Đã xác nhận"].includes(
                       orderDetail?.status

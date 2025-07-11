@@ -220,7 +220,7 @@ body {
 
 .btn-back svg {
   font-size: 1.2em;
-  margin-right: 6px;
+  margin-right: -5px;
 }
 .btn-cancel-order {
   background: #ff4d4f;

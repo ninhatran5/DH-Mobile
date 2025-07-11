@@ -674,12 +674,15 @@
     "confirmReceivedErrorText": "Không thể xác nhận đã nhận hàng"
   },
   "memberRank": {
-    "diamond": "Kim cương",
-    "gold": "Vàng",
-    "silver": "Bạc",
-    "bronze": "Đồng",
-    "nextRankLabel": "Hạng tiếp theo: {{rank}}",
-    "nextRankPoint": "Còn {{point}} điểm để lên hạng",
-    "nextRankRequire": "Yêu cầu: {{point}} điểm"
+    "currentPointLabel": "Điểm hiện tại:",
+    "pointUnit": "điểm",
+    "nextRank": "Hạng tiếp theo",
+    "pointsRemaining": "Còn {{points}} điểm để lên hạng",
+    "requirement": "Yêu cầu: {{points}} điểm",
+    "maxRankTitle": "Bạn đã đạt hạng cao nhất!",
+    "maxRankDesc": "Chúc mừng bạn đã trở thành thành viên VIP nhất hệ thống",
+    "maxRankBenefit": "Hãy tận hưởng mọi đặc quyền và ưu đãi dành riêng cho bạn!",
+    "max": "MAX",
+    "discount": "Ưu đãi giảm giá"
   }
 }

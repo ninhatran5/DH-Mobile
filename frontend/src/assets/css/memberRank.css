@@ -46,7 +46,7 @@
   display: flex;
   flex-direction: row;
   gap: 40px;
-  max-width: 1400px;
+  max-width: 1500px;
   margin: 48px auto 0 auto;
   align-items: stretch;
 }
@@ -113,9 +113,9 @@
   font-weight: 900;
   font-size: 26px;
   margin-top: 10px;
-  letter-spacing: 1px;
   color: #2563eb;
   text-shadow: 0 2px 8px #e0e7ef;
+  margin-bottom: 10px;
 }
 .member-rank-point-label {
   color: #2563eb;
@@ -164,8 +164,8 @@
 .member-rank-next-header {
   display: flex;
   align-items: center;
-  gap: 16px;
   margin-bottom: 12px;
+  gap: 2px;
 }
 .member-rank-next-label {
   font-weight: 700;

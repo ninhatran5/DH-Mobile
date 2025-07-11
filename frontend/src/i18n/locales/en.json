@@ -355,7 +355,8 @@
       "adminLogin": "Admin Login",
       "favoriteProducts": "Favorite Products",
       "orders": "Orders",
-      "logout": "Log Out"
+      "logout": "Log Out",
+      "rank": "Member Rank"
     },
     "statisticals": {
       "orders": "Your Orders",
@@ -671,5 +672,17 @@
     "confirmReceivedSuccessBtn": "OK",
     "confirmReceivedErrorTitle": "Error",
     "confirmReceivedErrorText": "Could not confirm order received"
+  },
+  "memberRank": {
+    "currentPointLabel": "Current points:",
+    "pointUnit": "points",
+    "nextRank": "Next rank",
+    "pointsRemaining": "{{points}} points remaining to level up",
+    "requirement": "Requirement: {{points}} points",
+    "maxRankTitle": "You've reached the highest rank!",
+    "maxRankDesc": "Congratulations! You are now the top VIP member of the system",
+    "maxRankBenefit": "Enjoy all exclusive privileges and benefits just for you!",
+    "max": "MAX",
+    "discount": "Discount benefit"
   }
 }

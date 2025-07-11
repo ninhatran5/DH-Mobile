@@ -17,6 +17,7 @@ export default function MemberRank() {
   const currentPoint = ranks?.loyalty_points;
   const currentRank = ranks?.current_tier;
   const nextRank = ranks?.next_tier;
+
   const percent = Math.min(
     100,
     Math.round(
@@ -42,9 +43,7 @@ export default function MemberRank() {
         showMainItem2={false}
       />
       <div className="member-rank-wrapper mb-5">
-        {/* Left: Rank Cards */}
         <div className="member-rank-left">
-          {/* Card 1: Current Rank & Progress */}
           <div className="member-rank-card">
             <div className="member-rank-card-header">
               <div
@@ -58,14 +57,21 @@ export default function MemberRank() {
               </div>
               <div
                 className="member-rank-title"
-                style={{ color: currentRank?.color }}
+                style={{ color: currentRank?.color, marginBottom: "-13px" }}
               >
                 {currentRank?.name}
               </div>
               <div className="member-rank-point-label">
-                Điểm hiện tại:{" "}
+                {t("memberRank.currentPointLabel")}{" "}
                 <b style={{ color: currentRank?.color }}>
                   {numberFormatRanks(currentPoint)}
+                </b>{" "}
+                {t("memberRank.pointUnit")}
+              </div>
+              <div className="member-rank-discount">
+                {t("memberRank.discount")}:{" "}
+                <b style={{ color: currentRank?.color }}>
+                  {currentRank?.discount_percent}
                 </b>
               </div>
             </div>
@@ -112,14 +118,13 @@ export default function MemberRank() {
                     }}
                   >
                     <span style={{ width: "100%", textAlign: "center" }}>
-                      MAX
+                      {t("memberRank.max")}
                     </span>
                   </div>
                 )}
               </div>
             </div>
           </div>
-          {/* Card 2: Next Rank Info (hide if max rank) */}
           {nextRank?.name && nextRank?.min_points > 0 ? (
             <div className="member-rank-card next">
               <div className="member-rank-next-header">
@@ -135,33 +140,41 @@ export default function MemberRank() {
               </div>
               <div
                 className="member-rank-next-label"
-                style={{ color: nextRank?.color }}
+                style={{ color: nextRank?.color, marginTop: "-10px" }}
               >
-                Hạng tiếp theo: {nextRank?.name}
+                {t("memberRank.nextRank")}: {nextRank?.name}
               </div>
-              <div className="member-rank-next-point">
-                Còn {numberFormatRanks(nextRank?.min_points - currentPoint)}{" "}
-                điểm để lên hạng
+              <div
+                className="member-rank-next-point"
+                style={{ marginTop: "-3px" }}
+              >
+                {t("memberRank.pointsRemaining", {
+                  points: numberFormatRanks(nextRank?.points_needed),
+                })}
               </div>
-              <div className="member-rank-next-require">
-                Yêu cầu: {numberFormatRanks(nextRank?.min_points)} điểm
+              <div
+                className="member-rank-next-require"
+                style={{ marginTop: "3px" }}
+              >
+                {t("memberRank.requirement", {
+                  points: numberFormatRanks(nextRank?.min_points),
+                })}
               </div>
             </div>
           ) : (
             <div className="member-rank-card next member-rank-max">
               <div className="member-rank-max-title">
-                Bạn đã đạt hạng cao nhất!
+                {t("memberRank.maxRankTitle")}
               </div>
               <div className="member-rank-max-desc">
-                Chúc mừng bạn đã trở thành thành viên VIP nhất hệ thống
+                {t("memberRank.maxRankDesc")}
               </div>
               <div className="member-rank-max-benefit">
-                Hãy tận hưởng mọi đặc quyền và ưu đãi dành riêng cho bạn!
+                {t("memberRank.maxRankBenefit")}
               </div>
             </div>
           )}
         </div>
-        {/* Right: Avatar Card */}
         <div
           className="member-rank-avatar-card"
           style={{ backgroundImage: `url(${backgroundCard})` }}
