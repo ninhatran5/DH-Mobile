@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\User;
 use App\Models\Orders;
+use App\Models\LoyaltyTier;
 use App\Models\LoyaltyPoint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Mail\OrderStatusUpdatedMail;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderCancelledByAdminMail;
@@ -953,7 +954,7 @@ class OrderController extends Controller
             DB::transaction(function () use ($order, $alreadyRewarded, &$points) {
                 if ($order->status !== 'Hoàn thành') $order->update(['status' => 'Hoàn thành']);
 
-             $points = ceil(ceil($order->total_amount / 100) / 1000) * 1000;
+                $points = ceil(ceil($order->total_amount / 100) / 1000) * 1000;
                 if (!$alreadyRewarded && $points > 0) {
                     LoyaltyPoint::create([
                         'user_id' => $order->user_id,
@@ -967,7 +968,13 @@ class OrderController extends Controller
                 $totalPoints = LoyaltyPoint::where('user_id', $order->user_id)->sum('points');
                 $user = User::where('user_id', $order->user_id)->first();
                 if ($user) {
+                    // Tìm tier phù hợp nhất dựa trên điểm
+                    $tier = LoyaltyTier::where('min_point', '<=', $totalPoints)
+                        ->orderByDesc('min_point')
+                        ->first();
+
                     $user->loyalty_points = $totalPoints;
+                    $user->tier_id = $tier ? $tier->id : null;
                     $user->save();
                 }
             });
