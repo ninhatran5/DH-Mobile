@@ -672,5 +672,14 @@
     "confirmReceivedSuccessBtn": "OK",
     "confirmReceivedErrorTitle": "Lỗi",
     "confirmReceivedErrorText": "Không thể xác nhận đã nhận hàng"
+  },
+  "memberRank": {
+    "diamond": "Kim cương",
+    "gold": "Vàng",
+    "silver": "Bạc",
+    "bronze": "Đồng",
+    "nextRankLabel": "Hạng tiếp theo: {{rank}}",
+    "nextRankPoint": "Còn {{point}} điểm để lên hạng",
+    "nextRankRequire": "Yêu cầu: {{point}} điểm"
   }
 }

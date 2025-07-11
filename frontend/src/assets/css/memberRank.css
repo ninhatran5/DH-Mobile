@@ -1,30 +1,45 @@
-@media (max-width: 1024px) {
-  .member-rank-wrapper {
-    flex-direction: column;
-    gap: 16px;
-    max-width: 98vw;
-    margin: 24px auto 0 auto;
-    align-items: stretch;
-  }
-  .member-rank-left {
-    flex: unset;
-    gap: 16px;
-    flex-direction: column;
-  }
-  .member-rank-card,
-  .member-rank-card.next,
-  .member-rank-avatar-card {
-    min-width: unset;
-    width: 100%;
-    margin-bottom: 0;
-    padding: 24px 8px 20px 8px;
-    border-radius: 18px;
-    display: block;
-  }
-  .member-rank-avatar-card {
-    margin-top: 0;
-    padding-top: 24px;
-  }
+/* Next rank icon circle */
+.member-rank-next-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fff 60%, #f0f4ff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px #2563eb22;
+  border: 2px solid #3b82f6;
+  margin-right: 8px;
+}
+.member-rank-max {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+}
+.member-rank-max-title {
+  font-weight: 700;
+  font-size: 22px;
+  color: #3b82f6;
+  margin-bottom: 8px;
+}
+.member-rank-max-desc {
+  font-size: 16px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+.member-rank-max-benefit {
+  font-size: 15px;
+  color: #2563eb;
+  margin-bottom: 8px;
+}
+.member-rank-max-discount {
+  font-size: 16px;
+  color: #16a34a;
+  font-weight: 700;
+  margin-top: 4px;
 }
 /* Wrapper layout */
 .member-rank-wrapper {
@@ -172,7 +187,6 @@
 
 .member-rank-avatar-card {
   flex: 1;
-  background: linear-gradient(135deg, #e0e7ef 0%, #f5f7fa 100%);
   border-radius: 32px;
   box-shadow: 0 12px 40px #2563eb22, 0 2px 12px #b0b0b033;
   padding: 52px 44px 44px 44px;
@@ -183,8 +197,9 @@
   justify-content: center;
   position: relative;
   background-size: cover;
-  background-position: center;
+  background-position: 40% center;
   overflow: hidden;
+  background-blend-mode: overlay;
 }
 .member-rank-avatar-card:before {
   content: "";
@@ -201,7 +216,7 @@
   height: 120px;
   border-radius: 50%;
   overflow: hidden;
-  border: 5px solid #3b82f6;
+  border: 5px solid #fff;
   box-shadow: 0 8px 32px #2563eb22;
   margin-bottom: 26px;
   background: #fff;
@@ -219,14 +234,97 @@
 .member-rank-avatar-name {
   font-weight: 900;
   font-size: 24px;
-  color: #2563eb;
-  margin-bottom: 10px;
-  text-shadow: 0 2px 8px #e0e7ef;
-  letter-spacing: 1px;
+  color: white;
+  text-align: center;
+  margin-top: -15px;
 }
-.member-rank-avatar-label {
-  color: #6b7280;
-  font-size: 17px;
-  text-shadow: 0 1px 4px #e0e7ef;
-  font-weight: 700;
+@media (max-width: 1024px) {
+  .member-rank-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    max-width: 98vw;
+    margin: 24px auto 0 auto;
+    align-items: stretch;
+  }
+
+  .member-rank-left {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .member-rank-card,
+  .member-rank-card.next {
+    width: 100%;
+    padding: 18px 8px;
+    border-radius: 14px;
+    min-width: unset;
+    font-size: 15px;
+  }
+
+  .member-rank-card-header {
+    margin-bottom: 12px;
+  }
+  .member-rank-title {
+    font-size: 17px;
+    margin-top: 6px;
+  }
+  .member-rank-point-label {
+    font-size: 13px;
+    margin-top: 2px;
+  }
+  .member-rank-progress-label {
+    font-size: 12px;
+  }
+  .member-rank-progress-bar {
+    height: 16px;
+    border-radius: 8px;
+    margin-top: 6px;
+  }
+  .member-rank-progress-point {
+    font-size: 13px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    top: -22px;
+  }
+
+  .member-rank-next-label {
+    font-size: 14px;
+  }
+  .member-rank-next-point {
+    font-size: 13px;
+  }
+  .member-rank-next-require {
+    font-size: 12px;
+  }
+
+  .member-rank-avatar-card {
+    width: 100%;
+    padding: 18px 8px;
+    border-radius: 14px;
+    min-width: unset;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+  }
+
+  .member-rank-avatar-img {
+    width: 72px;
+    height: 72px;
+    margin-bottom: 10px;
+  }
+
+  .member-rank-avatar-name {
+    font-size: 15px;
+    text-align: center;
+  }
+
+  .member-rank-avatar-label {
+    font-size: 12px;
+    text-align: center;
+  }
 }

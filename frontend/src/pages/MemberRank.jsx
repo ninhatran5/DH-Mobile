@@ -7,6 +7,7 @@ import "../assets/css/memberRank.css";
 import { numberFormatRanks } from "../../utils/numberFormatRanks";
 import Loading from "../components/Loading";
 import { fetchProfile } from "../slices/profileSlice";
+import backgroundCard from "../assets/images/background-card.jpg";
 
 export default function MemberRank() {
   const { t } = useTranslation();
@@ -20,7 +21,7 @@ export default function MemberRank() {
     100,
     Math.round(
       ((currentPoint - currentRank?.min_points) /
-        (nextRank?.points_needed - currentRank?.min_points)) *
+        (nextRank?.min_points - currentRank?.min_points)) *
         100
     )
   );
@@ -62,7 +63,7 @@ export default function MemberRank() {
                 {currentRank?.name}
               </div>
               <div className="member-rank-point-label">
-                Điểm hiện tại{" "}
+                Điểm hiện tại:{" "}
                 <b style={{ color: currentRank?.color }}>
                   {numberFormatRanks(currentPoint)}
                 </b>
@@ -74,62 +75,102 @@ export default function MemberRank() {
                 <span>{nextRank?.name}</span>
               </div>
               <div className="member-rank-progress-bar">
-                <div
-                  className="member-rank-progress-bar-inner"
-                  style={{
-                    width: percent + "%",
-                    background: `linear-gradient(90deg, ${currentRank?.color} 60%, ${nextRank?.color} 100%)`,
-                    boxShadow: `0 2px 8px ${currentRank?.color}33`,
-                  }}
-                />
-                <div
-                  className="member-rank-progress-point"
-                  style={{
-                    left: `calc(${percent}% - 22px)`,
-                    color: currentRank?.color,
-                  }}
-                >
-                  {numberFormatRanks(currentPoint)}
-                </div>
+                {nextRank?.name && nextRank?.min_points > 0 ? (
+                  <>
+                    <div
+                      className="member-rank-progress-bar-inner"
+                      style={{
+                        width: percent + "%",
+                        background: `linear-gradient(90deg, ${currentRank?.color} 60%, ${nextRank?.color} 100%)`,
+                        boxShadow: `0 2px 8px ${currentRank?.color}33`,
+                      }}
+                    />
+                    <div
+                      className="member-rank-progress-point"
+                      style={{
+                        left: `calc(${percent}% - 22px)`,
+                        color: currentRank?.color,
+                      }}
+                    >
+                      {numberFormatRanks(currentPoint)}
+                    </div>
+                  </>
+                ) : (
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "20px",
+                      borderRadius: "10px",
+                      background:
+                        "linear-gradient(90deg, #3b82f6 60%, #2563eb 100%)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#fff",
+                      fontWeight: 700,
+                      fontSize: 15,
+                    }}
+                  >
+                    <span style={{ width: "100%", textAlign: "center" }}>
+                      MAX
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
-          {/* Card 2: Next Rank Info */}
-          <div className="member-rank-card next">
-            <div className="member-rank-next-header">
-              <img width={38} src={nextRank?.image_url} alt="" />
-              <span
-                className="member-rank-title"
+          {/* Card 2: Next Rank Info (hide if max rank) */}
+          {nextRank?.name && nextRank?.min_points > 0 ? (
+            <div className="member-rank-card next">
+              <div className="member-rank-next-header">
+                <div className="member-rank-next-icon">
+                  <img width={38} src={nextRank?.image_url} alt="" />
+                </div>
+                <span
+                  className="member-rank-title"
+                  style={{ color: nextRank?.color }}
+                >
+                  {nextRank?.name}
+                </span>
+              </div>
+              <div
+                className="member-rank-next-label"
                 style={{ color: nextRank?.color }}
               >
-                {nextRank?.name}
-              </span>
+                Hạng tiếp theo: {nextRank?.name}
+              </div>
+              <div className="member-rank-next-point">
+                Còn {numberFormatRanks(nextRank?.min_points - currentPoint)}{" "}
+                điểm để lên hạng
+              </div>
+              <div className="member-rank-next-require">
+                Yêu cầu: {numberFormatRanks(nextRank?.min_points)} điểm
+              </div>
             </div>
-            <div
-              className="member-rank-next-label"
-              style={{ color: nextRank?.color }}
-            >
-              Hạng tiếp theo: {nextRank?.name}
+          ) : (
+            <div className="member-rank-card next member-rank-max">
+              <div className="member-rank-max-title">
+                Bạn đã đạt hạng cao nhất!
+              </div>
+              <div className="member-rank-max-desc">
+                Chúc mừng bạn đã trở thành thành viên VIP nhất hệ thống
+              </div>
+              <div className="member-rank-max-benefit">
+                Hãy tận hưởng mọi đặc quyền và ưu đãi dành riêng cho bạn!
+              </div>
             </div>
-            <div className="member-rank-next-point">
-              Còn {numberFormatRanks(nextRank?.points_needed - currentPoint)}{" "}
-              điểm để lên hạng
-            </div>
-            <div className="member-rank-next-require">
-              Yêu cầu: {numberFormatRanks(nextRank?.points_needed)} điểm
-            </div>
-          </div>
+          )}
         </div>
         {/* Right: Avatar Card */}
-        <div className="member-rank-avatar-card">
+        <div
+          className="member-rank-avatar-card"
+          style={{ backgroundImage: `url(${backgroundCard})` }}
+        >
           <div className="member-rank-avatar-img">
             <img src={profile?.user?.image_url} alt="avatar" />
           </div>
           <div className="member-rank-avatar-name">
             {profile?.user?.full_name}
-          </div>
-          <div className="member-rank-avatar-label">
-            @{profile?.user?.username}
           </div>
         </div>
       </div>
