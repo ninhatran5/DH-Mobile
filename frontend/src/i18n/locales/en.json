@@ -355,7 +355,8 @@
       "adminLogin": "Admin Login",
       "favoriteProducts": "Favorite Products",
       "orders": "Orders",
-      "logout": "Log Out"
+      "logout": "Log Out",
+      "rank": "Member Rank"
     },
     "statisticals": {
       "orders": "Your Orders",
@@ -368,6 +369,10 @@
   },
   "breadcrumbLiked": {
     "breadcrumbHeader": "Favorite Products"
+  },
+  "breadcrumbMemberRank": {
+    "breadcrumbHeader": "Member Rank",
+    "breadcrumbHeaderForMe": "My Member Rank"
   },
   "orderHistory": {
     "orderCode": "Order Code",

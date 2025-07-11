@@ -92,11 +92,16 @@ const Profile = () => {
     },
     {
       id: 3,
+      name: t("profile.featuresList.rank"),
+      links: "/member-rank",
+    },
+    {
+      id: 4,
       name: t("profile.featuresList.orders"),
       links: "/order-history",
     },
     {
-      id: 4,
+      id: 5,
       name: t("profile.featuresList.logout"),
       onClick: handleLogout,
     },
@@ -282,7 +287,7 @@ const Profile = () => {
                         <th>{t("orderHistory.detail")}</th>
                       </tr>
                     </thead>
-                    {orders?.orders?.slice(0, 2).map((order) => (
+                    {orders?.orders?.slice(0, 4).map((order) => (
                       <OrderHistory key={order?.order_id} order={order} />
                     ))}
                   </table>
