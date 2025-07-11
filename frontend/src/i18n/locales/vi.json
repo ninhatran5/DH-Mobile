@@ -137,6 +137,10 @@
     "success": "Đã sao chép mã mã giảm giá",
     "err": "Lỗi khi sao chép:"
   },
+  "breadcrumbMemberRank": {
+    "breadcrumbHeader": "Hạng Thành Viên",
+    "breadcrumbHeaderForMe": "Hạng Thành Viên Của Tôi"
+  },
   "breadcrumbLiked": {
     "breadcrumbHeader": "Sản Phẩm Yêu Thích"
   },
@@ -354,7 +358,8 @@
       "adminLogin": "Đăng nhập vào admin",
       "favoriteProducts": "Sản phẩm đã thích",
       "orders": "Đơn hàng",
-      "logout": "Đăng xuất"
+      "logout": "Đăng xuất",
+      "rank": "Hạng thành viên"
     },
     "statisticals": {
       "orders": "Đơn hàng của bạn",
@@ -667,5 +672,14 @@
     "confirmReceivedSuccessBtn": "OK",
     "confirmReceivedErrorTitle": "Lỗi",
     "confirmReceivedErrorText": "Không thể xác nhận đã nhận hàng"
+  },
+  "memberRank": {
+    "diamond": "Kim cương",
+    "gold": "Vàng",
+    "silver": "Bạc",
+    "bronze": "Đồng",
+    "nextRankLabel": "Hạng tiếp theo: {{rank}}",
+    "nextRankPoint": "Còn {{point}} điểm để lên hạng",
+    "nextRankRequire": "Yêu cầu: {{point}} điểm"
   }
 }
