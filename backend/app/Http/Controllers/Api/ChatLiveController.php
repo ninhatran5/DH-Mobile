@@ -157,13 +157,10 @@ class ChatLiveController extends Controller
     {
         $userId = Auth::id();
 
-        $notification = SupportChatNotification::where('chat_id', $chatId)
-            ->where('user_id', $userId)
-            ->first();
-
-        if ($notification && !$notification->is_read) {
-            $notification->update(['is_read' => true]);
-        }
+        // Đánh dấu tất cả tin nhắn chưa đọc của user này là đã đọc
+        SupportChatNotification::where('user_id', $userId)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
 
         return response()->json(['success' => true]);
     }
