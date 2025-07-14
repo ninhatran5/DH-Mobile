@@ -1,20 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import "../../assets/css/ckeditor.css";
 import { useDispatch, useSelector } from "react-redux";
-import { addBlog } from "../../slices/blogSlice";
+import { fetchNewsById, updateNews } from "../../slices/newsSlice";
 import Swal from "sweetalert2";
+import { useParams, useNavigate } from "react-router-dom";
+import Loading from "../../components/Loading";
 
-export default function AddBlog() {
+export default function UpdateBlog() {
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { current, loading, error } = useSelector((state) => state.adminNews);
+
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
-  const dispatch = useDispatch();
 
-  const { adminProfile } = useSelector((state) => state.adminProfile);
-  const user = adminProfile?.user;
+  useEffect(() => {
+    dispatch(fetchNewsById(id));
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    if (current && current.data) {
+      setTitle(current.data.title || "");
+      setContent(current.data.content || "");
+      setImagePreview(current.data.image_url || "");
+    }
+  }, [current]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -29,39 +43,37 @@ export default function AddBlog() {
 
   const handleSubmit = async () => {
     try {
+      // eslint-disable-next-line no-unused-vars
       const result = await dispatch(
-        addBlog({
-          title: title,
-          content: content,
+        updateNews({
+          newsId: id,
+          title,
+          content,
           image_url: imageFile,
-          user_id: user.id,
         })
-      );
-      if (result.meta && result.meta.requestStatus === "fulfilled") {
-        Swal.fire({
-          icon: "success",
-          title: "Thành công",
-          text: "Thêm bài viết thành công!",
-        });
-        setTitle("");
-        setContent("");
-        setImageFile(null);
-        setImagePreview("");
-      } else {
-        throw new Error(result.error?.message || "Có lỗi xảy ra");
-      }
+      ).unwrap();
+      await Swal.fire({
+        icon: "success",
+        title: "Thành công",
+        text: "Cập nhật bài viết thành công!",
+        confirmButtonText: "OK",
+      });
+      navigate("/admin/articles");
     } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Thất bại",
-        text: error.message || "Thêm bài viết thất bại!",
+        text: error || "Cập nhật bài viết thất bại!",
       });
     }
   };
 
+  if (loading) return <Loading />;
+  if (error) return <div style={{ color: "red" }}>{error}</div>;
+
   return (
     <div className="add-blog-container">
-      <h2 className="add-blog-title">Thêm bài viết mới</h2>
+      <h2 className="add-blog-title">Cập nhật bài viết</h2>
       <div className="add-blog-form-group">
         <label htmlFor="title">
           <strong>Tiêu đề:</strong>
@@ -139,38 +151,56 @@ export default function AddBlog() {
           <p className="upload-hint">Định dạng: JPG, PNG. Tối đa 2MB</p>
         </div>
       </div>
-      <CKEditor
-        editor={ClassicEditor}
-        data={content}
-        onChange={(event, editor) => {
-          const data = editor.getData();
-          setContent(data);
-        }}
-        config={{
-          toolbar: [
-            "heading",
-            "|",
-            "bold",
-            "italic",
-            "link",
-            "bulletedList",
-            "numberedList",
-            "blockQuote",
-            "undo",
-            "redo",
-          ],
-          image: {
-            toolbar: [
-              "imageTextAlternative",
-              "imageStyle:full",
-              "imageStyle:side",
-            ],
-          },
-        }}
-      />
+      <div className="add-blog-form-group">
+        <label
+          htmlFor="ckeditor-content"
+          style={{ display: "block", marginBottom: 8, fontWeight: 600 }}
+        >
+          Nội dung:
+        </label>
+        <div
+          className="ckeditor-wrapper"
+          style={{
+            border: "1px solid #d0d7de",
+            borderRadius: 8,
+            padding: 8,
+            background: "#fafbfc",
+          }}
+        >
+          <CKEditor
+            editor={ClassicEditor}
+            data={content}
+            onChange={(event, editor) => {
+              const data = editor.getData();
+              setContent(data);
+            }}
+            config={{
+              toolbar: [
+                "heading",
+                "|",
+                "bold",
+                "italic",
+                "link",
+                "bulletedList",
+                "numberedList",
+                "blockQuote",
+                "undo",
+                "redo",
+              ],
+              image: {
+                toolbar: [
+                  "imageTextAlternative",
+                  "imageStyle:full",
+                  "imageStyle:side",
+                ],
+              },
+            }}
+          />
+        </div>
+      </div>
       <div style={{ marginTop: "20px" }}>
         <button className="add-blog-btn" onClick={handleSubmit}>
-          Thêm bài viết
+          Cập nhật bài viết
         </button>
       </div>
     </div>

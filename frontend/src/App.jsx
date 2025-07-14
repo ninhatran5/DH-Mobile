@@ -71,6 +71,8 @@ import RequireNotSaleRole from "./components/RequireNotSaleRole";
 import AdminRouteRedirector from "./components/AdminRouteRedirector";
 import Membership from "./pages/admin/AdminMembership";
 import MemberRank from "./pages/MemberRank";
+import UpdateBlog from "./pages/admin/UpdateBlog";
+import BlogDetailAdmin from "./pages/admin/BlogDetail";
 
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
@@ -361,6 +363,14 @@ const routerConfig = [
       {
         path: "blog/add-blog",
         element: <AddBlog />,
+      },
+      {
+        path: "blog/update-blog/:id",
+        element: <UpdateBlog />,
+      },
+      {
+        path: "blog/blog-detail-admin/:id",
+        element: <BlogDetailAdmin />,
       },
       {
         path: "Editattribute/:id",

@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useState, useRef } from "react";
+import Pusher from "pusher-js";
 import "../assets/css/chatbot.css";
 import { FaPaperPlane } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
@@ -134,6 +135,45 @@ export default function AdminChat() {
     }
   }, [messages]);
 
+  // Subscribe Pusher để nhận tin nhắn realtime
+  useEffect(() => {
+    if (!profile?.user?.id) return;
+
+    // Khởi tạo Pusher
+    const pusher = new Pusher("dcc715adcba25f4b8d09", {
+      cluster: "ap1",
+      // Nếu dùng authEndpoint cho private channel, thêm:
+      // authEndpoint: "http://localhost:8000/broadcasting/auth",
+      // auth: { headers: { Authorization: `Bearer ${token}` } }
+    });
+
+    // Lắng nghe channel chat của user
+    const channel = pusher.subscribe(`private-support-chat.${profile.user.id}`);
+    channel.bind("SupportChatSent", function (data) {
+      // Khi có tin nhắn mới, fetch lại messages hoặc push vào state
+      dispatch(fetchChatMessage(profile.user.id))
+        .unwrap()
+        .then((data) => {
+          if (data.success && data.chats) {
+            const formattedMessages = data.chats.map((chat) => ({
+              sender: chat.sender === 'customer' ? 'user' : 'admin',
+              message: chat.message,
+              images: chat.attachments?.map(att => att.file_url) || [],
+              created_at: chat.sent_at,
+              is_read: chat.is_read,
+            }));
+            setMessages(formattedMessages);
+          }
+        });
+    });
+
+    return () => {
+      channel.unbind_all();
+      channel.unsubscribe();
+      pusher.disconnect();
+    };
+  }, [profile?.user?.id, dispatch]);
+
   useEffect(() => {
     if (profile?.user?.id) {
       setLoading(true);
@@ -151,7 +191,6 @@ export default function AdminChat() {
             
             setMessages(formattedMessages);
             
-            // Đánh dấu đã xem tất cả tin nhắn khi load
             dispatch(markMessageAsRead({ customer_id: profile.user.id }));
           }
           setLoading(false);

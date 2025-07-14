@@ -172,6 +172,15 @@
   background: #fecaca;
 }
 
+.update-button {
+  background: #7fd4e7;
+  color: rgb(46, 46, 46);
+}
+
+.update-button:hover {
+  background: #4eb6ce;
+}
+
 .empty-state {
   text-align: center;
   padding: 40px 20px;

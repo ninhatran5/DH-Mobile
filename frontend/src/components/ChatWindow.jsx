@@ -1,10 +1,9 @@
-/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import "../assets/css/chatbot.css";
 import chatbotLogo2 from "../assets/images/logochat.png";
 import { FaTimes } from "react-icons/fa";
 import { ImEnlarge2 } from "react-icons/im";
-import { MdCloseFullscreen, MdOutlineZoomInMap } from "react-icons/md";
+import { MdCloseFullscreen } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import BotChat from "./BotChat";
 import AdminChat from "./AdminChat";
