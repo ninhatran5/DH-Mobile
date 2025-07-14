@@ -128,7 +128,8 @@
   "comment": {
     "replied_to": "replied to",
     "showMore": "Show more",
-    "showLess": "Show less"
+    "showLess": "Show less",
+    "reviews": "reviews"
   },
   "breadcrumbVoucher": {
     "breadcrumbHeader": "Vouchers",
