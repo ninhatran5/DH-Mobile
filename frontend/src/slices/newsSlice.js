@@ -13,9 +13,11 @@ export const fetchNews = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await axiosAdmin.get("/news");
-      return res.data.data;  
+      return res.data.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Lỗi khi gọi API news");
+      return rejectWithValue(
+        err.response?.data?.message || "Lỗi khi gọi API news"
+      );
     }
   }
 );
@@ -27,7 +29,34 @@ export const fetchNewsById = createAsyncThunk(
       const res = await axiosAdmin.get(`/news/${newsId}`);
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Lỗi khi tải chi tiết news");
+      return rejectWithValue(
+        err.response?.data?.message || "Lỗi khi tải chi tiết news"
+      );
+    }
+  }
+);
+
+export const updateNews = createAsyncThunk(
+  "AdminNews/updateNews",
+  async ({ newsId, title, content, image_url }, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("content", content);
+      if (image_url) {
+        formData.append("image_url", image_url);
+      }
+      formData.append("_method", "PUT");
+      const res = await axiosAdmin.post(`/news/${newsId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Lỗi khi cập nhật news"
+      );
     }
   }
 );
@@ -38,7 +67,7 @@ const newsSlice = createSlice({
   reducers: {
     clearCurrentNews(state) {
       state.current = null;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -66,8 +95,21 @@ const newsSlice = createSlice({
       .addCase(fetchNewsById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      .addCase(updateNews.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateNews.fulfilled, (state, action) => {
+        state.loading = false;
+        state.current = action.payload;
+      })
+      .addCase(updateNews.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
-  }
+  },
 });
 
 export const { clearCurrentNews } = newsSlice.actions;

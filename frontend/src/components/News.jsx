@@ -12,9 +12,30 @@ export default function News({ item }) {
   return (
     <div className="card-products col-md-4" key={item.id}>
       <article className="post-item card border-0 shadow-sm d-flex flex-column">
-        <div className="image-holder zoom-effect">
-          <Link to={`/blog-detail/${item.news_id}`}>
-            <img src={item.image_url} alt="post" className="card-img-top" />
+        <div
+          className="image-holder zoom-effect"
+          style={{
+            width: "100%",
+            height: 340,
+            overflow: "hidden",
+            background: "#f6f6f6",
+          }}
+        >
+          <Link
+            to={`/blog-detail/${item.news_id}`}
+            style={{ display: "block", width: "100%", height: "100%" }}
+          >
+            <img
+              src={item.image_url}
+              alt="post"
+              className="card-img-top"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                display: "block",
+              }}
+            />
           </Link>
         </div>
         <div className="card-body flex-grow-1">
@@ -45,6 +66,7 @@ export default function News({ item }) {
               </Link>
             </h3>
             <div
+            style={{ fontSize: 15}}
               dangerouslySetInnerHTML={{
                 __html: truncateText(item.content, 170),
               }}
