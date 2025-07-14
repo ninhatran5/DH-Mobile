@@ -24,7 +24,7 @@ class SupportChatSent implements ShouldBroadcast
         // Gửi cho cả customer và staff
         return [
             new PrivateChannel('chat.user.' . $this->chat->customer_id),
-            new PrivateChannel('chat.user.' . $this->chat->staff_id),
+         new PrivateChannel('chat.admin')
         ];
     }
 
