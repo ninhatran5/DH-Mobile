@@ -1,4 +1,8 @@
 import { useEffect, useState, useRef } from "react";
+const notificationAudio =
+  typeof window !== "undefined"
+    ? new Audio("/happy-message-ping-351298.mp3")
+    : null;
 import "../assets/css/chatbot.css";
 import "../assets/css/chat-with.css";
 import { FaPaperPlane } from "react-icons/fa";
@@ -48,6 +52,18 @@ export default function BotChat() {
       });
     }
   }, [response]);
+
+  const prevBotMsgCount = useRef(0);
+  useEffect(() => {
+    const botMsgs = messages.filter((m) => m.sender === "bot");
+    if (botMsgs.length > prevBotMsgCount.current) {
+      if (document.hidden && notificationAudio) {
+        notificationAudio.currentTime = 0;
+        notificationAudio.play().catch(() => {});
+      }
+    }
+    prevBotMsgCount.current = botMsgs.length;
+  }, [messages]);
 
   useEffect(() => {
     const handleStorage = (e) => {
