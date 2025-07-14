@@ -17,7 +17,7 @@ import { fetchProfileAdmin } from "../../slices/adminProfile";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-
+import Pusher from "pusher-js";
 const ChatBotAdmin = () => {
   // Loại bỏ dấu tiếng Việt
   const removeVietnameseTones = (str) => {
@@ -70,9 +70,11 @@ const ChatBotAdmin = () => {
   };
 
   const chatMessages = useMemo(() => {
-    if (!activeUser) return [];
-    return chatHistory?.[activeUser.customer_id] || [];
-  }, [chatHistory, activeUser]);
+  if (!activeUser) return [];
+  const result = chatHistory?.[activeUser.customer_id] || [];
+  console.log("📨 Tin nhắn từ Redux:", result);
+  return result;
+}, [chatHistory, activeUser]);
 
   const { adminProfile } = useSelector((state) => state.adminProfile);
 
@@ -104,6 +106,57 @@ const ChatBotAdmin = () => {
     dispatch(fetchProfileAdmin());
   }, [dispatch]);
 
+const activeUserRef = useRef(null);
+
+useEffect(() => {
+  activeUserRef.current = activeUser;
+}, [activeUser]);
+
+useEffect(() => {
+  if (!adminProfile?.user?.id) return;
+
+  const pusher = new Pusher("dcc715adcba25f4b8d09", {
+    cluster: "ap1",
+    authEndpoint: `${import.meta.env.VITE_BASE_URL_REAL_TIME}/broadcasting/auth`,
+    auth: {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+      },
+    },
+    withCredentials: true,
+  });
+
+  const channel = pusher.subscribe(`private-chat.admin`);
+
+  // channel.bind("SupportChatSent", function (data) {
+  //   console.log("📨 Sự kiện SupportChatSent nhận được:", data);
+  //   dispatch(fetchChatUserList());
+  //   if (
+  //     activeUserRef.current &&
+  //     data.customer_id === activeUserRef.current.customer_id
+  //   ) {
+  //     dispatch(fetchChatHistory(data.chat.customer_id));
+  //   }
+  // });
+
+  channel.bind("SupportChatSent", function (data) {
+  const customerId = data.chat?.customer_id; // 👈 lấy đúng từ data.chat
+   dispatch(fetchChatUserList());
+  if (
+    activeUserRef.current &&
+    customerId === activeUserRef.current.customer_id
+  ) {
+    dispatch(fetchChatHistory(customerId));
+  }
+});
+  return () => {
+    channel.unbind_all();
+    channel.unsubscribe();
+    pusher.disconnect();
+  };
+}, [adminProfile?.user?.id, dispatch]);
+
+
   return (
     <div className="chat-live-admin-manage-app-wrapper">
       <main className="chat-live-admin-manage-main-content">
@@ -112,7 +165,6 @@ const ChatBotAdmin = () => {
             showDetailPanel ? " chat-live-admin-manage-has-detail-panel" : ""
           }`}
         >
-          {/* Sidebar Chat List */}
           <div className="chat-live-admin-manage-chat-list">
             <header className="chat-live-admin-manage-header">
               <div className="chat-live-admin-manage-header-title chat-live-admin-manage-pointer">

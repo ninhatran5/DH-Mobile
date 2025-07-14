@@ -72,42 +72,22 @@ export const fetchChatUserList = createAsyncThunk(
 
 // Lấy lịch sử trò chuyện của một user
 export const fetchChatHistory = createAsyncThunk(
-  "chatLive/fetchChatHistory",
+  "adminchatLive/fetchChatHistory",
   async (customerId, { rejectWithValue }) => {
+console.log("📦 Gọi API lấy lịch sử chat của:", customerId);
     try {
-      const token = localStorage.getItem("adminToken");
-      if (!token) return rejectWithValue("Token không tồn tại hoặc đã hết hạn");
-
-      const response = await axiosAdmin.get(
-        `/support-chats/history/${customerId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      console.log("📥 Server trả về lịch sử chat:", response.data);
-
-      const rawChats = response.data?.chats || [];
-      const messages = rawChats.map((msg) => ({
-        chat_id: msg.chat_id,
-        sender: msg.sender,
-        message: msg.message,
-        timestamp: new Date(msg.sent_at).getTime(),
-        is_read: msg.is_read,
-        attachments: msg.attachments || [],
-      }));
-
+      const res = await axiosAdmin.get(`/support-chats/history/${customerId}`);
+      console.log("🧾 Nội dung response:", res.data.chats);
       return {
         customerId,
-        messages,
+        messages: res.data.chats,
       };
-    } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || "Lỗi khi lấy lịch sử tin nhắn"
-      );
+    } catch (err) {
+      return rejectWithValue(err.response.data);
     }
   }
 );
+
 
 const chatLiveSlice = createSlice({
   name: "chatLive",
@@ -135,18 +115,24 @@ const chatLiveSlice = createSlice({
       })
 
       // 🟢 Fetch Chat History
-      .addCase(fetchChatHistory.pending, (state) => {
-        state.chatHistoryLoading = true;
-      })
-      .addCase(fetchChatHistory.fulfilled, (state, action) => {
-        const { customerId, messages } = action.payload;
-        state.chatHistoryLoading = false;
-        state.chatHistory[customerId] = messages;
-      })
-      .addCase(fetchChatHistory.rejected, (state, action) => {
-        state.chatHistoryLoading = false;
-        state.chatHistoryError = action.payload;
-      })
+.addCase(fetchChatHistory.pending, (state) => {
+  state.chatHistoryLoading = true;
+  state.chatHistoryError = null;
+})
+.addCase(fetchChatHistory.fulfilled, (state, action) => {
+  const { customerId, messages } = action.payload;
+  state.chatHistoryLoading = false;
+  state.chatHistory = {
+    ...state.chatHistory,
+    [customerId]: messages,
+  };
+})
+.addCase(fetchChatHistory.rejected, (state, action) => {
+  state.chatHistoryLoading = false;
+  state.chatHistoryError = action.payload;
+})
+
+
 
       // 🔵 Reply Chat
       .addCase(replyToChat.pending, (state) => {
