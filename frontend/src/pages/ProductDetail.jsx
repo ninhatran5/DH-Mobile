@@ -27,6 +27,8 @@ import { fetchComments } from "../slices/reviewSlice";
 import coins from "../assets/images/coins.png";
 import numberFormatCoins from "../../utils/numberFormatCoins";
 import "../assets/admin/product.css";
+import { calculateAverageRating } from "../../utils/reviewUtils";
+import { FaStar, FaRegStar } from "react-icons/fa";
 
 function getAllAttributes(variants) {
   const attrMap = {};
@@ -136,6 +138,7 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
     return null;
   }
 
+  const { totalReviews, averageRating } = calculateAverageRating(reviews);
   const selectedValueImage = getSelectedValueImage();
 
   const productImages = useMemo(() => {
@@ -292,7 +295,7 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
     }
   }, [dispatch, id]);
 
-useEffect(() => {
+  useEffect(() => {
     if (userID) {
       dispatch(fetchSpecification(userID));
     }
@@ -494,6 +497,21 @@ useEffect(() => {
                   )}
                 </p>
               </div>
+              <div className="mb-3">
+                <div className="d-flex align-items-center">
+                  {Array.from({ length: 5 }, (_, i) =>
+                    i < Math.floor(averageRating) ? (
+                      <FaStar key={i} className="star-filled me-1" />
+                    ) : (
+                      <FaRegStar key={i} className="star-empty me-1" />
+                    )
+                  )}
+                  <span style={{ marginLeft: 8 }}>
+                    {averageRating} ({totalReviews} {t("comment.reviews")})
+                  </span>
+                </div>
+              </div>
+
               {Object.keys(selectedOptions).length === allAttributes.length && (
                 <p className="text-muted">
                   {t("productDetail.quantity")}:{" "}
