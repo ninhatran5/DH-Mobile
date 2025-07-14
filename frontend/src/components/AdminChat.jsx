@@ -17,6 +17,11 @@ import { GoPaperclip } from "react-icons/go";
 import { toast } from "react-toastify";
 import { LuCheck } from "react-icons/lu";
 import { LuCheckCheck } from "react-icons/lu";
+import useChatSubscription from "../../utils/useChatSubscription";
+const notificationAudio =
+  typeof window !== "undefined"
+    ? new Audio("/happy-message-ping-351298.mp3")
+    : null;
 
 export default function AdminChat() {
   const { profile } = useSelector((state) => state.profile);
@@ -31,6 +36,7 @@ export default function AdminChat() {
   const [zoom, setZoom] = useState(1);
   const dispatch = useDispatch();
   const messagesEndRef = useRef(null);
+  const prevAdminMsgCount = useRef(0);
 
   const handleSendMessage = async () => {
     if (message.trim() === "" && pastedImages.length === 0) return;
@@ -138,47 +144,8 @@ export default function AdminChat() {
     }
   }, [messages]);
 
-  // Subscribe Pusher để nhận tin nhắn realtime
-  useEffect(() => {
-    if (!profile?.user?.id) return;
-
-    const pusher = new Pusher("dcc715adcba25f4b8d09", {
-      cluster: "ap1",
-      authEndpoint: `${
-        import.meta.env.VITE_BASE_URL_REAL_TIME
-      }/broadcasting/auth`,
-      auth: {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      },
-      withCredentials: true,
-    });
-
-    const channel = pusher.subscribe(`private-chat.user.${profile.user.id}`);
-    channel.bind("SupportChatSent", function (data) {
-      dispatch(fetchChatMessage(profile.user.id))
-        .unwrap()
-        .then((data) => {
-          if (data.success && data.chats) {
-            const formattedMessages = data.chats.map((chat) => ({
-              sender: chat.sender === "customer" ? "user" : "admin",
-              message: chat.message,
-              images: chat.attachments?.map((att) => att.file_url) || [],
-              created_at: chat.sent_at,
-              is_read: chat.is_read,
-            }));
-            setMessages(formattedMessages);
-          }
-        });
-    });
-
-    return () => {
-      channel.unbind_all();
-      channel.unsubscribe();
-      pusher.disconnect();
-    };
-  }, [profile?.user?.id, dispatch]);
+  // Hook Real Time
+  useChatSubscription(profile, dispatch, setMessages);
 
   useEffect(() => {
     if (profile?.user?.id) {
@@ -207,6 +174,21 @@ export default function AdminChat() {
         });
     }
   }, [dispatch, profile?.user?.id, t]);
+
+  useEffect(() => {
+    const adminMessages = messages.filter((m) => m.sender === "admin");
+
+    if (
+      adminMessages.length > prevAdminMsgCount.current &&
+      document.hidden &&
+      notificationAudio
+    ) {
+      notificationAudio.currentTime = 0;
+      notificationAudio.play().catch(() => {});
+    }
+
+    prevAdminMsgCount.current = adminMessages.length;
+  }, [messages]);
 
   return (
     <>
