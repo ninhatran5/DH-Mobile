@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Providers;
+
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Http\Middleware\HandleCors;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 class BroadcastServiceProvider extends ServiceProvider
 {
@@ -22,7 +24,11 @@ class BroadcastServiceProvider extends ServiceProvider
     public function boot()
     {
         // Đăng ký route xác thực broadcasting
-        Broadcast::routes(['middleware' => ['api','auth:sanctum',HandleCors::class]]);
+
+        Broadcast::routes([
+            'middleware' => ['api', EnsureFrontendRequestsAreStateful::class, 'auth:sanctum'],
+        ]);
+
 
         // Load file định nghĩa kênh
         require base_path('routes/channels.php');
