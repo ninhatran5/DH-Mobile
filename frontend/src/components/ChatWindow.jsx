@@ -51,6 +51,7 @@ export default function ChatWindow() {
               {chatMode !== null && (
                 <button
                   className="back-btn-chat"
+                  style={{border: "none", background: "transparent"}}
                   onClick={handleBackToModeSelector}
                 >
                   <IoMdArrowRoundBack />

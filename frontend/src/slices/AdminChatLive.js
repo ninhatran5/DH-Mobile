@@ -16,11 +16,15 @@ const initialState = {
 // Gửi tin nhắn từ admin
 export const replyToChat = createAsyncThunk(
   "chatLive/replyToChat",
-  async ({ customer_id, message, images_base64 = [], socket }, { rejectWithValue }) => {
+  async (
+    { customer_id, message, images_base64 = [], socket },
+    { rejectWithValue }
+  ) => {
     try {
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
+      // eslint-disable-next-line no-unused-vars
       const response = await axiosAdmin.post(
         "/support-chats/reply",
         { customer_id, message, images_base64 },
@@ -39,7 +43,9 @@ export const replyToChat = createAsyncThunk(
 
       return { customer_id, message };
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Lỗi khi gửi tin nhắn");
+      return rejectWithValue(
+        error.response?.data?.message || "Lỗi khi gửi tin nhắn"
+      );
     }
   }
 );
@@ -55,10 +61,11 @@ export const fetchChatUserList = createAsyncThunk(
       const response = await axiosAdmin.get("/support-chats/chat-user-list", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("📦 fetchChatUserList response:", response.data);
       return response.data.customers;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Lỗi khi lấy danh sách người dùng");
+      return rejectWithValue(
+        error.response?.data?.message || "Lỗi khi lấy danh sách người dùng"
+      );
     }
   }
 );
@@ -71,14 +78,17 @@ export const fetchChatHistory = createAsyncThunk(
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc đã hết hạn");
 
-      const response = await axiosAdmin.get(`/support-chats/history/${customerId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axiosAdmin.get(
+        `/support-chats/history/${customerId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       console.log("📥 Server trả về lịch sử chat:", response.data);
 
-      const rawChats = response.data?.chats || []; 
-      const messages = rawChats.map(msg => ({
+      const rawChats = response.data?.chats || [];
+      const messages = rawChats.map((msg) => ({
         chat_id: msg.chat_id,
         sender: msg.sender,
         message: msg.message,
@@ -92,7 +102,9 @@ export const fetchChatHistory = createAsyncThunk(
         messages,
       };
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Lỗi khi lấy lịch sử tin nhắn");
+      return rejectWithValue(
+        error.response?.data?.message || "Lỗi khi lấy lịch sử tin nhắn"
+      );
     }
   }
 );
