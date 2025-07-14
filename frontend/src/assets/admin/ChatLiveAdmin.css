@@ -427,6 +427,7 @@ html,
   font-weight: bold;
   font-size: 1.1rem;
   padding: 16px 20px 8px 20px;
+  color: #1e1e1e;
 }
 .chat-live-admin-manage-chat-list-items {
   flex: 1;
@@ -458,18 +459,22 @@ html,
 .chat-live-admin-manage-chat-list-name {
   font-weight: 500;
   font-size: 1rem;
+  color: #1e1e1e;
 }
 .chat-live-admin-manage-chat-list-status {
-  font-size: 0.85rem;
+  font-size: 14px;
   color: #888;
+  margin-top: -3px;
 }
 .chat-live-admin-manage-chat-box-name {
   font-weight: 500;
   font-size: 1rem;
+  color: #1e1e1e;
 }
 .chat-live-admin-manage-chat-box-status {
   font-size: 0.8rem;
   color: #888;
+  margin-top: -5px;
 }
 
 .chat-live-admin-manage-chat-box {
@@ -591,16 +596,64 @@ html,
   background: #0095f6;
   border: none;
   color: #fff;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
+  border-radius: 999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
   cursor: pointer;
   transition: background 0.2s;
 }
+
 .chat-live-admin-manage-chat-input button:hover {
   background: #0077c2;
+}
+
+.chat-send-icon {
+  width: 20px;
+  height: -20px;
+}
+
+/* Dropdown menu cho admin header */
+.chat-admin-dropdown-menu {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.13);
+  min-width: 160px;
+  z-index: 100;
+  padding: 12px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: dropdownFadeIn 0.22s ease;
+}
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.chat-admin-dropdown-item {
+  background: none;
+  border: none;
+  padding: 14px 32px;
+  text-align: center;
+  font-size: 16px;
+  color: #222;
+  cursor: pointer;
+  font-weight: 600;
+  border-radius: 12px;
+  transition: background 0.18s, color 0.18s;
+  margin: 0 8px;
+}
+.chat-admin-dropdown-item:hover {
+  background: #eaf3ff;
+  color: #1877f2;
+  box-shadow: 0 2px 8px rgba(24, 119, 242, 0.08);
 }
