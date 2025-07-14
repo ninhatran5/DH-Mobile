@@ -8,12 +8,15 @@ import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import { marked } from "marked";
 import { Modal } from "react-bootstrap";
-import { fetchChatMessage, sendChatMessage, markMessageAsRead } from "../slices/chatLiveSlice";
+import {
+  fetchChatMessage,
+  sendChatMessage,
+  markMessageAsRead,
+} from "../slices/chatLiveSlice";
 import { GoPaperclip } from "react-icons/go";
 import { toast } from "react-toastify";
 import { LuCheck } from "react-icons/lu";
 import { LuCheckCheck } from "react-icons/lu";
-
 
 export default function AdminChat() {
   const { profile } = useSelector((state) => state.profile);
@@ -36,7 +39,7 @@ export default function AdminChat() {
 
     const currentMessage = message;
     const currentImages = [...pastedImages];
-    
+
     setMessage("");
     setPastedImages([]);
 
@@ -56,13 +59,13 @@ export default function AdminChat() {
           .then((data) => {
             if (data.success && data.chats) {
               const formattedMessages = data.chats.map((chat) => ({
-                sender: chat.sender === 'customer' ? 'user' : 'admin',
+                sender: chat.sender === "customer" ? "user" : "admin",
                 message: chat.message,
-                images: chat.attachments?.map(att => att.file_url) || [],
+                images: chat.attachments?.map((att) => att.file_url) || [],
                 created_at: chat.sent_at,
                 is_read: chat.is_read,
               }));
-              
+
               setMessages(formattedMessages);
             }
             setSending(false);
@@ -139,26 +142,29 @@ export default function AdminChat() {
   useEffect(() => {
     if (!profile?.user?.id) return;
 
-    // Khởi tạo Pusher
     const pusher = new Pusher("dcc715adcba25f4b8d09", {
       cluster: "ap1",
-      // Nếu dùng authEndpoint cho private channel, thêm:
-      // authEndpoint: "http://localhost:8000/broadcasting/auth",
-      // auth: { headers: { Authorization: `Bearer ${token}` } }
+      authEndpoint: `${
+        import.meta.env.VITE_BASE_URL_REAL_TIME
+      }/broadcasting/auth`,
+      auth: {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      },
+      withCredentials: true,
     });
 
-    // Lắng nghe channel chat của user
-    const channel = pusher.subscribe(`private-support-chat.${profile.user.id}`);
+    const channel = pusher.subscribe(`private-chat.user.${profile.user.id}`);
     channel.bind("SupportChatSent", function (data) {
-      // Khi có tin nhắn mới, fetch lại messages hoặc push vào state
       dispatch(fetchChatMessage(profile.user.id))
         .unwrap()
         .then((data) => {
           if (data.success && data.chats) {
             const formattedMessages = data.chats.map((chat) => ({
-              sender: chat.sender === 'customer' ? 'user' : 'admin',
+              sender: chat.sender === "customer" ? "user" : "admin",
               message: chat.message,
-              images: chat.attachments?.map(att => att.file_url) || [],
+              images: chat.attachments?.map((att) => att.file_url) || [],
               created_at: chat.sent_at,
               is_read: chat.is_read,
             }));
@@ -182,15 +188,15 @@ export default function AdminChat() {
         .then((data) => {
           if (data.success && data.chats) {
             const formattedMessages = data.chats.map((chat) => ({
-              sender: chat.sender === 'customer' ? 'user' : 'admin',
+              sender: chat.sender === "customer" ? "user" : "admin",
               message: chat.message,
-              images: chat.attachments?.map(att => att.file_url) || [],
+              images: chat.attachments?.map((att) => att.file_url) || [],
               created_at: chat.sent_at,
               is_read: chat.is_read,
             }));
-            
+
             setMessages(formattedMessages);
-            
+
             dispatch(markMessageAsRead({ customer_id: profile.user.id }));
           }
           setLoading(false);
@@ -218,7 +224,7 @@ export default function AdminChat() {
           </p>
         </div>
       )}
-      
+
       <div className="messages">
         {!loading && messages.length === 0 && (
           <div
@@ -234,116 +240,124 @@ export default function AdminChat() {
         )}
 
         {messages.map((msg, index) => {
-          // Tìm tin nhắn cuối cùng của user
-          const lastUserMessageIndex = messages.map((m, i) => m.sender === 'user' ? i : -1)
-            .filter(i => i !== -1)
+          const lastUserMessageIndex = messages
+            .map((m, i) => (m.sender === "user" ? i : -1))
+            .filter((i) => i !== -1)
             .pop();
-          const isLastUserMessage = msg.sender === 'user' && index === lastUserMessageIndex;
-          
-          return (
-          <div
-            className={`message ${msg.sender}`}
-            key={index}
-            style={{
-              display: "flex",
-              flexDirection: msg.sender === "user" ? "row-reverse" : "row",
-              alignItems: "flex-end",
-              marginBottom: 10,
-            }}
-          >
-            <div className="avatar_chat">
-              <img
-                src={
-                  msg.sender === "user"
-                    ? profile?.user?.image_url ||
-                      "https://bootdey.com/img/Content/avatar/avatar1.png"
-                    : "https://img.freepik.com/free-vector/customer-support-flat-design-illustration_23-2148887720.jpg"
-                }
-                alt="avatar"
-                className="avatar"
-              />
-            </div>
+          const isLastUserMessage =
+            msg.sender === "user" && index === lastUserMessageIndex;
 
+          return (
             <div
-              className="bubble"
+              className={`message ${msg.sender}`}
+              key={index}
               style={{
-                backgroundColor: msg.sender === "user" ? "#54b4d3" : "#28a745",
-                textAlign: msg.sender === "user" ? "right" : "left",
-                color: "white",
+                display: "flex",
+                flexDirection: msg.sender === "user" ? "row-reverse" : "row",
+                alignItems: "flex-end",
+                marginBottom: 10,
               }}
             >
-              {msg.message && (
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: marked.parse(msg.message || ""),
-                  }}
+              <div className="avatar_chat">
+                <img
+                  src={
+                    msg.sender === "user"
+                      ? profile?.user?.image_url ||
+                        "https://bootdey.com/img/Content/avatar/avatar1.png"
+                      : "https://img.freepik.com/free-vector/customer-support-flat-design-illustration_23-2148887720.jpg"
+                  }
+                  alt="avatar"
+                  className="avatar"
                 />
-              )}
-
-              {Array.isArray(msg.images) &&
-                msg.images.map((img, i) => (
-                  <img
-                    key={i}
-                    src={img}
-                    alt="chat"
-                    onClick={() => handlePreviewClick(img)}
-                    style={{
-                      maxWidth: 160,
-                      maxHeight: 160,
-                      borderRadius: 8,
-                      marginTop: 8,
-                      marginRight: 5,
-                      cursor: "pointer",
-                      border: "1px solid white",
-                    }}
-                  />
-                ))}
+              </div>
 
               <div
-                className="timestamp"
-                style={{ 
-                  color: "rgba(255,255,255,0.8)", 
-                  marginTop: 4,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: isLastUserMessage ? "space-between" : "flex-end",
-                  gap: "12px"
+                className="bubble"
+                style={{
+                  backgroundColor:
+                    msg.sender === "user" ? "#54b4d3" : "#28a745",
+                  textAlign: msg.sender === "user" ? "right" : "left",
+                  color: "white",
                 }}
               >
-                {/* Hiển thị trạng thái gửi/xem cho tin nhắn cuối cùng của user */}
-                {isLastUserMessage && (
+                {msg.message && (
                   <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "4px",
-                      fontSize: "12px",
-                      flexShrink: 0
+                    dangerouslySetInnerHTML={{
+                      __html: marked.parse(msg.message || ""),
                     }}
-                  >
-                    {/* Hiển thị icon tùy theo trạng thái */}
-                    {msg.is_read === 1 ? (
-                      <LuCheckCheck style={{ color: "rgba(255,255,255,0.9)" }} />
-                    ) : (
-                      <LuCheck style={{ color: "rgba(255,255,255,0.7)" }} />
-                    )}
-                    
-                    {/* Text trạng thái */}
-                    <span style={{ 
-                      fontSize: "10px", 
-                      opacity: 0.8,
-                      whiteSpace: "nowrap"
-                    }}>
-                      {msg.is_read === 1 ? t("chatBot.seen") : t("chatBot.sent")}
-                    </span>
-                  </div>
+                  />
                 )}
-                
-                <span>{dayjs(msg.created_at).format("HH:mm")}</span>
+
+                {Array.isArray(msg.images) &&
+                  msg.images.map((img, i) => (
+                    <img
+                      key={i}
+                      src={img}
+                      alt="chat"
+                      onClick={() => handlePreviewClick(img)}
+                      style={{
+                        maxWidth: 160,
+                        maxHeight: 160,
+                        borderRadius: 8,
+                        marginTop: 8,
+                        marginRight: 5,
+                        cursor: "pointer",
+                        border: "1px solid white",
+                      }}
+                    />
+                  ))}
+
+                <div
+                  className="timestamp"
+                  style={{
+                    color: "rgba(255,255,255,0.8)",
+                    marginTop: 4,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: isLastUserMessage
+                      ? "space-between"
+                      : "flex-end",
+                    gap: "12px",
+                  }}
+                >
+                  {isLastUserMessage && (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                        fontSize: "12px",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {msg.is_read === 1 ? (
+                        <LuCheckCheck
+                          style={{ color: "rgba(255,255,255,0.9)" }}
+                        />
+                      ) : (
+                        <LuCheck style={{ color: "rgba(255,255,255,0.7)" }} />
+                      )}
+
+                      {/* Text trạng thái */}
+                      <span
+                        style={{
+                          fontSize: "10px",
+                          opacity: 0.8,
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {msg.is_read === 1
+                          ? t("chatBot.seen")
+                          : t("chatBot.sent")}
+                      </span>
+                    </div>
+                  )}
+
+                  <span>{dayjs(msg.created_at).format("HH:mm")}</span>
+                </div>
               </div>
             </div>
-          </div>
-        );
+          );
         })}
 
         {sending && (
