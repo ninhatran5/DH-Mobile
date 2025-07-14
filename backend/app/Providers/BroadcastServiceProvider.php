@@ -3,6 +3,7 @@
 namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Http\Middleware\HandleCors;
 
 class BroadcastServiceProvider extends ServiceProvider
 {
@@ -21,7 +22,7 @@ class BroadcastServiceProvider extends ServiceProvider
     public function boot()
     {
         // Đăng ký route xác thực broadcasting
-        Broadcast::routes(['middleware' => ['api','auth:sanctum','cors']]);
+        Broadcast::routes(['middleware' => ['api','auth:sanctum',HandleCors::class]]);
 
         // Load file định nghĩa kênh
         require base_path('routes/channels.php');
