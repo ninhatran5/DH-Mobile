@@ -34,6 +34,12 @@ return [
         'null' => [
             'driver' => 'null',
         ],
+        'guards' => [
+            'web',
+            'sanctum',
+            'api',
+        ],
+
 
     ],
 
