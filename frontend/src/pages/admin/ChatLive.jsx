@@ -18,8 +18,8 @@ import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Pusher from "pusher-js";
+import sound from "../../assets/sound/anhthanhtinnhanadmin.mp3"
 const ChatBotAdmin = () => {
-  // Loại bỏ dấu tiếng Việt
   const removeVietnameseTones = (str) => {
     return str
       .normalize("NFD")
@@ -72,7 +72,7 @@ const ChatBotAdmin = () => {
   const chatMessages = useMemo(() => {
   if (!activeUser) return [];
   const result = chatHistory?.[activeUser.customer_id] || [];
-  console.log("📨 Tin nhắn từ Redux:", result);
+  console.log(" Tin nhắn từ Redux:", result);
   return result;
 }, [chatHistory, activeUser]);
 
@@ -112,6 +112,8 @@ useEffect(() => {
   activeUserRef.current = activeUser;
 }, [activeUser]);
 
+const audio = new Audio(sound);
+
 useEffect(() => {
   if (!adminProfile?.user?.id) return;
 
@@ -127,35 +129,36 @@ useEffect(() => {
   });
 
   const channel = pusher.subscribe(`private-chat.admin`);
+  channel.bind("SupportChatSent", (data) => {
+  const customerId = data.chat?.customer_id;
+  const sender = data.chat?.sender;
 
-  // channel.bind("SupportChatSent", function (data) {
-  //   console.log("📨 Sự kiện SupportChatSent nhận được:", data);
-  //   dispatch(fetchChatUserList());
-  //   if (
-  //     activeUserRef.current &&
-  //     data.customer_id === activeUserRef.current.customer_id
-  //   ) {
-  //     dispatch(fetchChatHistory(data.chat.customer_id));
-  //   }
-  // });
+  dispatch(fetchChatUserList());
 
-  channel.bind("SupportChatSent", function (data) {
-  const customerId = data.chat?.customer_id; // 👈 lấy đúng từ data.chat
-   dispatch(fetchChatUserList());
   if (
     activeUserRef.current &&
     customerId === activeUserRef.current.customer_id
   ) {
     dispatch(fetchChatHistory(customerId));
   }
+
+  if (sender !== "admin") {
+    try {
+      audio.play().catch((e) => {
+        console.warn("Không thể phát âm thanh:", e);
+      });
+    } catch (err) {
+      console.error("Lỗi âm thanh:", err);
+    }
+  }
 });
+
   return () => {
     channel.unbind_all();
     channel.unsubscribe();
     pusher.disconnect();
   };
 }, [adminProfile?.user?.id, dispatch]);
-
 
   return (
     <div className="chat-live-admin-manage-app-wrapper">

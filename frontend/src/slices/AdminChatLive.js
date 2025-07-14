@@ -15,40 +15,32 @@ const initialState = {
 
 // Gửi tin nhắn từ admin
 export const replyToChat = createAsyncThunk(
-  "chatLive/replyToChat",
-  async (
-    { customer_id, message, images_base64 = [], socket },
-    { rejectWithValue }
-  ) => {
+  "adminchatLive/replyToChat",
+  async ({ customer_id, message, images_base64 = [] }, { rejectWithValue }) => {
+    console.log("✉️ Gửi tin nhắn tới:", customer_id);
     try {
-      const token = localStorage.getItem("adminToken");
-      if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
+      const res = await axiosAdmin.post("/support-chats/reply", {
+        customer_id,
+        message,
+        images_base64,
+      });
 
-      // eslint-disable-next-line no-unused-vars
-      const response = await axiosAdmin.post(
-        "/support-chats/reply",
-        { customer_id, message, images_base64 },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      console.log("Tin nhắn gửi thành công:", res.data);
 
-      if (socket?.emit) {
-        socket.emit("chat message", {
-          roomId: customer_id.toString(),
-          sender: "admin",
-          message,
-          images: images_base64,
-          timestamp: Date.now(),
-        });
-      }
-
-      return { customer_id, message };
-    } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || "Lỗi khi gửi tin nhắn"
-      );
+      return {
+        customer_id,
+        message: res.data.message,
+        images: res.data.images || [],
+        created_at: res.data.created_at, 
+      };
+    } catch (err) {
+      console.error(" Lỗi khi gửi tin nhắn:", err.response?.data || err.message);
+      return rejectWithValue(err.response?.data || { message: "Gửi tin nhắn thất bại." });
     }
   }
 );
+
+
 
 // Lấy danh sách người dùng đang chat
 export const fetchChatUserList = createAsyncThunk(
