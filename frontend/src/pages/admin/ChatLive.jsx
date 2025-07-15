@@ -43,31 +43,36 @@ const ChatBotAdmin = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (activeUser) {
-      dispatch(fetchChatHistory(activeUser.customer_id));
-    }
-  }, [activeUser, dispatch]);
+  if (activeUser?.customer_id) {
+    dispatch(fetchChatHistory(activeUser.customer_id));
+  }
+}, [activeUser?.customer_id, dispatch]);
+
 
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatHistory, activeUser]);
 
-  const handleSend = async () => {
-    if (!message.trim() || !activeUser) return;
-    setSending(true);
-    const payload = {
-      customer_id: activeUser.customer_id,
-      message,
-      images_base64: [],
-    };
-    try {
-      await dispatch(replyToChat(payload)).unwrap();
-      setMessage("");
-    } catch (err) {
-      console.error("Gửi lỗi:", err);
-    }
-    setSending(false);
+ const handleSend = async () => {
+  if (sending || !message.trim() || !activeUser) return;
+  setSending(true);
+
+  const payload = {
+    customer_id: activeUser.customer_id,
+    message,
+    images_base64: [],
   };
+
+  try {
+    await dispatch(replyToChat(payload)).unwrap();
+    setMessage("");
+  } catch (err) {
+    console.error("Gửi lỗi:", err);
+  }
+
+  setSending(false);
+};
+
 
   const chatMessages = useMemo(() => {
   if (!activeUser) return [];
@@ -114,24 +119,30 @@ useEffect(() => {
 
 const audio = new Audio(sound);
 
+const audioRef = useRef(null);
+
 useEffect(() => {
   if (!adminProfile?.user?.id) return;
 
+  if (!audioRef.current) {
+    audioRef.current = new Audio(sound);
+  }
+
   const pusher = new Pusher(import.meta.env.VITE_PUSHER_KEY, {
     cluster: import.meta.env.VITE_PUSHER_CLUSTER,
-    authEndpoint: `${
-      import.meta.env.VITE_BASE_URL_REAL_TIME
-    }/broadcasting/auth`,
+    authEndpoint: `${import.meta.env.VITE_BASE_URL_REAL_TIME}/broadcasting/auth`,
     auth: {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
       },
     },
+    forceTLS: true,
     withCredentials: true,
   });
 
-  const channel = pusher.subscribe(`private-chat.admin`);
-  channel.bind("SupportChatSent", (data) => {
+  const channel = pusher.subscribe("private-chat.admin");
+
+  const handleChat = (data) => {
     const customerId = data.chat?.customer_id;
     const sender = data.chat?.sender;
 
@@ -144,23 +155,27 @@ useEffect(() => {
       dispatch(fetchChatHistory(customerId));
     }
 
-    if (sender !== "admin") {
+    if (sender !== "admin" && audioRef.current) {
       try {
-        audio.play().catch((e) => {
+        audioRef.current.play().catch((e) => {
           console.warn("Không thể phát âm thanh:", e);
         });
       } catch (err) {
         console.error("Lỗi âm thanh:", err);
       }
     }
-  });
+  };
+
+  channel.bind("SupportChatSent", handleChat);
 
   return () => {
-    channel.unbind_all();
+    channel.unbind("SupportChatSent", handleChat); // <== Gỡ đúng handler
     channel.unsubscribe();
     pusher.disconnect();
   };
-}, [adminProfile?.user?.id, dispatch]);
+}, [adminProfile?.user?.id]);
+
+
 
   return (
     <div className="chat-live-admin-manage-app-wrapper">
