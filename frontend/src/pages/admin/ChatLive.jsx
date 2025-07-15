@@ -117,9 +117,11 @@ const audio = new Audio(sound);
 useEffect(() => {
   if (!adminProfile?.user?.id) return;
 
-  const pusher = new Pusher("dcc715adcba25f4b8d09", {
-    cluster: "ap1",
-    authEndpoint: `${import.meta.env.VITE_BASE_URL_REAL_TIME}/broadcasting/auth`,
+  const pusher = new Pusher(import.meta.env.VITE_PUSHER_KEY, {
+    cluster: import.meta.env.VITE_PUSHER_CLUSTER,
+    authEndpoint: `${
+      import.meta.env.VITE_BASE_URL_REAL_TIME
+    }/broadcasting/auth`,
     auth: {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
@@ -130,28 +132,28 @@ useEffect(() => {
 
   const channel = pusher.subscribe(`private-chat.admin`);
   channel.bind("SupportChatSent", (data) => {
-  const customerId = data.chat?.customer_id;
-  const sender = data.chat?.sender;
+    const customerId = data.chat?.customer_id;
+    const sender = data.chat?.sender;
 
-  dispatch(fetchChatUserList());
+    dispatch(fetchChatUserList());
 
-  if (
-    activeUserRef.current &&
-    customerId === activeUserRef.current.customer_id
-  ) {
-    dispatch(fetchChatHistory(customerId));
-  }
-
-  if (sender !== "admin") {
-    try {
-      audio.play().catch((e) => {
-        console.warn("Không thể phát âm thanh:", e);
-      });
-    } catch (err) {
-      console.error("Lỗi âm thanh:", err);
+    if (
+      activeUserRef.current &&
+      customerId === activeUserRef.current.customer_id
+    ) {
+      dispatch(fetchChatHistory(customerId));
     }
-  }
-});
+
+    if (sender !== "admin") {
+      try {
+        audio.play().catch((e) => {
+          console.warn("Không thể phát âm thanh:", e);
+        });
+      } catch (err) {
+        console.error("Lỗi âm thanh:", err);
+      }
+    }
+  });
 
   return () => {
     channel.unbind_all();
