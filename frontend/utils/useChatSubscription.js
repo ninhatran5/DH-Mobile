@@ -6,11 +6,11 @@ export default function useChatSubscription(profile, dispatch, setMessages) {
   useEffect(() => {
     if (!profile?.user?.id) return;
 
-    const pusher = new Pusher("dcc715adcba25f4b8d09", {
-      cluster: "ap1",
-      authEndpoint: `${
-        import.meta.env.VITE_BASE_URL_REAL_TIME
-      }/broadcasting/auth`,
+    const pusher = new Pusher(
+      import.meta.env.VITE_PUSHER_KEY,
+      {
+        cluster: import.meta.env.VITE_PUSHER_CLUSTER,
+        authEndpoint: `${import.meta.env.VITE_BASE_URL_REAL_TIME}/broadcasting/auth`,
       auth: {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
