@@ -497,21 +497,55 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
                   )}
                 </p>
               </div>
-              <div className="mb-3">
-                <div className="d-flex align-items-center">
-                  {Array.from({ length: 5 }, (_, i) =>
-                    i < Math.floor(averageRating) ? (
-                      <FaStar key={i} className="star-filled me-1" />
-                    ) : (
-                      <FaRegStar key={i} className="star-empty me-1" />
-                    )
-                  )}
-                  <span style={{ marginLeft: 8 }}>
-                    {averageRating} ({totalReviews} {t("comment.reviews")})
-                  </span>
+              {totalReviews > 0 && (
+                <div className="mb-3">
+                  <div className="d-flex align-items-center" style={{ gap: 8 }}>
+                    <div
+                      style={{ display: "flex", alignItems: "center", gap: 1 }}
+                    >
+                      {Array.from({ length: 5 }, (_, i) =>
+                        i < Math.floor(averageRating) ? (
+                          <FaStar
+                            key={i}
+                            className="star-filled"
+                            style={{
+                              color: "#ffd530",
+                              fontSize: 19,
+                              marginRight: 1,
+                            }}
+                          />
+                        ) : (
+                          <FaRegStar
+                            key={i}
+                            className="star-empty"
+                            style={{
+                              color: "#e0e0e0",
+                              fontSize: 19,
+                              marginRight: 1,
+                            }}
+                          />
+                        )
+                      )}
+                    </div>
+                    <span
+                      style={{
+                        fontWeight: 600,
+                        fontSize: 16,
+                        color: "#333",
+                        marginLeft: 4,
+                        letterSpacing: 0.2,
+                      }}
+                    >
+                      {averageRating}
+                    </span>
+                    <span
+                      style={{ color: "#888", fontSize: 14, marginLeft: 2 }}
+                    >
+                      ({totalReviews} {t("comment.reviews")})
+                    </span>
+                  </div>
                 </div>
-              </div>
-
+              )}
               {Object.keys(selectedOptions).length === allAttributes.length && (
                 <p className="text-muted">
                   {t("productDetail.quantity")}:{" "}
