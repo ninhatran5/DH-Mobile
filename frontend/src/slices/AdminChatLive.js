@@ -84,13 +84,33 @@ console.log("📦 Gọi API lấy lịch sử chat của:", customerId);
 const chatLiveSlice = createSlice({
   name: "chatLive",
   initialState,
-  reducers: {
-    clearChatLiveError: (state) => {
-      state.chatUsersError = null;
-      state.replyError = null;
-      state.chatHistoryError = null;
-    },
+ reducers: {
+  clearChatLiveError: (state) => {
+    state.chatUsersError = null;
+    state.replyError = null;
+    state.chatHistoryError = null;
   },
+  receiveMessageRealtime: (state, action) => {
+    const { customer_id, message, sender, created_at, attachments = [] } = action.payload;
+    const msg = { message, sender, created_at, attachments };
+
+    if (!state.chatHistory[customer_id]) {
+      state.chatHistory[customer_id] = [];
+    }
+
+    const isDuplicate = state.chatHistory[customer_id].some(
+      (m) =>
+        m.message === msg.message &&
+        m.created_at === msg.created_at &&
+        m.sender === msg.sender
+    );
+
+    if (!isDuplicate) {
+      state.chatHistory[customer_id].push(msg);
+    }
+  }
+}
+,
   extraReducers: (builder) => {
     builder
       // 🟡 Fetch Chat Users
@@ -130,23 +150,35 @@ const chatLiveSlice = createSlice({
       .addCase(replyToChat.pending, (state) => {
         state.replyLoading = true;
       })
-      .addCase(replyToChat.fulfilled, (state, action) => {
-        state.replyLoading = false;
-        const { customer_id, message } = action.payload;
-        const newMsg = {
-          sender: "admin",
-          message,
-          timestamp: Date.now(),
-          attachments: [],
-          is_read: 1,
-        };
+     .addCase(replyToChat.fulfilled, (state, action) => {
+  state.replyLoading = false;
+  const { customer_id, message, created_at, images } = action.payload;
 
-        if (!state.chatHistory[customer_id]) {
-          state.chatHistory[customer_id] = [];
-        }
+  const newMsg = {
+    sender: "admin",
+    message,
+    created_at,
+    attachments: images || [],
+    is_read: 1,
+  };
 
-        state.chatHistory[customer_id].push(newMsg);
-      })
+  if (!state.chatHistory[customer_id]) {
+    state.chatHistory[customer_id] = [];
+  }
+
+  const isDuplicate = state.chatHistory[customer_id].some(
+    (msg) =>
+      msg.message === newMsg.message &&
+      msg.created_at === newMsg.created_at &&
+      msg.sender === "admin"
+  );
+
+  if (!isDuplicate) {
+    state.chatHistory[customer_id].push(newMsg);
+  }
+})
+
+
       .addCase(replyToChat.rejected, (state, action) => {
         state.replyLoading = false;
         state.replyError = action.payload;
@@ -154,5 +186,6 @@ const chatLiveSlice = createSlice({
   },
 });
 
-export const { clearChatLiveError } = chatLiveSlice.actions;
+export const { clearChatLiveError, receiveMessageRealtime } = chatLiveSlice.actions;
+
 export default chatLiveSlice.reducer;
