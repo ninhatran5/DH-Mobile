@@ -202,7 +202,8 @@ class ChatLiveController extends Controller
 
                 return [
                     'customer_id' => $customer->user_id,
-                    'customer_name' => $customer->full_name ?? $customer->username,
+                    'customer_name' => $customer->username,
+                    'customer_fule_name' => $customer->full_name,
                     'avatar_url' => $avatarUrl,
                     'last_message' => $lastChat->message ?? '',
                     'last_message_time' => $lastChat->sent_at ?? null,
