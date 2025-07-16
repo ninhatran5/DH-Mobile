@@ -112,7 +112,17 @@ const chatLiveSlice = createSlice({
     if (!isDuplicate) {
       state.chatHistory[customer_id].push(msg);
     }
+    const userIndex = state.chatUsers.findIndex(u => u.customer_id === customer_id);
+  if (userIndex !== -1) {
+    state.chatUsers[userIndex].last_message = {
+  sender,
+  content: message,
+  created_at,
+};
+
   }
+  }
+  
 }
 ,
   extraReducers: (builder) => {

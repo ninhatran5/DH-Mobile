@@ -18,7 +18,9 @@ import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Pusher from "pusher-js";
-import sound from "../../assets/sound/anhthanhtinnhanadmin.mp3"
+import sound from "../../assets/sound/anhthanhtinnhanadmin.mp3";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 const ChatLiveAdmin = () => {
   const removeVietnameseTones = (str) => {
     return str
@@ -167,7 +169,7 @@ useEffect(() => {
   };
 
   channel.bind("SupportChatSent", handleChat);
-
+dayjs.extend(utc); 
   return () => {
     channel.unbind("SupportChatSent", handleChat); // <== Gỡ đúng handler
     channel.unsubscribe();
@@ -276,7 +278,28 @@ useEffect(() => {
                           {user.customer_name}
                         </div>
                         <div className="chat-live-admin-manage-chat-list-status">
-                          {user.last_message || "..."}
+                         {user.last_message ? (
+  <div className="chat-last-message-preview">
+  <span style={{ fontWeight: 500, marginRight: 4 }}>
+    {user.last_message?.sender === "admin"
+      ? "Bạn:"
+      : `${user.customer_name}:`}
+  </span>
+  <span style={{ color: "#555" }}>
+    {user.last_message?.content || ""}
+  </span>
+  <br />
+  <small style={{ color: "#999", fontSize: 12 }}>
+    {user.last_message_time
+      ? dayjs(user.last_message_time).local().format("HH:mm DD/MM")
+      : "Chưa có tin nhắn"}
+  </small>
+</div>
+
+) : (
+  <span className="text-muted">...</span>
+)}
+
                         </div>
                       </div>
                     </div>
