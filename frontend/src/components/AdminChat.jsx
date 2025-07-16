@@ -1,8 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useState, useRef } from "react";
-import Pusher from "pusher-js";
-import "../assets/css/chatbot.css";
 import { FaPaperPlane } from "react-icons/fa";
+import "../assets/css/chatbot.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
@@ -37,6 +36,17 @@ export default function AdminChat() {
   const dispatch = useDispatch();
   const messagesEndRef = useRef(null);
   const prevAdminMsgCount = useRef(0);
+  const inputRef = useRef(null); 
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    if (!sending) {
+      inputRef.current?.focus();
+    }
+  }, [sending]);
 
   const handleSendMessage = async () => {
     if (message.trim() === "" && pastedImages.length === 0) return;
@@ -144,7 +154,6 @@ export default function AdminChat() {
     }
   }, [messages]);
 
-  // Hook Real Time
   useChatSubscription(profile, dispatch, setMessages);
 
   useEffect(() => {
@@ -245,8 +254,8 @@ export default function AdminChat() {
                   src={
                     msg.sender === "user"
                       ? profile?.user?.image_url ||
-                        "https://bootdey.com/img/Content/avatar/avatar1.png"
-                      : "https://img.freepik.com/free-vector/customer-support-flat-design-illustration_23-2148887720.jpg"
+                        'https://bootdey.com/img/Content/avatar/avatar1.png'
+                      : 'https://img.freepik.com/free-vector/customer-support-flat-design-illustration_23-2148887720.jpg'
                   }
                   alt="avatar"
                   className="avatar"
@@ -320,7 +329,6 @@ export default function AdminChat() {
                         <LuCheck style={{ color: "rgba(255,255,255,0.7)" }} />
                       )}
 
-                      {/* Text trạng thái */}
                       <span
                         style={{
                           fontSize: "10px",
@@ -341,42 +349,6 @@ export default function AdminChat() {
             </div>
           );
         })}
-
-        {sending && (
-          <div
-            className="message admin"
-            style={{
-              opacity: 0.7,
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "flex-end",
-              marginBottom: 10,
-            }}
-          >
-            <div className="avatar_chat">
-              <img
-                src="https://img.freepik.com/free-vector/customer-support-flat-design-illustration_23-2148887720.jpg"
-                alt="avatar"
-                className="avatar"
-              />
-            </div>
-
-            <div
-              className="bubble"
-              style={{
-                background: "#28a745",
-                fontStyle: "italic",
-                color: "white",
-              }}
-            >
-              <div className="typing-indicator">
-                <span className="typing-dot"></span>
-                <span className="typing-dot"></span>
-                <span className="typing-dot"></span>
-              </div>
-            </div>
-          </div>
-        )}
 
         <div ref={messagesEndRef} />
       </div>
@@ -405,6 +377,7 @@ export default function AdminChat() {
           onChange={(e) => setMessage(e.target.value)}
           onPaste={handlePaste}
           disabled={sending}
+          ref={inputRef}
         />
         <input
           type="file"
