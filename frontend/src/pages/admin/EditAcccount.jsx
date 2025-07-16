@@ -122,17 +122,6 @@ const UpdateUser = () => {
     }
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData((prev) => ({ ...prev, image_file: file }));
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -230,7 +219,7 @@ const UpdateUser = () => {
                 className="admin-edit-account-select"
                 disabled={formData.role === "customer"}
               >
-                <option value="">-- Chọn thành phố --</option>
+                <option value="">Chọn thành phố</option>
                 {cities.map((city) => (
                   <option key={city.code} value={city.name}>{city.name}</option>
                 ))}
@@ -244,7 +233,7 @@ const UpdateUser = () => {
                 className="admin-edit-account-select"
                 disabled={formData.role === "customer"}
               >
-                <option value="">-- Chọn quận --</option>
+                <option value="">Chọn quận</option>
                 {districts.map((d) => (
                   <option key={d.code} value={d.name}>{d.name}</option>
                 ))}
@@ -258,7 +247,7 @@ const UpdateUser = () => {
                 className="admin-edit-account-select"
                 disabled={formData.role === "customer"}
               >
-                <option value="">-- Chọn phường --</option>
+                <option value="">Chọn phường</option>
                 {wards.map((w) => (
                   <option key={w.code} value={w.name}>{w.name}</option>
                 ))}
@@ -272,7 +261,7 @@ const UpdateUser = () => {
                 className="admin-edit-account-select"
                 disabled={formData.role === "customer"}
               >
-                <option value="">-- Chọn vai trò --</option>
+                <option value="">Chọn vai trò</option>
                 <option value="customer">Khách hàng</option>
                 <option value="admin">Quản trị viên</option>
                 <option value="sale">Nhân viên bán hàng</option>
@@ -283,13 +272,6 @@ const UpdateUser = () => {
 
             <div className="admin-edit-account-image-upload">
               <label className="admin-edit-account-label">Ảnh đại diện</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="admin-edit-account-input-file"
-                disabled={formData.role === "customer"}
-              />
               {imagePreview && (
                 <img
                   src={imagePreview}
