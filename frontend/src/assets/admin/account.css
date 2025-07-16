@@ -33,8 +33,9 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-
-
+.disabled-icon {
+  pointer-events: none;
+}
 /* Bảng */
 .adminuser-table-wrapper {
   overflow-x: auto;
