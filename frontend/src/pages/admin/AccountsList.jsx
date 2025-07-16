@@ -133,21 +133,13 @@ const ListUser = () => {
                         {new Date(user.created_at).toLocaleString()}
                       </td>
                       <td className="adminuser-text-center adminuser-actions">
-                        {user.role !== "customer" && user.role !== "admin" ? (
-                          <FaEdit
-                            className="adminuser-icon adminuser-icon-edit"
-                            onClick={() =>
-                              navigate(`/admin/editaccount/${user.user_id}`)
-                            }
-                            title="Sửa user"
-                          />
-                        ) : (
-                          <FaEdit
-                            className="adminuser-icon adminuser-icon-edit disabled-icon"
-                            title="Không thể sửa"
-                            style={{ cursor: "not-allowed", opacity: 0.5 }}
-                          />
-                        )}
+                        <FaEdit
+                          className="adminuser-icon adminuser-icon-edit"
+                          onClick={() =>
+                            navigate(`/admin/editaccount/${user.user_id}`)
+                          }
+                          title="Sửa user"
+                        />
                       </td>
                     </tr>
                   ))
