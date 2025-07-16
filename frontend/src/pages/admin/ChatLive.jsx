@@ -10,16 +10,16 @@ import {
   fetchChatUserList,
   replyToChat,
   fetchChatHistory,
+  receiveMessageRealtime,
 } from "../../slices/AdminChatLive";
 import "../../assets/admin/ChatLiveAdmin.css";
-import Loading from "../../components/Loading";
 import { fetchProfileAdmin } from "../../slices/adminProfile";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Pusher from "pusher-js";
 import sound from "../../assets/sound/anhthanhtinnhanadmin.mp3"
-const ChatBotAdmin = () => {
+const ChatLiveAdmin = () => {
   const removeVietnameseTones = (str) => {
     return str
       .normalize("NFD")
@@ -49,9 +49,18 @@ const ChatBotAdmin = () => {
 }, [activeUser?.customer_id, dispatch]);
 
 
-  useEffect(() => {
+const chatMessages = useMemo(() => {
+  if (!activeUser) return [];
+  return chatHistory?.[activeUser.customer_id] || [];
+}, [chatHistory, activeUser]);
+
+useEffect(() => {
+  if (chatMessages.length > 0) {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatHistory, activeUser]);
+  }
+}, [chatMessages]);
+
+
 
  const handleSend = async () => {
   if (sending || !message.trim() || !activeUser) return;
@@ -72,15 +81,6 @@ const ChatBotAdmin = () => {
 
   setSending(false);
 };
-
-
-  const chatMessages = useMemo(() => {
-  if (!activeUser) return [];
-  const result = chatHistory?.[activeUser.customer_id] || [];
-  console.log(" Tin nhắn từ Redux:", result);
-  return result;
-}, [chatHistory, activeUser]);
-
   const { adminProfile } = useSelector((state) => state.adminProfile);
 
   const navigate = useNavigate();
@@ -117,7 +117,6 @@ useEffect(() => {
   activeUserRef.current = activeUser;
 }, [activeUser]);
 
-const audio = new Audio(sound);
 
 const audioRef = useRef(null);
 
@@ -143,16 +142,17 @@ useEffect(() => {
   const channel = pusher.subscribe("private-chat.admin");
 
   const handleChat = (data) => {
+    if (data.chat.sender_id === adminProfile?.user?.id) {
+      return;
+    }
     const customerId = data.chat?.customer_id;
     const sender = data.chat?.sender;
-
-    dispatch(fetchChatUserList());
 
     if (
       activeUserRef.current &&
       customerId === activeUserRef.current.customer_id
     ) {
-      dispatch(fetchChatHistory(customerId));
+      dispatch(receiveMessageRealtime(data.chat));
     }
 
     if (sender !== "admin" && audioRef.current) {
@@ -160,7 +160,7 @@ useEffect(() => {
         audioRef.current.play().catch((e) => {
           console.warn("Không thể phát âm thanh:", e);
         });
-      } catch (err) {
+      } catch (err)  {
         console.error("Lỗi âm thanh:", err);
       }
     }
@@ -250,7 +250,9 @@ useEffect(() => {
               Tin nhắn
             </div>
             <div className="chat-live-admin-manage-chat-list-items">
-              {chatUsersLoading && <Loading />}
+              {chatUsersLoading && (
+                <div className="text-center p-3">Đang tải danh sách...</div>
+              )}
               {chatUsers
                 .filter((user) =>
                   removeVietnameseTones(
@@ -499,4 +501,4 @@ useEffect(() => {
   );
 };
 
-export default ChatBotAdmin;
+export default ChatLiveAdmin;

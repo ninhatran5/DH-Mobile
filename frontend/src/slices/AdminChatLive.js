@@ -32,6 +32,7 @@ export const replyToChat = createAsyncThunk(
         message: res.data.message,
         images: res.data.images || [],
         created_at: res.data.created_at, 
+        sender: "admin",
       };
     } catch (err) {
       console.error(" Lỗi khi gửi tin nhắn:", err.response?.data || err.message);
@@ -73,6 +74,7 @@ console.log("📦 Gọi API lấy lịch sử chat của:", customerId);
       return {
         customerId,
         messages: res.data.chats,
+        sender: "admin",
       };
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -92,6 +94,8 @@ const chatLiveSlice = createSlice({
   },
   receiveMessageRealtime: (state, action) => {
     const { customer_id, message, sender, created_at, attachments = [] } = action.payload;
+    if (!message?.trim()) return;
+
     const msg = { message, sender, created_at, attachments };
 
     if (!state.chatHistory[customer_id]) {
@@ -133,10 +137,11 @@ const chatLiveSlice = createSlice({
 })
 .addCase(fetchChatHistory.fulfilled, (state, action) => {
   const { customerId, messages } = action.payload;
+  const filteredMessages = messages.filter((msg) => msg.message?.trim());
   state.chatHistoryLoading = false;
   state.chatHistory = {
     ...state.chatHistory,
-    [customerId]: messages,
+    [customerId]: filteredMessages,
   };
 })
 .addCase(fetchChatHistory.rejected, (state, action) => {
@@ -150,33 +155,22 @@ const chatLiveSlice = createSlice({
       .addCase(replyToChat.pending, (state) => {
         state.replyLoading = true;
       })
-     .addCase(replyToChat.fulfilled, (state, action) => {
+   .addCase(replyToChat.fulfilled, (state, action) => {
   state.replyLoading = false;
-  const { customer_id, message, created_at, images } = action.payload;
 
-  const newMsg = {
-    sender: "admin",
-    message,
-    created_at,
-    attachments: images || [],
-    is_read: 1,
-  };
-
-  if (!state.chatHistory[customer_id]) {
-    state.chatHistory[customer_id] = [];
-  }
-
-  const isDuplicate = state.chatHistory[customer_id].some(
-    (msg) =>
-      msg.message === newMsg.message &&
-      msg.created_at === newMsg.created_at &&
-      msg.sender === "admin"
-  );
-
-  if (!isDuplicate) {
-    state.chatHistory[customer_id].push(newMsg);
-  }
+  // Dùng lại reducer để tránh lặp code
+  chatLiveSlice.caseReducers.receiveMessageRealtime(state, {
+    payload: {
+      customer_id: action.payload.customer_id,
+      message: action.payload.message,
+      created_at: action.payload.created_at,
+      attachments: action.payload.images || [],
+      sender: "admin",
+    },
+    type: "chatLive/receiveMessageRealtime",
+  });
 })
+
 
 
       .addCase(replyToChat.rejected, (state, action) => {
