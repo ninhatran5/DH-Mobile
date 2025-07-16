@@ -30,6 +30,7 @@ class VnpayController extends Controller
             'customer' => 'required|string',
             'items' => 'required|array|min:1',
             'voucher_id' => 'nullable|integer',
+            'rank_discount' => 'nullable|integer',
         ]);
 
         // Kiểm tra tồn kho (giữ nguyên)
@@ -97,6 +98,7 @@ class VnpayController extends Controller
             'city' => $request->city,
             'phone' => $request->phone,
             'email' => $request->email,
+            'rank_discount' => $request->rank_discount,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -197,6 +199,7 @@ class VnpayController extends Controller
                 'phone' => $pending->phone,
                 'email' => $pending->email,
                 'customer' => $pending->customer,
+                'rank_discount' => $pending->rank_discount,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
