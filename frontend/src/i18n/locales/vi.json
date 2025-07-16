@@ -448,7 +448,8 @@
       "delivered": "Hoàn thành"
     },
     "receiverInfo": "Thông tin người nhận",
-    "orderInfo": "Thông tin đơn hàng"
+    "orderInfo": "Thông tin đơn hàng",
+    "rankDiscountInfo": "Giá ưu đãi theo hạng"
   },
   "auth": {
     "titleLogin": "Chào mừng bạn đến DH Moblie, hãy đăng nhập nhé!",
