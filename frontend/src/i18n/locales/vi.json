@@ -128,7 +128,7 @@
     "replied_to": "đã trả lời",
     "showMore": "Xem thêm",
     "showLess": "Ẩn bớt",
-    "reviews": "Bình luận"
+    "reviews": "Đánh giá"
   },
   "breadcrumbVoucher": {
     "breadcrumbHeader": "Mã Giảm Giá",
@@ -310,7 +310,9 @@
     "phoneMustBeNumber": "Số điện thoại chỉ được chứa các chữ số.",
     "email": "Email",
     "emailRequired": "Email là bắt buộc",
-    "emailInvalid": "Địa chỉ email không hợp lệ"
+    "emailInvalid": "Địa chỉ email không hợp lệ",
+    "rankDiscount": "Giảm giá theo hạng",
+    "voucherDiscount": "Giảm giá từ voucher"
   },
   "breadcrumb": {
     "home": "Trang chủ",

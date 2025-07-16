@@ -307,7 +307,9 @@
     "phoneMustBeNumber": "Phone number must contain only digits.",
     "email": "Email",
     "emailRequired": "Email is required",
-    "emailInvalid": "Invalid email address"
+    "emailInvalid": "Invalid email address",
+    "rankDiscount": "Rank discount",
+    "voucherDiscount": "Voucher discount"
   },
   "breadcrumb": {
     "home": "Home",
