@@ -27,6 +27,7 @@ class CodController extends Controller
             'customer' => 'required|string',
             'items' => 'required|array|min:1',
             'voucher_id' => 'nullable|integer',
+            'rank_discount' => 'nullable|integer',
         ]);
 
         if (empty($items) || !is_array($items)) {
@@ -70,6 +71,7 @@ class CodController extends Controller
                 'customer' => $request->customer,
                 'voucher_id' => null,
                 'voucher_discount' => 0,
+                'rank_discount' => $request->rank_discount ?? 0,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
