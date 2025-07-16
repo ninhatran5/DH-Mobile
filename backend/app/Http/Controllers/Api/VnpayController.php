@@ -55,6 +55,12 @@ class VnpayController extends Controller
             }
         }
 
+        // Áp dụng giảm giá hạng (rank_discount) nếu có
+        $rankDiscount = $request->rank_discount ?? 0;
+        if ($rankDiscount > 0) {
+            $total = max($total - $rankDiscount, 0);
+        }
+
 
         // Chỉ tính toán thông tin cần thiết
         $orderCode = $this->generateOrderCode();

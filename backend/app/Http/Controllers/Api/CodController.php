@@ -76,12 +76,11 @@ class CodController extends Controller
                 'updated_at' => now(),
             ]);
 
+
             $total = 0;
             $paidVariantIds = [];
-
             foreach ($items as $item) {
                 $variant = DB::table('product_variants')->where('variant_id', $item['variant_id'])->first();
-
                 DB::table('order_items')->insert([
                     'order_id' => $orderId,
                     'product_id' => $variant->product_id,
@@ -91,13 +90,17 @@ class CodController extends Controller
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
-
                 $total += $item['price_snapshot'] * $item['quantity'];
-
                 DB::table('product_variants')->where('variant_id', $item['variant_id'])->decrement('stock', $item['quantity']);
-
                 $paidVariantIds[] = $item['variant_id'];
             }
+
+            // Áp dụng giảm giá hạng (rank_discount) nếu có
+            $rankDiscount = $request->rank_discount ?? 0;
+            if ($rankDiscount > 0) {
+                $total = max($total - $rankDiscount, 0);
+            }
+
 
             // ==============================
             // Áp dụng voucher nếu có
