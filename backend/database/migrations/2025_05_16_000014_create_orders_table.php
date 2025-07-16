@@ -42,7 +42,7 @@ return new class extends Migration
                 'Đã hoàn tiền',
                 'Thanh toán thất bại'
             ])->default('Chưa thanh toán');
-
+            $table->decimal('rank_discount', 11, 2)->default(0);
             $table->unsignedBigInteger('voucher_id')->nullable();
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
