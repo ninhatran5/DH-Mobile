@@ -12,6 +12,7 @@ import { fetchCODCheckout, fetchVnpayCheckout } from "../slices/checkOutSlice";
 import { applyVoucher, fetchVoucherForUser } from "../slices/voucherSlice";
 import { toast } from "react-toastify";
 import { fetchCart } from "../slices/cartSlice";
+import { fetchRank } from "../slices/rankSlice";
 import ChangeAddressModal from "../components/ChangeAddressModal";
 import VoucherDropdown from "../components/VoucherDropdown";
 import "../assets/css/checkout.css";
@@ -23,6 +24,7 @@ const CheckOut = () => {
   const [discountAmount, setDiscountAmount] = useState(0);
   const [showVoucherDropdown, setShowVoucherDropdown] = useState(false);
   const [selectedVoucher, setSelectedVoucher] = useState(null);
+  const { ranks } = useSelector((state) => state.rank || {});
   const [loadingCOD, setLoadingCOD] = useState(false);
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -43,7 +45,14 @@ const CheckOut = () => {
     (sum, item) => sum + item.quantity * item?.variant?.price,
     0
   );
-  const finalPrice = totalPrice - discountAmount;
+  const rankDiscountPercent = ranks?.current_tier?.discount_percent
+    ? parseFloat(ranks.current_tier.discount_percent.replace("%", ""))
+    : 0;
+  const rankDiscountAmount = (totalPrice * rankDiscountPercent) / 100;
+
+  const voucherDiscountAmount = discountAmount || 0;
+
+  const finalPrice = totalPrice - rankDiscountAmount - voucherDiscountAmount;
 
   const handleApplyVoucher = async () => {
     if (!selectedVoucher) {
@@ -111,6 +120,7 @@ const CheckOut = () => {
         ? selectedVoucher.voucher_id || selectedVoucher.voucher?.voucher_id
         : null,
       voucher_discount: Number(discountAmount),
+      rank_discount: Number(rankDiscountAmount),
       address: addressData.address,
       customer: addressData.recipient_name || profile.user.full_name || "",
       email: addressData.email || profile.user.email || "",
@@ -152,6 +162,7 @@ const CheckOut = () => {
   useEffect(() => {
     dispatch(fetchProfile());
     dispatch(fetchVoucherForUser());
+    dispatch(fetchRank());
   }, [dispatch]);
 
   useEffect(() => {
@@ -504,15 +515,24 @@ const CheckOut = () => {
                     ))}
 
                     <ul className="checkout__total__all">
-                      <li>
-                        {t("checkout.discount")}:{" "}
-                        <span>- {numberFormat(discountAmount)}</span>
-                      </li>
+                      {rankDiscountAmount > 0 && (
+                        <li>
+                          {t("checkout.rankDiscount")}:{" "}
+                          <span>- {numberFormat(rankDiscountAmount)}</span>
+                        </li>
+                      )}
+                      {voucherDiscountAmount > 0 && (
+                        <li>
+                          {t("checkout.voucherDiscount")}:{" "}
+                          <span>- {numberFormat(voucherDiscountAmount)}</span>
+                        </li>
+                      )}
                       <li>
                         {t("checkout.totalMoney")}:{" "}
                         <span>{numberFormat(finalPrice)}</span>
                       </li>
                     </ul>
+
                     <button
                       className="site-btn"
                       onClick={handleCheckout}
