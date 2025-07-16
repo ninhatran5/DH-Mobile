@@ -25,6 +25,8 @@ class Orders extends Model
         'phone',
         'email',
         'customer',
+        'rank_discount',
+        'voucher_discount',
         'created_at',
         'updated_at',
     ];

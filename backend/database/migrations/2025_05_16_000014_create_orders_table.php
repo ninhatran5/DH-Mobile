@@ -44,6 +44,8 @@ return new class extends Migration
             ])->default('Chưa thanh toán');
             $table->decimal('rank_discount', 11, 2)->default(0);
             $table->unsignedBigInteger('voucher_id')->nullable();
+            $table->decimal('voucher_discount', 11, 2)->nullable();
+
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
 

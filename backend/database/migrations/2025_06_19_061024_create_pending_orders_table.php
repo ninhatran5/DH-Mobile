@@ -17,6 +17,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->json('items');
             $table->decimal('total_amount', 15, 2);
+            $table->unsignedBigInteger('voucher_id')->nullable();
+            $table->decimal('voucher_discount', 15, 2)->default(0);
             $table->string('customer')->nullable();
             $table->string('address')->nullable();
             $table->string('ward')->nullable();
