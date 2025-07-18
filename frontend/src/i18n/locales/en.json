@@ -449,7 +449,9 @@
       "delivered": "Completed"
     },
     "receiverInfo": "Recipient Information",
-    "orderInfo": "Order Information"
+    "orderInfo": "Order Information",
+    "rankDiscountInfo": "Tiered discount price"
+
   },
   "auth": {
     "titleLogin": "Welcome to DH Mobile, please Login!",

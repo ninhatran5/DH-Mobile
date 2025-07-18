@@ -139,10 +139,19 @@ const OrderDetail = () => {
       ? [
           {
             label: t("orderDetail.amountIsReduced"),
-            value: numberFormat(orderDetail?.voucher_discount),
+            value: `- ${numberFormat(orderDetail?.voucher_discount)}`,
           },
         ]
       : []),
+    ...(Number(orderDetail?.rank_discount) > 0
+      ? [
+          {
+            label: t("orderDetail.rankDiscountInfo"),
+            value: `- ${numberFormat(orderDetail?.rank_discount)}`,
+          },
+        ]
+      : []),
+
     {
       label: t("orderDetail.order_date"),
       value:
@@ -162,7 +171,8 @@ const OrderDetail = () => {
 
   const totalAmount = Number(orderDetail?.total_amount) || 0;
   const discount = Number(orderDetail?.voucher_discount) || 0;
-  const priceBeforeDiscount = totalAmount + discount;
+  const rankDiscount = Number(orderDetail?.rank_discount) || 0;
+  const priceBeforeDiscount = totalAmount + discount + rankDiscount;
   const totalBeforeDiscount = numberFormat(priceBeforeDiscount);
 
   const handleCancelOrder = async (orderId) => {
@@ -347,11 +357,12 @@ const OrderDetail = () => {
                           {numberFormat(totalAmount) ||
                             t("toast.pending_update")}
                         </span>
-                        {discount > 0 && (
-                          <small className="total_before_discount fw-bold">
-                            {totalBeforeDiscount}
-                          </small>
-                        )}
+                        {discount > 0 ||
+                          (rankDiscount > 0 && (
+                            <small className="total_before_discount fw-bold">
+                              {totalBeforeDiscount}
+                            </small>
+                          ))}
                       </td>
                     </tr>
                   </tfoot>

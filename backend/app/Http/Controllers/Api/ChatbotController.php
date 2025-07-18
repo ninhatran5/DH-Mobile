@@ -148,7 +148,15 @@ class ChatbotController extends Controller
         // Lấy intent có điểm cao nhất
         $maxScore = max($scores);
         if ($maxScore > 0) {
-            return array_search($maxScore, $scores);
+            $intent = array_search($maxScore, $scores);
+            // Nếu là chào hỏi hoặc tạm biệt thì trả lời nhanh
+            if ($intent === 'greeting') {
+                return 'greeting';
+            }
+            if ($intent === 'farewell') {
+                return 'farewell';
+            }
+            return $intent;
         }
 
         return 'general_query';
@@ -315,9 +323,9 @@ class ChatbotController extends Controller
     {
         $apiKey = config('services.openrouter.api_key');
         $endpoint = config('services.openrouter.endpoint');
-        $model = config('services.openrouter.model', 'deepseek/deepseek-r1-0528:free');
+        $model = config('services.openrouter.model');
         if (!$apiKey) {
-            return 'Hệ thống chưa cấu hình AI key.';
+            return 'Hệ thống hiện đang được bảo trì. Xin Quý Khách vui lòng quay lại sau khi bảo trì hoàn tất!';
         }
         $systemPrompt = 'Bạn là một trợ lý AI thân thiện, nói chuyện tự nhiên như con người, luôn trả lời ngắn gọn, dễ hiểu, tránh liệt kê máy móc, ưu tiên hội thoại gần gũi, có thể dùng emoji, markdown. Nếu không chắc chắn, hãy trả lời khéo léo và gợi mở thay vì trả lời cứng nhắc.';
         $data = [
@@ -360,9 +368,9 @@ class ChatbotController extends Controller
     {
         $apiKey = config('services.openrouter.api_key');
         $endpoint = config('services.openrouter.endpoint');
-        $model = config('services.openrouter.model', 'deepseek/deepseek-r1-0528:free');
+        $model = config('services.openrouter.model',);
         if (!$apiKey) {
-            return 'Hệ thống chưa cấu hình AI key.';
+            return 'Hệ thống hiện đang được bảo trì. Xin Quý Khách vui lòng quay lại sau khi bảo trì hoàn tất!';
         }
         $systemPrompt = 'Bạn là một trợ lý AI thân thiện, nói chuyện tự nhiên như con người, luôn trả lời ngắn gọn, dễ hiểu, tránh liệt kê máy móc, ưu tiên hội thoại gần gũi, có thể dùng emoji, markdown. Nếu không chắc chắn, hãy trả lời khéo léo và gợi mở thay vì trả lời cứng nhắc.';
         // Lấy context liên quan đến câu hỏi
@@ -509,7 +517,7 @@ class ChatbotController extends Controller
             return $json['choices'][0]['message']['content'];
         }
         return 'Xin lỗi, mình chưa có thông tin phù hợp cho câu hỏi này. Bạn có thể hỏi lại chi tiết hơn hoặc liên hệ nhân viên để được hỗ trợ nhé! 😊';
-    }   
+    }
 
     // Lấy lịch sử hội thoại của user (nếu có user_id)
     public function getConversation(Request $request)
