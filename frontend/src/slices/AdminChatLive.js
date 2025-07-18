@@ -8,7 +8,7 @@ const initialState = {
   replyLoading: false,
   replyError: null,
 
-  chatHistory: {}, // { customer_id: [messages] }
+  chatHistory: {}, 
   chatHistoryLoading: false,
   chatHistoryError: null,
 };

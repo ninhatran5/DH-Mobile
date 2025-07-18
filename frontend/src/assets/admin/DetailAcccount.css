@@ -1,0 +1,95 @@
+.admin-edit-account-container {
+  padding: 24px;
+  background-color: #fff;
+  border-radius: 8px;
+}
+
+.admin-edit-account-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+.user-detail-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.user-detail-section {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.user-detail-section-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.user-detail-flex {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+.user-detail-avatar img {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+}
+
+.user-detail-info {
+  flex: 1;
+}
+
+.user-detail-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+}
+
+.user-detail-info-item label {
+  font-weight: 500;
+  color: #555;
+  display: block;
+}
+
+.user-detail-info-item p {
+  margin: 4px 0 0;
+  color: #222;
+}
+
+.admin-edit-account-form-buttons {
+  margin-top: 24px;
+}
+
+.admin-edit-account-btn-cancel {
+  padding: 10px 20px;
+  border: none;
+  background-color: #ccc;
+  color: #000;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.admin-edit-account-btn-cancel:hover {
+  background-color: #bbb;
+}
+.titledeitail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.admin-edit-account-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
