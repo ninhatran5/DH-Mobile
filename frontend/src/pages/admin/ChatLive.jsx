@@ -2,7 +2,6 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { IoIosArrowDown } from "react-icons/io";
-import { AiFillInfoCircle, AiOutlineInfoCircle } from "react-icons/ai";
 import { IoSearchOutline } from "react-icons/io5";
 import { HiOutlinePaperClip } from "react-icons/hi";
 import { LuSend } from "react-icons/lu";
@@ -21,6 +20,9 @@ import Pusher from "pusher-js";
 import sound from "../../assets/sound/anhthanhtinnhanadmin.mp3";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { AiOutlineSearch, AiOutlineInfoCircle, AiFillInfoCircle } from "react-icons/ai";
+
+
 const ChatLiveAdmin = () => {
   const removeVietnameseTones = (str) => {
     return str
@@ -39,50 +41,67 @@ const ChatLiveAdmin = () => {
   const [showDetailPanel, setShowDetailPanel] = useState(false);
   const [sending, setSending] = useState(false);
   const messageEndRef = useRef(null);
+ const [showSearch, setShowSearch] = useState(false);
+
+
 
   useEffect(() => {
-    dispatch(fetchChatUserList());
+    const fetchData = async () => {
+      const res = await dispatch(fetchChatUserList());
+      console.log("Danh sách user từ API:", res.payload);
+    };
+    fetchData();
   }, [dispatch]);
 
+
   useEffect(() => {
-  if (activeUser?.customer_id) {
-    dispatch(fetchChatHistory(activeUser.customer_id));
-  }
-}, [activeUser?.customer_id, dispatch]);
+    if (activeUser?.customer_id) {
+      dispatch(fetchChatHistory(activeUser.customer_id));
+    }
+  }, [activeUser?.customer_id, dispatch]);
 
 
-const chatMessages = useMemo(() => {
-  if (!activeUser) return [];
-  return chatHistory?.[activeUser.customer_id] || [];
-}, [chatHistory, activeUser]);
+  const chatMessages = useMemo(() => {
+    if (!activeUser) return [];
+    return chatHistory?.[activeUser.customer_id] || [];
+  }, [chatHistory, activeUser]);
 
-useEffect(() => {
-  if (chatMessages.length > 0) {
-    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }
-}, [chatMessages]);
+  useEffect(() => {
+    if (chatMessages.length > 0) {
+      messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chatMessages]);
 
+  const [searchMessageTerm, setSearchMessageTerm] = useState("");
+  const filteredMessages = useMemo(() => {
+    if (!searchMessageTerm.trim()) return chatMessages;
 
+    const normalizedTerm = removeVietnameseTones(searchMessageTerm.toLowerCase());
 
- const handleSend = async () => {
-  if (sending || !message.trim() || !activeUser) return;
-  setSending(true);
+    return chatMessages.filter((msg) =>
+      removeVietnameseTones(msg.message.toLowerCase()).includes(normalizedTerm)
+    );
+  }, [chatMessages, searchMessageTerm]);
 
-  const payload = {
-    customer_id: activeUser.customer_id,
-    message,
-    images_base64: [],
+  const handleSend = async () => {
+    if (sending || !message.trim() || !activeUser) return;
+    setSending(true);
+
+    const payload = {
+      customer_id: activeUser.customer_id,
+      message,
+      images_base64: [],
+    };
+
+    try {
+      await dispatch(replyToChat(payload)).unwrap();
+      setMessage("");
+    } catch (err) {
+      console.error("Gửi lỗi:", err);
+    }
+
+    setSending(false);
   };
-
-  try {
-    await dispatch(replyToChat(payload)).unwrap();
-    setMessage("");
-  } catch (err) {
-    console.error("Gửi lỗi:", err);
-  }
-
-  setSending(false);
-};
   const { adminProfile } = useSelector((state) => state.adminProfile);
 
   const navigate = useNavigate();
@@ -113,69 +132,69 @@ useEffect(() => {
     dispatch(fetchProfileAdmin());
   }, [dispatch]);
 
-const activeUserRef = useRef(null);
+  const activeUserRef = useRef(null);
 
-useEffect(() => {
-  activeUserRef.current = activeUser;
-}, [activeUser]);
+  useEffect(() => {
+    activeUserRef.current = activeUser;
+  }, [activeUser]);
 
 
-const audioRef = useRef(null);
+  const audioRef = useRef(null);
 
-useEffect(() => {
-  if (!adminProfile?.user?.id) return;
+  useEffect(() => {
+    if (!adminProfile?.user?.id) return;
 
-  if (!audioRef.current) {
-    audioRef.current = new Audio(sound);
-  }
+    if (!audioRef.current) {
+      audioRef.current = new Audio(sound);
+    }
 
-  const pusher = new Pusher(import.meta.env.VITE_PUSHER_KEY, {
-    cluster: import.meta.env.VITE_PUSHER_CLUSTER,
-    authEndpoint: `${import.meta.env.VITE_BASE_URL_REAL_TIME}/broadcasting/auth`,
-    auth: {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+    const pusher = new Pusher(import.meta.env.VITE_PUSHER_KEY, {
+      cluster: import.meta.env.VITE_PUSHER_CLUSTER,
+      authEndpoint: `${import.meta.env.VITE_BASE_URL_REAL_TIME}/broadcasting/auth`,
+      auth: {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+        },
       },
-    },
-    forceTLS: true,
-    withCredentials: true,
-  });
+      forceTLS: true,
+      withCredentials: true,
+    });
 
-  const channel = pusher.subscribe("private-chat.admin");
+    const channel = pusher.subscribe("private-chat.admin");
 
-  const handleChat = (data) => {
-    if (data.chat.sender_id === adminProfile?.user?.id) {
-      return;
-    }
-    const customerId = data.chat?.customer_id;
-    const sender = data.chat?.sender;
-
-    if (
-      activeUserRef.current &&
-      customerId === activeUserRef.current.customer_id
-    ) {
-      dispatch(receiveMessageRealtime(data.chat));
-    }
-
-    if (sender !== "admin" && audioRef.current) {
-      try {
-        audioRef.current.play().catch((e) => {
-          console.warn("Không thể phát âm thanh:", e);
-        });
-      } catch (err)  {
-        console.error("Lỗi âm thanh:", err);
+    const handleChat = (data) => {
+      if (data.chat.sender_id === adminProfile?.user?.id) {
+        return;
       }
-    }
-  };
+      const customerId = data.chat?.customer_id;
+      const sender = data.chat?.sender;
 
-  channel.bind("SupportChatSent", handleChat);
-dayjs.extend(utc); 
-  return () => {
-    channel.unbind("SupportChatSent", handleChat); // <== Gỡ đúng handler
-    channel.unsubscribe();
-    pusher.disconnect();
-  };
-}, [adminProfile?.user?.id]);
+      if (
+        activeUserRef.current &&
+        customerId === activeUserRef.current.customer_id
+      ) {
+        dispatch(receiveMessageRealtime(data.chat));
+      }
+
+      if (sender !== "admin" && audioRef.current) {
+        try {
+          audioRef.current.play().catch((e) => {
+            console.warn("Không thể phát âm thanh:", e);
+          });
+        } catch (err) {
+          console.error("Lỗi âm thanh:", err);
+        }
+      }
+    };
+
+    channel.bind("SupportChatSent", handleChat);
+    dayjs.extend(utc);
+    return () => {
+      channel.unbind("SupportChatSent", handleChat);
+      channel.unsubscribe();
+      pusher.disconnect();
+    };
+  }, [adminProfile?.user?.id]);
 
 
 
@@ -183,9 +202,8 @@ dayjs.extend(utc);
     <div className="chat-live-admin-manage-app-wrapper">
       <main className="chat-live-admin-manage-main-content">
         <div
-          className={`chat-live-admin-manage-chat-layout${
-            showDetailPanel ? " chat-live-admin-manage-has-detail-panel" : ""
-          }`}
+          className={`chat-live-admin-manage-chat-layout${showDetailPanel ? " chat-live-admin-manage-has-detail-panel" : ""
+            }`}
         >
           <div className="chat-live-admin-manage-chat-list">
             <header className="chat-live-admin-manage-header">
@@ -264,11 +282,10 @@ dayjs.extend(utc);
                 .map((user) => (
                   <div
                     key={user.customer_id}
-                    className={`chat-live-admin-manage-chat-item${
-                      activeUser?.customer_id === user.customer_id
+                    className={`chat-live-admin-manage-chat-item${activeUser?.customer_id === user.customer_id
                         ? " active"
                         : ""
-                    }`}
+                      }`}
                     onClick={() => setActiveUser(user)}
                   >
                     <div className="chat-live-admin-manage-chat-item-inner">
@@ -278,29 +295,26 @@ dayjs.extend(utc);
                           {user.customer_name}
                         </div>
                         <div className="chat-live-admin-manage-chat-list-status">
-                         {user.last_message ? (
-  <div className="chat-last-message-preview">
-  <span style={{ fontWeight: 500, marginRight: 4 }}>
-    {user.last_message?.sender === "admin"
-      ? "Bạn:"
-      : `${user.customer_name}:`}
-  </span>
-  <span style={{ color: "#555" }}>
-    {user.last_message?.content || ""}
-  </span>
-  <br />
-  <small style={{ color: "#999", fontSize: 12 }}>
-    {user.last_message_time
-      ? dayjs(user.last_message_time).local().format("HH:mm DD/MM")
-      : "Chưa có tin nhắn"}
-  </small>
-</div>
-
-) : (
-  <span className="text-muted">...</span>
-)}
-
+                          {user.last_message ? (
+                            <div className="chat-last-message-preview">
+                              <span style={{ fontWeight: 500, marginRight: 4 }}>
+                                {user.last_message?.sender === "admin" ? "Bạn:" : ""}
+                              </span>
+                              <span style={{ color: "#555" }}>
+                                {user.last_message?.content || ""}
+                              </span>
+                              <br />
+                              <small style={{ color: "#999", fontSize: 12 }}>
+                                {user.last_message_time
+                                  ? dayjs(user.last_message_time).local().format("HH:mm DD/MM")
+                                  : "Chưa có tin nhắn"}
+                              </small>
+                            </div>
+                          ) : (
+                            <span className="text-muted">...</span>
+                          )}
                         </div>
+
                       </div>
                     </div>
                     {user.unread_count > 0 && (
@@ -313,160 +327,186 @@ dayjs.extend(utc);
             </div>
           </div>
           {/* Chat Box */}
-          <div className="chat-live-admin-manage-chat-box">
-            {activeUser ? (
-              <>
-                <div className="chat-live-admin-manage-chat-box-header">
-                  <img src={activeUser.avatar_url} alt="avatar" />
-                  <div>
-                    <div className="chat-live-admin-manage-chat-box-name">
-                      {activeUser.customer_name}
-                    </div>
-                    <div className="chat-live-admin-manage-chat-box-status">
-                      @{activeUser.customer_name}
-                    </div>
-                  </div>
-                  <div
-                    className="chat-live-admin-manage-chat-box-actions ms-auto chat-live-admin-manage-pointer"
-                    onClick={() => setShowDetailPanel((prev) => !prev)}
-                  >
-                    {showDetailPanel ? (
-                      <AiFillInfoCircle />
-                    ) : (
-                      <AiOutlineInfoCircle />
-                    )}
-                  </div>
-                </div>
-                <div className="chat-live-admin-manage-chat-messages">
-                  {chatHistoryLoading ? (
-                    <p className="text-muted text-center">
-                      Đang tải tin nhắn...
-                    </p>
-                  ) : chatMessages.length === 0 ? (
-                    <p className="text-center text-muted">
-                      Chưa có tin nhắn nào.
-                    </p>
-                  ) : (
-                    chatMessages.map((msg, idx) =>
-                      msg.sender !== "admin" ? (
-                        <div
-                          className="chat-live-admin-manage-message-group"
-                          key={idx}
-                        >
-                          <img
-                            src={activeUser.avatar_url}
-                            alt="avatar"
-                            className="chat-live-admin-manage-message-avatar"
-                          />
-                          <div className="chat-live-admin-manage-message-group-inner">
-                            <div className="chat-live-admin-manage-message left">
-                              {msg.message}
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div
-                          className="chat-live-admin-manage-message-group"
-                          key={idx}
-                        >
-                          <div
-                            className="chat-live-admin-manage-message-group-inner"
-                            style={{ alignItems: "flex-end", width: "100%" }}
-                          >
-                            <div className="chat-live-admin-manage-message right">
-                              {msg.message}
-                            </div>
-                          </div>
-                        </div>
-                      )
-                    )
-                  )}
-                  <div ref={messageEndRef}></div>
-                </div>
-                <div className="chat-live-admin-manage-chat-input">
-                  <input
-                    type="text"
-                    placeholder="Nhắn tin..."
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        handleSend();
-                      }
-                    }}
-                  />
-                  <label
-                    htmlFor="file-upload"
-                    className="chat-live-admin-manage-pointer chat-live-admin-manage-no-margin-bottom"
-                  >
-                    <HiOutlinePaperClip className="chat-live-admin-manage-clip-icon" />
-                  </label>
-                  <input
-                    id="file-upload"
-                    type="file"
-                    accept=".jpg,.jpeg,.png"
-                    style={{ display: "none" }}
-                  />
-                  <button onClick={handleSend} disabled={sending}>
-                    {sending ? (
-                      <span
-                        className="chat_spinner"
-                        style={{
-                          width: 20,
-                          height: 20,
-                          display: "inline-block",
-                        }}
-                      />
-                    ) : (
-                      <LuSend className="chat-send-icon" />
-                    )}
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  minHeight: "calc(87vh)",
-                  width: "100%",
-                  padding: "24px 10px",
-                  boxSizing: "border-box",
-                }}
-              >
-                <svg
-                  style={{
-                    marginBottom: "25px",
-                    color: "#333",
-                    width: "80px",
-                    height: "80px",
-                    maxWidth: "100%",
-                  }}
-                  width={80}
-                  height={80}
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 512 512"
-                >
-                  <path d="M256.6 8C116.5 8 8 110.3 8 248.6c0 72.3 29.7 134.8 78.1 177.9 8.4 7.5 6.6 11.9 8.1 58.2A19.9 19.9 0 0 0 122 502.3c52.9-23.3 53.6-25.1 62.6-22.7C337.9 521.8 504 423.7 504 248.6 504 110.3 396.6 8 256.6 8zm149.2 185.1l-73 115.6a37.4 37.4 0 0 1 -53.9 9.9l-58.1-43.5a15 15 0 0 0 -18 0l-78.4 59.4c-10.5 7.9-24.2-4.6-17.1-15.7l73-115.6a37.4 37.4 0 0 1 53.9-9.9l58.1 43.5a15 15 0 0 0 18 0l78.4-59.4c10.4-8 24.1 4.5 17.1 15.6z" />
-                </svg>
-                <h5
-                  style={{
-                    fontWeight: 600,
-                    fontSize: "clamp(16px,2vw,20px)",
-                    marginBottom: 8,
-                    color: "#333",
-                    textAlign: "center",
-                    wordBreak: "break-word",
-                  }}
-                >
-                  Chọn một người dùng để bắt đầu trò chuyện
-                </h5>
-              </div>
-            )}
+         <div className="chat-live-admin-manage-chat-box">
+  {activeUser ? (
+    <>
+      <div className="chat-live-admin-manage-chat-box-header">
+        <img src={activeUser.avatar_url} alt="avatar" />
+        <div>
+          <div className="chat-live-admin-manage-chat-box-name">
+            {activeUser.customer_name}
           </div>
+          <div className="chat-live-admin-manage-chat-box-status">
+            @{activeUser.customer_name}
+          </div>
+        </div>
+
+        {/* Nút action bên phải */}
+        <div className="chat-live-admin-manage-chat-box-actions ms-auto d-flex align-items-center gap-2">
+          {/* Nút tìm kiếm */}
+          <div
+            className="chat-live-admin-manage-pointer"
+            onClick={() => setShowSearch((prev) => !prev)}
+          >
+            <AiOutlineSearch size={20} />
+          </div>
+
+          {/* Nút chi tiết người dùng */}
+          <div
+            className="chat-live-admin-manage-pointer"
+            onClick={() => setShowDetailPanel((prev) => !prev)}
+          >
+            {showDetailPanel ? <AiFillInfoCircle /> : <AiOutlineInfoCircle />}
+          </div>
+        </div>
+      </div>
+
+      {/* Form tìm kiếm chỉ hiện khi showSearch = true */}
+      {showSearch && (
+        <div
+          className="chat-live-admin-manage-chat-search-messages"
+          style={{ padding: "0 12px", marginTop: "8px" }}
+        >
+          <input
+            type="text"
+            placeholder="Tìm trong tin nhắn..."
+            value={searchMessageTerm}
+            onChange={(e) => setSearchMessageTerm(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "8px",
+              marginBottom: "12px",
+              border: "1px solid #ccc",
+              borderRadius: "6px",
+            }}
+          />
+        </div>
+      )}
+
+      {/* Danh sách tin nhắn */}
+      <div className="chat-live-admin-manage-chat-messages">
+        {chatHistoryLoading ? (
+          <p className="text-muted text-center">Đang tải tin nhắn...</p>
+        ) : filteredMessages.length === 0 ? (
+          <p className="text-center text-muted">Chưa có tin nhắn nào.</p>
+        ) : (
+          filteredMessages.map((msg, idx) =>
+            msg.sender !== "admin" ? (
+              <div className="chat-live-admin-manage-message-group" key={idx}>
+                <img
+                  src={activeUser.avatar_url}
+                  alt="avatar"
+                  className="chat-live-admin-manage-message-avatar"
+                />
+                <div className="chat-live-admin-manage-message-group-inner">
+                  <div className="chat-live-admin-manage-message left">
+                    {msg.message}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="chat-live-admin-manage-message-group" key={idx}>
+                <div
+                  className="chat-live-admin-manage-message-group-inner"
+                  style={{ alignItems: "flex-end", width: "100%" }}
+                >
+                  <div className="chat-live-admin-manage-message right">
+                    {msg.message}
+                  </div>
+                </div>
+              </div>
+            )
+          )
+        )}
+        <div ref={messageEndRef}></div>
+      </div>
+
+      {/* Ô nhập tin nhắn */}
+      <div className="chat-live-admin-manage-chat-input">
+        <input
+          type="text"
+          placeholder="Nhắn tin..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleSend();
+            }
+          }}
+        />
+        <label
+          htmlFor="file-upload"
+          className="chat-live-admin-manage-pointer chat-live-admin-manage-no-margin-bottom"
+        >
+          <HiOutlinePaperClip className="chat-live-admin-manage-clip-icon" />
+        </label>
+        <input
+          id="file-upload"
+          type="file"
+          accept=".jpg,.jpeg,.png"
+          style={{ display: "none" }}
+        />
+        <button onClick={handleSend} disabled={sending}>
+          {sending ? (
+            <span
+              className="chat_spinner"
+              style={{
+                width: 20,
+                height: 20,
+                display: "inline-block",
+              }}
+            />
+          ) : (
+            <LuSend className="chat-send-icon" />
+          )}
+        </button>
+      </div>
+    </>
+  ) : (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "calc(87vh)",
+        width: "100%",
+        padding: "24px 10px",
+        boxSizing: "border-box",
+      }}
+    >
+      <svg
+        style={{
+          marginBottom: "25px",
+          color: "#333",
+          width: "80px",
+          height: "80px",
+          maxWidth: "100%",
+        }}
+        width={80}
+        height={80}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 512 512"
+      >
+        <path d="M256.6 8C116.5 8 8 110.3 8 248.6c0 72.3 29.7 134.8 78.1 177.9 8.4 7.5 6.6 11.9 8.1 58.2A19.9 19.9 0 0 0 122 502.3c52.9-23.3 53.6-25.1 62.6-22.7C337.9 521.8 504 423.7 504 248.6 504 110.3 396.6 8 256.6 8zm149.2 185.1l-73 115.6a37.4 37.4 0 0 1 -53.9 9.9l-58.1-43.5a15 15 0 0 0 -18 0l-78.4 59.4c-10.5 7.9-24.2-4.6-17.1-15.7l73-115.6a37.4 37.4 0 0 1 53.9-9.9l58.1 43.5a15 15 0 0 0 18 0l78.4-59.4c10.4-8 24.1 4.5 17.1 15.6z" />
+      </svg>
+      <h5
+        style={{
+          fontWeight: 600,
+          fontSize: "clamp(16px,2vw,20px)",
+          marginBottom: 8,
+          color: "#333",
+          textAlign: "center",
+          wordBreak: "break-word",
+        }}
+      >
+        Chọn một người dùng để bắt đầu trò chuyện
+      </h5>
+    </div>
+  )}
+</div>
+
 
           {/* Detail Panel */}
           {showDetailPanel && activeUser && (
@@ -490,24 +530,10 @@ dayjs.extend(utc);
                 </div>
               </div>
               <hr className="chat-live-admin-manage-detail-divider" />
-              <div className="chat-live-admin-manage-detail-member-title">
-                Thành viên
-              </div>
-              <div className="chat-live-admin-manage-detail-member">
-                <img
-                  src={activeUser.avatar_url}
-                  alt="avatar"
-                  className="chat-live-admin-manage-detail-member-avatar"
-                />
-                <div>
-                  <div className="chat-live-admin-manage-detail-member-name">
-                    {activeUser.customer_name}
-                  </div>
-                  <div className="chat-live-admin-manage-detail-member-username">
-                    @{activeUser.customer_name}
-                  </div>
-                </div>
-              </div>
+              
+
+             
+
               <div className="chat-live-admin-manage-detail-actions">
                 <button className="chat-live-admin-manage-detail-block-btn">
                   Chặn

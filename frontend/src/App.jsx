@@ -57,7 +57,7 @@ import AddAttributevalues from "./pages/admin/AddAttributevalues";
 import EditAttributevalues from "./pages/admin/EditAttributevalues";
 import MyDiscountCode from "./pages/MyDiscountCode";
 import EditProduct from "./pages/admin/EditProducts";
-import EditAccount from "./pages/admin/EditAcccount";
+import DetailAccount from "./pages/admin/DetailAcccount";
 import AddVariant from "./pages/admin/AddVariant";
 import EditVoucher from "./pages/admin/EditVoucher";
 import EditVariant from "./pages/admin/UpdateVariant";
@@ -405,10 +405,10 @@ const routerConfig = [
         ),
       },
       {
-        path: "editaccount/:id",
+        path: "detailaccount/:id",
         element: (
           <RequireNotSaleRole>
-            <EditAccount />
+            <DetailAccount />
           </RequireNotSaleRole>
         ),
       },

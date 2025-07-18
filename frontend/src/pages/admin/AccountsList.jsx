@@ -135,11 +135,10 @@ const ListUser = () => {
                       <td className="adminuser-text-center adminuser-actions">
                         <FaEdit
                           className="adminuser-icon adminuser-icon-edit"
-                          onClick={() =>
-                            navigate(`/admin/editaccount/${user.user_id}`)
-                          }
+                          onClick={() => navigate(`/admin/detailaccount/${user.user_id}`)}
                           title="Sửa user"
                         />
+                        
                       </td>
                     </tr>
                   ))
