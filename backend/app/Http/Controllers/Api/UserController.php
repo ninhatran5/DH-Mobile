@@ -152,6 +152,7 @@ class UserController extends Controller
             'city' => 'nullable|string|max:100',
             // Cho phép image_url là file hoặc string URL
             'image_url' => 'nullable',
+            'role' => 'nullable|in:admin,customer,sale'
         ]);
 
         if ($request->hasFile('image_url')) {
