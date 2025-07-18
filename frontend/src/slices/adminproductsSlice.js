@@ -6,6 +6,7 @@ const initialState = {
   loading: false,
   error: null,
   totalPages: 1,
+  variantsByProductId: {},
 };
 
 export const fetchAdminProducts = createAsyncThunk(
@@ -91,6 +92,32 @@ export const updateAdminProduct = createAsyncThunk(
   }
 );
 
+// Lấy danh sách variant của một sản phẩm
+export const fetchProductVariants = createAsyncThunk(
+  "adminproduct/fetchProductVariants",
+  async (productId, { rejectWithValue }) => {
+    try {
+      const res = await axiosAdmin.get(`/productvariants/${productId}`);
+      return {
+        productId,
+        variants: res.data.data || [],
+      };
+    } catch (err) {
+      if (err.response?.status === 404) {
+        // Trường hợp không có biến thể, coi như trả về mảng rỗng
+        return {
+          productId,
+          variants: [],
+        };
+      }
+      return rejectWithValue(
+        err.response?.data?.message || "Lỗi khi lấy biến thể sản phẩm"
+      );
+    }
+  }
+);
+
+
 
 const adminProductSlice = createSlice({
   name: "adminproduct",
@@ -168,7 +195,16 @@ const adminProductSlice = createSlice({
       .addCase(updateAdminProduct.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      .addCase(fetchProductVariants.fulfilled, (state, action) => {
+        const { productId, variants } = action.payload;
+        state.variantsByProductId[productId] = variants;
+      })
+      .addCase(fetchProductVariants.rejected, (state, action) => {
+        state.error = action.payload;
       });
+
   },
 });
 

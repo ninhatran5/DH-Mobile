@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAdminProducts,
   deleteAdminProduct,
+  fetchProductVariants
 } from "../../slices/adminproductsSlice";
 import { fetchCategories } from "../../slices/adminCategories";
 import { toast } from "react-toastify";
@@ -25,6 +26,7 @@ const ProductList = () => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  
   const [filters, setFilters] = useState({
     priceRange: "all",
     category: "all",
@@ -39,6 +41,27 @@ const ProductList = () => {
       toast.error(`Lỗi từ server: ${error}`);
     }
   }, [dispatch, error]);
+
+ useEffect(() => {
+  const fetchAllVariants = async () => {
+    if (adminproducts.length > 0) {
+      try {
+        const results = await Promise.all(
+          adminproducts.map((product) =>
+            dispatch(fetchProductVariants(product.product_id)).unwrap()
+          )
+        );
+
+        console.log("Danh sách biến thể từng sản phẩm:", results);
+      } catch (error) {
+        console.error("Lỗi khi lấy biến thể:", error);
+      }
+    }
+  };
+
+  fetchAllVariants();
+}, [dispatch, adminproducts]);
+
 
   useEffect(() => {
     setSearchParams((params) => {
@@ -102,8 +125,21 @@ const ProductList = () => {
     }
   };
 
-  const handleDeleteSingle = async (productId) => {
-    const result = await Swal.fire({
+ const handleDeleteSingle = async (productId) => {
+  try {
+    console.log("🔍 Gọi fetchProductVariants với productId:", productId);
+    const fetchResult = await dispatch(fetchProductVariants(productId)).unwrap();
+    console.log("Kết quả fetchProductVariants:", fetchResult);
+
+    // Lấy mảng biến thể thực tế
+    const variants = fetchResult.variants?.variants || [];
+
+    if (variants.length > 0) {
+      toast.warning(" Không thể xoá sản phẩm vì có biến thể.");
+      return;
+    }
+
+    const confirmResult = await Swal.fire({
       title: "Bạn có chắc muốn xóa sản phẩm này?",
       icon: "warning",
       showCancelButton: true,
@@ -111,26 +147,25 @@ const ProductList = () => {
       cancelButtonText: "Huỷ",
       confirmButtonColor: "#dc2626",
       cancelButtonColor: "#e5e7eb",
-      reverseButtons: true
+      reverseButtons: true,
     });
-    if (result.isConfirmed) {
-      try {
-        const resultAction = await dispatch(deleteAdminProduct(productId));
-        if (deleteAdminProduct.rejected.match(resultAction)) {
-          toast.error(`Lỗi khi xóa sản phẩm: ${resultAction.error.message}`);
-        }
-        setSelectedProducts(selectedProducts.filter((id) => id !== productId));
-        Swal.fire({
-          icon: "success",
-          title: "Đã xoá thành công!",
-          showConfirmButton: false,
-          timer: 1500
-        });
-      } catch (error) {
-        toast.error(`Lỗi từ server: ${error.message}`);
-      }
+
+    if (confirmResult.isConfirmed) {
+      await dispatch(deleteAdminProduct(productId));
+      setSelectedProducts((prev) => prev.filter((id) => id !== productId));
+
+      Swal.fire({
+        icon: "success",
+        title: " Đã xoá thành công!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
     }
-  };
+  } catch (error) {
+    toast.error(error.message || "❌ Lỗi khi kiểm tra biến thể sản phẩm");
+  }
+};
+
 
   const handleFilterChange = (filterType, value) => {
     setFilters((prev) => ({
