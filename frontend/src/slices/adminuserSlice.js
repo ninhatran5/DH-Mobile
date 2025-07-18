@@ -103,10 +103,7 @@ export const updateUser = createAsyncThunk(
           },
         }
       );
-
-
-      // Nếu API trả về user đã cập nhật ở res.data.data
-      return res.data.data || null;
+     return res.data.user;
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.message || "Lỗi khi cập nhật user"

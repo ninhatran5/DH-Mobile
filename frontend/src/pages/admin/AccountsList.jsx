@@ -1,20 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUsers } from "../../slices/adminuserSlice";
+import { fetchUsers, updateUser } from "../../slices/adminuserSlice";
 import "../../assets/admin/account.css";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import defaultAvatar from "../../assets/images/adminacccount.jpg";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-
+import Swal from 'sweetalert2';
 const ListUser = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const {
-    users = [],
-    loading,
-    error,
-  } = useSelector((state) => state.adminuser);
+  const { users = [], loading, error } = useSelector((state) => state.adminuser);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -29,10 +25,62 @@ const ListUser = () => {
     navigate("/admin/addaccount");
   };
 
+ const handleChangeRole = async (user, newRole) => {
+  console.log("User được chọn:", user);
+  if (!user || !user.user_id) {
+    Swal.fire("Lỗi", "Không tìm thấy ID của người dùng.", "error");
+    return;
+  }
+
+  if (user.role !== "sale") {
+    Swal.fire("Thông báo", "Chỉ được cập nhật vai trò nếu user hiện tại là 'sale'.", "info");
+    return;
+  }
+
+  if (newRole === user.role) return;
+
+  const result = await Swal.fire({
+    title: "Xác nhận thay đổi vai trò",
+    html: `Bạn có chắc muốn đổi vai trò của <strong>${user.username}</strong> từ <strong>${user.role}</strong> thành <strong>${newRole}</strong>?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Đồng ý",
+    cancelButtonText: "Hủy",
+  });
+
+  if (result.isConfirmed) {
+    try {
+      const formData = new FormData();
+      formData.append("role", newRole);
+
+      await dispatch(
+        updateUser({
+          id: user.user_id,
+          updatedData: formData,
+        })
+      ).unwrap();
+
+      dispatch(fetchUsers());
+
+      await Swal.fire({
+        title: "Thành công",
+        text: "Cập nhật vai trò thành công!",
+        icon: "success",
+      });
+    } catch (err) {
+      console.error("Lỗi khi cập nhật role:", err);
+      await Swal.fire({
+        title: "Thất bại",
+        text: "Cập nhật vai trò thất bại!",
+        icon: "error",
+      });
+    }
+  }
+};
+
+
   const filteredUsers = users.filter((user) => {
-    const matchesSearch = user.username
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+    const matchesSearch = user.username.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = selectedRole ? user.role === selectedRole : true;
     return matchesSearch && matchesRole;
   });
@@ -76,16 +124,8 @@ const ListUser = () => {
         </div>
       </div>
 
-      {loading && (
-        <div className="adminuser-loading">
-          <p>Đang tải dữ liệu...</p>
-        </div>
-      )}
-      {error && (
-        <div className="adminuser-error">
-          <p>Lỗi: {error}</p>
-        </div>
-      )}
+      {loading && <div className="adminuser-loading"><p>Đang tải dữ liệu...</p></div>}
+      {error && <div className="adminuser-error"><p>Lỗi: {error}</p></div>}
 
       {!loading && !error && (
         <>
@@ -128,17 +168,30 @@ const ListUser = () => {
                       <td>{user.full_name}</td>
                       <td>{user.email}</td>
                       <td>{user.phone}</td>
-                      <td className="adminuser-text-center">{user.role}</td>
+                      <td className="adminuser-text-center">
+  {user.role === "sale" ? (
+    <select
+      value={user.role}
+      onChange={(e) => handleChangeRole(user, e.target.value)}
+      className="adminuser-role-select"
+    >
+      <option value="admin">admin</option>
+      <option value="sale">sale</option>
+    </select>
+  ) : (
+    <span>{user.role}</span>
+  )}
+</td>
+
                       <td className="adminuser-text-center">
                         {new Date(user.created_at).toLocaleString()}
                       </td>
                       <td className="adminuser-text-center adminuser-actions">
-                        <FaEdit
-                          className="adminuser-icon adminuser-icon-edit"
+                        <FaEye
+                          className="adminuser-icon adminuser-icon-view"
                           onClick={() => navigate(`/admin/detailaccount/${user.user_id}`)}
-                          title="Sửa user"
+                          title="Xem chi tiết user"
                         />
-                        
                       </td>
                     </tr>
                   ))
@@ -153,7 +206,6 @@ const ListUser = () => {
             </table>
           </div>
 
-          {/* Pagination */}
           <div className="adminuser-pagination">
             <button
               className="pagination-btn"
@@ -166,9 +218,7 @@ const ListUser = () => {
             {Array.from({ length: totalPages }, (_, i) => (
               <button
                 key={i}
-                className={`pagination-btn ${
-                  currentPage === i + 1 ? "active" : ""
-                }`}
+                className={`pagination-btn ${currentPage === i + 1 ? "active" : ""}`}
                 onClick={() => setCurrentPage(i + 1)}
               >
                 {i + 1}
@@ -177,9 +227,7 @@ const ListUser = () => {
 
             <button
               className="pagination-btn"
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
             >
               Sau &raquo;
