@@ -202,6 +202,7 @@ class ChatLiveController extends Controller
 
                 return [
                     'customer_id' => $customer->user_id,
+                    'role' => $customer->role,
                     'customer_name' => $customer->username,
                     'customer_fule_name' => $customer->full_name,
                     'avatar_url' => $avatarUrl,
