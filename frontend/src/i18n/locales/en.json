@@ -123,7 +123,7 @@
     "comment": "Comments",
     "quantity": "Quantity",
     "product": "Products",
-    "coinReward": "Earn <b>{{coins}}</b> coins when you complete this order"
+    "coinReward": "Earn <b>{{coins}}</b> points when you complete this order"
   },
   "comment": {
     "replied_to": "replied to",
@@ -410,7 +410,10 @@
     "noOrder": "No orders found.",
     "confirmReceived": "Confirm received",
     "returnRequest": "Request return",
-    "reviewOrder": "Review order"
+    "reviewOrder": "Review order",
+    "fetchingNewData": "Refreshing order status...",
+    "cannotCancelTitle": "Unable to cancel order",
+    "cannotCancelBecauseAdminChangedStatus": "The order status has been updated by the administrator. You can no longer cancel this order."
   },
   "breadcrumbOrder": {
     "breadcrumbHeader": "Purchase History"
@@ -450,8 +453,8 @@
     },
     "receiverInfo": "Recipient Information",
     "orderInfo": "Order Information",
+    "email": "Email",
     "rankDiscountInfo": "Tiered discount price"
-
   },
   "auth": {
     "titleLogin": "Welcome to DH Mobile, please Login!",
@@ -642,7 +645,12 @@
     "closeBtn": "Close",
     "cancelBtn": "Cancel",
     "submitBtn": "Submit request",
-    "unknownColor": "Unknown"
+    "unknownColor": "Unknown",
+    "tooManyImagesTitle": "Too many images",
+    "max3ImagesText": "You can upload up to 3 images only.",
+    "uploadImages": "Upload Images",
+    "chooseImages": "Choose Images",
+    "uploadHint": "You can upload up to 3 images for illustration"
   },
   "updateProfile": {
     "confirmCloseTitle": "Are you sure you want to close?",

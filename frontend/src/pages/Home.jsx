@@ -168,8 +168,9 @@ const Home = () => {
             <div className="col-md-12">
               <div className="banner-blocks">
                 <div
+                
                   className="banner-ad large bg-info block-1"
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: "pointer", height: "550px" }}
                 >
                   <Swiper
                     modules={[Pagination, Autoplay]}
@@ -184,6 +185,7 @@ const Home = () => {
                           className="swiper-image w-100"
                           src={banner.image_url}
                           alt={banner.title}
+                          
                         />
                       </SwiperSlide>
                     ))}

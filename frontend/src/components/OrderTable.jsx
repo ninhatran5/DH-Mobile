@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import OrderHistory from "./OrderHistory";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
@@ -29,8 +30,6 @@ const OrderTable = () => {
     { label: t("orderHistory.refunded"), value: "đã hoàn tiền" },
   ];
 
-
-
   const handleCancelOrder = async (orderId) => {
     const result = await MySwal.fire({
       title: t("orderHistory.cancelOrder"),
@@ -53,7 +52,13 @@ const OrderTable = () => {
         toast.success(t("orderHistory.cancelSuccess"));
         dispatch(fetchOrder());
       } catch (error) {
-        toast.error(error || t("orderHistory.cancelFailed"));
+        await dispatch(fetchOrder());
+        await MySwal.fire({
+          icon: "error",
+          title: t("orderHistory.cannotCancelTitle"),
+          text: t("orderHistory.cannotCancelBecauseAdminChangedStatus"),
+          confirmButtonText: t("orderHistory.close"),
+        });
       }
     }
   };

@@ -48,10 +48,6 @@ const OrderDetail = () => {
   useEffect(() => {
     if (!id) return;
     dispatch(fetchOrderDetail(id));
-    const interval = setInterval(() => {
-      dispatch(fetchOrderDetail(id));
-    }, 5000);
-    return () => clearInterval(interval);
   }, [id, dispatch]);
 
   useEffect(() => {
@@ -98,6 +94,17 @@ const OrderDetail = () => {
     }
   };
 
+  const getPaymentStatusClass = (status) => {
+    switch (status) {
+      case "Đã thanh toán":
+        return "payment-paid";
+      case "Chưa thanh toán":
+        return "payment-unpaid";
+      default:
+        return "";
+    }
+  };
+
   const normalizedStatus = removeVietnameseTones(orderDetail?.status || "");
   const currentStatusKey = statusMap[normalizedStatus] || "pending";
   const isCanceled = currentStatusKey === "canceled";
@@ -117,6 +124,10 @@ const OrderDetail = () => {
       value: orderDetail?.customer || t("toast.pending_update"),
     },
     {
+      label: t("orderDetail.email"),
+      value: orderDetail?.email || t("toast.pending_update"),
+    },
+    {
       label: t("orderDetail.phone"),
       value: orderDetail?.phone || t("toast.pending_update"),
     },
@@ -133,13 +144,22 @@ const OrderDetail = () => {
     },
     {
       label: t("orderDetail.payment_status_note"),
-      value: orderDetail?.payment_status || t("toast.pending_update"),
+      value: (
+        <span className={getPaymentStatusClass(orderDetail?.payment_status)}>
+          {orderDetail?.payment_status || t("toast.pending_update")}
+        </span>
+      ),
     },
+
     ...(Number(orderDetail?.voucher_discount) > 0
       ? [
           {
             label: t("orderDetail.amountIsReduced"),
-            value: `- ${numberFormat(orderDetail?.voucher_discount)}`,
+            value: (
+              <span style={{ fontWeight: "bold" }}>
+                - {numberFormat(orderDetail?.voucher_discount)}
+              </span>
+            ),
           },
         ]
       : []),
@@ -147,7 +167,11 @@ const OrderDetail = () => {
       ? [
           {
             label: t("orderDetail.rankDiscountInfo"),
-            value: `- ${numberFormat(orderDetail?.rank_discount)}`,
+            value: (
+              <span style={{ fontWeight: "bold" }}>
+                - {numberFormat(orderDetail?.rank_discount)}
+              </span>
+            ),
           },
         ]
       : []),
@@ -357,12 +381,11 @@ const OrderDetail = () => {
                           {numberFormat(totalAmount) ||
                             t("toast.pending_update")}
                         </span>
-                        {discount > 0 ||
-                          (rankDiscount > 0 && (
-                            <small className="total_before_discount fw-bold">
-                              {totalBeforeDiscount}
-                            </small>
-                          ))}
+                        {(discount > 0 || rankDiscount > 0) && (
+                          <small className="total_before_discount fw-bold">
+                            {totalBeforeDiscount}
+                          </small>
+                        )}
                       </td>
                     </tr>
                   </tfoot>

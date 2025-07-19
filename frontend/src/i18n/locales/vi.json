@@ -122,7 +122,7 @@
     "comment": "Bình luận",
     "quantity": "Số lượng",
     "product": "Sản Phẩm",
-    "coinReward": "Nhận thêm <b>{{coins}}</b> xu khi hoàn tất đơn hàng này"
+    "coinReward": "Nhận thêm <b>{{coins}}</b> điểm khi hoàn tất đơn hàng này"
   },
   "comment": {
     "replied_to": "đã trả lời",
@@ -410,7 +410,10 @@
     "noOrder": "Không có đơn hàng nào.",
     "confirmReceived": "Xác nhận đã nhận hàng",
     "returnRequest": "Yêu cầu trả hàng",
-    "reviewOrder": "Đánh giá đơn hàng"
+    "reviewOrder": "Đánh giá đơn hàng",
+    "fetchingNewData": "Đang cập nhật trạng thái đơn hàng...",
+    "cannotCancelTitle": "Không thể huỷ đơn hàng",
+    "cannotCancelBecauseAdminChangedStatus": "Đơn hàng đã được cập nhật bởi quản trị viên. Bạn không thể huỷ đơn này nữa."
   },
   "breadcrumbOrder": {
     "breadcrumbHeader": "Lịch Sử Mua Hàng"
@@ -447,6 +450,7 @@
       "shipped": "Đã giao hàng",
       "delivered": "Hoàn thành"
     },
+    "email": "Email",
     "receiverInfo": "Thông tin người nhận",
     "orderInfo": "Thông tin đơn hàng",
     "rankDiscountInfo": "Giá ưu đãi theo hạng"
@@ -641,7 +645,12 @@
     "closeBtn": "Đóng",
     "cancelBtn": "Hủy",
     "submitBtn": "Gửi yêu cầu",
-    "unknownColor": "Không rõ"
+    "unknownColor": "Không rõ",
+    "tooManyImagesTitle": "Quá nhiều ảnh",
+    "max3ImagesText": "Chỉ được tải lên tối đa 3 ảnh.",
+    "uploadImages": "Hình ảnh",
+    "chooseImages": "Chọn ảnh",
+    "uploadHint": "Bạn có thể tải lên tối đa 3 ảnh"
   },
   "updateProfile": {
     "confirmCloseTitle": "Bạn có chắc chắn muốn đóng?",

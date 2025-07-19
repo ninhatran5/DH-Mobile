@@ -27,7 +27,6 @@ const Product = ({
   const { t } = useTranslation();
   const [show, setShow] = useState(false);
 
-  // Tính xu nếu không được truyền từ props
   const priceValue =
     typeof product.price === "string"
       ? parseInt(product.price.replace(/[^\d]/g, "")) || 0
