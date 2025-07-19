@@ -12,7 +12,11 @@ import ReturnRequestModal from "./ReturnRequestModal";
 import ReviewModal from "./ReviewModal";
 import { useDispatch } from "react-redux";
 import "../assets/css/order-history.css";
-import { fetchOrder, fetchOrderDetail, receivedOrder } from "../slices/orderSlice";
+import {
+  fetchOrder,
+  fetchOrderDetail,
+  receivedOrder,
+} from "../slices/orderSlice";
 import TooltipIcon from "./TooltipIcon";
 import dayjs from "dayjs";
 
@@ -30,7 +34,9 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
   const [refreshFlag, setRefreshFlag] = useState(0); // NEW
 
   useEffect(() => {
-    const reviewedVariants = JSON.parse(localStorage.getItem("reviewedVariants") || "[]");
+    const reviewedVariants = JSON.parse(
+      localStorage.getItem("reviewedVariants") || "[]"
+    );
 
     dispatch(fetchOrderDetail(order.order_id))
       .unwrap()
@@ -121,7 +127,18 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
           </td>
           <td>{order?.customer}</td>
           <td>{order?.payment_method}</td>
-          <td>{order?.payment_status}</td>
+          <td
+            style={{
+              color:
+                order.payment_status?.toLowerCase() === "đã thanh toán"
+                  ? "#28a745"
+                  : "#dc3545",
+              fontWeight: 600,
+            }}
+          >
+            {order.payment_status}
+          </td>
+
           <td>
             {dayjs(order?.created_at, "DD/MM/YYYY HH:mm:ss").format(
               "HH:mm - DD/MM/YYYY"

@@ -33,15 +33,20 @@ const OrderProductRow = ({ product }) => {
           />
         </div>
       </td>
-      <td>
+      <td className="align-middle">
         <div
           onClick={handleNextProduct}
-          className="align-middle"
-          style={{ cursor: "pointer" }}
+          style={{
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            height: "70px",
+          }}
         >
-          {product.product_name}
+          <span className="fw-semibold">{product.product_name}</span>
         </div>
       </td>
+
       <td className="align-middle">{product.quantity}</td>
       <td className="align-middle">{color}</td>
       <td className="align-middle">{version}</td>

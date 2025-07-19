@@ -9,13 +9,21 @@ body {
 .card_order_detail {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05) !important;
 }
+.payment-paid {
+  color: #28a745;
+  font-weight: bold;
+}
 
+.payment-unpaid {
+  color: #dc3545;
+  font-weight: bold;
+}
 .top {
   padding-top: 40px;
   padding-left: 13% !important;
   padding-right: 13% !important;
 }
-.total_before_discount{
+.total_before_discount {
   font-size: 13px;
   text-decoration: line-through;
   margin-top: 1px;

@@ -13,6 +13,7 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
   const { t } = useTranslation();
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
+  const [images, setImages] = useState([]);
   const maxChars = 2000;
   const dispatch = useDispatch();
   const { orderDetail } = useSelector((state) => state.order);
@@ -49,6 +50,36 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
 
   const returnReasons =
     caseType === 1 ? returnReasonsCase1 : returnReasonsCase2;
+
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length + images.length > 3) {
+      Swal.fire({
+        icon: "warning",
+        title: t("returnRequest.tooManyImagesTitle"),
+        text: t("returnRequest.max3ImagesText"),
+      });
+      return;
+    }
+
+    const newImages = files.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+      id: Date.now() + Math.random(),
+    }));
+
+    setImages((prev) => [...prev, ...newImages]);
+  };
+
+  const removeImage = (imageId) => {
+    setImages((prev) => {
+      const imgToRemove = prev.find((img) => img.id === imageId);
+      if (imgToRemove?.preview) {
+        URL.revokeObjectURL(imgToRemove.preview);
+      }
+      return prev.filter((img) => img.id !== imageId);
+    });
+  };
 
   useEffect(() => {
     if (!orderId) return;
@@ -184,6 +215,56 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
               <p className="refund_price">
                 {numberFormat(orderDetail?.total_amount || 0)}
               </p>
+            </div>
+
+            <hr className="hr_return" />
+            <div className="mb-3">
+              <label className="return-label form-label">
+                {t("returnRequest.uploadImages")}
+              </label>
+              <div className="image-upload-container">
+                <label className="custom-file-upload">
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    style={{ display: "none" }}
+                  />
+                  <div className="upload-button">
+                    <i
+                      className="bi bi-cloud-arrow-up"
+                      style={{ fontSize: 20 }}
+                    ></i>
+                    <span style={{ marginLeft: 8 }}>
+                      {t("returnRequest.chooseImages")}
+                    </span>
+                  </div>
+                </label>
+
+                {images.length > 0 && (
+                  <div className="image-preview-grid">
+                    {images.map((image) => (
+                      <div key={image.id} className="image-preview-item">
+                        <img src={image.preview} alt="Preview" />
+                        <button
+                          type="button"
+                          className="remove-image-btn"
+                          onClick={() => removeImage(image.id)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p
+                  className="upload-hint text-muted"
+                  style={{ fontSize: "13px" }}
+                >
+                  {t("returnRequest.uploadHint")} ({images.length}/3)
+                </p>
+              </div>
             </div>
 
             <hr className="hr_return" />
