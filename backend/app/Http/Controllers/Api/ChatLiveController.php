@@ -184,12 +184,13 @@ class ChatLiveController extends Controller
         $customers = User::whereIn('user_id', $customerIds)
             ->get()
             ->map(function ($customer) use ($staff) {
-                // Lấy tin nhắn cuối cùng giữa customer và staff bất kỳ
+                // Lấy lại user theo customer_id để đảm bảo đúng role
+                $customerUser = User::where('user_id', $customer->user_id)->first();
+
                 $lastChat = SupportChat::where('customer_id', $customer->user_id)
                     ->orderBy('sent_at', 'desc')
                     ->first();
 
-                // Đếm số tin nhắn chưa đọc của nhân viên này từ customer đó
                 $unreadCount = SupportChatNotification::where('user_id', $staff->user_id)
                     ->whereHas('chat', function ($q) use ($customer) {
                         $q->where('customer_id', $customer->user_id);
@@ -197,14 +198,13 @@ class ChatLiveController extends Controller
                     ->where('is_read', false)
                     ->count();
 
-                // Xử lý ảnh đại diện
                 $avatarUrl = $customer->image_url;
 
                 return [
                     'customer_id' => $customer->user_id,
-                    'role' => $customer->role,
+                    'role' => $customerUser ? $customerUser->role : null,
                     'customer_name' => $customer->username,
-                    'customer_fule_name' => $customer->full_name,
+                    'customer_full_name' => $customer->full_name,
                     'avatar_url' => $avatarUrl,
                     'last_message' => $lastChat->message ?? '',
                     'last_message_time' => $lastChat->sent_at ?? null,
