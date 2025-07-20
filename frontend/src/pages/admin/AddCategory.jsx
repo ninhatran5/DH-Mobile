@@ -79,7 +79,7 @@ const AddCategory = () => {
       <form onSubmit={handleSubmit} className="addcategories-form">
         <div className="addcategories-group">
           <label>
-            Tên danh mục
+            Tên danh mục * 
             {showValidation && !name.trim() && <span className="required">*</span>}
           </label>
           <input
@@ -95,7 +95,7 @@ const AddCategory = () => {
 
         <div className="addcategories-group">
           <label>
-            Mô tả
+            Mô tả * 
             {showValidation && !description.trim() && <span className="required">*</span>}
           </label>
           <textarea
@@ -110,7 +110,7 @@ const AddCategory = () => {
 
         <div className="addcategories-group">
           <label>
-            Hình ảnh
+            Hình ảnh *
             {showValidation && !imageFile && <span className="required">*</span>}
           </label>
           
@@ -128,7 +128,7 @@ const AddCategory = () => {
                   <path d="M17 8L12 3L7 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   <path d="M12 3V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                <span>Chọn hình ảnh</span>
+                <span>Chọn hình ảnh * </span>
               </div>
             </label>
             
@@ -155,16 +155,7 @@ const AddCategory = () => {
           )}
         </div>
 
-        <div className="addcategories-group">
-          <label>
-            <input
-              type="checkbox"
-              checked={is_active}
-              onChange={(e) => setIsActive(e.target.checked)}
-            />
-            Hoạt động
-          </label>
-        </div>
+       
 
         <button type="submit" className="addcategories-submit-btn">
           Thêm danh mục

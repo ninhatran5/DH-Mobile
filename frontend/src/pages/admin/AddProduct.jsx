@@ -300,7 +300,7 @@ const AdminAddProduct = () => {
 
               {/* Tên sản phẩm */}
               <div className="mb-3 adminAddProduct-name">
-                <label className="form-label fw-bold adminAddProduct-label">Tên sản phẩm:</label>
+                <label className="form-label fw-bold adminAddProduct-label">Tên sản phẩm * :</label>
                 <input
                   type="text"
                   name="name"
@@ -314,7 +314,7 @@ const AdminAddProduct = () => {
 
               {/* Mô tả */}
               <div className="mb-3 adminAddProduct-description">
-                <label className="form-label fw-bold adminAddProduct-label">Mô tả:</label>
+                <label className="form-label fw-bold adminAddProduct-label">Mô tả * :</label>
                 <textarea
                   name="description"
                   value={formData.description}
@@ -328,7 +328,7 @@ const AdminAddProduct = () => {
               {/* Giá bán và Giá gốc */}
               <div className="row adminAddProduct-price-row">
                 <div className="col-6 mb-3 adminAddProduct-price">
-                  <label className="form-label fw-bold adminAddProduct-label">Giá bán:</label>
+                  <label className="form-label fw-bold adminAddProduct-label">Giá bán * :</label>
                   <input
                     type="number"
                     name="price"
@@ -340,7 +340,7 @@ const AdminAddProduct = () => {
                   {errors.price && <div className="adminAddProduct-error">{errors.price}</div>}
                 </div>
                 <div className="col-6 mb-3 adminAddProduct-price-original">
-                  <label className="form-label fw-bold adminAddProduct-label">Giá gốc:</label>
+                  <label className="form-label fw-bold adminAddProduct-label">Giá gốc *:</label>
                   <input
                     type="number"
                     name="price_original"
@@ -355,7 +355,7 @@ const AdminAddProduct = () => {
 
               {/* Thông số kỹ thuật */}
               <div className="mb-3 adminAddProduct-specifications">
-                <label className="form-label fw-bold adminAddProduct-label">Thông số kỹ thuật:</label>
+                <label className="form-label fw-bold adminAddProduct-label">Thông số kỹ thuật * :</label>
                 {specifications.map((spec, index) => (
                   <div key={index} className="row mb-2 adminAddProduct-spec-row">
                     <div className="col-5 adminAddProduct-spec-name">
@@ -406,7 +406,7 @@ const AdminAddProduct = () => {
 
               {/* Ảnh */}
               <div className="mb-3 adminAddProduct-image">
-                <label className="form-label fw-bold adminAddProduct-label">Ảnh sản phẩm:</label>
+                <label className="form-label fw-bold adminAddProduct-label">Ảnh sản phẩm * :</label>
                 <input 
                   type="file" 
                   onChange={handleFileChange}

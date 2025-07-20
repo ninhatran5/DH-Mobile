@@ -200,7 +200,7 @@ const AddVariant = () => {
 
           <form onSubmit={handleSubmit} className="addvariant-form">
             <div className="addvariant-form-group mb-3">
-              <label htmlFor="sku" className="addvariant-label form-label">SKU:</label>
+              <label htmlFor="sku" className="addvariant-label form-label">SKU * :</label>
               <input
                 type="text"
                 className={`addvariant-input form-control ${errors.sku ? 'is-invalid' : ''}`}
@@ -214,7 +214,7 @@ const AddVariant = () => {
             </div>
 
             <div className="addvariant-form-group mb-3">
-              <label htmlFor="price" className="addvariant-label form-label">Giá:</label>
+              <label htmlFor="price" className="addvariant-label form-label">Giá * :</label>
               <input
                 type="number"
                 className={`addvariant-input form-control ${errors.price ? 'is-invalid' : ''}`}
@@ -228,7 +228,7 @@ const AddVariant = () => {
             </div>
 
             <div className="addvariant-form-group mb-3">
-              <label htmlFor="price_original" className="addvariant-label form-label">Giá gốc:</label>
+              <label htmlFor="price_original" className="addvariant-label form-label">Giá gốc * :</label>
               <input
                 type="number"
                 className="addvariant-input form-control"
@@ -241,7 +241,7 @@ const AddVariant = () => {
             </div>
 
             <div className="addvariant-form-group mb-3">
-              <label htmlFor="stock" className="addvariant-label form-label">Tồn kho:</label>
+              <label htmlFor="stock" className="addvariant-label form-label">Tồn kho * :</label>
               <input
                 type="number"
                 className={`addvariant-input form-control ${errors.stock ? 'is-invalid' : ''}`}
@@ -255,7 +255,7 @@ const AddVariant = () => {
             </div>
 
             <div className="addvariant-form-group mb-3">
-              <label htmlFor="image" className="addvariant-label form-label">Ảnh:</label>
+              <label htmlFor="image" className="addvariant-label form-label">Ảnh * : </label>
               <input
                 type="file"
                 className="addvariant-file-input form-control"
