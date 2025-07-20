@@ -206,7 +206,9 @@ class ChatLiveController extends Controller
                     'customer_name' => $customer->username,
                     'customer_full_name' => $customer->full_name,
                     'avatar_url' => $avatarUrl,
-                    'last_message' => $lastChat->message ?? '',
+                    'last_message' => isset($lastChat->message)
+                        ? (($lastChat->sender !== 'customer') ? 'Bạn: ' . $lastChat->message : $lastChat->message)
+                        : '',
                     'last_message_time' => $lastChat->sent_at ?? null,
                     'unread_count' => $unreadCount,
                 ];
