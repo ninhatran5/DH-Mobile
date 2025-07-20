@@ -309,20 +309,7 @@ const ChatLiveAdmin = () => {
 
     <div className="chat-live-admin-manage-chat-list-status">
       <div className="chat-last-message-preview" style={{ color: "#555" }}>
-        {(() => {
-          const msg = user.last_message;
-          if (!msg) return "...";
-
-          if (typeof msg === "object" && msg !== null && msg.content) {
-            return `${msg.sender === "admin" && user.role !== "customer" ? "Bạn: " : ""}${msg.content}`;
-          }
-
-          if (typeof msg === "string") {
-            return msg;
-          }
-
-          return "...";
-        })()}
+       { user.last_message}
       </div>
     </div>
   </div>
