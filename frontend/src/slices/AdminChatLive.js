@@ -8,7 +8,7 @@ const initialState = {
   replyLoading: false,
   replyError: null,
 
-  chatHistory: {}, 
+  chatHistory: {},
   chatHistoryLoading: false,
   chatHistoryError: null,
 };
@@ -17,7 +17,6 @@ const initialState = {
 export const replyToChat = createAsyncThunk(
   "adminchatLive/replyToChat",
   async ({ customer_id, message, images_base64 = [] }, { rejectWithValue }) => {
-    console.log("✉️ Gửi tin nhắn tới:", customer_id);
     try {
       const res = await axiosAdmin.post("/support-chats/reply", {
         customer_id,
@@ -25,23 +24,18 @@ export const replyToChat = createAsyncThunk(
         images_base64,
       });
 
-      console.log("Tin nhắn gửi thành công:", res.data);
-
       return {
         customer_id,
         message: res.data.message,
         images: res.data.images || [],
-        created_at: res.data.created_at, 
+        created_at: res.data.created_at,
         sender: "admin",
       };
     } catch (err) {
-      console.error(" Lỗi khi gửi tin nhắn:", err.response?.data || err.message);
       return rejectWithValue(err.response?.data || { message: "Gửi tin nhắn thất bại." });
     }
   }
 );
-
-
 
 // Lấy danh sách người dùng đang chat
 export const fetchChatUserList = createAsyncThunk(
@@ -63,71 +57,98 @@ export const fetchChatUserList = createAsyncThunk(
   }
 );
 
-// Lấy lịch sử trò chuyện của một user
+// Lấy lịch sử trò chuyện
 export const fetchChatHistory = createAsyncThunk(
   "adminchatLive/fetchChatHistory",
   async (customerId, { rejectWithValue }) => {
-console.log("📦 Gọi API lấy lịch sử chat của:", customerId);
     try {
       const res = await axiosAdmin.get(`/support-chats/history/${customerId}`);
-      console.log("🧾 Nội dung response:", res.data.chats);
       return {
         customerId,
         messages: res.data.chats,
         sender: "admin",
       };
     } catch (err) {
-      return rejectWithValue(err.response.data);
+      return rejectWithValue(err.response?.data || "Lỗi khi lấy lịch sử chat");
     }
   }
 );
 
-
 const chatLiveSlice = createSlice({
   name: "chatLive",
   initialState,
- reducers: {
-  clearChatLiveError: (state) => {
-    state.chatUsersError = null;
-    state.replyError = null;
-    state.chatHistoryError = null;
-  },
-  receiveMessageRealtime: (state, action) => {
-    const { customer_id, message, sender, created_at, attachments = [] } = action.payload;
-    if (!message?.trim()) return;
+  reducers: {
+    clearChatLiveError: (state) => {
+      state.chatUsersError = null;
+      state.replyError = null;
+      state.chatHistoryError = null;
+    },
 
-    const msg = { message, sender, created_at, attachments };
+   receiveMessageRealtime: (state, action) => {
+  const { customer_id, message, sender, created_at, attachments = [] } = action.payload;
+  if (!message?.trim()) return;
 
-    if (!state.chatHistory[customer_id]) {
-      state.chatHistory[customer_id] = [];
-    }
+  const msg = { message, sender, created_at, attachments };
 
-    const isDuplicate = state.chatHistory[customer_id].some(
-      (m) =>
-        m.message === msg.message &&
-        m.created_at === msg.created_at &&
-        m.sender === msg.sender
-    );
+  // Khởi tạo lịch sử nếu chưa có
+  if (!state.chatHistory[customer_id]) {
+    state.chatHistory[customer_id] = [];
+  }
 
-    if (!isDuplicate) {
-      state.chatHistory[customer_id].push(msg);
-    }
-    const userIndex = state.chatUsers.findIndex(u => u.customer_id === customer_id);
+  // Kiểm tra trùng tin nhắn
+  const isDuplicate = state.chatHistory[customer_id].some(
+    (m) =>
+      m.message === msg.message &&
+      m.created_at === msg.created_at &&
+      m.sender === msg.sender
+  );
+
+  // Thêm tin nhắn nếu không trùng
+  if (!isDuplicate) {
+    state.chatHistory[customer_id].push(msg);
+  }
+
+  // Tìm user trong danh sách chatUsers
+  const userIndex = state.chatUsers.findIndex((u) => u.customer_id === customer_id);
+
   if (userIndex !== -1) {
-    state.chatUsers[userIndex].last_message = {
-  sender,
-  content: message,
-  created_at,
-};
+    const user = state.chatUsers[userIndex];
 
+    // Cập nhật tin nhắn cuối
+    user.last_message = {
+      sender,
+      content: message,
+      created_at,
+    };
+
+    // Tăng số lượng chưa đọc nếu không phải admin gửi
+    if (sender !== "admin") {
+      user.unread_count = user.unread_count ? user.unread_count + 1 : 1;
+    }
+
+    // Đưa user lên đầu danh sách
+    state.chatUsers.splice(userIndex, 1); 
+    state.chatUsers.unshift(user);       
+  } else {
+    state.chatUsers.unshift({
+      customer_id,
+      customer_name: `Khách ${customer_id}`,
+      avatar_url: "",
+      last_message: {
+        sender,
+        content: message,
+        created_at,
+      },
+      unread_count: sender !== "admin" ? 1 : 0,
+    });
   }
-  }
-  
-}
-,
+},
+
+  },
+
   extraReducers: (builder) => {
     builder
-      // 🟡 Fetch Chat Users
+      // Lấy danh sách người dùng
       .addCase(fetchChatUserList.pending, (state) => {
         state.chatUsersLoading = true;
       })
@@ -140,46 +161,55 @@ const chatLiveSlice = createSlice({
         state.chatUsersError = action.payload;
       })
 
-      // 🟢 Fetch Chat History
-.addCase(fetchChatHistory.pending, (state) => {
-  state.chatHistoryLoading = true;
-  state.chatHistoryError = null;
-})
-.addCase(fetchChatHistory.fulfilled, (state, action) => {
-  const { customerId, messages } = action.payload;
-  const filteredMessages = messages.filter((msg) => msg.message?.trim());
-  state.chatHistoryLoading = false;
-  state.chatHistory = {
-    ...state.chatHistory,
-    [customerId]: filteredMessages,
-  };
-})
-.addCase(fetchChatHistory.rejected, (state, action) => {
-  state.chatHistoryLoading = false;
-  state.chatHistoryError = action.payload;
-})
+      // Lấy lịch sử chat
+      .addCase(fetchChatHistory.pending, (state) => {
+        state.chatHistoryLoading = true;
+        state.chatHistoryError = null;
+      })
+      .addCase(fetchChatHistory.fulfilled, (state, action) => {
+        const { customerId, messages } = action.payload;
+        const filteredMessages = messages.filter((msg) => msg.message?.trim());
+        state.chatHistoryLoading = false;
+        state.chatHistory = {
+          ...state.chatHistory,
+          [customerId]: filteredMessages,
+        };
+      })
+      .addCase(fetchChatHistory.rejected, (state, action) => {
+        state.chatHistoryLoading = false;
+        state.chatHistoryError = action.payload;
+      })
 
-
-
-      // 🔵 Reply Chat
+      // Gửi tin nhắn từ admin
       .addCase(replyToChat.pending, (state) => {
         state.replyLoading = true;
       })
    .addCase(replyToChat.fulfilled, (state, action) => {
   state.replyLoading = false;
 
-  // Dùng lại reducer để tránh lặp code
+  const {
+    customer_id,
+    message,
+    created_at,
+    images = [],
+  } = action.payload;
+
+  // Cập nhật lịch sử
   chatLiveSlice.caseReducers.receiveMessageRealtime(state, {
     payload: {
-      customer_id: action.payload.customer_id,
-      message: action.payload.message,
-      created_at: action.payload.created_at,
-      attachments: action.payload.images || [],
+      customer_id,
+      message,
+      created_at,
+      attachments: images,
       sender: "admin",
     },
     type: "chatLive/receiveMessageRealtime",
   });
+
+
+  
 })
+
 
 
 
@@ -191,5 +221,4 @@ const chatLiveSlice = createSlice({
 });
 
 export const { clearChatLiveError, receiveMessageRealtime } = chatLiveSlice.actions;
-
 export default chatLiveSlice.reducer;

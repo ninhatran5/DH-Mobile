@@ -174,6 +174,18 @@ const ChatLiveAdmin = () => {
         customerId === activeUserRef.current.customer_id
       ) {
         dispatch(receiveMessageRealtime(data.chat));
+        dispatch({
+  type: "adminchatLive/reorderChatUsers",
+  payload: {
+    customer_id: customerId,
+    last_message: {
+      sender: data.chat.sender,
+      content: data.chat.message,
+    },
+    last_message_time: new Date().toISOString(),
+  },
+});
+
       }
 
       if (sender !== "admin" && audioRef.current) {
@@ -288,35 +300,35 @@ const ChatLiveAdmin = () => {
                       }`}
                     onClick={() => setActiveUser(user)}
                   >
-                    <div className="chat-live-admin-manage-chat-item-inner">
-                      <img src={user.avatar_url} alt="avatar" />
-                      <div>
-                        <div className="chat-live-admin-manage-chat-list-name">
-                          {user.customer_name}
-                        </div>
-                        <div className="chat-live-admin-manage-chat-list-status">
-                          {user.last_message ? (
-                            <div className="chat-last-message-preview">
-                              <span style={{ fontWeight: 500, marginRight: 4 }}>
-                                {user.last_message?.sender === "admin" ? "Bạn:" : ""}
-                              </span>
-                              <span style={{ color: "#555" }}>
-                                {user.last_message?.content || ""}
-                              </span>
-                              <br />
-                              <small style={{ color: "#999", fontSize: 12 }}>
-                                {user.last_message_time
-                                  ? dayjs(user.last_message_time).local().format("HH:mm DD/MM")
-                                  : "Chưa có tin nhắn"}
-                              </small>
-                            </div>
-                          ) : (
-                            <span className="text-muted">...</span>
-                          )}
-                        </div>
+               <div className="chat-live-admin-manage-chat-item-inner">
+  <img src={user.avatar_url || "/default-avatar.png"} alt="avatar" />
+  <div>
+    <div className="chat-live-admin-manage-chat-list-name">
+      {user.customer_name}
+    </div>
 
-                      </div>
-                    </div>
+    <div className="chat-live-admin-manage-chat-list-status">
+      <div className="chat-last-message-preview" style={{ color: "#555" }}>
+        {(() => {
+          const msg = user.last_message;
+          if (!msg) return "...";
+
+          if (typeof msg === "object" && msg !== null && msg.content) {
+            return `${msg.sender === "admin" && user.role !== "customer" ? "Bạn: " : ""}${msg.content}`;
+          }
+
+          if (typeof msg === "string") {
+            return msg;
+          }
+
+          return "...";
+        })()}
+      </div>
+    </div>
+  </div>
+</div>
+
+
                     {user.unread_count > 0 && (
                       <span className="chat-live-admin-manage-unread-badge">
                         {user.unread_count > 99 ? "99+" : user.unread_count}
