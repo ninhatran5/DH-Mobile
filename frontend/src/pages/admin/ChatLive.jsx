@@ -10,6 +10,7 @@ import {
   replyToChat,
   fetchChatHistory,
   receiveMessageRealtime,
+  getUnreadCount,
 } from "../../slices/AdminChatLive";
 import "../../assets/admin/ChatLiveAdmin.css";
 import { fetchProfileAdmin } from "../../slices/adminProfile";
@@ -43,15 +44,21 @@ const ChatLiveAdmin = () => {
   const messageEndRef = useRef(null);
  const [showSearch, setShowSearch] = useState(false);
 
+useEffect(() => {
+  const fetchData = async () => {
+    const res = await dispatch(fetchChatUserList());
+
+    if (res.payload && Array.isArray(res.payload)) {
+      res.payload.forEach((user) => {
+        dispatch(getUnreadCount(user.customer_id));
+      });
+    }
+  };
+  fetchData();
+}, [dispatch]);
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await dispatch(fetchChatUserList());
-      console.log("Danh sách user từ API:", res.payload);
-    };
-    fetchData();
-  }, [dispatch]);
+  
 
 
   useEffect(() => {
@@ -317,10 +324,11 @@ const ChatLiveAdmin = () => {
 
 
                     {user.unread_count > 0 && (
-                      <span className="chat-live-admin-manage-unread-badge">
-                        {user.unread_count > 99 ? "99+" : user.unread_count}
-                      </span>
-                    )}
+  <span className="chat-live-admin-manage-unread-badge">
+    {user.unread_count > 99 ? "99+" : user.unread_count}
+  </span>
+)}
+
                   </div>
                 ))}
             </div>

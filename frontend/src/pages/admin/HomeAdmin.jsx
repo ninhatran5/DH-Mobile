@@ -16,7 +16,6 @@ import {
 import Thongbao from "../../assets/sound/thongbaomuahang.mp3";
 import { fetchProfileAdmin } from "../../slices/adminProfile";
 import Swal from "sweetalert2";
-import { FaSmile } from "react-icons/fa";
 const sidebarCollapsedStyles = {
   submenu: {
     position: "absolute",
@@ -711,9 +710,7 @@ const Homeadmin = () => {
                       isDropdownActive("chatbot") ? "show" : ""
                     }`}
                   >
-                    <div>
-                      <Link to="/admin/chatlive">Tin nhắn khách hàng</Link>
-                    </div>
+                  
                     {checkRole !== "sale" && (
                       <div>
                         <Link to="/admin/chatbot">Chatbot</Link>
@@ -721,7 +718,21 @@ const Homeadmin = () => {
                     )}
                   </div>
                 </div>
+                       <div
+                  className={
+                    location.pathname === "/admin/chatlive" ? "active" : ""
+                  }
+                >
+                  <Link
+                    to="/admin/chatlive"
+                    className="admin_dh-nav-link"
+                    data-title="Dashboard"
+                  >
+                   <i className="bi bi-messenger"></i>
 
+                    <span> Tin nhắn </span>
+                  </Link>
+                </div>
                 <div
                   className={
                     location.pathname.includes("/admin/articles")

@@ -74,6 +74,30 @@ export const fetchChatHistory = createAsyncThunk(
   }
 );
 
+export const getUnreadCount = createAsyncThunk(
+  "chatLive/getUnreadCount",
+  async (customer_id, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
+
+      const response = await axiosAdmin.get(`/support-chats/unread-count/${customer_id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      return {
+        customer_id,
+        unread_count: response.data.unread_count || 0,
+      };
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Lỗi khi lấy số lượng chưa đọc"
+      );
+    }
+  }
+);
+
+
 const chatLiveSlice = createSlice({
   name: "chatLive",
   initialState,
@@ -84,7 +108,7 @@ const chatLiveSlice = createSlice({
       state.chatHistoryError = null;
     },
 
-   receiveMessageRealtime: (state, action) => {
+  receiveMessageRealtime: (state, action) => {
   const { customer_id, message, sender, created_at, attachments = [] } = action.payload;
   if (!message?.trim()) return;
 
@@ -95,18 +119,8 @@ const chatLiveSlice = createSlice({
     state.chatHistory[customer_id] = [];
   }
 
-  // Kiểm tra trùng tin nhắn
-  const isDuplicate = state.chatHistory[customer_id].some(
-    (m) =>
-      m.message === msg.message &&
-      m.created_at === msg.created_at &&
-      m.sender === msg.sender
-  );
-
-  // Thêm tin nhắn nếu không trùng
-  if (!isDuplicate) {
-    state.chatHistory[customer_id].push(msg);
-  }
+  // ✅ Thêm trực tiếp không cần kiểm tra trùng
+  state.chatHistory[customer_id].push(msg);
 
   // Tìm user trong danh sách chatUsers
   const userIndex = state.chatUsers.findIndex((u) => u.customer_id === customer_id);
@@ -114,13 +128,9 @@ const chatLiveSlice = createSlice({
   if (userIndex !== -1) {
     const user = state.chatUsers[userIndex];
 
-    // Cập nhật tin nhắn cuối (dạng string giống API)
     user.last_message = sender === "admin" ? `Bạn: ${message}` : message;
 
-    // Tăng số lượng chưa đọc nếu không phải admin gửi
-    if (sender !== "admin") {
-      user.unread_count = (user.unread_count || 0) + 1;
-    }
+   
 
     // Đưa user lên đầu danh sách
     state.chatUsers.splice(userIndex, 1);
@@ -136,6 +146,7 @@ const chatLiveSlice = createSlice({
     });
   }
 }
+
 
 
   },
@@ -205,6 +216,14 @@ const chatLiveSlice = createSlice({
 })
 
 
+      .addCase(getUnreadCount.fulfilled, (state, action) => {
+  const { customer_id, unread_count } = action.payload;
+
+  const userIndex = state.chatUsers.findIndex((u) => u.customer_id === customer_id);
+  if (userIndex !== -1) {
+    state.chatUsers[userIndex].unread_count = unread_count;
+  }
+})
 
 
       .addCase(replyToChat.rejected, (state, action) => {

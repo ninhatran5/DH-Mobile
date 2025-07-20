@@ -100,12 +100,12 @@ const AddVoucherPage = () => {
   };
 
   const fields = [
-    { name: "code", label: "Mã Voucher", type: "text", placeholder: "Nhập mã voucher", required: true },
-    { name: "title", label: "Tiêu đề", type: "text", placeholder: "Nhập tiêu đề voucher", required: true },
-    { name: "discount_amount", label: "Số tiền giảm", type: "number", step: "1000", placeholder: "Nhập số tiền giảm", required: true },
-    { name: "min_order_value", label: "Giá trị đơn tối thiểu", type: "number", placeholder: "Nhập giá trị đơn tối thiểu", required: true },
-    { name: "quantity", label: "Số lượng", type: "number", placeholder: "Nhập số lượng voucher", required: true }, // Thêm dòng này
-    { name: "start_date", label: "Ngày bắt đầu", type: "datetime-local", placeholder: "", required: true },
+    { name: "code", label: "Mã Voucher * ", type: "text", placeholder: "Nhập mã voucher", required: true },
+    { name: "title", label: "Tiêu đề * ", type: "text", placeholder: "Nhập tiêu đề voucher", required: true },
+    { name: "discount_amount", label: "Số tiền giảm * ", type: "number", step: "1000", placeholder: "Nhập số tiền giảm", required: true },
+    { name: "min_order_value", label: "Giá trị đơn tối thiểu * ", type: "number", placeholder: "Nhập giá trị đơn tối thiểu", required: true },
+    { name: "quantity", label: "Số lượng * ", type: "number", placeholder: "Nhập số lượng voucher", required: true }, // Thêm dòng này
+    { name: "start_date", label: "Ngày bắt đầu * ", type: "datetime-local", placeholder: "", required: true },
   ];
 
   return (
@@ -174,7 +174,7 @@ const AddVoucherPage = () => {
         })}
 
         <div className="addVoucher-field flex flex-col relative">
-          <label className="addVoucher-label text-gray-700 font-medium mb-1">Ngày kết thúc</label>
+          <label className="addVoucher-label text-gray-700 font-medium mb-1">Ngày kết thúc *</label>
           <input
             type="datetime-local"
             placeholder=""
@@ -197,19 +197,7 @@ const AddVoucherPage = () => {
           )}
         </div>
 
-        <div className="addVoucher-select-container flex flex-col">
-          <label className="addVoucher-label text-gray-700 font-medium mb-1">
-            Trạng thái hoạt động
-          </label>
-          <select
-            {...register("is_active")}
-            className="addVoucher-select p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          >
-            <option value={1}>Kích hoạt</option>
-            <option value={0}>Không kích hoạt</option>
-          </select>
-        </div>
-
+        
         <div className="addVoucher-button-wrapper text-center">
           <button
             type="submit"

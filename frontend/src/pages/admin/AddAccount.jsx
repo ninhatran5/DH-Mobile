@@ -206,7 +206,7 @@ const AddAccount = () => {
                 <Row>
                   <Col md={6} className="admin-add-account-col">
                     <Form.Group className="admin-add-account-group mb-3">
-                      <Form.Label className="admin-add-account-label">Tên đăng nhập <span className="admin-add-account-required text-danger">*</span></Form.Label>
+                      <Form.Label className="admin-add-account-label">Tên đăng nhập *<span className="admin-add-account-required text-danger">*</span></Form.Label>
                       <Form.Control
                         type="text"
                         name="username"
@@ -222,7 +222,7 @@ const AddAccount = () => {
                   </Col>
                   <Col md={6} className="admin-add-account-col">
                     <Form.Group className="admin-add-account-group mb-3">
-                      <Form.Label className="admin-add-account-label">Email <span className="admin-add-account-required text-danger">*</span></Form.Label>
+                      <Form.Label className="admin-add-account-label">Email * <span className="admin-add-account-required text-danger">*</span></Form.Label>
                       <Form.Control
                         type="email"
                         name="email"
@@ -241,7 +241,7 @@ const AddAccount = () => {
                 <Row>
                   <Col md={6} className="admin-add-account-col">
                     <Form.Group className="admin-add-account-group mb-3">
-                      <Form.Label className="admin-add-account-label">Mật khẩu <span className="admin-add-account-required text-danger">*</span></Form.Label>
+                      <Form.Label className="admin-add-account-label">Mật khẩu * <span className="admin-add-account-required text-danger">*</span></Form.Label>
                       <div className="input-group admin-add-account-input-group">
                         <Form.Control
                           type={showPassword ? "text" : "password"}
@@ -270,7 +270,7 @@ const AddAccount = () => {
                 <Row>
                   <Col md={6} className="admin-add-account-col">
                     <Form.Group className="admin-add-account-group mb-3">
-                      <Form.Label className="admin-add-account-label">Họ tên <span className="admin-add-account-required text-danger">*</span></Form.Label>
+                      <Form.Label className="admin-add-account-label">Họ tên * <span className="admin-add-account-required text-danger">*</span></Form.Label>
                       <Form.Control
                         type="text"
                         name="full_name"
@@ -286,7 +286,7 @@ const AddAccount = () => {
                   </Col>
                   <Col md={6} className="admin-add-account-col">
                     <Form.Group className="admin-add-account-group mb-3">
-                      <Form.Label className="admin-add-account-label">Số điện thoại <span className="admin-add-account-required text-danger">*</span></Form.Label>
+                      <Form.Label className="admin-add-account-label">Số điện thoại * <span className="admin-add-account-required text-danger">*</span></Form.Label>
                       <Form.Control
                         type="tel"
                         name="phone"
@@ -305,7 +305,7 @@ const AddAccount = () => {
                 <Row>
                   <Col md={6} className="admin-add-account-col">
                     <Form.Group className="admin-add-account-group mb-3">
-                      <Form.Label className="admin-add-account-label">Địa chỉ <span className="admin-add-account-required text-danger">*</span></Form.Label>
+                      <Form.Label className="admin-add-account-label">Địa chỉ * <span className="admin-add-account-required text-danger">*</span></Form.Label>
                       <Form.Control
                         type="text"
                         name="address"
@@ -391,26 +391,11 @@ const AddAccount = () => {
                         <option value="customer">Khách hàng</option>
                         <option value="admin">Quản trị viên</option>
                         <option value="sale">Nhân viên bán hàng</option>
-                        <option value="shipper">Nhân viên giao hàng</option>
-                        <option value="checker">Nhân viên kiểm hàng</option>
+                       
                       </Form.Select>
                     </Form.Group>
                   </Col>
-                  <Col md={6} className="admin-add-account-col">
-                    <Form.Group className="admin-add-account-group mb-3">
-                      <Form.Label className="admin-add-account-label">Trạng thái</Form.Label>
-                      <Form.Select
-                        name="status"
-                        value={formData.status}
-                        onChange={handleInputChange}
-                        className="admin-add-account-select"
-                      >
-                        <option value="active">Hoạt động</option>
-                        <option value="inactive">Không hoạt động</option>
-                        <option value="suspended">Tạm khóa</option>
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
+                 
                 </Row>
               </Col>
 

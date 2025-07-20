@@ -64,7 +64,7 @@ export default function AddBlog() {
       <h2 className="add-blog-title">Thêm bài viết mới</h2>
       <div className="add-blog-form-group">
         <label htmlFor="title">
-          <strong>Tiêu đề:</strong>
+          <strong>Tiêu đề * :</strong>
         </label>
         <input
           id="title"
@@ -77,7 +77,7 @@ export default function AddBlog() {
       </div>
       <div className="add-blog-form-group">
         <label htmlFor="imageUpload">
-          <strong>Ảnh bài viết:</strong>
+          <strong>Ảnh bài viết * : </strong>
         </label>
         <div className="image-upload-container">
           <label className="custom-file-upload">
@@ -118,7 +118,7 @@ export default function AddBlog() {
                   strokeLinejoin="round"
                 />
               </svg>
-              <span>Chọn ảnh bài viết</span>
+              <span>Chọn ảnh bài viết * </span>
             </div>
           </label>
           {imagePreview && (
