@@ -221,4 +221,34 @@ class ChatLiveController extends Controller
             'customers' => $customers,
         ]);
     }
+    // đếm số tin nhắn chưa đọc theo từng id 
+    public function getUnreadCountByCustomerId($customerId)
+    {
+        $staff = Auth::user();
+
+        // Chỉ cho admin hoặc sale dùng
+        if (!in_array($staff->role, ['admin', 'sale'])) {
+            return response()->json(['message' => 'Bạn không có quyền truy cập.'], 403);
+        }
+
+        // Kiểm tra customer tồn tại
+        $customer = User::where('user_id', $customerId)->where('role', 'customer')->first();
+        if (!$customer) {
+            return response()->json(['message' => 'Customer không tồn tại.'], 404);
+        }
+
+        // Đếm số tin nhắn chưa đọc từ customer này gửi đến staff hiện tại
+        $unreadCount = SupportChatNotification::where('user_id', $staff->user_id)
+            ->where('is_read', false)
+            ->whereHas('chat', function ($query) use ($customerId) {
+                $query->where('customer_id', $customerId);
+            })
+            ->count();
+
+        return response()->json([
+            'success' => true,
+            'customer_id' => $customerId,
+            'unread_count' => $unreadCount
+        ]);
+    }
 }
