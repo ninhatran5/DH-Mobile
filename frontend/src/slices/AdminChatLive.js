@@ -114,35 +114,29 @@ const chatLiveSlice = createSlice({
   if (userIndex !== -1) {
     const user = state.chatUsers[userIndex];
 
-    // Cập nhật tin nhắn cuối
-    user.last_message = {
-      sender,
-      content: message,
-      created_at,
-    };
+    // Cập nhật tin nhắn cuối (dạng string giống API)
+    user.last_message = sender === "admin" ? `Bạn: ${message}` : message;
 
     // Tăng số lượng chưa đọc nếu không phải admin gửi
     if (sender !== "admin") {
-      user.unread_count = user.unread_count ? user.unread_count + 1 : 1;
+      user.unread_count = (user.unread_count || 0) + 1;
     }
 
     // Đưa user lên đầu danh sách
-    state.chatUsers.splice(userIndex, 1); 
-    state.chatUsers.unshift(user);       
+    state.chatUsers.splice(userIndex, 1);
+    state.chatUsers.unshift(user);
   } else {
+    // Thêm user mới vào danh sách nếu chưa có
     state.chatUsers.unshift({
       customer_id,
       customer_name: `Khách ${customer_id}`,
       avatar_url: "",
-      last_message: {
-        sender,
-        content: message,
-        created_at,
-      },
+      last_message: sender === "admin" ? `Bạn: ${message}` : message,
       unread_count: sender !== "admin" ? 1 : 0,
     });
   }
-},
+}
+
 
   },
 
