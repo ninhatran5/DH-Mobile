@@ -89,7 +89,17 @@
 }
 
 .admin-edit-account-title {
-  font-size: 24px;
   font-weight: bold;
   margin: 0;
+}
+.user-detail-info-item {
+  background-color: transparent; /* hoặc giữ lại màu nhẹ nếu thích */
+  padding: 8px 0;
+  border: none;
+}
+
+.user-detail-info-item label {
+  font-weight: 600;         /* Đậm hơn một chút */
+  font-size: 16px;          /* Lớn hơn một chút */
+  color: #222;              /* Màu tối hơn để dễ đọc */
 }

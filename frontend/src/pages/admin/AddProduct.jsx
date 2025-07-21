@@ -352,8 +352,38 @@ const AdminAddProduct = () => {
                   {errors.price_original && <div className="adminAddProduct-error">{errors.price_original}</div>}
                 </div>
               </div>
+ {/* Ảnh */}
+              <div className="mb-3 adminAddProduct-image">
+                <label className="form-label fw-bold adminAddProduct-label">Ảnh sản phẩm * :</label>
+                <input 
+                  type="file" 
+                  onChange={handleFileChange}
+                  className="form-control adminAddProduct-input"
+                />
+                {imagePreview && (
+                  <div className="mt-3 text-center adminAddProduct-image-preview">
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      style={{
+                        maxWidth: "200px",
+                        borderRadius: "8px",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+             
+            </div>
 
-              {/* Thông số kỹ thuật */}
+            {/* Cột phải */}
+            <div className="col-md-6 adminAddProduct-right-column">
+             
+
+             
+
+                 {/* Thông số kỹ thuật */}
               <div className="mb-3 adminAddProduct-specifications">
                 <label className="form-label fw-bold adminAddProduct-label">Thông số kỹ thuật * :</label>
                 {specifications.map((spec, index) => (
@@ -397,34 +427,6 @@ const AdminAddProduct = () => {
                   <i className="bi bi-plus-lg me-1"></i>
                   Thêm thông số kỹ thuật
                 </button>
-              </div>
-            </div>
-
-            {/* Cột phải */}
-            <div className="col-md-6 adminAddProduct-right-column">
-             
-
-              {/* Ảnh */}
-              <div className="mb-3 adminAddProduct-image">
-                <label className="form-label fw-bold adminAddProduct-label">Ảnh sản phẩm * :</label>
-                <input 
-                  type="file" 
-                  onChange={handleFileChange}
-                  className="form-control adminAddProduct-input"
-                />
-                {imagePreview && (
-                  <div className="mt-3 text-center adminAddProduct-image-preview">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      style={{
-                        maxWidth: "200px",
-                        borderRadius: "8px",
-                        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                      }}
-                    />
-                  </div>
-                )}
               </div>
 
               {/* Form thêm biến thể */}
