@@ -63,24 +63,24 @@ const UserDetail = () => {
             <div className="user-detail-section-title">Thông tin cá nhân</div>
             <div className="user-detail-info-grid">
               <div className="user-detail-info-item">
-                <label>Họ tên</label>
-                <p>{user.full_name}</p>
+                <label>Họ tên:  {user.full_name} </label>
+            
               </div>
               <div className="user-detail-info-item">
-                <label>Tên tài khoản</label>
-                <p>@{user.username}</p>
+                <label>Tên tài khoản: {user.username}</label>
+              
               </div>
               <div className="user-detail-info-item">
-                <label>Email</label>
-                <p>{user.email}</p>
+                <label>Email: {user.email}</label>
+           
               </div>
               <div className="user-detail-info-item">
-                <label>Số điện thoại</label>
-                <p>{user.phone}</p>
+                <label>Số điện thoại: {user.phone}</label>
+           
               </div>
               <div className="user-detail-info-item">
-                <label>Vai trò</label>
-                <p>{user.role}</p>
+                <label>Vai trò: {user.role}</label>
+           
               </div>
             </div>
           </div>
@@ -91,20 +91,16 @@ const UserDetail = () => {
           <div className="user-detail-section-title">Địa chỉ</div>
           <div className="user-detail-info-grid">
             <div className="user-detail-info-item">
-              <label>Thành phố</label>
-              <p>{user.city}</p>
+              <label>Thành phố: {user.city}</label>
             </div>
             <div className="user-detail-info-item">
-              <label>Quận</label>
-              <p>{user.district}</p>
+              <label>Quận: {user.district}</label>
             </div>
             <div className="user-detail-info-item">
-              <label>Phường</label>
-              <p>{user.ward}</p>
+              <label>Phường: {user.ward}</label>
             </div>
             <div className="user-detail-info-item">
-              <label>Địa chỉ cụ thể</label>
-              <p>{user.address}</p>
+              <label>Địa chỉ cụ thể: {user.address}</label>
             </div>
           </div>
         </div>
