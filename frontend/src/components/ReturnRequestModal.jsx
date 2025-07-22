@@ -93,6 +93,7 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
           id: orderId,
           reason,
           reasonOther: description,
+          images,
         })
       ).unwrap();
 
@@ -106,6 +107,7 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
       handleClose();
       setReason("");
       setDescription("");
+      setImages([]);
     } catch (error) {
       Swal.fire({
         icon: "error",
