@@ -27,28 +27,39 @@ const ArticlesList = () => {
   }
 
   const handleDelete = async (newsId) => {
-    if (newsId) {
-      try {
-        await dispatch(putInTheTrash(newsId)).unwrap();
-        await Swal.fire({
-          icon: "success",
-          title: "Đã đưa vào thùng rác",
-          text: "Bài viết đã được đưa vào thùng rác.",
-          confirmButtonText: "OK",
-        });
-        dispatch(fetchNews());
-      } catch (error) {
-        Swal.fire({
-          icon: "error",
-          title: "Lỗi",
-          text: "Có lỗi xảy ra khi xóa bài viết.",
-        });
-      }
-    } else {
+    if (!newsId) {
       Swal.fire({
         icon: "warning",
         title: "Không thể xóa",
         text: "Vui lòng thử lại sau hoặc liên hệ quản trị viên.",
+        timer: 1500,
+        showConfirmButton: false,
+        position: "center",
+      });
+      return;
+    }
+
+    try {
+      await dispatch(putInTheTrash(newsId)).unwrap();
+
+      Swal.fire({
+        icon: "success",
+        title: "Đã đưa vào thùng rác",
+        text: "Bài viết đã được đưa vào thùng rác.",
+        timer: 1500,
+        showConfirmButton: false,
+        position: "center",
+      });
+
+      dispatch(fetchNews());
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi khi xóa",
+        text: "Có lỗi xảy ra khi xóa bài viết.",
+        timer: 1500,
+        showConfirmButton: false,
+        position: "center",
       });
     }
   };
@@ -178,7 +189,13 @@ const ArticlesList = () => {
                   <div
                     style={{ color: "#888", fontSize: 13, marginLeft: "auto" }}
                   >
-                    {new Date(news.created_at).toLocaleDateString("vi-VN")}
+                    {`${new Date(news.created_at).toLocaleTimeString("vi-VN", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
+                    })} - ${new Date(news.created_at).toLocaleDateString(
+                      "vi-VN"
+                    )}`}
                   </div>
                 </div>
                 <h2
