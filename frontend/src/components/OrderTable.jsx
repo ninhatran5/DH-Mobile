@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { FaFilter } from "react-icons/fa";
+import echo from "../utils/echo"; // import echo
 
 const OrderTable = () => {
   const MySwal = withReactContent(Swal);
@@ -69,9 +70,23 @@ const OrderTable = () => {
       : order.status && order.status.trim().toLowerCase() === tab
   );
 
+  const userId = localStorage.getItem("userId");
+
   useEffect(() => {
     dispatch(fetchOrder());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (!userId) return;
+    const channel = echo.channel(`orders.${userId}`);
+    channel.listen("OrderUpdated", (data) => {
+      dispatch(fetchOrder());
+    });
+    return () => {
+      echo.leave(`orders.${userId}`);
+    };
+  }, [userId, dispatch]);
+
   return (
     <>
       {loading && <Loading />}
