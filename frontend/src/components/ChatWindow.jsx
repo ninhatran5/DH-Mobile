@@ -8,12 +8,14 @@ import { useTranslation } from "react-i18next";
 import BotChat from "./BotChat";
 import AdminChat from "./AdminChat";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { useSelector } from "react-redux";
 
 export default function ChatWindow() {
   const { t } = useTranslation();
   const [visible, setVisible] = useState(true);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [chatMode, setChatMode] = useState(null);
+  const { profile } = useSelector((state) => state.profile);
 
   const handleChatModeChange = (mode) => {
     setChatMode(mode);
@@ -50,7 +52,7 @@ export default function ChatWindow() {
               {chatMode !== null && (
                 <button
                   className="back-btn-chat"
-                  style={{border: "none", background: "transparent"}}
+                  style={{ border: "none", background: "transparent" }}
                   onClick={handleBackToModeSelector}
                 >
                   <IoMdArrowRoundBack />
@@ -61,8 +63,7 @@ export default function ChatWindow() {
                 onClick={() => setIsFullScreen((v) => !v)}
               >
                 {isFullScreen ? (
-                  <MdCloseFullscreen className="icon-zoomout"/>
-
+                  <MdCloseFullscreen className="icon-zoomout" />
                 ) : (
                   <ImEnlarge2 className="icon-enlarge" />
                 )}
@@ -129,35 +130,38 @@ export default function ChatWindow() {
                 🤖 {t("chatBot.chatWithBot")}
               </button>
 
-              <button
-                onClick={() => handleChatModeChange("admin")}
-                style={{
-                  padding: "15px 25px",
-                  border: "2px solid #28a745",
-                  borderRadius: "10px",
-                  background: "#28a745",
-                  color: "white",
-                  cursor: "pointer",
-                  fontSize: "16px",
-                  fontWeight: "500",
-                  transition: "all 0.3s ease",
-                  width: "200px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "10px",
-                }}
-                onMouseOver={(e) => {
-                  e.target.style.background = "#1e7e34";
-                  e.target.style.transform = "translateY(-2px)";
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.background = "#28a745";
-                  e.target.style.transform = "translateY(0)";
-                }}
-              >
-                👨‍💼 {t("chatBot.chatWithAdmin")}
-              </button>
+              {profile?.user?.role === "admin" &&
+                profile?.user?.role === "sales" && (
+                  <button
+                    onClick={() => handleChatModeChange("admin")}
+                    style={{
+                      padding: "15px 25px",
+                      border: "2px solid #28a745",
+                      borderRadius: "10px",
+                      background: "#28a745",
+                      color: "white",
+                      cursor: "pointer",
+                      fontSize: "16px",
+                      fontWeight: "500",
+                      transition: "all 0.3s ease",
+                      width: "200px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "10px",
+                    }}
+                    onMouseOver={(e) => {
+                      e.target.style.background = "#1e7e34";
+                      e.target.style.transform = "translateY(-2px)";
+                    }}
+                    onMouseOut={(e) => {
+                      e.target.style.background = "#28a745";
+                      e.target.style.transform = "translateY(0)";
+                    }}
+                  >
+                    👨‍💼 {t("chatBot.chatWithAdmin")}
+                  </button>
+                )}
 
               <p
                 style={{

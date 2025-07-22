@@ -213,8 +213,6 @@ const Homeadmin = () => {
 
   const isDropdownActive = (menu) => activeDropdown === menu;
 
-  
-
   const handleNotificationClick = (e) => {
     e.preventDefault();
     setShowNotificationDot(false);
@@ -240,6 +238,8 @@ const Homeadmin = () => {
       try {
         localStorage.removeItem("adminToken");
         localStorage.removeItem("adminID");
+        localStorage.removeItem("token");
+        localStorage.removeItem("userID");
         toast.success("Đăng xuất thành công");
         navigate("/AdminLogin", { replace: true });
       } catch (error) {
@@ -268,8 +268,6 @@ const Homeadmin = () => {
     localStorage.setItem("notificationSound", newSoundState);
   };
 
-  
-
   const { adminProfile } = useSelector((state) => state.adminProfile);
 
   const checkRole = adminProfile?.user?.role;
@@ -290,7 +288,11 @@ const Homeadmin = () => {
           <div className="admin_dh-sidebar-header">
             <div className="admin_dh-logo-container">
               <Link
-                to={checkRole && checkRole === "sale" ? "/admin/product" : "/admin/chart"}
+                to={
+                  checkRole && checkRole === "sale"
+                    ? "/admin/product"
+                    : "/admin/chart"
+                }
                 className="d-flex align-items-center"
               >
                 <div className="admin_dh-logo-img">
@@ -628,7 +630,7 @@ const Homeadmin = () => {
             <div className="admin_dh-nav-section">
               <div className="admin_dh-nav-section-title">Tiếp thị</div>
               <div className="admin_dh-components">
-                 <div
+                <div
                   className={
                     location.pathname === "/admin/membership" ? "active" : ""
                   }
@@ -638,7 +640,10 @@ const Homeadmin = () => {
                     className="admin_dh-nav-link"
                     data-title="Dashboard"
                   >
-                   <i className="bi bi-person-vcard" style={{ color: "#ff9f0a" }} />
+                    <i
+                      className="bi bi-person-vcard"
+                      style={{ color: "#ff9f0a" }}
+                    />
 
                     <span>Cấp bậc hạng</span>
                   </Link>
@@ -710,7 +715,6 @@ const Homeadmin = () => {
                       isDropdownActive("chatbot") ? "show" : ""
                     }`}
                   >
-                  
                     {checkRole !== "sale" && (
                       <div>
                         <Link to="/admin/chatbot">Chatbot</Link>
@@ -718,7 +722,7 @@ const Homeadmin = () => {
                     )}
                   </div>
                 </div>
-                       <div
+                <div
                   className={
                     location.pathname === "/admin/chatlive" ? "active" : ""
                   }
@@ -728,7 +732,7 @@ const Homeadmin = () => {
                     className="admin_dh-nav-link"
                     data-title="Dashboard"
                   >
-                   <i className="bi bi-messenger"></i>
+                    <i className="bi bi-messenger"></i>
 
                     <span> Tin nhắn </span>
                   </Link>
@@ -976,7 +980,6 @@ const Homeadmin = () => {
                     role="button"
                     data-bs-toggle="dropdown"
                   >
-
                     <div className="admin_dh-user-avatar">
                       <img
                         src={adminProfile?.user?.image_url}
@@ -995,8 +998,9 @@ const Homeadmin = () => {
                     <li>
                       <div className="menu-divider" />
                     </li>
-              <div className="Homeadmin-user123">Xin chào {adminProfile?.user?.username}</div>
-                    
+                    <div className="Homeadmin-user123">
+                      Xin chào {adminProfile?.user?.username}
+                    </div>
 
                     <li>
                       <button
@@ -1004,9 +1008,10 @@ const Homeadmin = () => {
                         onClick={handleLogout}
                         style={{ textAlign: "left", width: "100%" }}
                       >
-                      <i className="bi bi-box-arrow-right me-2" style={{ color: "red" }}></i>
-
-
+                        <i
+                          className="bi bi-box-arrow-right me-2"
+                          style={{ color: "red" }}
+                        ></i>
                         Đăng xuất
                       </button>
                     </li>
