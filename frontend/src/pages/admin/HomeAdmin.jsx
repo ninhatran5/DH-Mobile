@@ -732,7 +732,10 @@ const Homeadmin = () => {
                     className="admin_dh-nav-link"
                     data-title="Dashboard"
                   >
-                    <i className="bi bi-messenger" style={{color: "#197fe6"}}></i>
+                    <i
+                      className="bi bi-messenger"
+                      style={{ color: "#197fe6" }}
+                    ></i>
 
                     <span> Tin nhắn </span>
                   </Link>
@@ -797,6 +800,20 @@ const Homeadmin = () => {
                       style={{ color: "#ff9f0a" }}
                     />
                     <span>Bình Luận</span>
+                  </Link>
+                </div>
+                <div
+                  className={
+                    location.pathname === "/admin/comments" ? "active" : ""
+                  }
+                >
+                  <Link
+                    to="/admin/trash-can"
+                    className="admin_dh-nav-link"
+                    data-title="Dashboard"
+                  >
+                    <i class="bi bi-trash3-fill" style={{color: "#ff3737"}}></i>
+                    <span>Thùng Rác</span>
                   </Link>
                 </div>
               </div>

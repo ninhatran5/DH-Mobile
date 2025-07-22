@@ -73,6 +73,7 @@ import Membership from "./pages/admin/AdminMembership";
 import MemberRank from "./pages/MemberRank";
 import UpdateBlog from "./pages/admin/UpdateBlog";
 import BlogDetailAdmin from "./pages/admin/BlogDetail";
+import TrashCan from "./pages/admin/TrashCan";
 
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
@@ -449,6 +450,14 @@ const routerConfig = [
         element: (
           <RequireNotSaleRole>
             <Membership />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "trash-can",
+        element: (
+          <RequireNotSaleRole>
+            <TrashCan />
           </RequireNotSaleRole>
         ),
       },

@@ -22,6 +22,48 @@ export const fetchNews = createAsyncThunk(
   }
 );
 
+export const getDeletePost = createAsyncThunk(
+  "AdminNews/getDeletePost",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await axiosAdmin.get("/news/trashed");
+      return res.data.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Lỗi khi gọi API news"
+      );
+    }
+  }
+);
+
+export const restoreNews = createAsyncThunk(
+  "AdminNews/restoreNews",
+  async (newsId, { rejectWithValue }) => {
+    try {
+      const res = await axiosAdmin.put(`/news/restore/${newsId}`);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Lỗi khi tải chi tiết news"
+      );
+    }
+  }
+);
+
+export const deletePermanently = createAsyncThunk(
+  "AdminNews/deletePermanently",
+  async (newsId, { rejectWithValue }) => {
+    try {
+      const res = await axiosAdmin.delete(`/news/forceDelete/${newsId}`);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Lỗi khi tải chi tiết news"
+      );
+    }
+  }
+);
+
 export const fetchNewsById = createAsyncThunk(
   "AdminNews/fetchNewsById",
   async (newsId, { rejectWithValue }) => {
@@ -124,7 +166,7 @@ const newsSlice = createSlice({
         state.error = action.payload;
       })
 
-       .addCase(putInTheTrash.pending, (state) => {
+      .addCase(putInTheTrash.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -133,6 +175,42 @@ const newsSlice = createSlice({
         state.current = action.payload;
       })
       .addCase(putInTheTrash.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getDeletePost.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getDeletePost.fulfilled, (state, action) => {
+        state.loading = false;
+        state.newsList = action.payload;
+      })
+      .addCase(getDeletePost.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(restoreNews.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(restoreNews.fulfilled, (state, action) => {
+        state.loading = false;
+        state.current = action.payload;
+      })
+      .addCase(restoreNews.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(deletePermanently.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deletePermanently.fulfilled, (state, action) => {
+        state.loading = false;
+        state.current = action.payload;
+      })
+      .addCase(deletePermanently.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
