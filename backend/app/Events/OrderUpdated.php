@@ -10,7 +10,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class OrderUpdated
+class OrderUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -26,6 +26,10 @@ class OrderUpdated
     public function broadcastOn()
     {
         return new Channel('orders.' . $this->userId);
+    }
+    public function broadcastAs()
+    {
+        return 'OrderUpdated';
     }
 
     public function broadcastWith()
