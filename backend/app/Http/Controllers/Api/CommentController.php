@@ -136,7 +136,7 @@ class CommentController extends Controller
         if (!empty($imageUrls)) {
             $commentData['upload_urls'] = $imageUrls;
         }
-logger('Dữ liệu comment:', $commentData);
+// logger('Dữ liệu comment:', $commentData);
 
         $comment = Comment::updateOrCreate(
             [

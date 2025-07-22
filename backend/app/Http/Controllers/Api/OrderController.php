@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\User;
 use App\Models\Orders;
+use Cloudinary\Cloudinary;
 use App\Models\LoyaltyTier;
 use App\Models\LoyaltyPoint;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Mail\OrderStatusUpdatedMail;
 use Illuminate\Support\Facades\Mail;
@@ -382,7 +383,29 @@ class OrderController extends Controller
         $request->validate([
             'return_reason' => 'required|string',
             'return_reason_other' => 'nullable|string|max:255',
+            'upload_url' => 'nullable|array|max:3',
+            'upload_url.*' => 'file|mimes:jpg,png,jpeg|max:4096',
         ]);
+        $imageUrls = [];
+        if ($request->hasFile('upload_url')) {
+            try {
+                $cloudinary = app(Cloudinary::class);
+                $uploadApi = $cloudinary->uploadApi();
+
+                foreach ($request->file('upload_url') as $imageFile) {
+                    $result = $uploadApi->upload($imageFile->getRealPath(), [
+                        'folder' => 'comments_img'
+                    ]);
+                    $imageUrls[] = $result['secure_url'];
+                }
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Lỗi khi upload ảnh: ' . $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ], 500);
+            }
+        }
 
         $reason = $request->return_reason;
         if (!in_array($reason, $reasons)) {
@@ -420,6 +443,7 @@ class OrderController extends Controller
             'reason' => $reason,
             'status' => 'đã yêu cầu',
             'refund_amount' => $order->total_amount, // Lưu tổng tiền đã thanh toán vào refund_amount
+            'upload_url' => json_encode($imageUrls),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
