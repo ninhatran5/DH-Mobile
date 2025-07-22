@@ -3,7 +3,7 @@ import '../../assets/admin/Chart.css';
 import { useSelector, useDispatch } from "react-redux";
 import { fetchUsers } from "../../slices/adminuserSlice";
 import { fetchAdminProducts } from "../../slices/adminproductsSlice";
-import { fetchAdminOrders } from "../../slices/adminOrderSlice";
+import { fetchAdminOrders  } from "../../slices/adminOrderSlice";
 import {
   AreaChart,
   Area,
@@ -11,19 +11,20 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell
 } from "recharts";
-
 const Chart = () => {
   const dispatch = useDispatch();
   const { users } = useSelector((state) => state.adminuser);
   const { adminproducts } = useSelector((state) => state.adminproduct);
-  const { orders, completedOrders } = useSelector((state) => state.adminOrder);
+  const { orders, completedOrders,cancelledOrders } = useSelector((state) => state.adminOrder);
 
   const [activeTab, setActiveTab] = useState('day');
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isLoading, setIsLoading] = useState(false);
-
   const totalRevenue = completedOrders.reduce(
     (sum, order) => sum + Number(order.total_amount || 0),
     0
@@ -59,7 +60,7 @@ const Chart = () => {
       }, 0)
     : 0;
 
- 
+
   useEffect(() => {
     dispatch(fetchUsers());
     dispatch(fetchAdminProducts());
@@ -97,6 +98,12 @@ const Chart = () => {
       setIsLoading(false);
     }, 700);
   };
+const getMostViewedProduct = () => {
+  if (!adminproducts || adminproducts.length === 0) return null;
+
+  const sorted = [...adminproducts].sort((a, b) => b.view_count - a.view_count);
+  return sorted[0]; // sản phẩm có lượt xem cao nhất
+};
 
   const getMonthlyRevenueData = () => {
     const now = new Date();
@@ -122,28 +129,11 @@ const Chart = () => {
     }));
   };
 
-  const getDailyRevenueData = () => {
-    const today = new Date();
-    const hours = Array.from({ length: 24 }, (_, i) => i);
-    const hourlyData = {};
-    completedOrders.forEach((order) => {
-      const date = new Date(order.created_at);
-      if (
-        date.getFullYear() === today.getFullYear() &&
-        date.getMonth() === today.getMonth() &&
-        date.getDate() === today.getDate()
-      ) {
-        const hour = date.getHours();
-        if (!hourlyData[hour]) hourlyData[hour] = 0;
-        hourlyData[hour] += Number(order.total_amount || 0);
-      }
-    });
-    return hours.map((h) => ({
-      hour: h,
-      revenue: hourlyData[h] || 0,
-      label: `${h.toString().padStart(2, "0")}:00`,
-    }));
-  };
+  const getTotalSoldProducts = () => {
+  return orders
+    .filter((order) => order.status === "Hoàn thành")
+    .reduce((sum, order) => sum + Number(order.totalProduct || 0), 0);
+};
 
   const getMonthRevenueData = () => {
     // Doanh thu từng ngày trong tháng hiện tại
@@ -168,6 +158,48 @@ const Chart = () => {
       label: d.toString(),
     }));
   };
+
+
+const getCancelVsCompleteData = () => {
+  const cancelled = orders.filter(order => order.status === "Đã hủy").length;
+  const completed = orders.filter(order => order.status === "Hoàn thành").length;
+
+  return [
+    { name: "Đã hủy", value: cancelled },
+    { name: "Hoàn thành", value: completed }
+  ];
+};
+
+const getBestAndWorstSellingProducts = () => {
+  const productSales = {};
+
+  orders
+    .filter(order => order.status === "Hoàn thành")
+    .forEach(order => {
+      order.products.forEach(product => {
+        const { product_id, product_name, product_image, quantity } = product;
+        if (!productSales[product_id]) {
+          productSales[product_id] = {
+            product_id,
+            product_name,
+            product_image,
+            totalSold: 0,
+          };
+        }
+        productSales[product_id].totalSold += Number(quantity);
+      });
+    });
+
+  const productList = Object.values(productSales);
+  if (productList.length === 0) return { best: null, worst: null };
+
+  const sorted = productList.sort((a, b) => b.totalSold - a.totalSold);
+  return {
+    best: sorted[0],
+    worst: sorted[sorted.length - 1],
+  };
+};
+
 
   return (
     <div className="container admin_thongke-dashboard">
@@ -226,8 +258,8 @@ const Chart = () => {
               <i className="bi bi-bag-check"></i>
             </div>
             <div className="admin_thongke-card-content">
-              <h5>Đơn hàng</h5>
-              <div className="admin_thongke-stat-value">{orders?.length || 0}</div>
+              <h5>Sản phẩm đã bán</h5>
+               <strong>{getTotalSoldProducts().toLocaleString("vi-VN")}</strong>
             </div>
           </div>
         </div>
@@ -247,63 +279,92 @@ const Chart = () => {
        
       </div>
 
-      {/* Biểu đồ doanh thu trong ngày */}
-      <div className="admin_thongke-chart-container" style={{ marginBottom: 40 }}>
-        <h5 className="mt-4 mb-3">
-          Biểu đồ doanh thu hôm nay
-          {todayRevenue > 0 && (
-            <span style={{ marginLeft: 16, color: "#1976d2", fontWeight: 500 }}>
-              ({todayRevenue.toLocaleString("vi-VN")} đ)
-            </span>
-          )}
-        </h5>
-        <ResponsiveContainer width="100%" height={isMobile ? 320 : 220}>
-          <AreaChart
-            data={getDailyRevenueData()}
-            margin={{
-              top: 20,
-              right: isMobile ? 10 : 30,
-              left: isMobile ? 0 : 0,
-              bottom: isMobile ? 60 : 30,
-            }}
+ <div className="thongke-flex">
+  {/* Cột trái: Danh sách sản phẩm (70%) */}
+  <div className="col-left">
+    <h5 className="mt-4 mb-3">Thống kê sản phẩm</h5>
+    <div className="product-list">
+      {/* Lặp qua mảng top sản phẩm */}
+      {(() => {
+        const { best, worst } = getBestAndWorstSellingProducts();
+          if (!best || !worst) return <p>Chưa có dữ liệu sản phẩm bán ra.</p>;
+        const mostViewed = getMostViewedProduct();
+        const products = [
+  { ...best, title: "🔥 Sản phẩm bán chạy nhất" },
+  { ...worst, title: "🐢 Sản phẩm bán chậm nhất" },
+  mostViewed && {
+    product_id: mostViewed.product_id,
+    product_name: mostViewed.name,
+    product_image: mostViewed.image_url,
+    totalSold: mostViewed.view_count, 
+    title: "👀 Sản phẩm được xem nhiều nhất",
+    isViewCount: true 
+  }
+].filter(Boolean);
+
+        return products.map((p, idx) => (
+          <div className="product-card" key={idx}>
+            <h6>{p.title}</h6>
+            <div className="product-info">
+              <img src={p.product_image} alt={p.product_name} />
+              <div>
+                <strong>{p.product_name}</strong>
+                <p>Đã bán: {p.totalSold} sản phẩm</p>
+              </div>
+            </div>
+          </div>
+        ));
+        
+      })()}
+    </div>
+    
+  </div>
+
+  {/* Cột phải: Pie chart (30%) */}
+  <div className="col-right">
+    <div className="admin_thongke-chart-container">
+      <h5 className="mb-3">Tỷ lệ huỷ đơn hàng</h5>
+      <ResponsiveContainer width="100%" height={300}>
+        <PieChart>
+          <Pie
+            data={getCancelVsCompleteData()}
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            outerRadius={100}
           >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="label"
-              interval={isMobile ? 2 : 0}
-              angle={isMobile ? -45 : 0}
-              textAnchor={isMobile ? "end" : "middle"}
-              height={isMobile ? 80 : 30}
-              tick={{ fontSize: isMobile ? 10 : 12 }}
-              minTickGap={0}
-              allowDataOverflow={true}
-            />
-            <YAxis tickFormatter={(value) => `${(value / 1_000_000).toFixed(1)}tr`} />
-            <Tooltip
-              content={({ active, payload, label }) => {
-                if (active && payload && payload.length) {
-                  return (
-                    <div style={{ background: "#fff", border: "1px solid #ccc", padding: 10 }}>
-                      <div><strong>Giờ: {label}</strong></div>
-                      <div style={{ color: "red" }}>Doanh thu: {Number(payload[0].value).toLocaleString('vi-VN')} đ</div>
-                    </div>
-                  );
-                }
-                return null;
-              }}
-            />
-            <Area
-              type="monotone"
-              dataKey="revenue"
-              stroke="#1976d2"
-              fill="#bbdefb"
-              strokeWidth={3}
-              dot={{ r: 3, stroke: "#1976d2", strokeWidth: 2, fill: "#fff" }}
-              activeDot={{ r: 5 }}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
+            <Cell fill="#f44336" />
+            <Cell fill="#4caf50" />
+          </Pie>
+        </PieChart>
+      </ResponsiveContainer>
+
+      <div className="pie-legend">
+        {(() => {
+          const data = getCancelVsCompleteData();
+          const total = data.reduce((sum, item) => sum + item.value, 0);
+          return data.map((entry, i) => {
+            const color = entry.name === "Đã hủy" ? "#f44336" : "#4caf50";
+            const percent = total === 0 ? 0 : ((entry.value / total) * 100).toFixed(1);
+            return (
+              <div key={i} className="legend-item">
+                <div className="legend-color" style={{ backgroundColor: color }}></div>
+                <span style={{ color }}>{entry.name}: {entry.value} đơn ({percent}%)</span>
+              </div>
+            );
+          });
+        })()}
       </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
 
       <div className="admin_thongke-chart-container" style={{ marginBottom: 40 }}>
         <h5 className="mt-4 mb-3">
