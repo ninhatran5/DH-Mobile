@@ -147,6 +147,14 @@ class OrderController extends Controller
         $orders = $query->orderByDesc('created_at')->paginate(15);
 
         $formattedOrders = $orders->map(function ($order) {
+            $products = $order->orderItems->map(function ($item) {
+                return [
+                    'product_id' => $item->product_id,
+                    'product_name' => $item->product ? $item->product->name : null,
+                    'product_image' => $item->variant ? $item->variant->image_url : ($item->product ? $item->product->image_url : null),
+                    'quantity' => $item->quantity,
+                ];
+            });
             return [
                 'order_id' => $order->order_id,
                 'order_code' => $order->order_code,
@@ -159,6 +167,7 @@ class OrderController extends Controller
                 'cancel_reason' => $order->cancel_reason,
                 'created_at' => $order->created_at->format('d/m/Y H:i:s'),
                 'totalProduct' => $order->orderItems->sum('quantity'), // Tính tổng số lượng sản phẩm
+                'products' => $products,
             ];
         });
 
