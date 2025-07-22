@@ -6,9 +6,10 @@ use App\Models\User;
 use App\Models\Orders;
 use Cloudinary\Cloudinary;
 use App\Models\LoyaltyTier;
+use App\Events\OrderUpdated;
 use App\Models\LoyaltyPoint;
-use Illuminate\Http\Request;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Mail\OrderStatusUpdatedMail;
@@ -44,7 +45,6 @@ class OrderController extends Controller
                 'created_at' => $order->created_at,
             ];
         });
-
         return response()->json([
             'status' => true,
             'orders' => $formattedOrders
@@ -69,12 +69,8 @@ class OrderController extends Controller
 
         // Định dạng chi tiết sản phẩm
         $orderItems = $order->orderItems->map(function ($item) {
-
             $variantAttributes = [];
-
             if ($item->variant) {
-
-                // Lấy thông tin thuộc tính của biến thể
                 $variantAttributes = $item->variant->variantAttributeValues->map(function ($attrValue) {
                     return [
                         'attribute_name' => $attrValue->value->attribute->name,
@@ -82,7 +78,6 @@ class OrderController extends Controller
                     ];
                 });
             }
-
             return [
                 'variant_id' => $item->variant_id,
                 'product_id' => $item->product_id,
@@ -94,8 +89,6 @@ class OrderController extends Controller
                 'variant_attributes' => $variantAttributes
             ];
         });
-
-        // Định dạng chi tiết đơn hàng
         $formattedOrder = [
             'order_id' => $order->order_id,
             'order_code' => $order->order_code,
@@ -290,10 +283,9 @@ class OrderController extends Controller
             $order->payment_status = $request->payment_status;
         }
         $order->save();
-
+        // Broadcast event for realtime update
+        event(new OrderUpdated($order, $order->user_id));
         // start lưu lại lịch sử đơn hàng
-
-
         // Ghi lại lịch sử thay đổi trạng thái đơn hàng
         // Đoạn này giúp bạn lưu lại mỗi lần trạng thái đơn hàng thay đổi để tra cứu lịch sử sau này
         OrderStatusHistory::create([
@@ -345,6 +337,8 @@ class OrderController extends Controller
         }
         $order->status = 'Hoàn thành';
         $order->save();
+        // Broadcast event for realtime update
+        event(new OrderUpdated($order, $order->user_id));
         return response()->json([
             'status' => true,
             'message' => 'Đơn hàng đã được xác nhận hoàn thành',
@@ -451,7 +445,9 @@ class OrderController extends Controller
         DB::table('orders')->where('order_id', $order->order_id)->update([
             'status' => 'Yêu cầu hoàn hàng',
         ]);
-
+        // Broadcast event for realtime update
+        $order = Orders::find($order->order_id);
+        event(new OrderUpdated($order, $order->user_id));
         return response()->json([
             'status' => true,
             'message' => 'Đã gửi yêu cầu hoàn hàng',
@@ -574,6 +570,8 @@ class OrderController extends Controller
         $order->status = 'Đã hủy';
         $order->cancel_reason = $request->cancel_reason; // sử dụng trường có sẵn
         $order->save();
+        // Broadcast event for realtime update
+        event(new OrderUpdated($order, $order->user_id));
         return response()->json([
             'status' => true,
             'message' => 'Đơn hàng đã được hủy thành công',
@@ -933,6 +931,8 @@ class OrderController extends Controller
         $order->status = 'Đã hủy';
         $order->cancel_reason = $request->cancel_reason;
         $order->save();
+        // Broadcast event for realtime update
+        event(new OrderUpdated($order, $order->user_id));
 
         // Gửi email thông báo nếu có email
         if ($order->user && $order->user->email) {
