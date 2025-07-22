@@ -1,10 +1,12 @@
+/* eslint-disable no-unused-vars */
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchNews } from "../../slices/newsSlice";
-import { Link, useNavigate } from "react-router-dom";
+import { fetchNews, putInTheTrash } from "../../slices/newsSlice";
+import { useNavigate } from "react-router-dom";
 import "../../assets/admin/article.css";
 import { RxUpdate } from "react-icons/rx";
 import Loading from "../../components/Loading";
+import Swal from "sweetalert2";
 
 const ArticlesList = () => {
   const dispatch = useDispatch();
@@ -24,8 +26,31 @@ const ArticlesList = () => {
     return <div className="error-message">{error}</div>;
   }
 
-  const handleDelete = (newsId) => {
-    console.log(`Xóa bài viết với ID: ${newsId}`);
+  const handleDelete = async (newsId) => {
+    if (newsId) {
+      try {
+        await dispatch(putInTheTrash(newsId)).unwrap();
+        await Swal.fire({
+          icon: "success",
+          title: "Đã đưa vào thùng rác",
+          text: "Bài viết đã được đưa vào thùng rác.",
+          confirmButtonText: "OK",
+        });
+        dispatch(fetchNews());
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi",
+          text: "Có lỗi xảy ra khi xóa bài viết.",
+        });
+      }
+    } else {
+      Swal.fire({
+        icon: "warning",
+        title: "Không thể xóa",
+        text: "Vui lòng thử lại sau hoặc liên hệ quản trị viên.",
+      });
+    }
   };
 
   const handleNextPageUpdate = (newsId) => {

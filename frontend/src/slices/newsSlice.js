@@ -61,6 +61,20 @@ export const updateNews = createAsyncThunk(
   }
 );
 
+export const putInTheTrash = createAsyncThunk(
+  "AdminNews/putInTheTrash",
+  async (newsId, { rejectWithValue }) => {
+    try {
+      const res = await axiosAdmin.delete(`/news/${newsId}`);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Lỗi khi thêm vào thùng rác"
+      );
+    }
+  }
+);
+
 const newsSlice = createSlice({
   name: "AdminNews",
   initialState,
@@ -106,6 +120,19 @@ const newsSlice = createSlice({
         state.current = action.payload;
       })
       .addCase(updateNews.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+       .addCase(putInTheTrash.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(putInTheTrash.fulfilled, (state, action) => {
+        state.loading = false;
+        state.current = action.payload;
+      })
+      .addCase(putInTheTrash.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
