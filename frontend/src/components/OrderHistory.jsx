@@ -48,9 +48,9 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
         setHasReviewableProduct(hasReviewables);
       })
       .catch(() => {
-        setHasReviewableProduct(true); // fallback: hiển thị nếu lỗi
+        setHasReviewableProduct(true);
       });
-  }, [order.order_id, dispatch, refreshFlag]); // <- THÊM refreshFlag
+  }, [order.order_id, dispatch, refreshFlag]);
 
   const handleNextPageOrderDetail = (id) => {
     navigate(`/order-detail/${id}`);
