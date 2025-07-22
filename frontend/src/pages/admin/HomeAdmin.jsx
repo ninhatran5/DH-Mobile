@@ -732,7 +732,7 @@ const Homeadmin = () => {
                     className="admin_dh-nav-link"
                     data-title="Dashboard"
                   >
-                    <i className="bi bi-messenger"></i>
+                    <i className="bi bi-messenger" style={{color: "#197fe6"}}></i>
 
                     <span> Tin nhắn </span>
                   </Link>
