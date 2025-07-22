@@ -87,23 +87,24 @@ const UserDetail = () => {
         </div>
 
         {/* Địa chỉ */}
-        <div className="user-detail-section">
-          <div className="user-detail-section-title">Địa chỉ</div>
-          <div className="user-detail-info-grid">
-            <div className="user-detail-info-item">
-              <label>Thành phố: {user.city}</label>
-            </div>
-            <div className="user-detail-info-item">
-              <label>Quận: {user.district}</label>
-            </div>
-            <div className="user-detail-info-item">
-              <label>Phường: {user.ward}</label>
-            </div>
-            <div className="user-detail-info-item">
-              <label>Địa chỉ cụ thể: {user.address}</label>
-            </div>
-          </div>
-        </div>
+       <div className="user-detail-section">
+  <div className="user-detail-section-title">Địa chỉ</div>
+  <div className="user-detail-info-grid">
+    <div className="user-detail-info-item">
+      <label>Thành phố: {user.city || "Chưa cập nhật"}</label>
+    </div>
+    <div className="user-detail-info-item">
+      <label>Quận: {user.district || "Chưa cập nhật"}</label>
+    </div>
+    <div className="user-detail-info-item">
+      <label>Phường: {user.ward || "Chưa cập nhật"}</label>
+    </div>
+    <div className="user-detail-info-item">
+      <label>Địa chỉ cụ thể: {user.address || "Chưa cập nhật"}</label>
+    </div>
+  </div>
+</div>
+
 
        
       </div>
