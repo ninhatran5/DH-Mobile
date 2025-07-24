@@ -23,7 +23,9 @@ class Voucher extends Model
         'is_active',
         'created_at',
         'updated_at',
-        'deleted_at'
+        'deleted_at',
+        'discount_type',
+        'max_discount',
     ];
 
     // Một voucher có thể được gán cho nhiều đơn hàng
