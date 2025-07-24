@@ -28,6 +28,7 @@ use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Controllers\Api\ProductsViewsController;
 use App\Http\Controllers\Api\AttributevalueController;
 use App\Http\Controllers\Api\ChatLiveController;
+use App\Http\Controllers\Api\PercentVoucherController;
 use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
 use App\Http\Controllers\Api\VariantAttributeValuesController;
@@ -176,6 +177,17 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
         Route::delete('/forceDelete/{id}', 'forceDelete');
         Route::get('/trashed', 'trashed');
         // Route::get('/list-save-voucher', [VoucherController::class, 'getSavedVouchersForUser']);
+    });
+    // Voucher-percent
+    Route::prefix('voucher-percent')->controller(PercentVoucherController::class)->group(function () {
+        Route::get('/', 'index'); // Danh sách voucher percent
+        Route::post('/', 'store'); // Tạo mới voucher percent
+        Route::get('/trashed', 'trashed'); // Lấy danh sách voucher percent đã xóa mềm
+        Route::get('/{id}', 'show'); // Xem chi tiết 1 voucher percent
+        Route::put('/{id}', 'update'); // Cập nhật voucher percent
+        Route::delete('/{id}', 'destroy'); // Xóa mềm voucher percent
+        Route::put('/restore/{id}', 'restore'); // Khôi phục voucher percent đã xóa mềm
+        Route::delete('/force-delete/{id}', 'forceDelete'); // Xóa vĩnh viễn voucher percent
     });
     // product views
     Route::prefix('productsviews')->controller(ProductsViewsController::class)->group(function () {

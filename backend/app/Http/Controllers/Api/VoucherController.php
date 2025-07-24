@@ -343,7 +343,14 @@ class VoucherController extends Controller
             ->with('voucher')
             ->get()
             ->map(function ($item) {
-                $item->quantity = 1; // Thêm trường quantity
+                $voucher = $item->voucher;
+                $item->quantity = 1;
+
+                // Tuỳ chọn: thêm thông tin chi tiết về loại giảm giá
+                $item->discount_type = $voucher->discount_type;
+                $item->discount_amount = $voucher->discount_amount;
+                $item->max_discount = $voucher->max_discount;
+
                 return $item;
             });
 
