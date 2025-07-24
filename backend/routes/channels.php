@@ -8,5 +8,5 @@ Broadcast::channel('chat.user.{userId}', function ($user, $userId) {
 
 
 Broadcast::channel('chat.admin', function ($user) {
-    return $user && $user->role === 'admin';
+    return  in_array(  $user->role,['admin' , 'sale']);
 });
