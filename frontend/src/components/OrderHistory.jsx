@@ -19,6 +19,7 @@ import {
 } from "../slices/orderSlice";
 import TooltipIcon from "./TooltipIcon";
 import dayjs from "dayjs";
+import useOrderRealtime from "../hooks/useOrderRealtime";
 
 const OrderHistory = ({ order, handleCancelOrder }) => {
   const navigate = useNavigate();
@@ -31,14 +32,40 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [caseType, setCaseType] = useState(1);
   const [hasReviewableProduct, setHasReviewableProduct] = useState(false);
-  const [refreshFlag, setRefreshFlag] = useState(0); // NEW
+  const [refreshFlag, setRefreshFlag] = useState(0);
+  const [orderData, setOrderData] = useState(order);
+  const userId = localStorage.getItem("userID");
+
+  useOrderRealtime({
+    userId,
+    orderId: orderData.order_id,
+    onOrderUpdate: (orderUpdate) => {
+      setOrderData((prev) => ({
+        ...prev,
+        status: orderUpdate.status,
+        payment_status: orderUpdate.payment_status,
+        cancel_reason: orderUpdate.cancel_reason,
+      }));
+      dispatch(fetchOrderDetail(orderData.order_id))
+        .unwrap()
+        .then((updatedData) => {
+          const products = updatedData.products || [];
+          const reviewedVariants = JSON.parse(
+            localStorage.getItem("reviewedVariants") ?? "[]"
+          );
+          setHasReviewableProduct(
+            products.some((p) => !reviewedVariants.includes(p.variant_id))
+          );
+        });
+    },
+  });
 
   useEffect(() => {
     const reviewedVariants = JSON.parse(
       localStorage.getItem("reviewedVariants") || "[]"
     );
 
-    dispatch(fetchOrderDetail(order.order_id))
+    dispatch(fetchOrderDetail(orderData.order_id))
       .unwrap()
       .then((data) => {
         const products = data.products || [];
@@ -50,14 +77,18 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
       .catch(() => {
         setHasReviewableProduct(true);
       });
-  }, [order.order_id, dispatch, refreshFlag]);
+  }, [orderData.order_id, dispatch, refreshFlag]);
+
+  useEffect(() => {
+    setOrderData(order);
+  }, [order]);
 
   const handleNextPageOrderDetail = (id) => {
     navigate(`/order-detail/${id}`);
   };
 
   const handleOpenReasonModal = () => {
-    setSelectedOrderId(order.order_id);
+    setSelectedOrderId(orderData.order_id);
     setShowReasonModal(true);
   };
 
@@ -76,7 +107,7 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
   };
 
   const handleOpenReviewAlert = () => {
-    dispatch(receivedOrder({ id: order.order_id }))
+    dispatch(receivedOrder({ id: orderData.order_id }))
       .unwrap()
       .then(() => {
         Swal.fire({
@@ -110,6 +141,10 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
         return "order-status-delivered";
       case "đã huỷ":
         return "order-status-canceled";
+      case "yêu cầu hoàn hàng":
+        return "order-status-return-requested";
+      case "đã hoàn tiền":
+        return "order-status-refunded";
       default:
         return "order-status-default";
     }
@@ -120,54 +155,55 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
       <tbody>
         <tr>
           <td
-            onClick={() => handleNextPageOrderDetail(order.order_id)}
+            onClick={() => handleNextPageOrderDetail(orderData.order_id)}
             style={{ fontWeight: 600, cursor: "pointer" }}
           >
-            #{order?.order_code}
+            #{orderData?.order_code}
           </td>
-          <td>{order?.customer}</td>
-          <td>{order?.payment_method}</td>
+          <td>{orderData?.customer}</td>
+          <td>{orderData?.payment_method}</td>
           <td
             style={{
               color:
-                order.payment_status?.toLowerCase() === "đã thanh toán"
+                orderData.payment_status?.toLowerCase() === "đã thanh toán"
                   ? "#28a745"
                   : "#dc3545",
               fontWeight: 600,
             }}
           >
-            {order.payment_status}
+            {orderData.payment_status}
           </td>
-
           <td>
-            {dayjs(order?.created_at, "DD/MM/YYYY HH:mm:ss").format(
+            {dayjs(orderData?.created_at, "DD/MM/YYYY HH:mm:ss").format(
               "HH:mm - DD/MM/YYYY"
             )}
           </td>
           <td style={{ fontWeight: 600 }}>
-            {NumberFormat(order?.total_amount)}
+            {NumberFormat(orderData?.total_amount)}
           </td>
-          <td className={getStatusClass(order?.status)}>{order?.status}</td>
+          <td className={getStatusClass(orderData?.status)}>
+            {orderData?.status}
+          </td>
           <td>
             <TooltipIcon
               icon={FaEye}
               tooltip={t("orderHistory.viewDetail")}
               className="icon-circle"
-              onClick={() => handleNextPageOrderDetail(order.order_id)}
+              onClick={() => handleNextPageOrderDetail(orderData.order_id)}
             />
-
             {["chờ xác nhận", "đã xác nhận"].includes(
-              order?.status?.trim().toLowerCase()
+              orderData?.status?.trim().toLowerCase()
             ) && (
               <TooltipIcon
                 icon={FaTimes}
                 tooltip={t("orderHistory.cancel")}
                 className="icon-circle"
-                onClick={() => handleCancelOrder(order.order_id)}
+                onClick={() => handleCancelOrder(orderData.order_id)}
               />
             )}
-
-            {["đã giao hàng"].includes(order?.status?.trim().toLowerCase()) && (
+            {["đã giao hàng"].includes(
+              orderData?.status?.trim().toLowerCase()
+            ) && (
               <TooltipIcon
                 icon={FaDiagramSuccessor}
                 tooltip={t("orderHistory.confirmReceived")}
@@ -175,8 +211,9 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
                 onClick={handleOpenReviewAlert}
               />
             )}
-
-            {["hoàn thành"].includes(order?.status?.trim().toLowerCase()) && (
+            {["hoàn thành"].includes(
+              orderData?.status?.trim().toLowerCase()
+            ) && (
               <>
                 <TooltipIcon
                   icon={PiKeyReturnFill}
@@ -190,7 +227,7 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
                     tooltip={t("orderHistory.reviewOrder")}
                     className="icon-circle"
                     onClick={() => {
-                      setSelectedOrderId(order.order_id);
+                      setSelectedOrderId(orderData.order_id);
                       setShowReviewModal(true);
                     }}
                   />

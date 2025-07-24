@@ -127,10 +127,18 @@
   font-weight: bold;
 }
 .order-status-canceled {
-  color: #f44336; /* đỏ */
+  color: #e40303; /* đỏ tươi */
   font-weight: bold;
 }
 .order-status-default {
   color: #757575;
+  font-weight: bold;
+}
+.order-status-return-requested {
+  color: #ff9800; /* cam nổi bật */
+  font-weight: bold;
+}
+.order-status-refunded {
+  color: #009688; /* xanh ngọc */
   font-weight: bold;
 }
