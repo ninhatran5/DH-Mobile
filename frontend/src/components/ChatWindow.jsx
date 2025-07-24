@@ -130,8 +130,8 @@ export default function ChatWindow() {
                 🤖 {t("chatBot.chatWithBot")}
               </button>
 
-              {profile?.user?.role === "admin" &&
-                profile?.user?.role === "sales" && (
+              {profile?.user?.role !== "admin" &&
+                profile?.user?.role !== "sales" && (
                   <button
                     onClick={() => handleChatModeChange("admin")}
                     style={{

@@ -125,7 +125,7 @@ const Profile = () => {
         linkMainItem={"/"}
         showMainItem2={false}
       />
-      <div className="profile-content" style={{ marginTop: "-3rem" }}>
+      <div className="profile-content" style={{ marginTop: "-15px" }}>
         <div className="container-fluid">
           <div className="profile-row">
             <div className="profile-col-full">

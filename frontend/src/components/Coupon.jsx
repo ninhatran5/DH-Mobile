@@ -10,8 +10,11 @@ import { useDispatch } from "react-redux";
 import { fetchVoucher, saveVoucher } from "../slices/voucherSlice";
 import Swal from "sweetalert2";
 import numberFormat from "../../utils/numberFormat";
+import { LuSaveOff } from "react-icons/lu";
+import { MdBlockFlipped } from "react-icons/md";
 
 const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
+  console.log("🚀 ~ Coupon ~ voucher:", voucher)
   const inputRef = useRef(null);
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -78,7 +81,15 @@ const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
               )}
             </div>
             {isMyVoucher ? (
-              checkQuantityVoucher > 0 ? (
+              voucher.is_active === 1 ? (
+                <div className="userVoucher-icon-wrapper">
+                 <MdBlockFlipped  className="userVoucher-icon"/>
+
+                  <span className="userVoucher-tooltip">
+                    {t("voucher.iconSaveClose")}
+                  </span>
+                </div>
+              ) : checkQuantityVoucher > 0 ? (
                 <div className="userVoucher-icon-wrapper">
                   <HiSave
                     onClick={handleSaveVoucher}

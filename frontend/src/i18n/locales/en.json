@@ -524,6 +524,7 @@
     "saveSuccess": "Voucher saved successfully",
     "iconSave": "Save",
     "iconCopy": "Copy",
+    "iconSaveClose": "You have already saved",
     "expiry": "Expiry",
     "minOrder": "Minimum order",
     "discountAmount": "Discount amount",
