@@ -131,7 +131,7 @@ export default function ChatWindow() {
               </button>
 
               {profile?.user?.role !== "admin" &&
-                profile?.user?.role !== "sales" && (
+                profile?.user?.role !== "sale" && (
                   <button
                     onClick={() => handleChatModeChange("admin")}
                     style={{
