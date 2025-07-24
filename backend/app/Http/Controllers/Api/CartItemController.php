@@ -102,7 +102,10 @@ class CartItemController extends Controller
             ->get();
 
         $totalPrice = $cartItems->sum(function ($item) {
-            return $item->variant->price * $item->quantity;
+            if ($item->variant) {
+                return $item->variant->price * $item->quantity;
+            }
+            return 0;
         });
 
         $selectedCount = $cartItems->count();
