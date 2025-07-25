@@ -37,11 +37,13 @@ const UpdateAddressForm = forwardRef(
     }, [dispatch]);
 
     useEffect(() => {
-      reset(defaultValues);
-      setSelectedCityName(defaultValues.city || "");
-      setSelectedDistrictName(defaultValues.district || "");
-      setSelectedWardName(defaultValues.ward || "");
-    }, [defaultValues, reset]);
+      if (data && data.length > 0) {
+        reset(defaultValues);
+        setSelectedCityName(defaultValues.city || "");
+        setSelectedDistrictName(defaultValues.district || "");
+        setSelectedWardName(defaultValues.ward || "");
+      }
+    }, [defaultValues, reset, data]);
 
     useEffect(() => {
       setValue("city", selectedCityName);

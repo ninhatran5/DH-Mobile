@@ -33,11 +33,9 @@ const EditProfile = () => {
     image: null,
   });
 
-  // Watch các giá trị select để lọc động
   const watchCity = watch("city");
   const watchDistrict = watch("district");
 
-  // Lọc districts theo city được chọn - sử dụng useMemo để tối ưu
   const filteredDistricts = useMemo(() => {
     const selectedCity = watchCity;
     return (
@@ -45,7 +43,6 @@ const EditProfile = () => {
     );
   }, [data, watchCity]);
 
-  // Lọc wards theo district được chọn - sử dụng useMemo để tối ưu
   const filteredWards = useMemo(() => {
     const selectedDistrict = watchDistrict;
     return (
@@ -62,10 +59,8 @@ const EditProfile = () => {
     dispatch(fetchProfile());
   }, [dispatch]);
 
-  // Chỉ một useEffect duy nhất để reset form
   useEffect(() => {
-    // Nếu không lấy được data thành phố, vẫn reset form với thông tin user
-    if (profile?.user) {
+    if (profile?.user && Array.isArray(data) && data.length > 0) {
       const user = profile.user;
       reset({
         full_name: user.full_name || "",
@@ -77,9 +72,8 @@ const EditProfile = () => {
         address: user.address || "",
       });
     }
-  }, [profile?.user, reset]);
+  }, [profile?.user, data, reset]);
 
-  // useEffect để reset district và ward khi thay đổi city/district
   useEffect(() => {
     if (watchCity) {
       const currentDistrict = watch("district");
@@ -190,7 +184,7 @@ const EditProfile = () => {
         showMainItem2={true}
       />
       <div className="container-fluid">
-        <div className="row">
+        <div className="row" style={{ marginTop: "40px" }}>
           <div className="col-12">
             <div className="d-flex">
               <button
