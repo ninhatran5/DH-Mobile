@@ -23,9 +23,18 @@ const EditProfile = () => {
     handleSubmit,
     watch,
     formState: { errors },
-    reset,
+    setValue,
   } = useForm({
     mode: "onTouched",
+    defaultValues: {
+      full_name: "",
+      phone: "",
+      email: "",
+      city: "",
+      district: "",
+      ward: "",
+      address: "",
+    },
   });
 
   const [previewImage, setPreviewImage] = useState(null);
@@ -37,73 +46,81 @@ const EditProfile = () => {
   const watchDistrict = watch("district");
 
   const filteredDistricts = useMemo(() => {
-    const selectedCity = watchCity;
-    return (
-      data.find((province) => province.name === selectedCity)?.districts || []
-    );
+    if (!watchCity || !data || !Array.isArray(data)) return [];
+    const selectedCity = data.find((province) => province.name === watchCity);
+    return selectedCity?.districts || [];
   }, [data, watchCity]);
 
   const filteredWards = useMemo(() => {
-    const selectedDistrict = watchDistrict;
-    return (
-      filteredDistricts.find((district) => district.name === selectedDistrict)
-        ?.wards || []
+    if (!watchDistrict || !filteredDistricts || !Array.isArray(filteredDistricts)) return [];
+    const selectedDistrict = filteredDistricts.find(
+      (district) => district.name === watchDistrict
     );
+    return selectedDistrict?.wards || [];
   }, [filteredDistricts, watchDistrict]);
 
   useEffect(() => {
     dispatch(fetchAddress());
-  }, [dispatch]);
-
-  useEffect(() => {
     dispatch(fetchProfile());
   }, [dispatch]);
 
   useEffect(() => {
     if (profile?.user && Array.isArray(data) && data.length > 0) {
       const user = profile.user;
-      reset({
-        full_name: user.full_name || "",
-        phone: user.phone || "",
-        email: user.email || "",
-        city: user.city || "",
-        district: user.district || "",
-        ward: user.ward || "",
-        address: user.address || "",
-      });
+
+      setValue("full_name", user.full_name || "");
+      setValue("phone", user.phone || "");
+      setValue("email", user.email || "");
+      setValue("city", user.city || "");
+      
+      const cityExists = data.some((province) => province.name === user.city);
+      if (cityExists && user.district) {
+        setValue("district", user.district || "");
+        const districtExists = filteredDistricts.some(
+          (district) => district.name === user.district
+        );
+        if (districtExists && user.ward) {
+          setValue("ward", user.ward || "");
+        } else {
+          setValue("ward", "");
+        }
+      } else {
+        setValue("district", "");
+        setValue("ward", "");
+      }
+      setValue("address", user.address || "");
     }
-  }, [profile?.user, data, reset]);
+  }, [profile?.user, data, setValue, filteredDistricts]);
 
   useEffect(() => {
-    if (watchCity) {
+    if (watchCity && Array.isArray(data) && data.length > 0) {
       const currentDistrict = watch("district");
       const existDistrict = filteredDistricts.some(
         (d) => d.name === currentDistrict
       );
-
       if (!existDistrict && currentDistrict) {
-        reset((formValues) => ({
-          ...formValues,
-          district: "",
-          ward: "",
-        }));
+        setValue("district", "");
+        setValue("ward", "");
       }
+    } else if (!watchCity) {
+      setValue("district", "");
+      setValue("ward", "");
     }
-  }, [watchCity, filteredDistricts, reset, watch]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watchCity, filteredDistricts, setValue, watch]);
 
   useEffect(() => {
-    if (watchDistrict) {
+    if (watchDistrict && Array.isArray(filteredDistricts) && filteredDistricts.length > 0) {
       const currentWard = watch("ward");
       const existWard = filteredWards.some((w) => w.name === currentWard);
-
       if (!existWard && currentWard) {
-        reset((formValues) => ({
-          ...formValues,
-          ward: "",
-        }));
+        setValue("ward", "");
       }
+    } else if (!watchDistrict) {
+      setValue("ward", "");
     }
-  }, [watchDistrict, filteredWards, reset, watch]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watchDistrict, filteredWards, setValue, watch]);
 
   const onSubmit = async (dataForm) => {
     const dataToSend = new FormData();
@@ -120,11 +137,10 @@ const EditProfile = () => {
     dataToSend.append("_method", "PUT");
 
     try {
-      // eslint-disable-next-line no-unused-vars
-      const result = await dispatch(fetchEditProfile(dataToSend)).unwrap();
+      await dispatch(fetchEditProfile(dataToSend)).unwrap();
       toast.success("Cập nhật hồ sơ thành công!");
     } catch (error) {
-      toast.error(error);
+      toast.error(error.message || "Cập nhật hồ sơ thất bại!");
     }
   };
 
@@ -142,34 +158,19 @@ const EditProfile = () => {
   const handleNextForgotPasssword = () => {
     navigate("/forgot-password");
   };
+
   const handleReturnProfile = (id) => {
     navigate(`/profile/${id}`);
   };
 
   const getAvatarUrl = () => {
     if (previewImage) return previewImage;
-
     const userImageUrl = profile?.user?.image_url;
     if (userImageUrl && userImageUrl.trim() !== "" && userImageUrl !== "null") {
       return userImageUrl;
     }
-
     return "https://bootdey.com/img/Content/avatar/avatar1.png";
   };
-
-  useEffect(() => {
-    if (watchDistrict) {
-      const currentWard = watch("ward");
-      const existWard = filteredWards.some((w) => w.name === currentWard);
-
-      if (!existWard && currentWard) {
-        reset((formValues) => ({
-          ...formValues,
-          ward: "",
-        }));
-      }
-    }
-  }, [watchDistrict, filteredWards, reset, watch]);
 
   return (
     <>
@@ -316,10 +317,8 @@ const EditProfile = () => {
                             required: t("editProfile.validate.cityRequired"),
                           })}
                         >
-                          <option value="">
-                            {t("editProfile.selectCity")}
-                          </option>
-                          {data.map((province) => (
+                          <option value="">{t("editProfile.selectCity")}</option>
+                          {data && Array.isArray(data) && data.map((province) => (
                             <option key={province.code} value={province.name}>
                               {province.name}
                             </option>
@@ -344,15 +343,11 @@ const EditProfile = () => {
                             errors.district ? "is-invalid" : ""
                           }`}
                           {...register("district", {
-                            required: t(
-                              "editProfile.validate.districtRequired"
-                            ),
+                            required: t("editProfile.validate.districtRequired"),
                           })}
-                          disabled={!watchCity}
+                          disabled={!watchCity || filteredDistricts.length === 0}
                         >
-                          <option value="">
-                            {t("editProfile.selectDistrict")}
-                          </option>
+                          <option value="">{t("editProfile.selectDistrict")}</option>
                           {filteredDistricts.map((district) => (
                             <option key={district.code} value={district.name}>
                               {district.name}
@@ -380,11 +375,9 @@ const EditProfile = () => {
                           {...register("ward", {
                             required: t("editProfile.validate.wardRequired"),
                           })}
-                          disabled={!watchDistrict}
+                          disabled={!watchDistrict || filteredWards.length === 0}
                         >
-                          <option value="">
-                            {t("editProfile.selectWard")}
-                          </option>
+                          <option value="">{t("editProfile.selectWard")}</option>
                           {filteredWards.map((ward) => (
                             <option key={ward.code} value={ward.name}>
                               {ward.name}
@@ -457,7 +450,7 @@ const EditProfile = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="d-md-flex  justify-content-md-end text-center">
+                  <div className="d-md-flex justify-content-md-end text-center">
                     <button
                       type="submit"
                       className="btn btn-primary mb-5"

@@ -1,12 +1,11 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosAdmin } from "../../utils/axiosConfig";
 
 export const fetchAdminLoyaltyTiers = createAsyncThunk(
-  'adminMembership/fetchAdminLoyaltyTiers',
+  "adminMembership/fetchAdminLoyaltyTiers",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosAdmin.get('/loyalty-tiers');
-      console.log('Server trả về loyalty tiers:', response.data);
+      const response = await axiosAdmin.get("/loyalty-tiers");
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -15,7 +14,7 @@ export const fetchAdminLoyaltyTiers = createAsyncThunk(
 );
 
 export const updateAdminLoyaltyTier = createAsyncThunk(
-  'adminMembership/updateAdminLoyaltyTier',
+  "adminMembership/updateAdminLoyaltyTier",
   async ({ id, data }, { rejectWithValue }) => {
     try {
       const response = await axiosAdmin.put(`/loyalty-tiers/${id}`, data);
@@ -27,7 +26,7 @@ export const updateAdminLoyaltyTier = createAsyncThunk(
 );
 
 const adminMembershipSlice = createSlice({
-  name: 'adminMembership',
+  name: "adminMembership",
   initialState: {
     loyaltyTiers: [],
     loading: false,
@@ -35,8 +34,7 @@ const adminMembershipSlice = createSlice({
     updateLoading: false,
     updateError: null,
   },
-  reducers: {
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchAdminLoyaltyTiers.pending, (state) => {
@@ -45,7 +43,9 @@ const adminMembershipSlice = createSlice({
       })
       .addCase(fetchAdminLoyaltyTiers.fulfilled, (state, action) => {
         state.loading = false;
-        state.loyaltyTiers = Array.isArray(action.payload.data) ? action.payload.data : [];
+        state.loyaltyTiers = Array.isArray(action.payload.data)
+          ? action.payload.data
+          : [];
       })
       .addCase(fetchAdminLoyaltyTiers.rejected, (state, action) => {
         state.loading = false;
@@ -61,9 +61,8 @@ const adminMembershipSlice = createSlice({
         if (updatedTier) {
           // Tìm theo cả id và tier_id
           const idx = state.loyaltyTiers.findIndex(
-            tier =>
-              tier.id === updatedTier.id ||
-              tier.tier_id === updatedTier.tier_id
+            (tier) =>
+              tier.id === updatedTier.id || tier.tier_id === updatedTier.tier_id
           );
           if (idx !== -1) {
             state.loyaltyTiers[idx] = {

@@ -36,7 +36,9 @@ const OrderDetail = () => {
   const MySwal = withReactContent(Swal);
   const dispatch = useDispatch();
   const { id } = useParams();
-  const { orderDetail: reduxOrderDetail, loading } = useSelector((state) => state.order);
+  const { orderDetail: reduxOrderDetail, loading } = useSelector(
+    (state) => state.order
+  );
   const navigate = useNavigate();
   const [showReasonModal, setShowReasonModal] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
@@ -105,8 +107,14 @@ const OrderDetail = () => {
         return "order-status-shipped";
       case "hoàn thành":
         return "order-status-delivered";
-      case "đã huỷ":
+      case "đã hủy":
         return "order-status-canceled";
+      case "yêu cầu hoàn hàng":
+        return "order-status-return-requested";
+      case "đã hoàn tiền":
+        return "order-status-refunded";
+      case "trả hàng/hoàn tiền":
+        return "order-status-return-refund";
       default:
         return "order-status-default";
     }
@@ -284,7 +292,10 @@ const OrderDetail = () => {
         linkMainItem={"/"}
         linkMainItem2={"/order-history"}
       />
-      <div className="card_order_detail container-fluid px-1 px-md-4 py-5 mx-auto" style={{ marginTop: "30px" }}>
+      <div
+        className="card_order_detail container-fluid px-1 px-md-4 py-5 mx-auto"
+        style={{ marginTop: "30px" }}
+      >
         <div className="row d-flex justify-content-between px-3">
           <div className="d-flex">
             <h5>
@@ -415,9 +426,7 @@ const OrderDetail = () => {
                     {t("orderDetail.back")}
                   </button>
                   <div className="d-flex gap-2">
-                    {["Chờ xác nhận", "Đã xác nhận"].includes(
-                      orderDetail?.status
-                    ) && (
+                    {["Chờ xác nhận"].includes(orderDetail?.status) && (
                       <button
                         className="btn-cancel-order"
                         onClick={() => handleCancelOrder(orderDetail.order_id)}

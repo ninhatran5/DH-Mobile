@@ -31,15 +31,18 @@ export const addAdminProductVariant = createAsyncThunk(
       const res = await axiosAdmin.post("/productvariants", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": formData instanceof FormData ? "multipart/form-data" : "application/json",
+          "Content-Type":
+            formData instanceof FormData
+              ? "multipart/form-data"
+              : "application/json",
         },
       });
-      console.log("Submitting variant data:", formData);
-      console.log("DATA GỬI LÊN:", formData);
 
       return res.data.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Lỗi khi thêm biến thể");
+      return rejectWithValue(
+        err.response?.data?.message || "Lỗi khi thêm biến thể"
+      );
     }
   }
 );
@@ -59,24 +62,34 @@ export const updateAdminProductVariant = createAsyncThunk(
 
       if (updatedData instanceof FormData) {
         // Validate FormData fields
-        if (!updatedData.get('product_id') || !updatedData.get('sku') || !updatedData.get('price')) {
-          return rejectWithValue("Thiếu thông tin bắt buộc (product_id, sku, price)");
+        if (
+          !updatedData.get("product_id") ||
+          !updatedData.get("sku") ||
+          !updatedData.get("price")
+        ) {
+          return rejectWithValue(
+            "Thiếu thông tin bắt buộc (product_id, sku, price)"
+          );
         }
         payload = updatedData;
         contentType = "multipart/form-data";
       } else {
         // Validate regular object fields
         if (!updatedData.product_id || !updatedData.sku || !updatedData.price) {
-          return rejectWithValue("Thiếu thông tin bắt buộc (product_id, sku, price)");
+          return rejectWithValue(
+            "Thiếu thông tin bắt buộc (product_id, sku, price)"
+          );
         }
         // If not FormData, convert numeric fields
         payload = {
           ...updatedData,
           product_id: parseInt(updatedData.product_id),
           price: parseFloat(updatedData.price),
-          price_original: updatedData.price_original ? parseFloat(updatedData.price_original) : null,
+          price_original: updatedData.price_original
+            ? parseFloat(updatedData.price_original)
+            : null,
           stock: parseInt(updatedData.stock || 0),
-          is_active: updatedData.is_active ? 1 : 0
+          is_active: updatedData.is_active ? 1 : 0,
         };
         contentType = "application/json";
       }
@@ -87,8 +100,8 @@ export const updateAdminProductVariant = createAsyncThunk(
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": contentType
-          }
+            "Content-Type": contentType,
+          },
         }
       );
 
@@ -110,7 +123,9 @@ export const deleteAdminProductVariant = createAsyncThunk(
       });
       return id;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Lỗi khi xóa biến thể");
+      return rejectWithValue(
+        err.response?.data?.message || "Lỗi khi xóa biến thể"
+      );
     }
   }
 );
@@ -130,7 +145,7 @@ const adminProductVariantsSlice = createSlice({
         state.productVariants = action.payload;
       })
       .addCase(fetchAdminProductVariants.rejected, (state, action) => {
-        state.loading = false; 
+        state.loading = false;
         state.error = action.payload;
       })
       .addCase(addAdminProductVariant.pending, (state) => {
