@@ -758,6 +758,7 @@ class OrderController extends Controller
                 'return_id' => $r->return_id,
                 'reason' => $r->reason,
                 'status' => $r->status,
+                'upload_url' => $r->upload_url,
                 'refund_amount' => number_format($r->refund_amount, 0, '.', ''),
                 'created_at' => $r->created_at ? date('d/m/Y H:i:s', strtotime($r->created_at)) : null,
             ];
