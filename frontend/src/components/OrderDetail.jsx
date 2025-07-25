@@ -4,8 +4,8 @@ import Breadcrumb from "./Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import useOrderRealtime from "../hooks/useOrderRealtime";
 import { IoChevronBackOutline } from "react-icons/io5";
-
 import {
   cancelOrder,
   fetchOrderDetail,
@@ -36,7 +36,7 @@ const OrderDetail = () => {
   const MySwal = withReactContent(Swal);
   const dispatch = useDispatch();
   const { id } = useParams();
-  const { orderDetail, loading } = useSelector((state) => state.order);
+  const { orderDetail: reduxOrderDetail, loading } = useSelector((state) => state.order);
   const navigate = useNavigate();
   const [showReasonModal, setShowReasonModal] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
@@ -44,11 +44,29 @@ const OrderDetail = () => {
   const [caseType, setCaseType] = useState(1);
   const [refreshFlag, setRefreshFlag] = useState(0);
   const [hasReviewableProduct, setHasReviewableProduct] = useState(false);
+  const [orderDetail, setOrderDetail] = useState(reduxOrderDetail);
 
   useEffect(() => {
     if (!id) return;
     dispatch(fetchOrderDetail(id));
   }, [id, dispatch]);
+
+  useEffect(() => {
+    setOrderDetail(reduxOrderDetail);
+  }, [reduxOrderDetail]);
+
+  useOrderRealtime({
+    userId: localStorage.getItem("userID"),
+    orderId: orderDetail?.order_id,
+    onOrderUpdate: (orderUpdate) => {
+      setOrderDetail((prev) => ({
+        ...prev,
+        status: orderUpdate.status,
+        payment_status: orderUpdate.payment_status,
+        cancel_reason: orderUpdate.cancel_reason,
+      }));
+    },
+  });
 
   useEffect(() => {
     const reviewedVariants = JSON.parse(
@@ -266,8 +284,7 @@ const OrderDetail = () => {
         linkMainItem={"/"}
         linkMainItem2={"/order-history"}
       />
-      <div className="card_order_detail container-fluid px-1 px-md-4 py-5 mx-auto">
-        {/* Header */}
+      <div className="card_order_detail container-fluid px-1 px-md-4 py-5 mx-auto" style={{ marginTop: "30px" }}>
         <div className="row d-flex justify-content-between px-3">
           <div className="d-flex">
             <h5>

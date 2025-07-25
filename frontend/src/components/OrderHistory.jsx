@@ -46,17 +46,6 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
         payment_status: orderUpdate.payment_status,
         cancel_reason: orderUpdate.cancel_reason,
       }));
-      dispatch(fetchOrderDetail(orderData.order_id))
-        .unwrap()
-        .then((updatedData) => {
-          const products = updatedData.products || [];
-          const reviewedVariants = JSON.parse(
-            localStorage.getItem("reviewedVariants") ?? "[]"
-          );
-          setHasReviewableProduct(
-            products.some((p) => !reviewedVariants.includes(p.variant_id))
-          );
-        });
     },
   });
 
