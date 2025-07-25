@@ -107,7 +107,7 @@
   color: #fff;
 }
 .order-status-pending {
-  color: #ff9800; /* cam */
+  color: #3300ff; /* cam */
   font-weight: bold;
 }
 .order-status-confirmed {
@@ -140,5 +140,9 @@
 }
 .order-status-refunded {
   color: #009688; /* xanh ngọc */
+  font-weight: bold;
+}
+.order-status-return-refund {
+  color: #ff5722; /* cam đậm hoặc chọn màu bạn thích */
   font-weight: bold;
 }

@@ -128,10 +128,12 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
         return "order-status-shipped";
       case "hoàn thành":
         return "order-status-delivered";
-      case "đã huỷ":
+      case "đã hủy":
         return "order-status-canceled";
       case "yêu cầu hoàn hàng":
         return "order-status-return-requested";
+      case "trả hàng/hoàn tiền":
+        return "order-status-return-refund";
       case "đã hoàn tiền":
         return "order-status-refunded";
       default:
@@ -180,7 +182,7 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
               className="icon-circle"
               onClick={() => handleNextPageOrderDetail(orderData.order_id)}
             />
-            {["chờ xác nhận", "đã xác nhận"].includes(
+            {["chờ xác nhận"].includes(
               orderData?.status?.trim().toLowerCase()
             ) && (
               <TooltipIcon

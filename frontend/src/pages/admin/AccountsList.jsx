@@ -26,7 +26,6 @@ const ListUser = () => {
   };
 
  const handleChangeRole = async (user, newRole) => {
-  console.log("User được chọn:", user);
   if (!user || !user.user_id) {
     Swal.fire("Lỗi", "Không tìm thấy ID của người dùng.", "error");
     return;
