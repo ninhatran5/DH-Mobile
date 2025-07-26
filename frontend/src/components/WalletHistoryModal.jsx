@@ -6,12 +6,14 @@ import { fetchBalanceFluctuation, fetchWallet } from "../slices/walletSlice";
 import numberFormat from "../../utils/numberFormat";
 import Loading from "./Loading";
 import dayjs from "dayjs";
+
 const WalletHistoryModal = ({ show, onClose }) => {
   const [closing, setClosing] = useState(false);
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const { wallets } = useSelector((state) => state.wallet);
-  const { balanceFluctuation, loading } = useSelector((state) => state.wallet);
+  const { wallets, balanceFluctuation, loading } = useSelector(
+    (state) => state.wallet
+  );
 
   useEffect(() => {
     if (!wallets?.wallet_id) {
@@ -30,6 +32,20 @@ const WalletHistoryModal = ({ show, onClose }) => {
   };
 
   if (!show && !closing) return null;
+
+  const getSignByType = (type) => {
+    const normalized = type?.toLowerCase();
+    if (normalized === "hoàn tiền") return "+ ";
+    if (normalized === "trả tiền" || normalized === "tiêu tiền") return "- ";
+    return "";
+  };
+
+  const getColorByType = (type) => {
+    const normalized = type?.toLowerCase();
+    return normalized === "trả tiền" || normalized === "tiêu tiền"
+      ? "#dc2626"
+      : "#16a34a";
+  };
 
   return (
     <>
@@ -62,29 +78,29 @@ const WalletHistoryModal = ({ show, onClose }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {balanceFluctuation.map((transaction, idx) => (
-                    <tr key={idx}>
-                      <td>
-                        {dayjs(transaction?.created_at).format(
-                          "HH:mm - DD/MM/YYYY"
-                        )}
-                      </td>
-                      <td>{transaction?.type}</td>
-                      <td
-                        style={{
-                          color:
-                            Number(transaction?.amount) > 0
-                              ? "#16a34a"
-                              : "#dc2626",
-                          fontWeight: 600,
-                        }}
-                      >
-                        {Number(transaction?.amount) > 0 ? "+" : "-"}
-                        {numberFormat(Math.abs(Number(transaction?.amount)))}
-                      </td>
-                      <td>{transaction?.note || "-"}</td>
-                    </tr>
-                  ))}
+                  {balanceFluctuation.map((transaction, idx) => {
+                    const sign = getSignByType(transaction?.type);
+                    const color = getColorByType(transaction?.type);
+                    const amount = numberFormat(
+                      Math.abs(Number(transaction?.amount))
+                    );
+
+                    return (
+                      <tr key={idx}>
+                        <td>
+                          {dayjs(transaction?.created_at).format(
+                            "HH:mm - DD/MM/YYYY"
+                          )}
+                        </td>
+                        <td>{transaction?.type}</td>
+                        <td style={{ color, fontWeight: 600 }}>
+                          {sign}
+                          {amount}
+                        </td>
+                        <td>{transaction?.note || "-"}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             )}
