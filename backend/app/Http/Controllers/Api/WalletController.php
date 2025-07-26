@@ -24,7 +24,7 @@ class WalletController extends Controller
    {
        $data = WalletTransaction::where('wallet_id', $id)
            ->select('type', 'amount', 'note', 'created_at')
-           ->first();
+           ->get();
        return response()->json([
            'data' => $data
        ]);
