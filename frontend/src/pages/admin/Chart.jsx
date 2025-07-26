@@ -246,7 +246,7 @@ const getBestAndWorstSellingProducts = () => {
             <div className="admin_thongke-card-content">
               <h5>Doanh thu</h5>
               <div className="admin_thongke-stat-value">
-                {totalRevenue.toLocaleString("vi-VN")} đ
+                {totalRevenue.toLocaleString("vi-VN")} 
               </div>
             </div>
           </div>
@@ -282,129 +282,110 @@ const getBestAndWorstSellingProducts = () => {
  <div className="thongke-flex">
   {/* Cột trái: Danh sách sản phẩm (70%) */}
   <div className="col-left">
-    <h5 className="mt-4 mb-3">Thống kê sản phẩm</h5>
-    <div className="product-list">
-      {/* Lặp qua mảng top sản phẩm */}
-      {(() => {
-        const { best, worst } = getBestAndWorstSellingProducts();
-          if (!best || !worst) return <p>Chưa có dữ liệu sản phẩm bán ra.</p>;
-        const mostViewed = getMostViewedProduct();
-        const products = [
-  { ...best, title: "🔥 Sản phẩm bán chạy nhất" },
-  { ...worst, title: "🐢 Sản phẩm bán chậm nhất" },
-  mostViewed && {
-    product_id: mostViewed.product_id,
-    product_name: mostViewed.name,
-    product_image: mostViewed.image_url,
-    totalSold: mostViewed.view_count, 
-    title: "👀 Sản phẩm được xem nhiều nhất",
-    isViewCount: true 
-  }
-].filter(Boolean);
+  <h5 className="mt-4 mb-3">Thống kê sản phẩm</h5>
+  <div className="product-list">
+    {(() => {
+      const { best, worst } = getBestAndWorstSellingProducts();
+      const mostViewed = getMostViewedProduct();
 
-        return products.map((p, idx) => (
-          <div className="product-card" key={idx}>
-            <h6>{p.title}</h6>
-            <div className="product-info">
-              <img src={p.product_image} alt={p.product_name} />
-              <div>
-                <strong>{p.product_name}</strong>
-                <p>Đã bán: {p.totalSold} sản phẩm</p>
+      if (!best && !worst && !mostViewed) return <p>Chưa có dữ liệu sản phẩm.</p>;
+
+      return (
+        <>
+          {best && (
+            <div className="product-card">
+              <h6>🔥 Sản phẩm bán chạy nhất</h6>
+              <div className="product-info">
+                <img src={best.product_image} alt={best.product_name} />
+                <div>
+                  <strong>{best.product_name}</strong>
+                  <p>Đã bán: {best.totalSold} sản phẩm</p>
+                </div>
               </div>
             </div>
-          </div>
-        ));
-        
-      })()}
-    </div>
-    
-  </div>
+          )}
 
-  {/* Cột phải: Pie chart (30%) */}
-  <div className="col-right">
-    <div className="admin_thongke-chart-container">
-      <h5 className="mb-3">Tỷ lệ huỷ đơn hàng</h5>
-      <ResponsiveContainer width="100%" height={300}>
-        <PieChart>
-          <Pie
-            data={getCancelVsCompleteData()}
-            dataKey="value"
-            nameKey="name"
-            cx="50%"
-            cy="50%"
-            outerRadius={100}
-          >
-            <Cell fill="#f44336" />
-            <Cell fill="#4caf50" />
-          </Pie>
-        </PieChart>
-      </ResponsiveContainer>
-
-      <div className="pie-legend">
-        {(() => {
-          const data = getCancelVsCompleteData();
-          const total = data.reduce((sum, item) => sum + item.value, 0);
-          return data.map((entry, i) => {
-            const color = entry.name === "Đã hủy" ? "#f44336" : "#4caf50";
-            const percent = total === 0 ? 0 : ((entry.value / total) * 100).toFixed(1);
-            return (
-              <div key={i} className="legend-item">
-                <div className="legend-color" style={{ backgroundColor: color }}></div>
-                <span style={{ color }}>{entry.name}: {entry.value} đơn ({percent}%)</span>
+          {worst && (
+            <div className="product-card">
+              <h6>🐢 Sản phẩm bán chậm nhất</h6>
+              <div className="product-info">
+                <img src={worst.product_image} alt={worst.product_name} />
+                <div>
+                  <strong>{worst.product_name}</strong>
+                  <p>Đã bán: {worst.totalSold} sản phẩm</p>
+                </div>
               </div>
-            );
-          });
-        })()}
-      </div>
-    </div>
+            </div>
+          )}
+
+          {mostViewed && (
+            <div className="product-card">
+              <h6>👀 Sản phẩm được xem nhiều nhất</h6>
+              <div className="product-info">
+                <img src={mostViewed.image_url} alt={mostViewed.name} />
+                <div>
+                  <strong>{mostViewed.name}</strong>
+                  <p>Đã xem: {mostViewed.view_count} lần</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      );
+    })()}
   </div>
 </div>
 
 
+  {/* Cột phải: Pie chart (30%) */}
+ <div className="col-right">
+  <div className="admin_thongke-chart-container">
+    <h5 className="mb-3">Tỷ lệ huỷ đơn hàng</h5>
+    
+    <ResponsiveContainer width="100%" height={260}>
+  <PieChart>
+    <Pie
+      data={getCancelVsCompleteData()}
+      dataKey="value"
+      nameKey="name"
+      cx="50%"
+      cy="50%"
+      innerRadius={60}
+      outerRadius={90}
+      paddingAngle={3}
+      stroke="#fff"
+      strokeWidth={2}
+    >
+      <Cell fill="#f44336" />
+      <Cell fill="#4caf50" />
+    </Pie>
+    <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" fontSize={16} fontWeight={600}>
+      Tỷ lệ
+    </text>
+  </PieChart>
+</ResponsiveContainer>
 
 
+    <div className="pie-legend">
+      {(() => {
+        const data = getCancelVsCompleteData();
+        const total = data.reduce((sum, item) => sum + item.value, 0);
+        return data.map((entry, i) => {
+          const color = entry.name === "Đã hủy" ? "#f44336" : "#4caf50";
+          const percent = total === 0 ? 0 : ((entry.value / total) * 100).toFixed(1);
+          return (
+            <div key={i} className="legend-item">
+              <div className="legend-color" style={{ backgroundColor: color }}></div>
+              <span style={{ color }}>{entry.name}: {entry.value} đơn ({percent}%)</span>
+            </div>
+          );
+        });
+      })()}
+    </div>
+  </div>
+</div>
 
-
-
-      <div className="admin_thongke-chart-container" style={{ marginBottom: 40 }}>
-        <h5 className="mt-4 mb-3">
-          Biểu đồ doanh thu tháng này
-          {monthRevenue > 0 && (
-            <span style={{ marginLeft: 16, color: "#ff9800", fontWeight: 500 }}>
-              ({monthRevenue.toLocaleString("vi-VN")} đ)
-            </span>
-          )}
-        </h5>
-        <ResponsiveContainer width="100%" height={220}>
-          <AreaChart data={getMonthRevenueData()} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="label" />
-            <YAxis tickFormatter={(value) => `${(value / 1_000_000).toFixed(1)}tr`} />
-            <Tooltip 
-              content={({ active, payload, label }) => {
-                if (active && payload && payload.length) {
-                  return (
-                    <div style={{ background: "#fff", border: "1px solid #ccc", padding: 10 }}>
-                      <div><strong>Ngày: {label}</strong></div>
-                      <div style={{color:"red"}}>Doanh thu: {Number(payload[0].value).toLocaleString('vi-VN')} đ</div>
-                    </div>
-                  );
-                }
-                return null;
-              }}
-            />
-            <Area
-              type="monotone"
-              dataKey="revenue"
-              stroke="#ff9800"
-              fill="#ffe0b2"
-              strokeWidth={3}
-              dot={{ r: 3, stroke: "#ff9800", strokeWidth: 2, fill: "#fff" }}
-              activeDot={{ r: 5 }}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
+</div>
 
       {/* Biểu đồ doanh thu theo tháng (12 tháng) */}
       <div className="admin_thongke-chart-container" style={{ marginBottom: 40 }}>

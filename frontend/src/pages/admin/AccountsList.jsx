@@ -118,8 +118,7 @@ const ListUser = () => {
             <option value="customer">Khách hàng</option>
             <option value="admin">Quản trị viên</option>
             <option value="sale">Nhân viên bán hàng</option>
-            <option value="shipper">Nhân viên giao hàng</option>
-            <option value="checker">Nhân viên kiểm hàng</option>
+           
           </select>
         </div>
       </div>
