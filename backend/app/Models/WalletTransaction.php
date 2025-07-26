@@ -1,4 +1,5 @@
 <?php
+namespace App\Models;
 
 use App\Models\ReturnRequest;
 use Illuminate\Database\Eloquent\Model;
