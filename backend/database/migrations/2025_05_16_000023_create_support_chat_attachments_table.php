@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('support_chat_attachments', function (Blueprint $table) {
             $table->id('attachment_id');
             $table->unsignedBigInteger('chat_id')->nullable();
-            $table->string('file_url', 255);
+            $table->string('file_url', 255)->nullable();
             $table->string('file_type', 50)->nullable();
             $table->dateTime('uploaded_at')->useCurrent();
 

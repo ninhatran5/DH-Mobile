@@ -10,20 +10,29 @@ use App\Models\SupportChatAttachment;
 use App\Models\SupportChatNotification;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Cloudinary\Cloudinary;
 
 class ChatLiveController extends Controller
 {
     //  user gửi tin nhắn (1 chiều)
     public function sendMessage(Request $request)
     {
-        $request->validate([
-            'message' => 'required|string',
-            'attachments.*' => 'file|mimes:jpg,png,pdf,docx,txt|max:2048'
-        ]);
-
         $user = Auth::user();
+
         if ($user->role !== 'customer') {
             return response()->json(['message' => 'Bạn không có quyền gửi tin nhắn.'], 403);
+        }
+
+        // Kiểm tra attachments có thể là file hoặc mảng
+        $isMultiple = is_array($request->attachments);
+        $request->validate([
+            'message' => 'nullable|string',
+            'attachments' => 'nullable' . ($isMultiple ? '|array' : '|file'),
+            'attachments.*' => 'file|mimes:jpg,jpeg,png,gif,svg,pdf,docx,txt|max:4096'
+        ]);
+
+        if (!$request->message && !$request->hasFile('attachments')) {
+            return response()->json(['message' => 'Tin nhắn không được để trống.'], 422);
         }
 
         $chat = SupportChat::create([
@@ -34,19 +43,26 @@ class ChatLiveController extends Controller
             'is_read' => false,
         ]);
 
-        // File đính kèm
         if ($request->hasFile('attachments')) {
-            foreach ($request->file('attachments') as $file) {
-                $path = $file->store('chat_attachments', 'public');
-                SupportChatAttachment::create([
-                    'chat_id' => $chat->chat_id,
-                    'file_path' => $path,
-                    'file_type' => $file->getClientMimeType(),
+            $cloudinary = app(Cloudinary::class);
+
+            $files = $isMultiple ? $request->file('attachments') : [$request->file('attachments')];
+
+            foreach ($files as $file) {
+                $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
+                    'folder' => 'chat_attachments'
                 ]);
+
+                if (isset($result['secure_url'])) {
+                    SupportChatAttachment::create([
+                        'chat_id' => $chat->chat_id,
+                        'file_url' => $result['secure_url'],
+                        'file_type' => $file->getClientMimeType(),
+                    ]);
+                }
             }
         }
 
-        // Gửi noti đến tất cả staff
         $staffList = User::whereIn('role', ['admin', 'sale'])->pluck('user_id');
         foreach ($staffList as $staffId) {
             SupportChatNotification::create([
@@ -55,63 +71,81 @@ class ChatLiveController extends Controller
                 'is_read' => false,
             ]);
         }
-        // realtime 
+
         broadcast(new SupportChatSent($chat->load('attachments')))->toOthers();
 
-        return response()->json(['success' => true, 'chat' => $chat->load('attachments')]);
+        return response()->json([
+            'success' => true,
+            'chat' => $chat->load('attachments')
+        ]);
     }
+
 
     //  (admin/sale) trả lời theo customer_id
     public function replyToCustomer(Request $request)
     {
-        // 1. Validate input
         $request->validate([
             'customer_id' => 'required|exists:users,user_id',
-            'message' => 'required|string',
-            'attachments.*' => 'file|mimes:jpg,png,pdf,docx,txt|max:2048'
+            'message' => 'nullable|string',
+            'attachments' => 'nullable',
+            'attachments.*' => 'file|mimes:jpg,jpeg,png,gif,svg,pdf,docx,txt|max:4096'
         ]);
 
-        // 2. Lấy user hiện tại và kiểm tra quyền
         $staff = Auth::user();
         if (!in_array($staff->role, ['admin', 'sale'])) {
             return response()->json(['message' => 'Bạn không có quyền trả lời.'], 403);
         }
 
-        // 3. Tạo tin nhắn mới
+        // Nếu không có message và không có file thì trả về lỗi
+        if (!$request->message && !$request->hasFile('attachments')) {
+            return response()->json(['message' => 'Tin nhắn không được để trống.'], 422);
+        }
+
         $chat = SupportChat::create([
             'customer_id' => $request->customer_id,
             'staff_id' => $staff->user_id,
-            'sender' => $staff->role, // ✅ dùng role 'admin' hoặc 'sale'
+            'sender' => $staff->role,
             'message' => $request->message,
             'sent_at' => now(),
             'is_read' => false,
         ]);
 
-        // 4. Lưu file đính kèm nếu có
+        // Xử lý file đính kèm nếu có
         if ($request->hasFile('attachments')) {
-            foreach ($request->file('attachments') as $file) {
-                $path = $file->store('chat_attachments', 'public');
-                SupportChatAttachment::create([
-                    'chat_id' => $chat->chat_id,
-                    'file_path' => $path,
-                    'file_type' => $file->getClientMimeType(),
+            $cloudinary = app(Cloudinary::class);
+
+            $files = $request->file('attachments');
+            // Nếu là 1 file đơn, chuyển thành mảng
+            if (!is_array($files)) {
+                $files = [$files];
+            }
+
+            foreach ($files as $file) {
+                $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
+                    'folder' => 'chat_attachments'
                 ]);
+
+                if (isset($result['secure_url'])) {
+                    SupportChatAttachment::create([
+                        'chat_id' => $chat->chat_id,
+                        'file_url' => $result['secure_url'],
+                        'file_type' => $file->getClientMimeType(),
+                    ]);
+                }
             }
         }
 
-        // 5. Tạo thông báo cho user (customer)
         SupportChatNotification::create([
             'chat_id' => $chat->chat_id,
             'user_id' => $request->customer_id,
             'is_read' => false,
         ]);
 
-        // 6. Gửi realtime qua Pusher
         broadcast(new SupportChatSent($chat->load('attachments')))->toOthers();
 
         return response()->json([
             'success' => true,
-            'chat' => $chat->load('attachments'),
+            'chat' => $chat,
         ]);
     }
 
@@ -164,6 +198,7 @@ class ChatLiveController extends Controller
 
         return response()->json(['success' => true]);
     }
+
     // danh sách user nhắn tin cho admin và sale
     public function getCustomersChatList()
     {
@@ -221,6 +256,7 @@ class ChatLiveController extends Controller
             'customers' => $customers,
         ]);
     }
+
     // đếm số tin nhắn chưa đọc theo từng id 
     public function getUnreadCountByCustomerId($customerId)
     {
@@ -250,5 +286,29 @@ class ChatLiveController extends Controller
             'customer_id' => $customerId,
             'unread_count' => $unreadCount
         ]);
+    }
+
+    /**
+     * Lấy public_id từ URL Cloudinary
+     *
+     * @param string $url URL của ảnh Cloudinary
+     * @return string|null public_id hoặc null nếu không tìm thấy
+     */
+    private function getPublicIdFromUrl($url)
+    {
+        // URL Cloudinary có dạng: https://res.cloudinary.com/cloud_name/image/upload/v1234567890/folder/filename.jpg
+        if (empty($url)) {
+            return null;
+        }
+
+        // Tìm phần upload/ trong URL
+        $pattern = '/\/upload\/(?:v\d+\/)?(.+)$/';
+        if (preg_match($pattern, $url, $matches)) {
+            // Loại bỏ phần mở rộng của file
+            $publicId = preg_replace('/\.[^.]+$/', '', $matches[1]);
+            return $publicId;
+        }
+
+        return null;
     }
 }
