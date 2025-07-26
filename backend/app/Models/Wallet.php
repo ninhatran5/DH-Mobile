@@ -1,7 +1,10 @@
-<?php 
+<?php
+
+namespace App\Models;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+
 class Wallet extends Model
 {
     protected $primaryKey = 'wallet_id';
@@ -17,5 +20,3 @@ class Wallet extends Model
         return $this->hasMany(WalletTransaction::class, 'wallet_id');
     }
 }
-
-
