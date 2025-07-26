@@ -8,7 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Wallet extends Model
 {
     protected $primaryKey = 'wallet_id';
-    protected $fillable = ['user_id', 'balance'];
+    protected $fillable = [
+        'user_id',
+        'balance'
+    ];
 
     public function user()
     {
