@@ -59,15 +59,16 @@ export const walletSlice = createSlice({
       })
       .addCase(fetchBalanceFluctuation.fulfilled, (state, action) => {
         state.loading = false;
-        // Nếu payload là mảng thì giữ nguyên, nếu là object thì chuyển thành mảng
+
         if (Array.isArray(action.payload)) {
           state.balanceFluctuation = action.payload;
-        } else if (action.payload && typeof action.payload === "object") {
-          state.balanceFluctuation = [action.payload];
+        } else if (action.payload?.data && Array.isArray(action.payload.data)) {
+          state.balanceFluctuation = action.payload.data;
         } else {
           state.balanceFluctuation = [];
         }
       })
+
       .addCase(fetchBalanceFluctuation.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";

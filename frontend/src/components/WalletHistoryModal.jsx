@@ -62,33 +62,29 @@ const WalletHistoryModal = ({ show, onClose }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {balanceFluctuation.map((item, idx) => {
-                    const transaction = item?.data || {};
-                    return (
-                      <tr key={idx}>
-                        <td>
-                          {dayjs(transaction?.created_at).format(
-                            "HH:mm - DD/MM/YYYY"
-                          )}
-                        </td>
-
-                        <td>{transaction?.type}</td>
-                        <td
-                          style={{
-                            color:
-                              Number(transaction?.amount) > 0
-                                ? "#16a34a"
-                                : "#dc2626",
-                            fontWeight: 600,
-                          }}
-                        >
-                          {Number(transaction?.amount) > 0 ? "+" : "-"}
-                          {numberFormat(Math.abs(Number(transaction?.amount)))}
-                        </td>
-                        <td>{transaction?.note || "-"}</td>
-                      </tr>
-                    );
-                  })}
+                  {balanceFluctuation.map((transaction, idx) => (
+                    <tr key={idx}>
+                      <td>
+                        {dayjs(transaction?.created_at).format(
+                          "HH:mm - DD/MM/YYYY"
+                        )}
+                      </td>
+                      <td>{transaction?.type}</td>
+                      <td
+                        style={{
+                          color:
+                            Number(transaction?.amount) > 0
+                              ? "#16a34a"
+                              : "#dc2626",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {Number(transaction?.amount) > 0 ? "+" : "-"}
+                        {numberFormat(Math.abs(Number(transaction?.amount)))}
+                      </td>
+                      <td>{transaction?.note || "-"}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             )}
