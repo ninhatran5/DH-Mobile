@@ -5,16 +5,17 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\User;
 use App\Models\Orders;
-use App\Models\WalletTransaction;
 use App\Models\Wallet;
 use Cloudinary\Cloudinary;
 use App\Models\LoyaltyTier;
-
 use App\Events\OrderUpdated;
+
 use App\Models\LoyaltyPoint;
 use Illuminate\Http\Request;
 use App\Models\ReturnRequest;
+use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\DB;
+use App\Events\ReturnRequestUpdated;
 use App\Http\Controllers\Controller;
 use App\Mail\OrderStatusUpdatedMail;
 use Illuminate\Support\Facades\Mail;
@@ -470,104 +471,112 @@ class OrderController extends Controller
 
     // Admin duyệt hoặc từ chối hoàn hàng (sử dụng bảng return_requests)
     public function adminHandleReturnRequest(Request $request, $id)
-{
-    $allowedStatuses = ['Đã yêu cầu', 'Đã chấp thuận', 'Đã từ chối', 'Đang xử lý', 'Đã hoàn lại', 'Đã hủy'];
-    $validTransitions = [
-        'Đã yêu cầu'   => ['Đã chấp thuận', 'Đã từ chối'],
-        'Đã chấp thuận' => ['Đang xử lý', 'Đã từ chối'],
-        'Đang xử lý'   => ['Đã hoàn lại', 'Đã từ chối'],
-        'Đã hoàn lại'  => [],
-        'Đã từ chối'   => [],
-        'Đã hủy'       => [],
-    ];
+    {
+        $allowedStatuses = ['Đã yêu cầu', 'Đã chấp thuận', 'Đã từ chối', 'Đang xử lý', 'Đã hoàn lại', 'Đã hủy'];
+        $validTransitions = [
+            'Đã yêu cầu'   => ['Đã chấp thuận', 'Đã từ chối'],
+            'Đã chấp thuận' => ['Đang xử lý', 'Đã từ chối'],
+            'Đang xử lý'   => ['Đã hoàn lại', 'Đã từ chối'],
+            'Đã hoàn lại'  => [],
+            'Đã từ chối'   => [],
+            'Đã hủy'       => [],
+        ];
 
-    $newStatus = $request->input('status');
+        $newStatus = $request->input('status');
 
-    if (!in_array($newStatus, $allowedStatuses)) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Trạng thái không hợp lệ.'
-        ], 422);
-    }
-
-    $returnRequest = ReturnRequest::where('order_id', $id)
-        ->whereIn('status', array_keys($validTransitions))
-        ->first();
-
-    if (!$returnRequest) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Không tìm thấy yêu cầu hoàn hàng đang chờ xử lý cho đơn hàng này'
-        ], 404);
-    }
-
-    $currentStatus = $returnRequest->status;
-    if (!isset($validTransitions[$currentStatus]) || !in_array($newStatus, $validTransitions[$currentStatus])) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Chuyển trạng thái không hợp lệ!'
-        ], 400);
-    }
-
-    $refundAmount = $returnRequest->refund_amount;
-    $userId = $returnRequest->user_id;
-
-    DB::beginTransaction();
-    try {
-        // 1. Cập nhật trạng thái yêu cầu hoàn hàng
-        $returnRequest->status = $newStatus;
-        $returnRequest->updated_at = now();
-        $returnRequest->save();
-
-        // 2. Cập nhật đơn hàng
-        $order = Orders::find($id);
-        if ($order) {
-            if ($newStatus === 'Đã yêu cầu') {
-                $order->status = 'Đã yêu cầu hoàn hàng';
-            } elseif (in_array($newStatus, ['Đã chấp thuận', 'Đang xử lý'])) {
-                $order->status = 'Trả hàng/Hoàn tiền';
-            } elseif ($newStatus === 'Đã hoàn lại') {
-                $order->status = 'Đã hoàn tiền';
-                $order->payment_status = 'Đã hoàn tiền';
-
-
-                // 3. Xử lý hoàn tiền vào ví
-                $wallet = Wallet::firstOrCreate(['user_id' => $userId], ['balance' => 0]);
-                $wallet->balance += $refundAmount;
-                $wallet->save();
-
-                // 4. Ghi log giao dịch ví
-                WalletTransaction::create([
-                    'wallet_id' => $wallet->wallet_id,
-                    'type' => 'hoàn tiền',
-                    'amount' => $refundAmount,
-                    'note' => 'Hoàn tiền đơn hàng #' . $order->order_code,
-                    'return_id' => $returnRequest->return_id,
-                ]);
-            } elseif (in_array($newStatus, ['Đã từ chối', 'Đã hủy'])) {
-                $order->status = 'Từ chối hoàn hàng';
-            }
-
-            $order->save();
+        if (!in_array($newStatus, $allowedStatuses)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Trạng thái không hợp lệ.'
+            ], 422);
         }
 
-        DB::commit();
+        $returnRequest = ReturnRequest::where('order_id', $id)
+            ->whereIn('status', array_keys($validTransitions))
+            ->first();
 
-        return response()->json([
-            'status' => true,
-            'message' => $newStatus === 'Đã hoàn lại' ? 'Đã duyệt hoàn tiền' : ($newStatus === 'Đã từ chối' ? 'Đã từ chối hoàn hàng' : 'Cập nhật trạng thái yêu cầu hoàn hàng thành công'),
-            'return_request_id' => $returnRequest->return_id,
-            'return_request_status' => $newStatus,
-            'refund_amount' => $newStatus === 'Đã hoàn lại' ? $refundAmount : null
-        ]);
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return response()->json([
-            'status' => false,
-            'message' => 'Đã xảy ra lỗi khi xử lý: ' . $e->getMessage()
-        ], 500);
+        if (!$returnRequest) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Không tìm thấy yêu cầu hoàn hàng đang chờ xử lý cho đơn hàng này'
+            ], 404);
+        }
+
+        $currentStatus = $returnRequest->status;
+        if (!isset($validTransitions[$currentStatus]) || !in_array($newStatus, $validTransitions[$currentStatus])) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Chuyển trạng thái không hợp lệ!'
+            ], 400);
+        }
+
+        $refundAmount = $returnRequest->refund_amount;
+        $userId = $returnRequest->user_id;
+
+        DB::beginTransaction();
+        try {
+            // 1. Cập nhật trạng thái yêu cầu hoàn hàng
+            $returnRequest->status = $newStatus;
+            $returnRequest->updated_at = now();
+            $returnRequest->save();
+
+            // 2. Cập nhật đơn hàng
+            $order = Orders::find($id);
+            if ($order) {
+                if ($newStatus === 'Đã yêu cầu') {
+                    $order->status = 'Đã yêu cầu hoàn hàng';
+                } elseif ($newStatus === 'Đã chấp thuận') {
+                    $order->status = 'Đã chấp thuận';
+                } elseif ($newStatus === 'Đang xử lý') {
+                    $order->status = 'Đang xử lý';
+                } elseif ($newStatus === 'Đã từ chối') {
+                    $order->status = 'Đã từ chối';
+                } elseif ($newStatus === 'Đã hoàn lại') {
+                    $order->status = 'Đã trả hàng';
+                    $order->payment_status = 'Đã hoàn tiền';
+
+
+                    // 3. Xử lý hoàn tiền vào ví
+                    $wallet = Wallet::firstOrCreate(['user_id' => $userId], ['balance' => 0]);
+                    $wallet->balance += $refundAmount;
+                    $wallet->save();
+                    event(new ReturnRequestUpdated($order->order_id, [
+                        'status' => $order->status,
+                        'payment_status' => $order->payment_status,
+                        'updated_at' => now()
+                    ]));
+                    // 4. Ghi log giao dịch ví
+                    WalletTransaction::create([
+                        'wallet_id' => $wallet->wallet_id,
+                        'type' => 'hoàn tiền',
+                        'amount' => $refundAmount,
+                        'note' => 'Hoàn tiền đơn hàng #' . $order->order_code,
+                        'return_id' => $returnRequest->return_id,
+                    ]);
+                } elseif (in_array($newStatus, ['Đã từ chối', 'Đã hủy'])) {
+                    $order->status = 'Từ chối hoàn hàng';
+                }
+
+                $order->save();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => $newStatus === 'Đã hoàn lại' ? 'Đã duyệt hoàn tiền' : ($newStatus === 'Đã từ chối' ? 'Đã từ chối hoàn hàng' : 'Cập nhật trạng thái yêu cầu hoàn hàng thành công'),
+                'return_request_id' => $returnRequest->return_id,
+                'return_request_status' => $newStatus,
+                'refund_amount' => $newStatus === 'Đã hoàn lại' ? $refundAmount : null
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => 'Đã xảy ra lỗi khi xử lý: ' . $e->getMessage()
+            ], 500);
+        }
     }
-}
 
 
     // Client hủy đơn hàng khi đang ở trạng thái Chờ xác nhận
@@ -990,7 +999,6 @@ class OrderController extends Controller
             'order' => $order
         ]);
     }
-
 
     // luồng xử lý đơn hàng hoàn thành thì được cộng điểm 
     public function markAsCompleted($orderId)
