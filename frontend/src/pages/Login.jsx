@@ -14,7 +14,6 @@ import Loading from "../components/Loading";
 const Login = () => {
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.register);
-
   const [isShowPassword, setIsShowPassword] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -34,12 +33,7 @@ const Login = () => {
       localStorage.setItem("token", result.access_token);
       localStorage.setItem("userID", result.user.id);
       toast.success(t("auth.loginNotificationSuccess"));
-      const userRole = result.user.role;
-      if (userRole && userRole.toLowerCase() !== "customer") {
-        navigate("/admin/chart");
-      } else if (userRole && userRole.toLowerCase() === "customer") {
-        navigate("/");
-      }
+      navigate("/");
     } catch (error) {
       toast.error(error);
     }
