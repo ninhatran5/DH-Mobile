@@ -358,4 +358,5 @@ Route::middleware('auth:sanctum')->get('/loyalty-summary', [LoyaltyTierControlle
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/wallet', [WalletController::class, 'getWallet']);
+    Route::get('/wallet/history/{id}', [WalletController::class, 'getHistoryWallet']);
 });
