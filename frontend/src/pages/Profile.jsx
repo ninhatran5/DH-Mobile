@@ -5,12 +5,13 @@ import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { fetchProfile } from "../slices/profileSlice";
 import Loading from "../components/Loading";
 import { fetchListFavorite } from "../slices/favoriteProductsSlice";
 import { fetchOrder } from "../slices/orderSlice";
 import { fetchRank } from "../slices/rankSlice";
+import WalletHistoryModal from "../components/WalletHistoryModal";
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -28,6 +29,100 @@ const Profile = () => {
     dispatch(fetchOrder());
     dispatch(fetchRank());
   }, [dispatch]);
+
+  const [showWalletModal, setShowWalletModal] = useState(false);
+  const walletTransactions = [
+    {
+      time: "2025-07-25 10:00",
+      type: "Nạp tiền",
+      amount: 50000,
+      note: "Nạp qua Momo",
+    },
+    {
+      time: "2025-07-24 15:30",
+      type: "Thanh toán đơn hàng #1234",
+      amount: -20000,
+      note: "",
+    },
+    {
+      time: "2025-07-23 09:10",
+      type: "Hoàn tiền",
+      amount: 10000,
+      note: "Đơn #1222 bị huỷ",
+    },
+    {
+      time: "2025-07-25 10:00",
+      type: "Nạp tiền",
+      amount: 50000,
+      note: "Nạp qua Momo",
+    },
+    {
+      time: "2025-07-24 15:30",
+      type: "Thanh toán đơn hàng #1234",
+      amount: -20000,
+      note: "",
+    },
+    {
+      time: "2025-07-23 09:10",
+      type: "Hoàn tiền",
+      amount: 10000,
+      note: "Đơn #1222 bị huỷ",
+    },
+    {
+      time: "2025-07-25 10:00",
+      type: "Nạp tiền",
+      amount: 50000,
+      note: "Nạp qua Momo",
+    },
+    {
+      time: "2025-07-24 15:30",
+      type: "Thanh toán đơn hàng #1234",
+      amount: -20000,
+      note: "",
+    },
+    {
+      time: "2025-07-23 09:10",
+      type: "Hoàn tiền",
+      amount: 10000,
+      note: "Đơn #1222 bị huỷ",
+    },
+    {
+      time: "2025-07-25 10:00",
+      type: "Nạp tiền",
+      amount: 50000,
+      note: "Nạp qua Momo",
+    },
+    {
+      time: "2025-07-24 15:30",
+      type: "Thanh toán đơn hàng #1234",
+      amount: -20000,
+      note: "",
+    },
+    {
+      time: "2025-07-23 09:10",
+      type: "Hoàn tiền",
+      amount: 10000,
+      note: "Đơn #1222 bị huỷ",
+    },
+    {
+      time: "2025-07-25 10:00",
+      type: "Nạp tiền",
+      amount: 50000,
+      note: "Nạp qua Momo",
+    },
+    {
+      time: "2025-07-24 15:30",
+      type: "Thanh toán đơn hàng #1234",
+      amount: -20000,
+      note: "",
+    },
+    {
+      time: "2025-07-23 09:10",
+      type: "Hoàn tiền",
+      amount: 10000,
+      note: "Đơn #1222 bị huỷ",
+    },
+  ];
 
   const personalInformations = [
     {
@@ -248,15 +343,47 @@ const Profile = () => {
                 {statisticals.map((item) => (
                   <div className="profile-col-4" key={item.id}>
                     <div className="profile-card">
-                      <h6 className="profile-stat-label">{item.label}</h6>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <h6
+                          className="profile-stat-label"
+                          style={{ margin: 0 }}
+                        >
+                          {item.label}
+                        </h6>
+                        {item.id === 2 && (
+                          <span
+                            className="profile-wallet-history-link"
+                            style={{
+                              color: "#2563EB",
+                              cursor: "pointer",
+                              fontSize: 13,
+                              fontWeight: 800,
+                              marginLeft: 8,
+                            }}
+                            onClick={() => setShowWalletModal(true)}
+                          >
+                            {t("profile.balanceChanges")}
+                          </span>
+                        )}
+                      </div>
                       <h2 className="profile-stat-value">{item.value}</h2>
-
                       <span className="profile-muted-text">
                         {t("profile.orderStats")}
                       </span>
                     </div>
                   </div>
                 ))}
+                <WalletHistoryModal
+                  show={showWalletModal}
+                  onClose={() => setShowWalletModal(false)}
+                  transactions={walletTransactions}
+                />
               </div>
 
               <div className="profile-card">

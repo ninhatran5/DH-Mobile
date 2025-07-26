@@ -342,6 +342,7 @@
     "returnProfile": "Return to profile page",
     "forgotPassword": "Change password",
     "introduction": "Introduction",
+    "balanceChanges": "Balance changes",
     "description": "Hello",
     "personalInfo": "Personal Information",
     "titleHello": ", welcome to DH Mobile",
@@ -698,5 +699,13 @@
     "maxRankBenefit": "Enjoy all exclusive privileges and benefits just for you!",
     "max": "MAX",
     "discount": "Discount benefit"
+  },
+  "walletHistory": {
+    "title": "Wallet Balance Changes",
+    "empty": "No balance changes yet.",
+    "time": "Time",
+    "type": "Transaction Type",
+    "amount": "Amount",
+    "note": "Note"
   }
 }

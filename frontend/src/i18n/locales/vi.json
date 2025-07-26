@@ -342,6 +342,7 @@
     "title": "Hồ Sơ Cá Nhân",
     "home": "Trang chủ",
     "editProfile": "Chỉnh sửa",
+    "balanceChanges": "Biến động số dư",
     "returnProfile": "Quay lại trang hồ sơ",
     "forgotPassword": "Thay đổi mật khẩu",
     "introduction": "Giới thiệu",
@@ -698,5 +699,13 @@
     "maxRankBenefit": "Hãy tận hưởng mọi đặc quyền và ưu đãi dành riêng cho bạn!",
     "max": "MAX",
     "discount": "Ưu đãi giảm giá"
+  },
+  "walletHistory": {
+    "title": "Biến động số dư ví",
+    "empty": "Chưa có biến động số dư nào.",
+    "time": "Thời gian",
+    "type": "Loại giao dịch",
+    "amount": "Số tiền",
+    "note": "Ghi chú"
   }
 }
