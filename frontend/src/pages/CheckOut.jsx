@@ -15,6 +15,8 @@ import { fetchCart } from "../slices/cartSlice";
 import { fetchRank } from "../slices/rankSlice";
 import ChangeAddressModal from "../components/ChangeAddressModal";
 import VoucherDropdown from "../components/VoucherDropdown";
+import { fetchWallet } from "../slices/walletSlice";
+import { HiWallet } from "react-icons/hi2";
 import "../assets/css/checkout.css";
 
 const CheckOut = () => {
@@ -35,6 +37,7 @@ const CheckOut = () => {
   const { vouchers, loading: voucherLoading } = useSelector(
     (state) => state.voucher || {}
   );
+  const { wallets } = useSelector((state) => state.wallet);
   const location = useLocation();
   const selectedItems = location.state?.selectedItems || [];
   const navigate = useNavigate();
@@ -51,8 +54,14 @@ const CheckOut = () => {
   const rankDiscountAmount = (totalPrice * rankDiscountPercent) / 100;
 
   const voucherDiscountAmount = discountAmount || 0;
-
-  const finalPrice = totalPrice - rankDiscountAmount - voucherDiscountAmount;
+  const walletBalance = Number(wallets?.balance) || 0;
+  const [useWallet, setUseWallet] = useState(false);
+  const priceAfterDiscounts =
+    totalPrice - rankDiscountAmount - voucherDiscountAmount;
+  const walletDeductAmount = useWallet
+    ? Math.min(walletBalance, priceAfterDiscounts)
+    : 0;
+  const finalPrice = priceAfterDiscounts - walletDeductAmount;
 
   const handleApplyVoucher = async () => {
     if (!selectedVoucher) {
@@ -121,6 +130,7 @@ const CheckOut = () => {
         : null,
       voucher_discount: Number(discountAmount),
       rank_discount: Number(rankDiscountAmount),
+      wallet_deduct: useWallet ? Number(walletDeductAmount) : 0,
       address: addressData.address,
       customer: addressData.recipient_name || profile.user.full_name || "",
       email: addressData.email || profile.user.email || "",
@@ -163,6 +173,7 @@ const CheckOut = () => {
     dispatch(fetchProfile());
     dispatch(fetchVoucherForUser());
     dispatch(fetchRank());
+    dispatch(fetchWallet());
   }, [dispatch]);
 
   useEffect(() => {
@@ -339,8 +350,6 @@ const CheckOut = () => {
                       </h6>
                     </Link>
                   </div>
-
-                  {/* marginTop: -30, */}
                   <div style={{ width: "60%" }}>
                     <div className="checkout__input__checkbox">
                       <label htmlFor="cod">
@@ -429,7 +438,100 @@ const CheckOut = () => {
                         </div>
                       )}
                     </div>
+                    {walletBalance > 0 && (
+                      <div
+                        className="wallet-option-container"
+                        style={{
+                          border: "2px solid #e5e7eb",
+                          borderRadius: "12px",
+                          padding: "16px",
+                          marginTop: "16px",
+                          backgroundColor: useWallet ? "#f0f9ff" : "#ffffff",
+                          borderColor: useWallet ? "#0ea5e9" : "#e5e7eb",
+                          transition: "all 0.3s ease",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => setUseWallet((prev) => !prev)}
+                      >
+                        <div className="d-flex align-items-center justify-content-between">
+                          <div className="d-flex align-items-center">
+                            <div
+                              style={{
+                                width: "40px",
+                                height: "40px",
+                                backgroundColor: "#16a34a",
+                                borderRadius: "50%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                marginRight: "12px",
+                              }}
+                            >
+                             <HiWallet  style={{color: "white"}} />
+                             
+                            </div>
+                            <div>
+                              <h6
+                                className="mb-1"
+                                style={{
+                                  fontWeight: "600",
+                                  color: "#1f2937",
+                                  fontSize: "16px",
+                                }}
+                              >
+                                {t("checkout.useWallet")}
+                              </h6>
+                              <p
+                                className="mb-0"
+                                style={{
+                                  color: "#6b7280",
+                                  fontSize: "14px",
+                                }}
+                              >
+                                {t("checkout.walletBalance")}
+                                <span
+                                  style={{
+                                    color: "#16a34a",
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  {numberFormat(walletBalance)}
+                                </span>
+                              </p>
+                            </div>
+                          </div>
+                          <div
+                            style={{
+                              width: "24px",
+                              height: "24px",
+                              border: "2px solid",
+                              borderColor: useWallet ? "#0ea5e9" : "#d1d5db",
+                              borderRadius: "50%",
+                              backgroundColor: useWallet
+                                ? "#0ea5e9"
+                                : "transparent",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              transition: "all 0.3s ease",
+                            }}
+                          >
+                            {useWallet && (
+                              <svg
+                                width="12"
+                                height="12"
+                                fill="white"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                              </svg>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
+
                   <div className="checkout__order">
                     <h4 className="order__title">{t("checkout.cartTotal")}</h4>
                     <div className="checkout__order__products">
@@ -525,6 +627,12 @@ const CheckOut = () => {
                         <li>
                           {t("checkout.voucherDiscount")}:{" "}
                           <span>- {numberFormat(voucherDiscountAmount)}</span>
+                        </li>
+                      )}
+                      {useWallet && walletDeductAmount > 0 && (
+                        <li>
+                          {t("checkout.walletDiscount")}:{" "}
+                          <span>- {numberFormat(walletDeductAmount)}</span>
                         </li>
                       )}
                       <li>

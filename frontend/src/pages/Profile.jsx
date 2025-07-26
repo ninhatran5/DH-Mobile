@@ -12,6 +12,8 @@ import { fetchListFavorite } from "../slices/favoriteProductsSlice";
 import { fetchOrder } from "../slices/orderSlice";
 import { fetchRank } from "../slices/rankSlice";
 import WalletHistoryModal from "../components/WalletHistoryModal";
+import { fetchWallet } from "../slices/walletSlice";
+import numberFormat from "../../utils/numberFormat";
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -21,108 +23,9 @@ const Profile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { listFavorite } = useSelector((state) => state.favoriteProduct);
+  const { wallets } = useSelector((state) => state.wallet);
   const { orders } = useSelector((state) => state.order);
-
-  useEffect(() => {
-    dispatch(fetchListFavorite());
-    dispatch(fetchProfile());
-    dispatch(fetchOrder());
-    dispatch(fetchRank());
-  }, [dispatch]);
-
   const [showWalletModal, setShowWalletModal] = useState(false);
-  const walletTransactions = [
-    {
-      time: "2025-07-25 10:00",
-      type: "Nạp tiền",
-      amount: 50000,
-      note: "Nạp qua Momo",
-    },
-    {
-      time: "2025-07-24 15:30",
-      type: "Thanh toán đơn hàng #1234",
-      amount: -20000,
-      note: "",
-    },
-    {
-      time: "2025-07-23 09:10",
-      type: "Hoàn tiền",
-      amount: 10000,
-      note: "Đơn #1222 bị huỷ",
-    },
-    {
-      time: "2025-07-25 10:00",
-      type: "Nạp tiền",
-      amount: 50000,
-      note: "Nạp qua Momo",
-    },
-    {
-      time: "2025-07-24 15:30",
-      type: "Thanh toán đơn hàng #1234",
-      amount: -20000,
-      note: "",
-    },
-    {
-      time: "2025-07-23 09:10",
-      type: "Hoàn tiền",
-      amount: 10000,
-      note: "Đơn #1222 bị huỷ",
-    },
-    {
-      time: "2025-07-25 10:00",
-      type: "Nạp tiền",
-      amount: 50000,
-      note: "Nạp qua Momo",
-    },
-    {
-      time: "2025-07-24 15:30",
-      type: "Thanh toán đơn hàng #1234",
-      amount: -20000,
-      note: "",
-    },
-    {
-      time: "2025-07-23 09:10",
-      type: "Hoàn tiền",
-      amount: 10000,
-      note: "Đơn #1222 bị huỷ",
-    },
-    {
-      time: "2025-07-25 10:00",
-      type: "Nạp tiền",
-      amount: 50000,
-      note: "Nạp qua Momo",
-    },
-    {
-      time: "2025-07-24 15:30",
-      type: "Thanh toán đơn hàng #1234",
-      amount: -20000,
-      note: "",
-    },
-    {
-      time: "2025-07-23 09:10",
-      type: "Hoàn tiền",
-      amount: 10000,
-      note: "Đơn #1222 bị huỷ",
-    },
-    {
-      time: "2025-07-25 10:00",
-      type: "Nạp tiền",
-      amount: 50000,
-      note: "Nạp qua Momo",
-    },
-    {
-      time: "2025-07-24 15:30",
-      type: "Thanh toán đơn hàng #1234",
-      amount: -20000,
-      note: "",
-    },
-    {
-      time: "2025-07-23 09:10",
-      type: "Hoàn tiền",
-      amount: 10000,
-      note: "Đơn #1222 bị huỷ",
-    },
-  ];
 
   const personalInformations = [
     {
@@ -155,7 +58,7 @@ const Profile = () => {
     {
       id: 2,
       label: t("profile.statisticals.wallet"),
-      value: "10.000đ",
+      value: numberFormat(wallets?.balance || 0),
     },
     {
       id: 3,
@@ -209,6 +112,14 @@ const Profile = () => {
       links: "/admin",
     });
   }
+
+  useEffect(() => {
+    dispatch(fetchListFavorite());
+    dispatch(fetchProfile());
+    dispatch(fetchOrder());
+    dispatch(fetchRank());
+    dispatch(fetchWallet());
+  }, [dispatch]);
 
   return (
     <>
@@ -382,7 +293,6 @@ const Profile = () => {
                 <WalletHistoryModal
                   show={showWalletModal}
                   onClose={() => setShowWalletModal(false)}
-                  transactions={walletTransactions}
                 />
               </div>
 

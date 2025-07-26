@@ -41,13 +41,12 @@ import reviewReducer from "../slices/reviewSlice";
 import adminReturnOrderReducer from "../slices/AdminReturnOrderSlice";
 import adminMembershipReducer from "../slices/adminMembership";
 import adminchatLiveReducer from "../slices/AdminChatLive";
-
 import adminCommentsReducer from "../slices/adminComments";
-
 import chatBotReducer from "../slices/chatBotSlice";
 import adminProfileReducer from "../slices/adminProfile";
 import chatLiveReducer from "../slices/chatLiveSlice";
 import rankReducer from "../slices/rankSlice";
+import walletReducer from "../slices/walletSlice";
 
 export const store = configureStore({
   reducer: {
@@ -80,6 +79,7 @@ export const store = configureStore({
     chatLive: chatLiveReducer,
     category: categoryReducer,
     payment: paymentReducer,
+    wallet: walletReducer,
     attribute: attributeReducer,
     attributeValue: attributeValueReducer,
     adminproduct: adminProductReducer,
