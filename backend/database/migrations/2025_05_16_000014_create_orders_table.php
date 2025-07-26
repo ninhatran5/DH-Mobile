@@ -32,10 +32,12 @@ return new class extends Migration
                 'Hoàn thành',
                 'Đã hủy',
                 'Yêu cầu hoàn hàng',
-                'Trả hàng/Hoàn tiền',
-                'Đã hoàn tiền'
+                'Đã chấp thuận',
+                'Đã từ chối',
+                'Đang xử lý',
+                'Đã trả hàng',
             ])->default('Chờ xác nhận');
-
+            
             $table->enum('payment_status', [
                 'Chưa thanh toán',
                 'Đã thanh toán',
