@@ -11,12 +11,14 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\VnpayController;
 use App\Http\Controllers\Api\BannerController;
+use App\Http\Controllers\Api\WalletController;
 use App\Http\Controllers\Api\ChatbotController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\VoucherController;
 use App\Http\Controllers\Api\CartItemController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\ChatLiveController;
 use App\Http\Controllers\Api\AttributeController;
 use App\Http\Controllers\Api\LoyaltyTierController;
 use App\Http\Controllers\Api\ProductLikeController;
@@ -27,7 +29,6 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Controllers\Api\ProductsViewsController;
 use App\Http\Controllers\Api\AttributevalueController;
-use App\Http\Controllers\Api\ChatLiveController;
 use App\Http\Controllers\Api\PercentVoucherController;
 use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
@@ -350,3 +351,11 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('loyalty-tiers')-
     Route::put('{id}', [LoyaltyTierController::class, 'update']);
 });
 Route::middleware('auth:sanctum')->get('/loyalty-summary', [LoyaltyTierController::class, 'loyaltySummary']);
+
+
+
+// wallet 
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/wallet', [WalletController::class, 'getWallet']);
+});
