@@ -1,4 +1,3 @@
-// components/ReturnRequestModal.jsx
 import { useEffect, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
@@ -307,7 +306,7 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
           <Button
             className="btn_save_address"
             onClick={handleSubmit}
-            disabled={!description}
+            disabled={!reason || !description}
           >
             {t("returnRequest.submitBtn")}
           </Button>
