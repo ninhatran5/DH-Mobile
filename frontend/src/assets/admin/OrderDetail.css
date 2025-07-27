@@ -13,13 +13,16 @@
 }
 
 .adminorderdetail-table {
-  width: 100%;
   border-collapse: collapse;
   background-color: #fafafa;
   border: 1px solid #eee;
   border-radius: 8px;
   margin-bottom: 2rem;
   overflow: hidden;
+}
+.orderdetail-tong{
+  display: flex;
+  margin: 5px;
 }
 
 .adminorderdetail-table th,
@@ -230,4 +233,42 @@
   .col-md-6 {
     width: 100%;
   }
+}
+.orderdetail-account {
+  background-color: #ffffff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
+}
+
+.adminorderdetail-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #111827;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.adminorderdetail {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 16px;
+  color: #374151;
+}
+
+.adminorderdetail td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: top;
+}
+
+.adminorderdetail td:first-child {
+  font-weight: 500;
+  color: #111827;
+  width: 160px;
+  white-space: nowrap;
 }
