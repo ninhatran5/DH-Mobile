@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             BannerSeeder::class,
             NewsSeeder::class,
-            // VoucherSeeder::class,
+            VoucherSeeder::class,
             ChatbotSeeder::class,
             PaymentMethodSeeder::class,
           
