@@ -174,8 +174,10 @@ const ListUser = () => {
       onChange={(e) => handleChangeRole(user, e.target.value)}
       className="adminuser-role-select"
     >
-      <option value="admin">admin</option>
-      <option value="sale">sale</option>
+      <option value="admin">Quản trị viên</option>
+      <option value="sale">Nhân viên bán hàng </option>
+            <option value="customer">Khách hàng</option>
+
     </select>
   ) : (
     <span>{user.role}</span>
