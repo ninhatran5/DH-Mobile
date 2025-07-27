@@ -24,6 +24,11 @@ class PaymentMethodSeeder extends Seeder
                 'description' => 'Thanh toán COD',
                 'is_active' => true,
             ],
+            [
+                'name' => 'DHPay',
+                'description' => 'Thanh toán qua ví DHPay',
+                'is_active' => true,
+            ],
         ];
 
         foreach ($paymentMethods as $method) {
