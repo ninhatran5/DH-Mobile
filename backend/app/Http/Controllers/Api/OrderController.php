@@ -229,6 +229,7 @@ class OrderController extends Controller
             'order_code' => $order->order_code,
             'order_date' => $order->created_at->format('d/m/Y H:i:s'),
             'customer' => $order->customer,
+            'email' => $order->email,
             'phone' => $order->phone,
             'address' => $order ? ($order->address . ', ' . $order->ward . ', ' . $order->district . ', ' . $order->city) : null,
             'payment_method' => $order->paymentMethods ? [$order->paymentMethods->name, $order->paymentMethods->description] : null,
