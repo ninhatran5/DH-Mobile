@@ -55,17 +55,15 @@ const OrdersList = () => {
 
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
-      const matchSearch =
-        order.order_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.customer.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchStatus =
-        !statusFilter || normalizeString(order.status) === normalizeString(statusFilter);
-      const matchTab =
-        selectedStatusTab === "Tất cả" ||
-        normalizeString(order.status) === normalizeString(selectedStatusTab);
-      return matchSearch && matchStatus && matchTab;
+      const normalizedStatus = normalizeString(order.status);
+      return (
+        normalizedStatus !== normalizeString("Đã trả hàng") &&
+        (normalizeString(order.order_code).includes(normalizeString(searchTerm)) ||
+          normalizeString(order.customer).includes(normalizeString(searchTerm))) &&
+        (selectedStatusTab === "Tất cả" || normalizedStatus === normalizeString(selectedStatusTab))
+      );
     });
-  }, [orders, searchTerm, statusFilter, selectedStatusTab]);
+  }, [orders, searchTerm, selectedStatusTab]);
 
   // Pagination client-side
   const ORDERS_PER_PAGE = 15;
