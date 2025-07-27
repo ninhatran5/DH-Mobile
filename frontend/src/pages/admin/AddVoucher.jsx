@@ -197,7 +197,18 @@ const AddVoucherPage = () => {
           )}
         </div>
 
-        
+        <div className="addVoucher-field flex flex-col relative">
+          <label className="addVoucher-label text-gray-700 font-medium mb-1">Trạng thái *</label>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              {...register("is_active")}
+              className="addVoucher-checkbox w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <span className="text-gray-700">Hoạt động</span>
+          </div>
+        </div>
+
         <div className="addVoucher-button-wrapper text-center">
           <button
             type="submit"

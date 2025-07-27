@@ -79,15 +79,15 @@ const OrderDetails = () => {
   };
 
   return (
-    <div className="adminorderdetail-container container-fluid px-3">
+    <div className="adminorderdetail-container container-fluid">
       <button
-        className="adminorderdetail-back-btn mb-3"
+        className="adminorderdetail-back-btn mb-2"
         onClick={() => navigate("/admin/orders")}
       >
         ← Quay lại danh sách đơn hàng
       </button>
 
-      <div className="row gx-5 gy-4">
+      <div className="orderdetail-tong">
         <div className="col-md-6">
           <h2 className="adminorderdetail-title">Thông tin đơn hàng</h2>
           <div className="table-responsive">
@@ -114,13 +114,14 @@ const OrderDetails = () => {
           </div>
         </div>
 
-        <div className="col-md-6">
+        <div className="col-md-10">
           <h2 className="adminorderdetail-title">Thông tin người nhận</h2>
           <div className="table-responsive">
-            <table className="adminorderdetail-table w-100">
+            <table className="adminorderdetail-table">
               <tbody>
                 <tr><td>Người nhận</td><td>{order.customer}</td></tr>
                 <tr><td>Số điện thoại</td><td>{order.phone || "Chưa cập nhật"}</td></tr>
+                <tr><td>Email</td><td>{order.email || "Chưa cập nhật"}</td></tr>
                 <tr>
                   <td>Địa chỉ</td>
                   <td style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
