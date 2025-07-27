@@ -1018,7 +1018,16 @@ const Homeadmin = () => {
                     <div className="Homeadmin-user123">
                       Xin chào {adminProfile?.user?.username}
                     </div>
-
+                        <li>
+      <Link
+        to={`/admin/detailacccount/${adminProfile?.user?.id}`}
+        className="dropdown-item"
+        style={{ textAlign: "left", width: "100%" }}
+      >
+        <i className="bi bi-person-circle me-2" style={{ color: "#0d6efd" }}></i>
+        Trang cá nhân
+      </Link>
+    </li>
                     <li>
                       <button
                         className="dropdown-item"
