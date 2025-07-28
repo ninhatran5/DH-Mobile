@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { fetchProfile } from "../slices/profileSlice";
 import Loading from "../components/Loading";
 import numberFormat from "../../utils/numberFormat";
-import { fetchCODCheckout, fetchVnpayCheckout } from "../slices/checkOutSlice";
+import { fetchCODCheckout, fetchVnpayCheckout, fetchWalletCheckout } from "../slices/checkOutSlice";
 import { applyVoucher, fetchVoucherForUser } from "../slices/voucherSlice";
 import { toast } from "react-toastify";
 import { fetchCart } from "../slices/cartSlice";
@@ -56,12 +56,27 @@ const CheckOut = () => {
   const voucherDiscountAmount = discountAmount || 0;
   const walletBalance = Number(wallets?.balance) || 0;
   const [useWallet, setUseWallet] = useState(false);
+  const [secondaryPaymentMethod, setSecondaryPaymentMethod] = useState("cod");
+
+  const handleToggleWallet = () => {
+    if (useWallet) {
+      setUseWallet(false);
+      setPaymentMethod("cod");
+    } else {
+      setUseWallet(true);
+      setPaymentMethod("wallet");
+    }
+  };
+
   const priceAfterDiscounts =
     totalPrice - rankDiscountAmount - voucherDiscountAmount;
   const walletDeductAmount = useWallet
     ? Math.min(walletBalance, priceAfterDiscounts)
     : 0;
   const finalPrice = priceAfterDiscounts - walletDeductAmount;
+
+  const needSecondaryPayment =
+    useWallet && walletBalance < priceAfterDiscounts && priceAfterDiscounts > 0;
 
   const handleApplyVoucher = async () => {
     if (!selectedVoucher) {
@@ -100,11 +115,21 @@ const CheckOut = () => {
   };
 
   const handleCheckOutCOD = (event) => {
-    setPaymentMethod(event.target.value);
+    if (needSecondaryPayment) {
+      setSecondaryPaymentMethod(event.target.value);
+    } else {
+      setPaymentMethod(event.target.value);
+      setUseWallet(false);
+    }
   };
 
   const handleCheckOutVNPAY = (event) => {
-    setPaymentMethod(event.target.value);
+    if (needSecondaryPayment) {
+      setSecondaryPaymentMethod(event.target.value);
+    } else {
+      setPaymentMethod(event.target.value);
+      setUseWallet(false);
+    }
   };
 
   const handleCheckout = async (e) => {
@@ -130,7 +155,7 @@ const CheckOut = () => {
         : null,
       voucher_discount: Number(discountAmount),
       rank_discount: Number(rankDiscountAmount),
-      wallet_deduct: useWallet ? Number(walletDeductAmount) : 0,
+      wallet_amount: Number(walletDeductAmount),
       address: addressData.address,
       customer: addressData.recipient_name || profile.user.full_name || "",
       email: addressData.email || profile.user.email || "",
@@ -140,7 +165,26 @@ const CheckOut = () => {
       phone: addressData.phone,
     };
 
-    if (paymentMethod === "cod") {
+    // Xác định phương thức thanh toán cuối cùng
+    const finalPaymentMethod = needSecondaryPayment
+      ? secondaryPaymentMethod
+      : paymentMethod;
+
+    if (finalPaymentMethod === "wallet" && useWallet && finalPrice === 0) {
+      setLoadingCOD(true);
+      try {
+        await dispatch(fetchWalletCheckout(payloadBase)).unwrap();
+        await dispatch(fetchCart());
+        navigate("/waiting-for-payment");
+      } catch (error) {
+        toast.error(t("toast.paymentError"));
+      } finally {
+        setLoadingCOD(false);
+      }
+      return;
+    }
+
+    if (finalPaymentMethod === "cod" || (useWallet && finalPrice === 0)) {
       setLoadingCOD(true);
       try {
         await dispatch(fetchCODCheckout(payloadBase)).unwrap();
@@ -154,7 +198,7 @@ const CheckOut = () => {
       return;
     }
 
-    if (paymentMethod === "vnpay") {
+    if (finalPaymentMethod === "vnpay") {
       try {
         const actionResult = await dispatch(fetchVnpayCheckout(payloadBase));
         const result = actionResult.payload;
@@ -351,18 +395,62 @@ const CheckOut = () => {
                     </Link>
                   </div>
                   <div style={{ width: "60%" }}>
+                    {needSecondaryPayment && (
+                      <div
+                        style={{
+                          marginBottom: "20px",
+                          padding: "15px",
+                          backgroundColor: "#f8f9fa",
+                          borderRadius: "8px",
+                          border: "1px solid #dee2e6",
+                        }}
+                      >
+                        <h5
+                          style={{
+                            color: "#495057",
+                            marginBottom: "10px",
+                            fontSize: "16px",
+                          }}
+                        >
+                          Phương thức thanh toán bổ sung
+                        </h5>
+                        <p
+                          style={{
+                            color: "#6c757d",
+                            fontSize: "14px",
+                            marginBottom: "15px",
+                          }}
+                        >
+                          Số tiền còn lại:{" "}
+                          <strong>{numberFormat(finalPrice)}</strong>
+                        </p>
+                      </div>
+                    )}
+
                     <div className="checkout__input__checkbox">
                       <label htmlFor="cod">
                         <h4 className="checkout-text">
-                          {t("checkout.payOnDelivery")}
+                          {needSecondaryPayment
+                            ? "Thanh toán số tiền còn lại khi nhận hàng"
+                            : t("checkout.payOnDelivery")}
                         </h4>
                         <input
                           type="radio"
                           name="checkout"
                           id="cod"
                           value="cod"
-                          checked={paymentMethod === "cod"}
+                          checked={
+                            needSecondaryPayment
+                              ? secondaryPaymentMethod === "cod"
+                              : paymentMethod === "cod"
+                          }
                           onChange={handleCheckOutCOD}
+                          disabled={
+                            !needSecondaryPayment &&
+                            useWallet &&
+                            walletBalance >= priceAfterDiscounts &&
+                            priceAfterDiscounts > 0
+                          }
                         />
                         <span className="checkmark" />
                       </label>
@@ -370,7 +458,9 @@ const CheckOut = () => {
                     <div className="checkout__input__checkbox">
                       <label htmlFor="vnpay">
                         <h4 className="checkout-text">
-                          {t("checkout.payViaVNPAY")}
+                          {needSecondaryPayment
+                            ? "Thanh toán số tiền còn lại qua VNPAY"
+                            : t("checkout.payViaVNPAY")}
                         </h4>
                         <input
                           type="radio"
@@ -378,7 +468,17 @@ const CheckOut = () => {
                           id="vnpay"
                           value={"vnpay"}
                           onChange={handleCheckOutVNPAY}
-                          checked={paymentMethod === "vnpay"}
+                          checked={
+                            needSecondaryPayment
+                              ? secondaryPaymentMethod === "vnpay"
+                              : paymentMethod === "vnpay"
+                          }
+                          disabled={
+                            !needSecondaryPayment &&
+                            useWallet &&
+                            walletBalance >= priceAfterDiscounts &&
+                            priceAfterDiscounts > 0
+                          }
                         />
                         <span className="checkmark" />
                       </label>
@@ -451,7 +551,7 @@ const CheckOut = () => {
                           transition: "all 0.3s ease",
                           cursor: "pointer",
                         }}
-                        onClick={() => setUseWallet((prev) => !prev)}
+                        onClick={handleToggleWallet}
                       >
                         <div className="d-flex align-items-center justify-content-between">
                           <div className="d-flex align-items-center">
@@ -467,8 +567,7 @@ const CheckOut = () => {
                                 marginRight: "12px",
                               }}
                             >
-                             <HiWallet  style={{color: "white"}} />
-                             
+                              <HiWallet style={{ color: "white" }} />
                             </div>
                             <div>
                               <h6

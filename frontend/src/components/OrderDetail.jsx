@@ -113,7 +113,7 @@ const OrderDetail = () => {
         return "order-status-return-requested";
       case "đã hoàn tiền":
         return "order-status-refunded";
-      case "trả hàng/hoàn tiền":
+      case "đã trả hàng":
         return "order-status-return-refund";
       default:
         return "order-status-default";

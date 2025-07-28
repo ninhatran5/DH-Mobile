@@ -132,7 +132,7 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
         return "order-status-canceled";
       case "yêu cầu hoàn hàng":
         return "order-status-return-requested";
-      case "trả hàng/hoàn tiền":
+      case "đã trả hàng":
         return "order-status-return-refund";
       case "đã hoàn tiền":
         return "order-status-refunded";

@@ -4,11 +4,11 @@ import { axiosUser } from "../../utils/axiosConfig";
 const initialState = {
   vnpayUrl: null,
   cod: null,
+  wallet: null,
   loading: false,
   error: null,
 };
 
-// Gọi API thanh toán VNPAY
 export const fetchVnpayCheckout = createAsyncThunk(
   "payment/fetchVnpayCheckout",
   async (payload, thunkAPI) => {
@@ -39,6 +39,21 @@ export const fetchCODCheckout = createAsyncThunk(
   }
 );
 
+export const fetchWalletCheckout = createAsyncThunk(
+  "payment/fetchWalletCheckout",
+  async (payload, thunkAPI) => {
+    try {
+      const response = await axiosUser.post("/wallet/pay", payload);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message ||
+          "Đã có lỗi xảy ra trong quá trình thanh toán"
+      );
+    }
+  }
+);
+
 export const paymentSlice = createSlice({
   name: "payment",
   initialState,
@@ -59,18 +74,27 @@ export const paymentSlice = createSlice({
         state.error = action.payload;
         state.vnpayUrl = null;
       })
-
       .addCase(fetchCODCheckout.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      // call thành công
       .addCase(fetchCODCheckout.fulfilled, (state, action) => {
         state.loading = false;
         state.cod = action.payload;
       })
-      // call lỗi
       .addCase(fetchCODCheckout.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Đã có lỗi xảy ra";
+      })
+      .addCase(fetchWalletCheckout.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchWalletCheckout.fulfilled, (state, action) => {
+        state.loading = false;
+        state.wallet = action.payload;
+      })
+      .addCase(fetchWalletCheckout.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
       });
