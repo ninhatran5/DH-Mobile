@@ -84,11 +84,15 @@ const CheckOut = () => {
 
   const priceAfterDiscounts =
     totalPrice - rankDiscountAmount - voucherDiscountAmount;
-  const walletDeductAmount = useWallet
-    ? Math.min(walletBalance, priceAfterDiscounts)
-    : 0;
-  const finalPrice = priceAfterDiscounts;
+  const isWalletEnough = useWallet && walletBalance >= priceAfterDiscounts;
 
+  const walletDeductAmount = useWallet
+    ? isWalletEnough
+      ? 0
+      : walletBalance
+    : 0;
+
+  const finalPrice = priceAfterDiscounts - walletDeductAmount;
   const handleApplyVoucher = async () => {
     if (!selectedVoucher) {
       toast.error(t("voucher.selectError"));
@@ -695,6 +699,14 @@ const CheckOut = () => {
                           <span>- {numberFormat(voucherDiscountAmount)}</span>
                         </li>
                       )}
+                      {useWallet &&
+                        walletDeductAmount > 0 &&
+                        walletDeductAmount < priceAfterDiscounts && (
+                          <li>
+                            {t("checkout.walletDiscount")}:{" "}
+                            <span>- {numberFormat(walletDeductAmount)}</span>
+                          </li>
+                        )}
 
                       <li>
                         {t("checkout.totalMoney")}:{" "}
