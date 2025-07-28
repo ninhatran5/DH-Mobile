@@ -711,5 +711,16 @@
     "type": "Loại giao dịch",
     "amount": "Số tiền",
     "note": "Ghi chú"
-  }
+  },
+  "modal": {
+    "walletInsufficientTitle": "Số dư ví không đủ",
+    "walletInsufficientDesc": "Vui lòng chọn phương thức thanh toán khác",
+    "walletCurrentBalance": "Số dư hiện tại:",
+    "walletTotalRequired": "Số tiền cần thanh toán:",
+    "walletShortAmount": "Số tiền thiếu:",
+    "walletTip": "Bạn có thể sử dụng ví để thanh toán một phần {{wallet}} và thanh toán số tiền còn lại {{short}} qua VNPay.",
+    "cancel": "Hủy bỏ",
+    "payWithVNPay": "Thanh toán qua VNPay"
+}
+  
 }

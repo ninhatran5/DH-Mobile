@@ -711,5 +711,15 @@
     "type": "Transaction Type",
     "amount": "Amount",
     "note": "Note"
+  },
+  "modal": {
+    "walletInsufficientTitle": "Insufficient wallet balance",
+    "walletInsufficientDesc": "Please choose another payment method",
+    "walletCurrentBalance": "Current balance:",
+    "walletTotalRequired": "Total required:",
+    "walletShortAmount": "Short amount:",
+    "walletTip": "You can use your wallet to pay {{wallet}} and pay the remaining {{short}} via VNPay.",
+    "cancel": "Cancel",
+    "payWithVNPay": "Pay with VNPay"
   }
 }
