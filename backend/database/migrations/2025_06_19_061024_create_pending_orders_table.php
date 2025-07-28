@@ -26,6 +26,8 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
+            $table->decimal('paid_by_wallet', 15, 2)->default(0);
+            $table->decimal('paid_by_vnpay', 15, 2)->default(0);
             $table->decimal('rank_discount', 11, 2)->default(0);
             $table->timestamps();
         });

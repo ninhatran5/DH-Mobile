@@ -21,7 +21,7 @@ class VnpayController extends Controller
         $user = Auth::user();
         $items = $request->input('items');
 
-        $request->validate([
+        $validated = $request->validate([
             'address' => 'required|string',
             'ward' => 'required|string',
             'district' => 'required|string',
@@ -34,38 +34,100 @@ class VnpayController extends Controller
             'rank_discount' => 'nullable|integer',
         ]);
 
-        if (empty($items) || !is_array($items)) {
-            return response()->json(['message' => 'Không có sản phẩm nào được chọn'], 400);
-        }
-
+        // Validate cart & stock
         $cart = DB::table('carts')->where('user_id', $user->user_id)->first();
-        if (!$cart) {
-            return response()->json(['message' => 'Giỏ hàng không tồn tại'], 400);
-        }
+        if (!$cart) return response()->json(['message' => 'Giỏ hàng không tồn tại'], 400);
 
+        $total = 0;
         foreach ($items as $item) {
-            if (!is_array($item) || !isset($item['variant_id'], $item['quantity'], $item['price_snapshot'])) {
+            if (!isset($item['variant_id'], $item['quantity'], $item['price_snapshot'])) {
                 return response()->json(['message' => 'Dữ liệu sản phẩm không hợp lệ'], 400);
             }
             $variant = DB::table('product_variants')->where('variant_id', $item['variant_id'])->first();
             if (!$variant || $variant->stock < $item['quantity']) {
-                return response()->json([
-                    'message' => 'Sản phẩm đã hết hàng hoặc không đủ số lượng',
-                    'variant_id' => $item['variant_id']
-                ], 400);
+                return response()->json(['message' => 'Sản phẩm hết hàng hoặc không đủ'], 400);
+            }
+            $total += $item['price_snapshot'] * $item['quantity'];
+        }
+
+        // Tính giảm giá
+        $rankDiscount = $request->rank_discount ?? 0;
+        $voucherId = $request->input('voucher_id');
+        $voucherDiscount = 0;
+
+        if ($voucherId) {
+            $voucher = DB::table('vouchers')
+                ->where('voucher_id', $voucherId)
+                ->where('is_active', 1)
+                ->where('start_date', '<=', now())
+                ->where('end_date', '>=', now())
+                ->where('quantity', '>', 0)
+                ->first();
+            if ($voucher && $total >= $voucher->min_order_value) {
+                $voucherDiscount = $voucher->discount_amount;
+            } else {
+                $voucherId = null;
             }
         }
 
+        $finalTotal = max($total - $rankDiscount - $voucherDiscount, 0);
+
+        // Kiểm tra số dư ví
+        $wallet = Wallet::firstOrCreate(['user_id' => $user->user_id], ['balance' => 0.00]);
+        $walletBalance = (float) $wallet->balance;
+
+        $paidByWallet = min($walletBalance, $finalTotal);
+        $remaining = $finalTotal - $paidByWallet;
+
+        if ($remaining > 0) {
+            // Lưu đơn hàng pending
+            $orderCode = $this->generateOrderCode();
+            DB::table('pending_orders')->insert([
+                'order_code' => $orderCode,
+                'user_id' => $user->user_id,
+                'items' => json_encode($items),
+                'total_amount' => $remaining,
+                'voucher_id' => $voucherId,
+                'voucher_discount' => $voucherDiscount,
+                'rank_discount' => $rankDiscount,
+                'paid_by_wallet' => $paidByWallet,
+                'customer' => $request->customer,
+                'address' => $request->address,
+                'ward' => $request->ward,
+                'district' => $request->district,
+                'city' => $request->city,
+                'phone' => $request->phone,
+                'email' => $request->email,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            $vnpUrl = $this->generateVnpayUrl($request, $orderCode, $remaining);
+
+            return response()->json([
+                'message' => 'Số dư ví không đủ. Chuyển sang VNPAY.',
+                'order_code' => $orderCode,
+                'remaining' => $remaining,
+                'payment_url' => $vnpUrl,
+            ]);
+        }
+
+        // Nếu đủ tiền ví thì tạo đơn hàng thật
         DB::beginTransaction();
         try {
             $orderCode = $this->generateOrderCode();
             $orderId = DB::table('orders')->insertGetId([
                 'user_id' => $user->user_id,
                 'order_code' => $orderCode,
-                'method_id' => 3, // 3 = thanh toán ví
-                'total_amount' => 0, // cập nhật sau
+                'method_id' => 3,
+                'total_amount' => $finalTotal,
                 'status' => 'Chờ xác nhận',
-                'payment_status' => 'Chưa thanh toán',
+                'payment_status' => 'Đã thanh toán',
+                'voucher_id' => $voucherId,
+                'voucher_discount' => $voucherDiscount,
+                'rank_discount' => $rankDiscount,
+                'paid_by_wallet' => $finalTotal,
+                'paid_by_vnpay' => 0,
                 'address' => $request->address,
                 'ward' => $request->ward,
                 'district' => $request->district,
@@ -73,15 +135,9 @@ class VnpayController extends Controller
                 'phone' => $request->phone,
                 'email' => $request->email,
                 'customer' => $request->customer,
-                'voucher_id' => null,
-                'voucher_discount' => 0,
-                'rank_discount' => $request->rank_discount ?? 0,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-
-            $total = 0;
-            $paidVariantIds = [];
 
             foreach ($items as $item) {
                 $variant = DB::table('product_variants')->where('variant_id', $item['variant_id'])->first();
@@ -94,70 +150,26 @@ class VnpayController extends Controller
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
-                $total += $item['price_snapshot'] * $item['quantity'];
                 DB::table('product_variants')->where('variant_id', $item['variant_id'])->decrement('stock', $item['quantity']);
-                $paidVariantIds[] = $item['variant_id'];
             }
 
-            $rankDiscount = $request->rank_discount ?? 0;
-            $total -= $rankDiscount;
-
-            $voucherId = $request->input('voucher_id');
-            $discount = 0;
-
-            if ($voucherId) {
-                $voucher = DB::table('vouchers')
-                    ->where('voucher_id', $voucherId)
-                    ->where('is_active', 1)
-                    ->where('start_date', '<=', now())
-                    ->where('end_date', '>=', now())
-                    ->where('quantity', '>', 0)
-                    ->first();
-
-                if ($voucher && $total >= $voucher->min_order_value) {
-                    $discount = $voucher->discount_amount;
-                    DB::table('vouchers')->where('voucher_id', $voucherId)->decrement('quantity');
-                } else {
-                    $voucherId = null;
-                }
-            }
-            $order = Orders::where('order_code', $orderCode)->first();
-            $wallet = Wallet::where('user_id', $order->user_id)->first();
-            $finalTotal = max($total - $discount, 0);
-            $walletBalance = (float) $wallet->balance;
-
-            $paidByWallet = min($walletBalance, $finalTotal);
-            $remaining = $finalTotal - $paidByWallet;
-
-            // Update đơn hàng
-            DB::table('orders')->where('order_id', $orderId)->update([
-                'total_amount' => $finalTotal,
-                'voucher_id' => $voucherId,
-                'voucher_discount' => $discount,
-                'paid_by_wallet' => $paidByWallet,
-                'paid_by_vnpay' => $remaining > 0 ? null : 0,
-                'payment_status' => $remaining > 0 ? 'Chưa thanh toán' : 'Đã thanh toán',
-                'updated_at' => now(),
+            DB::table('wallets')->where('wallet_id', $wallet->wallet_id)->decrement('balance', $finalTotal);
+            DB::table('wallet_transactions')->insert([
+                'wallet_id' => $wallet->wallet_id,
+                'amount' => -$finalTotal,
+                'type' => 'tiêu tiền',
+                'note' => 'Thanh toán đơn hàng #' . $orderCode,
+                'created_at' => now(),
             ]);
 
-            // Trừ ví
-            if ($paidByWallet > 0) {
-                DB::table('wallets')->where('user_id', $user->user_id)->decrement('balance', $paidByWallet);
-                DB::table('wallet_transactions')->insert([
-                    'wallet_id' => $wallet->wallet_id,
-                    'amount' => -$paidByWallet,
-                    'type' => $remaining > 0 ? 'hoàn tiền' : 'tiêu tiền',
-                    'note' => 'Thanh toán đơn hàng #' . $orderCode,
-                    'created_at' => now(),
-                ]);
-            }
-
+            // Xoá cart item
             DB::table('cart_items')
                 ->where('cart_id', $cart->cart_id)
-                ->whereIn('variant_id', $paidVariantIds)
+                ->whereIn('variant_id', collect($items)->pluck('variant_id'))
                 ->delete();
 
             if ($voucherId) {
+                DB::table('vouchers')->where('voucher_id', $voucherId)->decrement('quantity');
                 DB::table('user_vouchers')
                     ->where('user_id', $user->user_id)
                     ->where('voucher_id', $voucherId)
@@ -166,20 +178,7 @@ class VnpayController extends Controller
 
             DB::commit();
 
-            if ($remaining > 0) {
-                return response()->json([
-                    'message' => 'Số dư ví không đủ. Vui lòng thanh toán phần còn lại bằng VNPAY.',
-                    'order_id' => $orderId,
-                    'order_code' => $orderCode,
-                    'remaining' => $remaining,
-                    'next_step' => 'redirect_to_vnpay'
-                ]);
-            }
-
-            // Gửi mail nếu đã thanh toán toàn bộ bằng ví
-            $order = DB::table('orders')->where('order_id', $orderId)->first();
-            $userData = DB::table('users')->where('user_id', $user->user_id)->first();
-            Mail::to($order->email)->send(new PaymentSuccessMail($order, $userData));
+            Mail::to($request->email)->send(new PaymentSuccessMail(DB::table('orders')->where('order_id', $orderId)->first(), $user));
 
             return response()->json([
                 'message' => 'Thanh toán thành công bằng ví',
@@ -188,12 +187,12 @@ class VnpayController extends Controller
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
-            return response()->json([
-                'message' => 'Đặt hàng thất bại',
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(['message' => 'Đặt hàng thất bại', 'error' => $e->getMessage()], 500);
         }
     }
+
+
+
     public function createPayment(Request $request)
     {
         $user = Auth::user();
@@ -373,7 +372,9 @@ class VnpayController extends Controller
                 'user_id' => $user_id,
                 'order_code' => $orderCode,
                 'method_id' => 1,
-                'total_amount' => $totalAmount,
+                'total_amount' => $pending->total_amount + ($pending->paid_by_wallet ?? 0),
+                'paid_by_wallet' => $pending->paid_by_wallet,
+                'paid_by_vnpay' => $pending->total_amount,
                 'status' => 'Chờ xác nhận',
                 'payment_status' => 'Đã thanh toán',
                 'voucher_id' => $voucherId,
@@ -390,7 +391,7 @@ class VnpayController extends Controller
                 'updated_at' => now(),
             ]);
 
-
+$wallet = DB::table('wallets')->where('user_id', $user_id)->first();
             // Thêm order items và trừ tồn kho
             foreach ($items as $item) {
                 if (isset($item['variant_id'], $item['quantity'], $item['price_snapshot'])) {
@@ -415,6 +416,18 @@ class VnpayController extends Controller
                     }
                 }
             }
+
+               // Trừ ví nếu có
+        if ($pending->paid_by_wallet > 0 && $wallet) {
+            DB::table('wallets')->where('wallet_id', $wallet->wallet_id)->decrement('balance', $pending->paid_by_wallet);
+            DB::table('wallet_transactions')->insert([
+                'wallet_id' => $wallet->wallet_id,
+                'amount' => -$pending->paid_by_wallet,
+                'type' => 'tiêu tiền',
+                'note' => 'Thanh toán đơn hàng #' . $orderCode,
+                'created_at' => now(),
+            ]);
+        }
 
             // Xử lý voucher sau khi tạo đơn hàng thành công
             if ($voucherId) {
@@ -487,5 +500,39 @@ class VnpayController extends Controller
             ->count();
         $sequence = str_pad($orderCount + 1, 4, '0', STR_PAD_LEFT);
         return $prefix . $timestamp . $sequence . $randomStr;
+    }
+
+    private function generateVnpayUrl($request, $orderCode, $finalAmount)
+    {
+        $vnp_TxnRef = $orderCode;
+        $vnp_OrderInfo = 'Thanh toán đơn hàng ' . $orderCode;
+        $vnp_Amount = (int)($finalAmount * 100);
+
+        $vnp_Url = config('vnpay.vnp_Url');
+        $vnp_TmnCode = config('vnpay.vnp_TmnCode');
+        $vnp_HashSecret = config('vnpay.vnp_HashSecret');
+        $returnUrl = config('vnpay.vnp_ReturnUrl') . '?order_code=' . $orderCode;
+
+        $inputData = [
+            "vnp_Version" => "2.1.0",
+            "vnp_TmnCode" => $vnp_TmnCode,
+            "vnp_Amount" => $vnp_Amount,
+            "vnp_Command" => "pay",
+            "vnp_CreateDate" => now()->format('YmdHis'),
+            "vnp_CurrCode" => "VND",
+            "vnp_IpAddr" => $request->ip(),
+            "vnp_Locale" => "vn",
+            "vnp_OrderInfo" => $vnp_OrderInfo,
+            "vnp_OrderType" => "billpayment",
+            "vnp_ReturnUrl" => $returnUrl,
+            "vnp_TxnRef" => $vnp_TxnRef,
+        ];
+
+        ksort($inputData);
+        $query = http_build_query($inputData);
+        $hashdata = http_build_query($inputData);
+        $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
+
+        return $vnp_Url . "?" . $query . '&vnp_SecureHash=' . $vnpSecureHash;
     }
 }
