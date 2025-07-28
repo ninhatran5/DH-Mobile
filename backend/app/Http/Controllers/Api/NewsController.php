@@ -264,8 +264,8 @@ class NewsController extends Controller
             return response()->json([
                 'message' => 'Không tìm thấy tin tức đã xóa mềm',
                 'data' => [],
-                'status' => 404,
-            ], 404);
+                'status' => 200,
+            ], 200);
         }
 
         return response()->json([
