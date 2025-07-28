@@ -14,6 +14,7 @@ import { LuSaveOff } from "react-icons/lu";
 import { MdBlockFlipped } from "react-icons/md";
 
 const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
+  console.log("🚀 ~ Coupon ~ voucher:", voucher)
   const inputRef = useRef(null);
   const { t } = useTranslation();
   const dispatch = useDispatch();

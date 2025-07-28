@@ -13,7 +13,8 @@ return new class extends Migration
             $table->string('order_code', 50)->unique();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('method_id')->nullable();
-
+            $table->decimal('paid_by_wallet', 11, 2)->default(0);
+            $table->decimal('paid_by_vnpay', 11, 2)->default(0);
             $table->decimal('total_amount', 11, 2)->nullable();
             $table->string('cancel_reason')->nullable(); // cái này là lý do khách hàng báo hủy khi đang xác nhận
             $table->string('address')->nullable();

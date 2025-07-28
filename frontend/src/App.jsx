@@ -74,7 +74,7 @@ import MemberRank from "./pages/MemberRank";
 import UpdateBlog from "./pages/admin/UpdateBlog";
 import BlogDetailAdmin from "./pages/admin/BlogDetail";
 import TrashCan from "./pages/admin/TrashCan";
-
+import AdminDetailAcccount from "./pages/admin/AdminDetailAcccount.jsx";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -442,6 +442,14 @@ const routerConfig = [
         element: (
           <RequireNotSaleRole>
             <AdminOrderDetail />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "detailacccount/:id",
+        element: (
+          <RequireNotSaleRole>
+            <AdminDetailAcccount/>
           </RequireNotSaleRole>
         ),
       },

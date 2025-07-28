@@ -5,6 +5,7 @@ const initialState = {
   users: [],
   loading: false,
   error: null,
+  selectedUser: null, 
 };
 
 // Lấy danh sách user
@@ -112,6 +113,30 @@ export const updateUser = createAsyncThunk(
   }
 );
 
+// Lấy thông tin chi tiết 1 user
+export const fetchUserById = createAsyncThunk(
+  "adminuser/fetchUserById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
+
+      const res = await axiosAdmin.get(`/getuser/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return res.data.user;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Lỗi khi lấy chi tiết người dùng"
+      );
+    }
+  }
+);
+
+
 const adminuserSlice = createSlice({
   name: "adminuser",
   initialState,
@@ -190,7 +215,24 @@ const adminuserSlice = createSlice({
       .addCase(updateUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+      // Fetch one user
+.addCase(fetchUserById.pending, (state) => {
+  state.loading = true;
+  state.error = null;
+  state.selectedUser = null;
+})
+.addCase(fetchUserById.fulfilled, (state, action) => {
+  state.loading = false;
+  state.selectedUser = action.payload;
+})
+.addCase(fetchUserById.rejected, (state, action) => {
+  state.loading = false;
+  state.error = action.payload;
+  state.selectedUser = null;
+});
+
+
   },
 });
 

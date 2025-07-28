@@ -8,7 +8,11 @@ import { useEffect, useState } from "react";
 import { fetchProfile } from "../slices/profileSlice";
 import Loading from "../components/Loading";
 import numberFormat from "../../utils/numberFormat";
-import { fetchCODCheckout, fetchVnpayCheckout } from "../slices/checkOutSlice";
+import {
+  fetchCODCheckout,
+  fetchVnpayCheckout,
+  fetchWalletCheckout,
+} from "../slices/checkOutSlice";
 import { applyVoucher, fetchVoucherForUser } from "../slices/voucherSlice";
 import { toast } from "react-toastify";
 import { fetchCart } from "../slices/cartSlice";
@@ -17,6 +21,7 @@ import ChangeAddressModal from "../components/ChangeAddressModal";
 import VoucherDropdown from "../components/VoucherDropdown";
 import { fetchWallet } from "../slices/walletSlice";
 import { HiWallet } from "react-icons/hi2";
+import InsufficientFundsModal from "../components/InsufficientFundsModal";
 import "../assets/css/checkout.css";
 
 const CheckOut = () => {
@@ -28,6 +33,8 @@ const CheckOut = () => {
   const [selectedVoucher, setSelectedVoucher] = useState(null);
   const { ranks } = useSelector((state) => state.rank || {});
   const [loadingCOD, setLoadingCOD] = useState(false);
+  const [showInsufficientFundsModal, setShowInsufficientFundsModal] =
+    useState(false);
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const [show, setShow] = useState(false);
@@ -56,12 +63,31 @@ const CheckOut = () => {
   const voucherDiscountAmount = discountAmount || 0;
   const walletBalance = Number(wallets?.balance) || 0;
   const [useWallet, setUseWallet] = useState(false);
+
+  const handleToggleWallet = () => {
+    const priceAfterDiscounts =
+      totalPrice - rankDiscountAmount - voucherDiscountAmount;
+
+    if (!useWallet) {
+      // Khi bật ví, kiểm tra số dư
+      if (walletBalance < priceAfterDiscounts && priceAfterDiscounts > 0) {
+        setShowInsufficientFundsModal(true);
+        return;
+      }
+      setUseWallet(true);
+      setPaymentMethod("wallet");
+    } else {
+      setUseWallet(false);
+      setPaymentMethod("cod");
+    }
+  };
+
   const priceAfterDiscounts =
     totalPrice - rankDiscountAmount - voucherDiscountAmount;
   const walletDeductAmount = useWallet
     ? Math.min(walletBalance, priceAfterDiscounts)
     : 0;
-  const finalPrice = priceAfterDiscounts - walletDeductAmount;
+  const finalPrice = priceAfterDiscounts;
 
   const handleApplyVoucher = async () => {
     if (!selectedVoucher) {
@@ -101,10 +127,12 @@ const CheckOut = () => {
 
   const handleCheckOutCOD = (event) => {
     setPaymentMethod(event.target.value);
+    setUseWallet(false);
   };
 
   const handleCheckOutVNPAY = (event) => {
     setPaymentMethod(event.target.value);
+    setUseWallet(false);
   };
 
   const handleCheckout = async (e) => {
@@ -130,7 +158,7 @@ const CheckOut = () => {
         : null,
       voucher_discount: Number(discountAmount),
       rank_discount: Number(rankDiscountAmount),
-      wallet_deduct: useWallet ? Number(walletDeductAmount) : 0,
+      wallet_amount: Number(walletDeductAmount),
       address: addressData.address,
       customer: addressData.recipient_name || profile.user.full_name || "",
       email: addressData.email || profile.user.email || "",
@@ -140,7 +168,25 @@ const CheckOut = () => {
       phone: addressData.phone,
     };
 
-    if (paymentMethod === "cod") {
+    if (paymentMethod === "wallet" && useWallet) {
+      if (walletBalance < priceAfterDiscounts) {
+        toast.error(t("modal.walletInsufficientDesc"));
+        return;
+      }
+      setLoadingCOD(true);
+      try {
+        await dispatch(fetchWalletCheckout(payloadBase)).unwrap();
+        await dispatch(fetchCart());
+        navigate("/thank-you");
+      } catch (error) {
+        toast.error(t("toast.paymentError"));
+      } finally {
+        setLoadingCOD(false);
+      }
+      return;
+    }
+
+    if (paymentMethod === "cod" || (useWallet && finalPrice === 0)) {
       setLoadingCOD(true);
       try {
         await dispatch(fetchCODCheckout(payloadBase)).unwrap();
@@ -167,6 +213,17 @@ const CheckOut = () => {
         toast.error(t("toast.paymentError"));
       }
     }
+  };
+
+  const handleProceedWithVNPay = () => {
+    setShowInsufficientFundsModal(false);
+    setUseWallet(true);
+    setPaymentMethod("vnpay");
+  };
+
+  const handleCancelWalletUse = () => {
+    setShowInsufficientFundsModal(false);
+    setUseWallet(false);
   };
 
   useEffect(() => {
@@ -363,6 +420,11 @@ const CheckOut = () => {
                           value="cod"
                           checked={paymentMethod === "cod"}
                           onChange={handleCheckOutCOD}
+                          disabled={
+                            useWallet &&
+                            walletBalance >= priceAfterDiscounts &&
+                            priceAfterDiscounts > 0
+                          }
                         />
                         <span className="checkmark" />
                       </label>
@@ -379,6 +441,11 @@ const CheckOut = () => {
                           value={"vnpay"}
                           onChange={handleCheckOutVNPAY}
                           checked={paymentMethod === "vnpay"}
+                          disabled={
+                            useWallet &&
+                            walletBalance >= priceAfterDiscounts &&
+                            priceAfterDiscounts > 0
+                          }
                         />
                         <span className="checkmark" />
                       </label>
@@ -451,7 +518,7 @@ const CheckOut = () => {
                           transition: "all 0.3s ease",
                           cursor: "pointer",
                         }}
-                        onClick={() => setUseWallet((prev) => !prev)}
+                        onClick={handleToggleWallet}
                       >
                         <div className="d-flex align-items-center justify-content-between">
                           <div className="d-flex align-items-center">
@@ -467,8 +534,7 @@ const CheckOut = () => {
                                 marginRight: "12px",
                               }}
                             >
-                             <HiWallet  style={{color: "white"}} />
-                             
+                              <HiWallet style={{ color: "white" }} />
                             </div>
                             <div>
                               <h6
@@ -629,12 +695,7 @@ const CheckOut = () => {
                           <span>- {numberFormat(voucherDiscountAmount)}</span>
                         </li>
                       )}
-                      {useWallet && walletDeductAmount > 0 && (
-                        <li>
-                          {t("checkout.walletDiscount")}:{" "}
-                          <span>- {numberFormat(walletDeductAmount)}</span>
-                        </li>
-                      )}
+
                       <li>
                         {t("checkout.totalMoney")}:{" "}
                         <span>{numberFormat(finalPrice)}</span>
@@ -663,6 +724,15 @@ const CheckOut = () => {
           </div>
         </section>
       </div>
+
+      <InsufficientFundsModal
+        show={showInsufficientFundsModal}
+        walletBalance={walletBalance}
+        priceAfterDiscounts={priceAfterDiscounts}
+        handleCancelWalletUse={handleCancelWalletUse}
+        handleProceedWithVNPay={handleProceedWithVNPay}
+      />
+
       <ChangeAddressModal
         show={show}
         handleClose={handleClose}
