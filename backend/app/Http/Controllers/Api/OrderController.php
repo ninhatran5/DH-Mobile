@@ -44,7 +44,7 @@ class OrderController extends Controller
                     $order->district . ', ' .
                     $order->city,
                 'payment_status' => $order->payment_status,
-                'payment_method' => $order->paymentMethods->name,
+                'payment_method' => optional($order->paymentMethods)->name,
                 'status' => $order->status,
                 'cancel_reason' => $order->cancel_reason,
                 'created_at' => $order->created_at,
