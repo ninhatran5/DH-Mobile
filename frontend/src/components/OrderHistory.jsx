@@ -47,6 +47,14 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
         cancel_reason: orderUpdate.cancel_reason,
       }));
     },
+    onReturnUpdate: (returnData) => {
+      if (returnData.data) {
+        setOrderData((prev) => ({
+          ...prev,
+          status: returnData.data.status || prev.status,
+        }));
+      }
+    },
   });
 
   useEffect(() => {
@@ -136,6 +144,10 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
         return "order-status-return-refund";
       case "đã hoàn tiền":
         return "order-status-refunded";
+      case "đã chấp thuận":
+        return "order-status-approved";
+      case "đang xử lý":
+        return "order-status-processing";
       default:
         return "order-status-default";
     }
