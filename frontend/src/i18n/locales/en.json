@@ -714,7 +714,12 @@
     "time": "Time",
     "type": "Transaction Type",
     "amount": "Amount",
-    "note": "Note"
+    "note": "Note",
+    "pagination": {
+      "showing": "Showing {{start}}-{{end}} of {{total}} transactions",
+      "previous": "Previous page",
+      "next": "Next page"
+    }
   },
   "modal": {
     "walletInsufficientTitle": "Insufficient wallet balance",

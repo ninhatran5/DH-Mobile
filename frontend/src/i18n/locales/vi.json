@@ -714,7 +714,12 @@
     "time": "Thời gian",
     "type": "Loại giao dịch",
     "amount": "Số tiền",
-    "note": "Ghi chú"
+    "note": "Ghi chú",
+    "pagination": {
+      "showing": "Hiển thị {{start}}-{{end}} của {{total}} giao dịch",
+      "previous": "Trang trước",
+      "next": "Trang sau"
+    }
   },
   "modal": {
     "walletInsufficientTitle": "Số dư ví không đủ",
