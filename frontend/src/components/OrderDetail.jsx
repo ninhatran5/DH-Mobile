@@ -119,6 +119,10 @@ const OrderDetail = () => {
         return "order-status-canceled";
       case "yêu cầu hoàn hàng":
         return "order-status-return-requested";
+      case "đã chấp thuận":
+        return "order-status-return-approved";
+      case "đang xử lý":
+        return "order-status-return-processing";
       case "đã hoàn tiền":
         return "order-status-refunded";
       case "đã trả hàng":
@@ -142,13 +146,41 @@ const OrderDetail = () => {
   const normalizedStatus = removeVietnameseTones(orderDetail?.status || "");
   const currentStatusKey = statusMap[normalizedStatus] || "pending";
   const isCanceled = currentStatusKey === "canceled";
+  const isReturn = [
+    "order-status-return-requested",
+    "order-status-return-approved",
+    "order-status-return-processing",
+    "order-status-return-refund"
+  ].includes(getStatusClass(orderDetail?.status));
+
   const statusOrder = isCanceled
     ? ["pending", "confirmed", "canceled"]
-    : ["pending", "confirmed", "shipping", "shipped", "delivered"];
-  const currentStatusIndex = statusOrder.indexOf(currentStatusKey);
+    : isReturn
+      ? [
+          "return-requested",
+          "return-approved",
+          "return-processing",
+          "return-refund"
+        ]
+      : ["pending", "confirmed", "shipping", "shipped", "delivered"];
+
+  let currentStatusIndex;
+  if (isReturn) {
+    const returnStatusMap = {
+      "order-status-return-requested": 0,
+      "order-status-return-approved": 1,
+      "order-status-return-processing": 2,
+      "order-status-return-refund": 3,
+    };
+    currentStatusIndex = returnStatusMap[getStatusClass(orderDetail?.status)] ?? 0;
+  } else {
+    currentStatusIndex = statusOrder.indexOf(currentStatusKey);
+  }
 
   const statusSteps = statusOrder.map((key, idx) => ({
-    label: t(`order_status.${key}`),
+    label: isReturn
+      ? t(`order_status.${key}`)
+      : t(`order_status.${key}`),
     active: idx <= currentStatusIndex,
   }));
 
@@ -336,7 +368,8 @@ const OrderDetail = () => {
                   key={index}
                   className={`step0 ${step.active ? "active" : ""} 
                     ${index === currentStatusIndex ? "current" : ""} 
-                    ${currentStatusKey === "canceled" ? "canceled" : ""}`}
+                    ${currentStatusKey === "canceled" ? "canceled" : ""}
+                    ${isReturn ? "return-order-step" : ""}`}
                 >
                   <span className="step-label">{step.label}</span>
                 </li>

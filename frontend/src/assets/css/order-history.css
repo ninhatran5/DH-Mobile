@@ -146,3 +146,11 @@
   color: #ff5722; /* cam đậm hoặc chọn màu bạn thích */
   font-weight: bold;
 }
+.order-status-return-approved {
+  color: #009688; /* xanh ngọc */
+  font-weight: bold;
+}
+.order-status-return-processing {
+  color: #ff5722; /* cam đậm hoặc chọn màu bạn thích */
+  font-weight: bold;
+}
