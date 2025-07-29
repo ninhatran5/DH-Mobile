@@ -743,8 +743,7 @@ class OrderController extends Controller
     }
 
     // Chi tiết đơn hàng hoàn trả (admin)
-    public function getReturnOrderDetail($order_id)
-    {
+    public function getReturnOrderDetail($order_id){
         //Lấy đơn hàng với các quan hệ liên quan
         $order = Orders::with([
             'user',
@@ -802,7 +801,7 @@ class OrderController extends Controller
             return [
                 'return_id' => $r->return_id,
                 'reason' => $r->reason,
-                'return_reason_other' => $r->return_reason_other, // ✅ Thêm lý do khác
+                'return_reason_other' => $r->return_reason_other, //Thêm lý do khác
                 'status' => $r->status,
                 'upload_url' => $r->upload_url,
                 'refund_amount' => $r->refund_amount !== null
@@ -844,9 +843,7 @@ class OrderController extends Controller
 
 
 
-
     // phần này là lấy danh sách lịch sử trạng thái đã cập nhật
-
 
 
 
