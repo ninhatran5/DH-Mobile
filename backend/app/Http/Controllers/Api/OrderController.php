@@ -815,7 +815,8 @@ class OrderController extends Controller
                 : null,
             'order_status' => $order->status,
             'payment_status' => $order->payment_status,
-            'payment_method' => optional($order->paymentMethods)->name,
+            'payment_method_name' => optional($order->paymentMethods)->name,
+            'payment_method_description' => optional($order->paymentMethods)->description,
             'cancel_reason' => $order->cancel_reason,
             'order_created_at' => $order->created_at
                 ? $order->created_at->format('d/m/Y H:i:s')
