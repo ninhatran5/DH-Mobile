@@ -219,10 +219,55 @@ const CheckOut = () => {
     }
   };
 
-  const handleProceedWithVNPay = () => {
+  const handleProceedWithVNPay = async () => {
     setShowInsufficientFundsModal(false);
-    setUseWallet(true);
-    setPaymentMethod("vnpay");
+    const addressData = selectedAddress || profile.user || {};
+    const { address, city, district, ward, phone } = addressData;
+
+    if (!address || !city || !district || !ward || !phone) {
+      toast.error(t("toast.missingAddress"));
+      return;
+    }
+
+    const payloadBase = {
+      user_id: profile.user.id,
+      items: selectedItems.map((item) => ({
+        variant_id: Number(item.variant.variant_id),
+        quantity: Number(item.quantity),
+        price_snapshot: Number(item.variant.price),
+      })),
+      total_amount: Number(finalPrice),
+      voucher_id: selectedVoucher
+        ? selectedVoucher.voucher_id || selectedVoucher.voucher?.voucher_id
+        : null,
+      voucher_discount: Number(discountAmount),
+      rank_discount: Number(rankDiscountAmount),
+      wallet_amount: Number(walletBalance),
+      address: addressData.address,
+      customer: addressData.recipient_name || profile.user.full_name || "",
+      email: addressData.email || profile.user.email || "",
+      city: addressData.city,
+      district: addressData.district,
+      ward: addressData.ward,
+      phone: addressData.phone,
+    };
+
+    try {
+      const actionResult = await dispatch(fetchWalletCheckout(payloadBase));
+      const result = actionResult.payload;
+
+      if (result && result.payment_url) {
+        window.open(result.payment_url, "_blank");
+        if (result.message) {
+          toast.info(result.message);
+        }
+        await dispatch(fetchCart());
+      } else {
+        toast.error(t("toast.maxOnlineAmount"));
+      }
+    } catch (err) {
+      toast.error(t("toast.paymentError"));
+    }
   };
 
   const handleCancelWalletUse = () => {
