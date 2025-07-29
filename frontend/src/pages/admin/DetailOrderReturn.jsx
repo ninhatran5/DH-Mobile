@@ -42,7 +42,6 @@ const DetailOrderReturn = () => {
     email,
     total_amount,
     order_status,
-    payment_status,
    payment_method_description,
    payment_method_name,
     order_created_at,
@@ -72,7 +71,7 @@ const DetailOrderReturn = () => {
                 <span className="card-icon">📋</span>
                 <h2 className="card-title">Thông tin đơn hàng</h2>
               </div>
-              <div className="order-code">Mã đơn: {order_code}</div>
+              <div className="order-code">Mã đơn: <span className="fw-bold">{order_code}</span></div>
             </div>
             
             <div className="order-info-grid">
@@ -97,7 +96,7 @@ const DetailOrderReturn = () => {
               </div>
               
               <div className="info-item">
-                <span className="info-label">Phương thức thanh toán</span>
+                <span className="info-label mb-2">Phương thức thanh toán</span>
                 <div className="payment-method">
                  {payment_method_name} - {payment_method_description}
                 </div>
@@ -258,11 +257,9 @@ const DetailOrderReturn = () => {
             
             <div className="action-buttons">
                <button className="action-button button-orange">
-                <span className="button-icon">📞</span>
                 Liên hệ hỗ trợ
               </button>
               <button className="action-button button-orange">
-                <span className="button-icon">📞</span>
                 Liên hệ hỗ trợ
               </button>
             </div>

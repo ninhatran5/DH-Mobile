@@ -1,11 +1,11 @@
 /* DetailOrderReturn.css */
 .detail-order-return-container {
-  max-width: 1400px;
   margin: 0 auto;
   padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: #f8f9fa;
   min-height: 100vh;
+  font-size: 15px; /* Giảm từ 16px */
 }
 
 /* Header Section */
@@ -19,15 +19,16 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+/* Nút quay lại đơn giản như trong hình */
 .back-button {
-  background: none;
+  background: #ff5722; /* Màu cam giống trong hình */
   border: none;
   cursor: pointer;
-  padding: 8px 12px;
+  padding: 10px 16px;
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #6b7280;
+  color: white;
   font-size: 14px;
   font-weight: 500;
   border-radius: 6px;
@@ -35,12 +36,16 @@
 }
 
 .back-button:hover {
-  background: #f3f4f6;
-  color: #374151;
+  background: #e64a19;
+  transform: none; /* Bỏ hiệu ứng transform */
+}
+
+.back-button:active {
+  background: #d84315;
 }
 
 .page-title {
-  font-size: 20px;
+  font-size: 20px; /* Giảm từ 22px */
   font-weight: 600;
   color: #111827;
   margin: 0;
@@ -55,7 +60,7 @@
 }
 
 .status-returned, .status-refunded {
-  font-size: 14px;
+  font-size: 14px; /* Giảm từ 15px */
   font-weight: 500;
   color: #6b7280;
 }
@@ -104,14 +109,15 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-bottom: 10px;
 }
 
 .card-icon {
-  font-size: 18px;
+  font-size: 18px; /* Giảm từ 20px */
 }
 
 .card-title {
-  font-size: 16px;
+  font-size: 17px; /* Giảm từ 18px */
   font-weight: 600;
   color: #111827;
   margin: 0;
@@ -119,7 +125,7 @@
 
 .order-code {
   color: #6b7280;
-  font-size: 13px;
+  font-size: 14px; /* Giảm từ 15px */
   font-weight: 500;
 }
 
@@ -133,17 +139,16 @@
 .info-item {
   display: flex;
   flex-direction: column;
-  gap: 6px;
 }
 
 .info-label {
-  font-size: 14px;
+  font-size: 14px; /* Giảm từ 15px */
   color: #6b7280;
   font-weight: 500;
 }
 
 .info-value {
-  font-size: 14px;
+  font-size: 15px; /* Giảm từ 16px */
   color: #111827;
   font-weight: 500;
 }
@@ -151,7 +156,7 @@
 .info-value.highlight {
   color: #dc2626;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 17px; /* Giảm từ 18px */
 }
 
 .refund-amount {
@@ -168,19 +173,20 @@
   color: #166534;
   padding: 6px 16px;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 13px; /* Giảm từ 14px */
   font-weight: 500;
   border: 1px solid #bbf7d0;
   width: 200px;
 }
 
 .payment-icon {
-  font-size: 14px;
+  font-size: 14px; /* Giảm từ 16px */
 }
 
 .status-returned-text {
   color: #dc2626;
   font-weight: 600;
+  font-size: 15px; /* Giảm từ 16px */
 }
 
 /* Product Card */
@@ -220,7 +226,7 @@
 }
 
 .product-name {
-  font-size: 15px;
+  font-size: 16px; /* Giảm từ 17px */
   font-weight: 600;
   color: #111827;
   line-height: 1.4;
@@ -229,14 +235,14 @@
 .product-specs {
   display: flex;
   gap: 20px;
-  font-size: 13px;
+  font-size: 14px; /* Giảm từ 15px */
   color: #6b7280;
 }
 
 .product-price-info {
   display: flex;
   gap: 20px;
-  font-size: 14px;
+  font-size: 14px; /* Giảm từ 15px */
   color: #374151;
   margin-top: 4px;
 }
@@ -246,7 +252,7 @@
 }
 
 .product-total {
-  font-size: 15px;
+  font-size: 16px; /* Giảm từ 17px */
   font-weight: 600;
   color: #dc2626;
   text-align: right;
@@ -275,13 +281,13 @@
 }
 
 .request-number {
-  font-size: 15px;
+  font-size: 15px; /* Giảm từ 16px */
   font-weight: 600;
   color: #111827;
 }
 
 .request-date {
-  font-size: 13px;
+  font-size: 13px; /* Giảm từ 14px */
   color: #6b7280;
 }
 
@@ -297,7 +303,7 @@
   align-items: center;
   gap: 8px;
   color: #dc2626;
-  font-size: 14px;
+  font-size: 14px; /* Giảm từ 15px */
   font-weight: 500;
   margin-bottom: 12px;
   padding: 8px 12px;
@@ -308,6 +314,7 @@
 
 .reason-icon {
   color: #dc2626;
+  font-size: 14px; /* Giảm từ 16px */
 }
 
 .request-status {
@@ -320,7 +327,7 @@
   align-items: center;
   gap: 6px;
   color: #16a34a;
-  font-size: 14px;
+  font-size: 14px; /* Giảm từ 15px */
   font-weight: 500;
   background: #dcfce7;
   padding: 6px 12px;
@@ -330,6 +337,7 @@
 
 .status-icon {
   color: #16a34a;
+  font-size: 14px; /* Giảm từ 16px */
 }
 
 /* History Section */
@@ -370,13 +378,13 @@
 }
 
 .history-icon {
-  width: 32px;
-  height: 32px;
+  width: 32px; /* Giảm từ 36px */
+  height: 32px; /* Giảm từ 36px */
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 14px; /* Giảm từ 16px */
   font-weight: 600;
   flex-shrink: 0;
   z-index: 1;
@@ -389,26 +397,26 @@
 }
 
 .history-title {
-  font-size: 14px;
+  font-size: 15px; /* Giảm từ 16px */
   font-weight: 600;
   color: #111827;
   margin: 0 0 4px 0;
 }
 
 .history-time {
-  font-size: 12px;
+  font-size: 13px; /* Giảm từ 14px */
   color: #6b7280;
   margin-bottom: 4px;
 }
 
 .history-amount {
-  font-size: 13px;
+  font-size: 13px; /* Giảm từ 14px */
   font-weight: 600;
   color: #16a34a;
 }
 
 .history-reason, .history-order-code {
-  font-size: 12px;
+  font-size: 12px; /* Giảm từ 13px */
   color: #6b7280;
 }
 
@@ -423,7 +431,7 @@
   padding: 12px 16px;
   border-radius: 8px;
   border: none;
-  font-size: 14px;
+  font-size: 14px; /* Giảm từ 15px */
   font-weight: 500;
   cursor: pointer;
   display: flex;
@@ -464,7 +472,7 @@
 }
 
 .button-icon {
-  font-size: 16px;
+  font-size: 16px; /* Giảm từ 18px */
 }
 
 /* Summary Section */
@@ -481,13 +489,13 @@
 }
 
 .summary-label {
-  font-size: 14px;
+  font-size: 15px; /* Giảm từ 16px */
   color: #374151;
   font-weight: 500;
 }
 
 .summary-value {
-  font-size: 14px;
+  font-size: 15px; /* Giảm từ 16px */
   color: #111827;
   font-weight: 500;
 }
@@ -509,7 +517,7 @@
 }
 
 .final-amount {
-  font-size: 16px !important;
+  font-size: 17px !important; /* Giảm từ 18px */
   font-weight: 700 !important;
 }
 
@@ -522,6 +530,7 @@
   border: 1px solid #fecaca;
   text-align: center;
   font-weight: 500;
+  font-size: 15px; /* Giảm từ 16px */
   margin: 20px;
 }
 
@@ -580,11 +589,16 @@
   .product-total {
     text-align: center;
   }
+  
+  .back-button {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
 }
 
 @media (max-width: 480px) {
   .page-title {
-    font-size: 18px;
+    font-size: 18px; /* Giảm từ 20px */
   }
   
   .card-header {
@@ -601,5 +615,10 @@
   .product-price-info {
     flex-direction: column;
     gap: 4px;
+  }
+  
+  .back-button {
+    padding: 8px 14px;
+    font-size: 13px;
   }
 }
