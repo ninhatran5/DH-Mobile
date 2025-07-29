@@ -745,68 +745,81 @@ class OrderController extends Controller
     // Chi tiết đơn hàng hoàn trả (admin)
     public function getReturnOrderDetail($order_id)
     {
-        // Lấy thông tin đơn hàng
-        $order = Orders::with(['user', 'paymentMethods', 'orderItems.product', 'orderItems.variant.variantAttributeValues.value.attribute'])
-            ->where('order_id', $order_id)
-            ->first();
+        $order = Orders::with([
+            'user',
+            'paymentMethods',
+            'orderItems.product',
+            'orderItems.variant.variantAttributeValues.value.attribute'
+        ])->where('order_id', $order_id)->first();
+
         if (!$order) {
             return response()->json([
                 'status' => false,
                 'message' => 'Không tìm thấy đơn hàng'
             ], 404);
         }
-        // Lấy các yêu cầu hoàn trả của đơn hàng này
+
         $returnRequests = DB::table('return_requests')
             ->where('order_id', $order_id)
             ->orderByDesc('created_at')
             ->get();
 
-        // Định dạng chi tiết sản phẩm
         $orderItems = $order->orderItems->map(function ($item) {
-            $variantAttributes = [];
-            if ($item->variant) {
-                $variantAttributes = $item->variant->variantAttributeValues->map(function ($attrValue) {
+            $variantAttributes = $item->variant
+                ? $item->variant->variantAttributeValues->map(function ($attrValue) {
                     return [
-                        'attribute_name' => $attrValue->value->attribute->name,
-                        'attribute_value' => $attrValue->value->value
+                        'attribute_name' => optional(optional($attrValue->value)->attribute)->name,
+                        'attribute_value' => optional($attrValue->value)->value
                     ];
-                });
-            }
+                })
+                : [];
+
             return [
                 'variant_id' => $item->variant_id,
                 'product_id' => $item->product_id,
-                'product_name' => $item->product->name,
-                'product_image' => $item->variant ? $item->variant->image_url : $item->product->image_url,
+                'product_name' => optional($item->product)->name,
+                'product_image' => $item->variant
+                    ? $item->variant->image_url
+                    : optional($item->product)->image_url,
                 'quantity' => $item->quantity,
-                'price' => number_format($item->price, 0, '.', ''),
-                'subtotal' => number_format($item->price * $item->quantity, 0, '.', ''),
+                'price' => $item->price !== null ? number_format($item->price, 0, '.', '') : null,
+                'subtotal' => ($item->price !== null)
+                    ? number_format($item->price * $item->quantity, 0, '.', '')
+                    : null,
                 'variant_attributes' => $variantAttributes
             ];
         });
 
-        // Định dạng các yêu cầu hoàn trả
         $returnRequestsFormatted = $returnRequests->map(function ($r) {
             return [
                 'return_id' => $r->return_id,
                 'reason' => $r->reason,
                 'status' => $r->status,
                 'upload_url' => $r->upload_url,
-                'refund_amount' => number_format($r->refund_amount, 0, '.', ''),
-                'created_at' => $r->created_at ? date('d/m/Y H:i:s', strtotime($r->created_at)) : null,
+                'refund_amount' => $r->refund_amount !== null
+                    ? number_format($r->refund_amount, 0, '.', '')
+                    : null,
+                'created_at' => $r->created_at
+                    ? date('d/m/Y H:i:s', strtotime($r->created_at))
+                    : null,
             ];
         });
 
         $formattedOrder = [
             'order_id' => $order->order_id,
             'order_code' => $order->order_code,
-            'customer' => $order->customer,
-            'email' => $order->user ? $order->user->email : null,
-            'total_amount' => number_format($order->total_amount, 0, '.', ''),
+            'customer' => $order->customer ?? optional($order->user)->name,
+            'email' => optional($order->user)->email,
+            'total_amount' => $order->total_amount !== null
+                ? number_format($order->total_amount, 0, '.', '')
+                : null,
             'order_status' => $order->status,
             'payment_status' => $order->payment_status,
-            'payment_method' => $order->paymentMethods ? $order->paymentMethods->name : null,
+            'payment_method' => optional($order->paymentMethods)->name,
             'cancel_reason' => $order->cancel_reason,
-            'order_created_at' => $order->created_at ? $order->created_at->format('d/m/Y H:i:s') : null,
+            'order_created_at' => $order->created_at
+                ? $order->created_at->format('d/m/Y H:i:s')
+                : null,
             'products' => $orderItems,
             'return_requests' => $returnRequestsFormatted
         ];
