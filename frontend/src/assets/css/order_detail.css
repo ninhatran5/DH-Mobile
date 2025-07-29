@@ -1,3 +1,18 @@
+#progressbar li.return-order-step::before {
+  content: "\f0e2";
+  font-family: FontAwesome;
+  background-color: #ff7248 !important;
+  color: white;
+}
+
+#progressbar li.return-order-step.active::after {
+  background-color: #ff7248 !important;
+}
+
+#progressbar li.return-order-step .step-label {
+  color: #ff7248;
+  font-weight: 500;
+}
 body {
   color: #000;
   overflow-x: hidden;
@@ -44,9 +59,12 @@ body {
 #progressbar li {
   flex: 1 1 auto;
   position: relative;
-  text-align: center;
   min-width: 120px;
   margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 #progressbar li::before {
@@ -96,10 +114,12 @@ body {
   font-size: 13px;
   text-align: center;
   color: #333;
-  position: absolute;
-  width: 100%;
-  left: 0;
-  margin-left: 90px;
+  position: static;
+  width: auto;
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 0;
+  align-self: center;
 }
 
 /* Responsive chỉnh sửa */
@@ -116,6 +136,10 @@ body {
   #progressbar li {
     flex: 0 0 33.333%;
     margin-bottom: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
 
   #progressbar li::after {
@@ -131,9 +155,12 @@ body {
     font-size: 12px;
     padding: 0 5px;
     text-align: center;
-    position: absolute;
-    width: 100%;
+    position: static;
+    width: auto;
     left: 0;
+    margin-left: 0;
+    margin-right: 0;
+    align-self: center;
   }
 
   .card {

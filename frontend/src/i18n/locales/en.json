@@ -567,7 +567,11 @@
     "delivering": "Out for Delivery",
     "shipped": "Delivered to Carrier",
     "delivered": "Completed",
-    "canceled": "Canceled"
+    "canceled": "Canceled",
+    "return-requested": "Return Requested",
+    "return-approved": "Return Approved",
+    "return-processing": "Processing",
+    "return-refund": "Returned"
   },
   "review": {
     "title": "Product Review",

@@ -567,7 +567,11 @@
     "delivering": "Đang giao hàng",
     "shipped": "Đã giao hàng",
     "delivered": "Hoàn thành",
-    "canceled": "Đã huỷ"
+    "canceled": "Đã huỷ",
+    "return-requested": "Đã yêu cầu trả hàng",
+    "return-approved": "Đã chấp thuận",
+    "return-processing": "Đang xử lý",
+    "return-refund": "Đã trả hàng"
   },
   "review": {
     "title": "Đánh giá sản phẩm",
@@ -721,6 +725,5 @@
     "walletTip": "Bạn có thể sử dụng ví để thanh toán một phần {{wallet}} và thanh toán số tiền còn lại {{short}} qua VNPay.",
     "cancel": "Hủy bỏ",
     "payWithVNPay": "Thanh toán qua VNPay"
-}
-  
+  }
 }
