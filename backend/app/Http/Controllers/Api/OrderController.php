@@ -745,6 +745,7 @@ class OrderController extends Controller
     // Chi tiết đơn hàng hoàn trả (admin)
     public function getReturnOrderDetail($order_id)
     {
+        //Lấy đơn hàng với các quan hệ liên quan
         $order = Orders::with([
             'user',
             'paymentMethods',
@@ -752,6 +753,7 @@ class OrderController extends Controller
             'orderItems.variant.variantAttributeValues.value.attribute'
         ])->where('order_id', $order_id)->first();
 
+        //  Nếu không tìm thấy đơn hàng
         if (!$order) {
             return response()->json([
                 'status' => false,
@@ -759,12 +761,15 @@ class OrderController extends Controller
             ], 404);
         }
 
+        //Lấy các yêu cầu hoàn trả liên quan đến đơn hàng
         $returnRequests = DB::table('return_requests')
             ->where('order_id', $order_id)
             ->orderByDesc('created_at')
             ->get();
 
+        //Format danh sách sản phẩm trong đơn hàng
         $orderItems = $order->orderItems->map(function ($item) {
+            // Lấy thông tin thuộc tính của biến thể (nếu có)
             $variantAttributes = $item->variant
                 ? $item->variant->variantAttributeValues->map(function ($attrValue) {
                     return [
@@ -782,18 +787,22 @@ class OrderController extends Controller
                     ? $item->variant->image_url
                     : optional($item->product)->image_url,
                 'quantity' => $item->quantity,
-                'price' => $item->price !== null ? number_format($item->price, 0, '.', '') : null,
-                'subtotal' => ($item->price !== null)
+                'price' => $item->price !== null
+                    ? number_format($item->price, 0, '.', '')
+                    : null,
+                'subtotal' => $item->price !== null
                     ? number_format($item->price * $item->quantity, 0, '.', '')
                     : null,
                 'variant_attributes' => $variantAttributes
             ];
         });
 
+        //Format danh sách yêu cầu hoàn trả
         $returnRequestsFormatted = $returnRequests->map(function ($r) {
             return [
                 'return_id' => $r->return_id,
                 'reason' => $r->reason,
+                'return_reason_other' => $r->return_reason_other, // ✅ Thêm lý do khác
                 'status' => $r->status,
                 'upload_url' => $r->upload_url,
                 'refund_amount' => $r->refund_amount !== null
@@ -805,6 +814,7 @@ class OrderController extends Controller
             ];
         });
 
+        //Định dạng dữ liệu trả về
         $formattedOrder = [
             'order_id' => $order->order_id,
             'order_code' => $order->order_code,
@@ -824,13 +834,12 @@ class OrderController extends Controller
             'return_requests' => $returnRequestsFormatted
         ];
 
+        //Trả về response JSON
         return response()->json([
             'status' => true,
             'order' => $formattedOrder
         ]);
     }
-
-
 
 
 
