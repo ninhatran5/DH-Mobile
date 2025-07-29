@@ -8,6 +8,7 @@ import {
 } from "../../slices/adminOrderSlice";
 import "../../assets/admin/OrderDetail.css";
 import OrderStatusSteps from "../../components/AdminOrderDetail";
+import Swal from "sweetalert2";
 
 const ORDER_STATUS_OPTIONS = [
   "Chờ xác nhận",
@@ -69,12 +70,25 @@ const OrderDetails = () => {
 
   const handleCancelOrder = async () => {
     if (!order || !order.order_id) return;
-    const reason = window.prompt("Nhập lý do huỷ đơn hàng:");
+
+    const { value: reason } = await Swal.fire({
+      title: "Nhập lý do huỷ đơn hàng:",
+      input: "text",
+      inputPlaceholder: "Nhập lý do...",
+      showCancelButton: true,
+      confirmButtonText: "Xác nhận",
+      cancelButtonText: "Hủy",
+    });
+
     if (!reason) return;
+
     setUpdating(true);
     try {
       await dispatch(cancelOrder({ orderId: order.order_id, cancel_reason: reason })).unwrap();
-    } catch (e) {}
+      Swal.fire("Thành công", "Đơn hàng đã được huỷ.", "success");
+    } catch (e) {
+      Swal.fire("Lỗi", "Không thể huỷ đơn hàng.", "error");
+    }
     setUpdating(false);
   };
 
@@ -199,7 +213,7 @@ const OrderDetails = () => {
           <tfoot>
             <tr>
               <td colSpan="6" className="text-end fw-bold">Tổng cộng:</td>
-              <td className="text-danger fw-bold">{formatCurrency(order.total_amount)}</td>
+              <td className="text-danger fw-bold rderdetail">{formatCurrency(order.total_amount)}</td>
             </tr>
           </tfoot>
         </table>

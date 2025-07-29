@@ -374,7 +374,7 @@ const OrdersCancelled = () => {
                                 </>
                               )}
                               <Link 
-                                to={`/admin/return-request/${order.return_id}`} 
+                                to={`/admin/detailorderreturn/${order.order_id}`} 
                                 className="admin-return-order-action-btn" 
                                 title="Xem chi tiết"
                               >
