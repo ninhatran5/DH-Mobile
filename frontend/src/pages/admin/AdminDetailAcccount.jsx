@@ -18,7 +18,7 @@ import {
   FaClock,
   FaExclamationTriangle,
 } from "react-icons/fa";
-import "./AdminDetailAcccount.css";
+import "../../assets/admin/AdminDetailAcccount.css";
 
 const ProfileAdmin = () => {
   const dispatch = useDispatch();

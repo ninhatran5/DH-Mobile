@@ -23,20 +23,23 @@ export const fetchReturnOrders = createAsyncThunk(
   }
 );
 
-// Lấy chi tiết đơn hoàn hàng
-export const fetchReturnOrderDetails = createAsyncThunk(
-  "adminReturnOrder/fetchReturnOrderDetails",
-  async (returnId, { rejectWithValue }) => {
+
+// Lấy chi tiết đơn hoàn hàng theo ID
+export const fetchReturnOrderById = createAsyncThunk(
+  "adminReturnOrder/fetchReturnOrderById",
+  async (orderId, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
-      const response = await axiosAdmin.get(`/admin/return-requests/${returnId}`, {
+      const response = await axiosAdmin.get(`/admin/orders/return-orders/${orderId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      return response.data;
+      console.log("Return order data:", response.data.order);
+
+      return response.data.order;
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Lỗi khi lấy chi tiết đơn hoàn hàng"
@@ -78,7 +81,7 @@ const initialState = {
     current_page: 1,
     total: 0,
     per_page: 10,
-    total_pages: 0
+    total_pages: 0,
   },
   loading: false,
   error: null,
@@ -112,27 +115,19 @@ const adminReturnOrderSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Fetch return order details
-      .addCase(fetchReturnOrderDetails.pending, (state) => {
+      
+
+      // Fetch return order by ID
+      .addCase(fetchReturnOrderById.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchReturnOrderDetails.fulfilled, (state, action) => {
-        state.loading = false;
-        state.currentReturnOrder = action.payload.return_request;
-        
-        // Update in list if exists
-        const index = state.returnOrders.findIndex(
-          order => order.return_id === action.payload.return_request.return_id
-        );
-        if (index !== -1) {
-          state.returnOrders[index] = action.payload.return_request;
-        }
-      })
-      .addCase(fetchReturnOrderDetails.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
+      
+      .addCase(fetchReturnOrderById.fulfilled, (state, action) => {
+  state.loading = false;
+  state.currentReturnOrder = action.payload; // Chính xác vì bạn return response.data.order
+})
+
 
       // Update return order status
       .addCase(updateReturnOrderStatus.pending, (state) => {

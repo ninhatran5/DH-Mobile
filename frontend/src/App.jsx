@@ -75,6 +75,7 @@ import UpdateBlog from "./pages/admin/UpdateBlog";
 import BlogDetailAdmin from "./pages/admin/BlogDetail";
 import TrashCan from "./pages/admin/TrashCan";
 import AdminDetailAcccount from "./pages/admin/AdminDetailAcccount.jsx";
+import DetailOrderReturn from "./pages/admin/DetailOrderReturn.jsx";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -313,6 +314,13 @@ const routerConfig = [
           </RequireNotSaleRole>
         ),
       },
+      {
+        path:"detailorderreturn/:returnId",
+        element:<DetailOrderReturn/>
+      },
+
+
+     
       {
         path: "addvoucher",
         element: (

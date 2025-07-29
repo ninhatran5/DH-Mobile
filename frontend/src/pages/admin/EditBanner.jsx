@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchBannerById, updateBanner } from "../../slices/BannerSlice";
 import "../../assets/admin/editbanner.css";
+import { toast } from "react-toastify";
 
 const EditBanner = () => {
   const { id } = useParams();
@@ -72,10 +73,10 @@ const EditBanner = () => {
     try {
       const resultAction = await dispatch(updateBanner({ id, data })).unwrap();
       await dispatch(fetchBannerById(id));
-      alert("Cập nhật thành công!");
+      toast.success("Cập nhật thành công!");
       navigate("/admin/banners");
     } catch (err) {
-      console.error("Lỗi cập nhật banner:", err);
+      toast.error("Lỗi cập nhật banner:", err);
       alert("Lỗi cập nhật: " + (err.message || err));
     } finally {
       setUploading(false);
