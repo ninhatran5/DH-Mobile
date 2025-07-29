@@ -16,6 +16,7 @@ class ReturnRequest extends Model
         'user_id',
         'reason',
         'status',
+        'return_reason_other',
         'refund_amount',
     ];
 
