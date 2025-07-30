@@ -9,7 +9,7 @@ class SupportChatAttachment extends Model
     protected $primaryKey = 'attachment_id';
     public $timestamps = false;
 
-    protected $fillable = ['chat_id', 'file_path', 'file_type'];
+    protected $fillable = ['chat_id', 'file_url', 'file_type'];
 
     public function chat()
     {
