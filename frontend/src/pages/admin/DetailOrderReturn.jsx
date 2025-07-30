@@ -186,25 +186,54 @@ const handleUpdateStatus = () => {
 
 
   const handleCancelOrder = async () => {
-    if (!currentReturnOrder?.order_id) return;
+  if (!currentReturnOrder?.order_id) return;
 
- if (currentReturnOrder?.order_status !== "Đã chấp thuận") {
-      alert("Chỉ có thể hủy đơn hàng khi trạng thái là 'Đã chấp thuận'.");
-      return;
-    }
+  if (currentReturnOrder?.order_status !== "Đã chấp thuận") {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Không thể hủy đơn',
+      text: "Chỉ có thể hủy đơn hàng khi trạng thái là 'Đã chấp thuận'.",
+    });
+    return;
+  }
 
+  const result = await Swal.fire({
+    title: 'Xác nhận hủy đơn hàng',
+    text: 'Bạn có chắc chắn muốn hủy đơn hàng này không?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Đồng ý',
+    cancelButtonText: 'Hủy',
+    confirmButtonColor: '#dc3545',
+    cancelButtonColor: '#3085d6',
+  });
+
+  if (result.isConfirmed) {
     try {
       await dispatch(updateReturnOrderStatus({
         orderId: currentReturnOrder.order_id,
-        status: "rejected",
+        status: "Đã từ chối", 
       })).unwrap();
-      alert("Đơn hàng đã được hủy thành công.");
-      dispatch(fetchReturnOrderById(returnId)); // Refresh data
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Hủy đơn thành công',
+        text: 'Đơn hàng đã được hủy thành công.',
+        timer: 2000,
+        showConfirmButton: false,
+      });
+
+      dispatch(fetchReturnOrderById(returnId)); 
     } catch (error) {
       console.error("Chi tiết lỗi API:", error);
-      alert("Lỗi khi hủy đơn hàng: " + (error.message || "Không xác định"));
+      Swal.fire({
+        icon: 'error',
+        title: 'Lỗi',
+        text: error?.message || 'Có lỗi xảy ra khi hủy đơn hàng.',
+      });
     }
-  };
+  }
+};
 
   if (loading) return <Loading />;
   if (error) return <div className="error">Lỗi: {error}</div>;
@@ -368,8 +397,7 @@ const handleUpdateStatus = () => {
         Lý do: {request.reason}
       </div>
       <div className="request-reason">
-        <span className="reason-icon">⚠️</span>
-        Lý do: {request.return_reason_other}
+        Mô tả : {request.return_reason_other}
       </div>
       {/* Hiển thị hình ảnh - FIXED */}
       {request.upload_url && (
