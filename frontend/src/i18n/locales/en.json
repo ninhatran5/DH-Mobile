@@ -571,7 +571,9 @@
     "return-requested": "Return Requested",
     "return-approved": "Return Approved",
     "return-processing": "Processing",
-    "return-refund": "Returned"
+    "return-refund": "Returned",
+    "return-rejected": "Rejected"
+
   },
   "review": {
     "title": "Product Review",

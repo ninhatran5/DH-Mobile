@@ -150,6 +150,8 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
         return "order-status-return-approved";
       case "đang xử lý":
         return "order-status-return-processing";
+      case "đã từ chối":
+        return "order-status-return-rejected";
       default:
         return "order-status-default";
     }
