@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\Controller;
+use App\Events\ChatMessageSent;
 
 
 class ChatbotController extends Controller
@@ -50,6 +51,7 @@ class ChatbotController extends Controller
     }
 
 
+
     public function handle(Request $request)
     {
         $request->validate([
@@ -60,13 +62,19 @@ class ChatbotController extends Controller
         $message = trim(Str::lower($request->input('message')));
         $userId = $request->input('user_id');
         $cacheKey = 'chatbot:' . md5($message . '|' . ($userId ?? 'guest'));
-        $cacheTtl = 600; // cache 10 phút
+        $cacheTtl = 600;
+
         if (Cache::has($cacheKey)) {
             $cached = Cache::get($cacheKey);
+
+            // **BROADCAST CACHED RESPONSE**
+            broadcast(new ChatMessageSent($message, $cached, $userId));
+
             return response()->json([
                 'success' => true,
                 'response' => $cached,
-                'cached' => true
+                'cached' => true,
+                'realtime' => true
             ]);
         }
 
@@ -82,13 +90,11 @@ class ChatbotController extends Controller
             ]);
         }
 
-        // Phân tích ý định của người dùng từ message
-        // Sử dụng hàm analyzeIntent để xác định intent dựa trên từ khóa
         $intent = $this->analyzeIntent($message);
-
 
         try {
             $response = $this->handleIntent($intent, $message, $userId);
+
             if ($userId) {
                 DB::table('chatbot_logs')->insert([
                     'user_id' => $userId,
@@ -98,17 +104,23 @@ class ChatbotController extends Controller
                     'updated_at' => now()
                 ]);
             }
-            // Lưu cache
+
+            // **BROADCAST RESPONSE VIA PUSHER**
+            broadcast(new ChatMessageSent($message, $response, $userId));
+
             Cache::put($cacheKey, $response, $cacheTtl);
+
             return response()->json([
                 'success' => true,
-                'response' => $response
+                'response' => $response,
+                'realtime' => true
             ]);
         } catch (\Exception $e) {
             Log::error('ChatbotController Exception', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
+
             return response()->json([
                 'success' => false,
                 'error' => 'Đã xảy ra lỗi khi xử lý yêu cầu',
@@ -116,7 +128,6 @@ class ChatbotController extends Controller
             ], 500);
         }
     }
-
     protected function analyzeIntent($message)
     {
         $message = Str::lower($message);
