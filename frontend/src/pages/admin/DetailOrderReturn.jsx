@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
-import { fetchReturnOrderById } from "../../slices/AdminReturnOrderSlice";
+import { fetchReturnOrderById, updateReturnOrderStatus } from "../../slices/AdminReturnOrderSlice";
 import Loading from "../../components/Loading";
 import "../../assets/admin/DetailOrderReturn.css";
-
+import Swal from 'sweetalert2';
 const DetailOrderReturn = () => {
   const { returnId } = useParams();
   const dispatch = useDispatch();
@@ -32,6 +32,180 @@ const DetailOrderReturn = () => {
     });
   };
 
+  // Function to get timeline based on status - FIXED
+const getStatusMilestones = (returnStatus) => {
+  // If rejected, only show rejection milestone
+  if (returnStatus?.toLowerCase() === 'rejected' || returnStatus?.toLowerCase() === 'từ chối') {
+    return [{
+      key: 'rejected',
+      title: 'Đã từ chối',
+      icon: '❌',
+      description: 'Yêu cầu hoàn hàng đã bị từ chối',
+      isCompleted: true,
+      isActive: false
+    }];
+  }
+
+  // Normal flow - 4 milestones
+  const normalMilestones = [
+    {
+      key: 'requested',
+      title: 'Yêu cầu hoàn hàng',
+      icon: '📋',
+      description: 'Khách hàng đã gửi yêu cầu hoàn hàng',
+      priority: 1
+    },
+    {
+      key: 'approved',
+      title: 'Đã chấp thuận',
+      icon: '✅',
+      description: 'Yêu cầu hoàn hàng đã được phê duyệt',
+      priority: 2
+    },
+    {
+      key: 'processing',
+      title: 'Đang xử lý',
+      icon: '⚙️',
+      description: 'Đang xử lý hoàn hàng',
+      priority: 3
+    },
+    {
+      key: 'returned',
+      title: 'Đã trả hàng',
+      icon: '📦',
+      description: 'Hàng hóa đã được trả về',
+      priority: 4
+    }
+  ];
+
+  // Determine current priority based on status
+  let currentPriority = 1;
+  switch (returnStatus?.toLowerCase()) {
+    case 'pending':
+    case 'yêu cầu':
+      currentPriority = 1;
+      break;
+    case 'approved':
+    case 'đã chấp thuận':
+      currentPriority = 2;
+      break;
+    case 'processing':
+    case 'đang xử lý':
+      currentPriority = 3;
+      break;
+    case 'returned':
+    case 'completed':
+    case 'đã trả hàng':
+    case 'đã hoàn lại':
+      currentPriority = 5; 
+      break;
+    default:
+      currentPriority = 1;
+  }
+
+  return normalMilestones.map(milestone => ({
+    ...milestone,
+    isCompleted: milestone.priority < currentPriority, // Tất cả các bước nhỏ hơn currentPriority
+    isActive: milestone.priority === currentPriority && currentPriority <= 4, // Chỉ active khi chưa hoàn thành hết
+    isPending: milestone.priority > currentPriority
+  }));
+};
+
+const [processing, setProcessing] = React.useState(false);
+
+const getNextStatus = (currentStatus) => {
+  const statusFlow = [
+    'Đã yêu cầu',      // Requested
+    'Đã chấp thuận',  // Approved
+    'Đang xử lý',     // Processing
+    'Đã hoàn lại'     // Returned
+  ];
+  const currentIndex = statusFlow.indexOf(currentStatus);
+  if (currentIndex < 0 || currentIndex >= statusFlow.length - 1) {
+    return null;
+  }
+  return statusFlow[currentIndex + 1];
+};
+
+const handleUpdateStatus = () => {
+  if (!currentReturnOrder || !currentReturnOrder.return_requests?.length) return;
+
+  const currentStatus = currentReturnOrder.return_requests[0].status;
+  const nextStatus = getNextStatus(currentStatus);
+
+  if (!nextStatus) {
+    Swal.fire({
+      icon: 'info',
+      title: 'Thông báo',
+      text: 'Không còn trạng thái tiếp theo để cập nhật.',
+    });
+    return;
+  }
+
+  Swal.fire({
+    title: 'Xác nhận thay đổi trạng thái',
+    text: `Bạn muốn chuyển từ trạng thái "${currentStatus}" sang trạng thái "${nextStatus}" không?`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Đồng ý',
+    cancelButtonText: 'Hủy',
+    confirmButtonColor: '#007aff',
+    cancelButtonColor: '#dc3545'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      setProcessing(true);
+
+      dispatch(updateReturnOrderStatus({
+        orderId: currentReturnOrder.order_id,
+        status: nextStatus
+      }))
+        .unwrap()
+        .then(() => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Thành công',
+            text: 'Cập nhật trạng thái yêu cầu hoàn hàng thành công',
+            timer: 2000,
+            showConfirmButton: false
+          });
+          dispatch(fetchReturnOrderById(returnId)); // Load lại dữ liệu mới
+        })
+        .catch((error) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: error || 'Có lỗi xảy ra khi cập nhật trạng thái',
+          });
+        })
+        .finally(() => {
+          setProcessing(false);
+        });
+    }
+  });
+};
+
+
+  const handleCancelOrder = async () => {
+    if (!currentReturnOrder?.order_id) return;
+
+ if (currentReturnOrder?.order_status !== "Đã chấp thuận") {
+      alert("Chỉ có thể hủy đơn hàng khi trạng thái là 'Đã chấp thuận'.");
+      return;
+    }
+
+    try {
+      await dispatch(updateReturnOrderStatus({
+        orderId: currentReturnOrder.order_id,
+        status: "rejected",
+      })).unwrap();
+      alert("Đơn hàng đã được hủy thành công.");
+      dispatch(fetchReturnOrderById(returnId)); // Refresh data
+    } catch (error) {
+      console.error("Chi tiết lỗi API:", error);
+      alert("Lỗi khi hủy đơn hàng: " + (error.message || "Không xác định"));
+    }
+  };
+
   if (loading) return <Loading />;
   if (error) return <div className="error">Lỗi: {error}</div>;
   if (!currentReturnOrder) return <div className="error">Không tìm thấy thông tin đơn hoàn hàng.</div>;
@@ -43,12 +217,16 @@ const DetailOrderReturn = () => {
     total_amount,
     order_status,
     payment_status,
-   payment_method_description,
-   payment_method_name,
+    payment_method_name,
+    payment_method_description,
     order_created_at,
     products,
     return_requests,
   } = currentReturnOrder;
+
+  const currentReturnStatus = return_requests?.[0]?.status || 'pending';
+  
+  const statusMilestones = getStatusMilestones(currentReturnStatus);
 
   return (
     <div className="detail-order-return-container">
@@ -99,7 +277,8 @@ const DetailOrderReturn = () => {
               <div className="info-item">
                 <span className="info-label">Phương thức thanh toán</span>
                 <div className="payment-method">
-                 {payment_method_name} - {payment_method_description}
+                  <span className="payment-icon">🇻🇳</span>
+                  {payment_method_name}( {payment_method_description })
                 </div>
               </div>
               
@@ -155,52 +334,113 @@ const DetailOrderReturn = () => {
           </div>
 
           {/* Return Request Details */}
-          <div className="info-card">
-            <div className="card-header">
-              <div className="header-left">
-                <span className="card-icon">🔄</span>
-                <h2 className="card-title">Chi tiết yêu cầu trả hàng</h2>
-              </div>
-            </div>
-            
-            {return_requests && return_requests.map((request, index) => (
-              <div key={index} className="return-request-card">
-                <div className="request-header">
-                  <span className="request-number">#{index + 3}</span>
-                  <span className="request-date">{formatDate(request.created_at)}</span>
-                </div>
-                
-                <div className="request-grid">
-                  <div className="info-item">
-                    <span className="info-label">Ngày yêu cầu</span>
-                    <span className="info-value">{formatDate(request.created_at)}</span>
-                  </div>
-                  
-                  <div className="info-item">
-                    <span className="info-label">Số tiền hoàn lại</span>
-                    <span className="info-value refund-amount">{formatCurrency(request.refund_amount)}</span>
-                  </div>
-                </div>
-                
-                <div className="request-reason">
-                  <span className="reason-icon">⚠️</span>
-                  Lý do: {request.reason}
-                </div>
-                
-                <div className="request-status">
-                  <span className="status-completed">
-                    <span className="status-icon">✅</span>
-                    Đã hoàn lại
-                  </span>
-                </div>
-              </div>
-            ))}
+        <div className="info-card">
+  <div className="card-header">
+    <div className="header-left">
+      <span className="card-icon">🔄</span>
+      <h2 className="card-title">Chi tiết yêu cầu trả hàng</h2>
+    </div>
+  </div>
+  
+  {return_requests && return_requests.map((request, index) => (
+    <div key={index} className="return-request-card">
+      <div className="request-header">
+        <span className="request-number">#{index + 3}</span>
+        <span className="request-date">{request.created_at}</span>
+      </div>
+      
+      <div className="request-grid">
+        <div className="info-item">
+          <span className="info-label">Ngày yêu cầu</span>
+          <span className="info-value">{request.created_at}</span>
+        </div>
+        
+        <div className="info-item">
+          <span className="info-label">Số tiền hoàn lại</span>
+          <span className="info-value refund-amount">{formatCurrency(request.refund_amount)}</span>
+        </div>
+      </div>
+      
+      <div className="request-reason">
+        <span className="reason-icon">⚠️</span>
+        Lý do: {request.reason}
+      </div>
+      <div className="request-reason">
+        <span className="reason-icon">⚠️</span>
+        Lý do: {request.return_reason_other}
+      </div>
+      {/* Hiển thị hình ảnh - FIXED */}
+      {request.upload_url && (
+        <div className="request-images">
+          <div className="images-label">
+            <span className="images-icon">📸</span>
+            Hình ảnh đính kèm:
           </div>
+          <div className="images-grid">
+            {(() => {
+              try {
+                // Nếu upload_url là JSON string
+                if (typeof request.upload_url === 'string') {
+                  const urls = JSON.parse(request.upload_url);
+                  return Array.isArray(urls) ? urls.map((url, idx) => (
+                    <img 
+                      key={idx} 
+                      src={url} 
+                      alt={`Hình ảnh hoàn hàng ${idx + 1}`}
+                      className="return-image"
+                      onClick={() => window.open(url, '_blank')}
+                    />
+                  )) : (
+                    <img 
+                      src={urls} 
+                      alt="Hình ảnh hoàn hàng"
+                      className="return-image"
+                      onClick={() => window.open(urls, '_blank')}
+                    />
+                  );
+                }
+                // Nếu upload_url là array
+                else if (Array.isArray(request.upload_url)) {
+                  return request.upload_url.map((url, idx) => (
+                    <img 
+                      key={idx} 
+                      src={url} 
+                      alt={`Hình ảnh hoàn hàng ${idx + 1}`}
+                      className="return-image"
+                      onClick={() => window.open(url, '_blank')}
+                    />
+                  ));
+                }
+                // Nếu upload_url là string URL đơn
+                else {
+                  return (
+                    <img 
+                      src={request.upload_url} 
+                      alt="Hình ảnh hoàn hàng"
+                      className="return-image"
+                      onClick={() => window.open(request.upload_url, '_blank')}
+                    />
+                  );
+                }
+              } catch (error) {
+                console.error('Error parsing upload_url:', error);
+                return <div className="error-message">Không thể tải hình ảnh</div>;
+              }
+            })()}
+          </div>
+        </div>
+      )}
+      
+      
+    </div>
+  ))}
+</div>
+
         </div>
 
         {/* Right Column */}
         <div className="right-column">
-          {/* Processing History */}
+          {/* Processing History - Updated logic */}
           <div className="info-card">
             <div className="card-header">
               <div className="header-left">
@@ -209,42 +449,42 @@ const DetailOrderReturn = () => {
               </div>
             </div>
             
-            <div className="history-section">
-              <div className="history-item completed">
-                <div className="history-icon">
-                  <span>✓</span>
-                </div>
-                <div className="history-content">
-                  <div className="history-title">{return_requests?.[0]?.status}</div>
-                  <div className="history-time">{order_created_at}</div>
-                  <div className="history-amount">Số tiền: {formatCurrency(total_amount)}</div>
-                </div>
-              </div>
-              
-              <div className="history-item completed">
-                <div className="history-icon">
-                  <span>✓</span>
-                </div>
-                <div className="history-content">
-                  <div className="history-title">Đã trả hàng</div>
-                  <div className="history-time">{order_created_at}</div>
-                  <div className="history-reason">
-                    Lý do: {return_requests?.[0]?.reason}
-                  </div>
-                </div>
-              </div>
-              
-              <div className="history-item pending">
-                <div className="history-icon">
-                  <span>📋</span>
-                </div>
-                <div className="history-content">
-                  <div className="history-title">Đặt hàng thành công</div>
-                  <div className="history-time">{order_created_at}</div>
-                  <div className="history-order-code">Mã đơn: {order_code}</div>
-                </div>
-              </div>
-            </div>
+           <div className="history-section">
+  {statusMilestones.map((milestone, index) => (
+    <div key={milestone.key} className={`history-item ${
+      milestone.isCompleted ? 'completed' : 
+      milestone.isActive ? 'active' : 'pending'
+    } ${milestone.key === 'rejected' ? 'rejected' : ''}`}>
+      <div className="history-icon">
+        <span>
+          {milestone.isCompleted ? '✓' : milestone.icon}
+        </span>
+      </div>
+      <div className="history-content">
+        <div className="history-title">{milestone.title}</div>
+        <div className="history-time">
+          
+        </div>
+        <div className="history-description">
+          {milestone.description}
+        </div>
+        {milestone.key === 'returned' && milestone.isCompleted && (
+          <div className="history-amount">
+            Số tiền hoàn: {formatCurrency(total_amount)}
+          </div>
+        )}
+        {milestone.key === 'rejected' && return_requests?.[0]?.reason && (
+          <div className="history-reason">
+            Lý do từ chối: {return_requests[0].reason}
+          </div>
+        )}
+      </div>
+    </div>
+  ))}
+  
+ 
+</div>
+
           </div>
 
           {/* Action Buttons */}
@@ -257,14 +497,13 @@ const DetailOrderReturn = () => {
             </div>
             
             <div className="action-buttons">
-               <button className="action-button button-orange">
-                <span className="button-icon">📞</span>
-                Liên hệ hỗ trợ
+              <button className="action-button button-primary" onClick={handleUpdateStatus}>
+                Cập nhật trạng thái đơn hàng a
               </button>
-              <button className="action-button button-orange">
-                <span className="button-icon">📞</span>
-                Liên hệ hỗ trợ
+              <button className="action-button button-success" onClick={handleCancelOrder}>
+                Huỷ đơn hàng
               </button>
+              
             </div>
           </div>
 
@@ -286,7 +525,6 @@ const DetailOrderReturn = () => {
                 <span className="summary-label">Số tiền hoàn:</span>
                 <span className="summary-value highlight">{formatCurrency(total_amount)}</span>
               </div>
-           
               <div className="summary-row final">
                 <span className="summary-label">Thực nhận:</span>
                 <span className="summary-value highlight final-amount">{formatCurrency(total_amount)}</span>
