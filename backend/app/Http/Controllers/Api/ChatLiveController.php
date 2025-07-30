@@ -52,15 +52,21 @@ class ChatLiveController extends Controller
                 $files = [$files];
             }
             foreach ($files as $file) {
-                $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
-                    'folder' => 'chat_attachments'
-                ]);
-                if (isset($result['secure_url'])) {
-                    SupportChatAttachment::create([
-                        'chat_id' => $chat->chat_id,
-                        'file_url' => $result['secure_url'],
-                        'file_type' => $file->getClientMimeType(),
+                try {
+                    $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
+                        'folder' => 'chat_attachments'
                     ]);
+                    if (isset($result['secure_url'])) {
+                        SupportChatAttachment::create([
+                            'chat_id' => $chat->chat_id,
+                            'file_url' => $result['secure_url'],
+                            'file_type' => $file->getClientMimeType(),
+                        ]);
+                    } else {
+                        return response()->json(['message' => 'Upload file thất bại!'], 500);
+                    }
+                } catch (\Exception $e) {
+                    return response()->json(['message' => 'Upload file thất bại!', 'error' => $e->getMessage()], 500);
                 }
             }
         }
@@ -121,15 +127,21 @@ class ChatLiveController extends Controller
                 $files = [$files];
             }
             foreach ($files as $file) {
-                $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
-                    'folder' => 'chat_attachments'
-                ]);
-                if (isset($result['secure_url'])) {
-                    SupportChatAttachment::create([
-                        'chat_id' => $chat->chat_id,
-                        'file_url' => $result['secure_url'],
-                        'file_type' => $file->getClientMimeType(),
+                try {
+                    $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
+                        'folder' => 'chat_attachments'
                     ]);
+                    if (isset($result['secure_url'])) {
+                        SupportChatAttachment::create([
+                            'chat_id' => $chat->chat_id,
+                            'file_url' => $result['secure_url'],
+                            'file_type' => $file->getClientMimeType(),
+                        ]);
+                    } else {
+                        return response()->json(['message' => 'Upload file thất bại!'], 500);
+                    }
+                } catch (\Exception $e) {
+                    return response()->json(['message' => 'Upload file thất bại!', 'error' => $e->getMessage()], 500);
                 }
             }
         }
