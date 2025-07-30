@@ -18,23 +18,25 @@ class ChatLiveController extends Controller
     public function sendMessage(Request $request)
     {
         $user = Auth::user();
-
+    
         if ($user->role !== 'customer') {
             return response()->json(['message' => 'Bạn không có quyền gửi tin nhắn.'], 403);
         }
-
-        // Kiểm tra attachments có thể là file hoặc mảng
-        $isMultiple = is_array($request->attachments);
+    
+        // Validate: Cho phép gửi message, ảnh, hoặc cả hai. Nếu cả hai đều rỗng thì báo lỗi.
         $request->validate([
             'message' => 'nullable|string',
-            'attachments' => 'nullable' . ($isMultiple ? '|array' : '|file'),
+            'attachments' => 'nullable',
             'attachments.*' => 'file|mimes:jpg,jpeg,png,gif,svg,pdf,docx,txt|max:4096'
         ]);
-
-        if (!$request->message && !$request->hasFile('attachments')) {
-            return response()->json(['message' => 'Tin nhắn không được để trống.'], 422);
+    
+        if (
+            (empty($request->message) || trim($request->message) === '')
+            && !$request->hasFile('attachments')
+        ) {
+            return response()->json(['message' => 'Tin nhắn hoặc ảnh không được để trống.'], 422);
         }
-
+    
         $chat = SupportChat::create([
             'customer_id' => $user->user_id,
             'sender' => 'customer',
@@ -42,27 +44,33 @@ class ChatLiveController extends Controller
             'sent_at' => now(),
             'is_read' => false,
         ]);
-
+    
         if ($request->hasFile('attachments')) {
             $cloudinary = app(Cloudinary::class);
-
-            $files = $isMultiple ? $request->file('attachments') : [$request->file('attachments')];
-
+            $files = $request->file('attachments');
+            if (!is_array($files)) {
+                $files = [$files];
+            }
             foreach ($files as $file) {
-                $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
-                    'folder' => 'chat_attachments'
-                ]);
-
-                if (isset($result['secure_url'])) {
-                    SupportChatAttachment::create([
-                        'chat_id' => $chat->chat_id,
-                        'file_url' => $result['secure_url'],
-                        'file_type' => $file->getClientMimeType(),
+                try {
+                    $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
+                        'folder' => 'chat_attachments'
                     ]);
+                    if (isset($result['secure_url'])) {
+                        SupportChatAttachment::create([
+                            'chat_id' => $chat->chat_id,
+                            'file_url' => $result['secure_url'],
+                            'file_type' => $file->getClientMimeType(),
+                        ]);
+                    } else {
+                        return response()->json(['message' => 'Upload file thất bại!'], 500);
+                    }
+                } catch (\Exception $e) {
+                    return response()->json(['message' => 'Upload file thất bại!', 'error' => $e->getMessage()], 500);
                 }
             }
         }
-
+    
         $staffList = User::whereIn('role', ['admin', 'sale'])->pluck('user_id');
         foreach ($staffList as $staffId) {
             SupportChatNotification::create([
@@ -71,9 +79,9 @@ class ChatLiveController extends Controller
                 'is_read' => false,
             ]);
         }
-
+    
         broadcast(new SupportChatSent($chat->load('attachments')))->toOthers();
-
+    
         return response()->json([
             'success' => true,
             'chat' => $chat->load('attachments')
@@ -84,21 +92,24 @@ class ChatLiveController extends Controller
     //  (admin/sale) trả lời theo customer_id
     public function replyToCustomer(Request $request)
     {
-        $request->validate([
-            'customer_id' => 'required|exists:users,user_id',
-            'message' => 'nullable|string',
-            'attachments' => 'nullable',
-            'attachments.*' => 'file|mimes:jpg,jpeg,png,gif,svg,pdf,docx,txt|max:4096'
-        ]);
-
         $staff = Auth::user();
         if (!in_array($staff->role, ['admin', 'sale'])) {
             return response()->json(['message' => 'Bạn không có quyền trả lời.'], 403);
         }
 
-        // Nếu không có message và không có file thì trả về lỗi
-        if (!$request->message && !$request->hasFile('attachments')) {
-            return response()->json(['message' => 'Tin nhắn không được để trống.'], 422);
+        $request->validate([
+            'customer_id' => 'required|exists:users,user_id',
+            'message' => 'nullable|string',
+            // Cho phép gửi 1 file hoặc nhiều file
+            'attachments' => 'nullable',
+            'attachments.*' => 'file|mimes:jpg,jpeg,png,gif,svg,pdf,docx,txt|max:4096',
+        ]);
+
+        if (
+            (empty($request->message) || trim($request->message) === '')
+            && !$request->hasFile('attachments')
+        ) {
+            return response()->json(['message' => 'Tin nhắn hoặc ảnh không được để trống.'], 422);
         }
 
         $chat = SupportChat::create([
@@ -110,27 +121,35 @@ class ChatLiveController extends Controller
             'is_read' => false,
         ]);
 
-        // Xử lý file đính kèm nếu có
         if ($request->hasFile('attachments')) {
             $cloudinary = app(Cloudinary::class);
-
             $files = $request->file('attachments');
-            // Nếu là 1 file đơn, chuyển thành mảng
             if (!is_array($files)) {
                 $files = [$files];
             }
-
             foreach ($files as $file) {
-                $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
-                    'folder' => 'chat_attachments'
+                // Validate từng file nếu cần
+                $validator = \Validator::make(['file' => $file], [
+                    'file' => 'file|mimes:jpg,jpeg,png,gif,svg,pdf,docx,txt|max:4096'
                 ]);
-
-                if (isset($result['secure_url'])) {
-                    SupportChatAttachment::create([
-                        'chat_id' => $chat->chat_id,
-                        'file_url' => $result['secure_url'],
-                        'file_type' => $file->getClientMimeType(),
+                if ($validator->fails()) {
+                    return response()->json(['message' => 'File không hợp lệ!'], 422);
+                }
+                try {
+                    $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
+                        'folder' => 'chat_attachments'
                     ]);
+                    if (isset($result['secure_url'])) {
+                        SupportChatAttachment::create([
+                            'chat_id' => $chat->chat_id,
+                            'file_url' => $result['secure_url'],
+                            'file_type' => $file->getClientMimeType(),
+                        ]);
+                    } else {
+                        return response()->json(['message' => 'Upload file thất bại!'], 500);
+                    }
+                } catch (\Exception $e) {
+                    return response()->json(['message' => 'Upload file thất bại!', 'error' => $e->getMessage()], 500);
                 }
             }
         }
@@ -145,7 +164,7 @@ class ChatLiveController extends Controller
 
         return response()->json([
             'success' => true,
-            'chat' => $chat,
+            'chat' => $chat->load('attachments'),
         ]);
     }
 

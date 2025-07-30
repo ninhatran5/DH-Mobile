@@ -14,8 +14,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->text('reason')->nullable();
             $table->json('upload_url')->nullable();
-            $table->text('return_reason_other')->nullable()->after('reason')
-                ->comment('Lý do khác khi người dùng chọn lý do tùy chỉnh');
+            $table->text('return_reason_other')->nullable();
             $table->enum('status', ['Đã yêu cầu', 'Đã chấp thuận', 'Đã từ chối', 'Đang xử lý', 'Đã hoàn lại', 'Đã hủy'])->default('Đã yêu cầu');
             $table->decimal('refund_amount', 11, 2)->nullable();
             $table->dateTime('created_at')->useCurrent();

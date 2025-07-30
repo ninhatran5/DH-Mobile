@@ -65,7 +65,7 @@ export default function AdminChat() {
           customer_id: profile?.user?.id,
           message: currentMessage,
           sender: "customer",
-          images_base64: currentImages,
+          attachments: currentImages,
         })
       ).unwrap();
 
