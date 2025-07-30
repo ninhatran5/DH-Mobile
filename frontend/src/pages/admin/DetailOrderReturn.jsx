@@ -529,7 +529,7 @@ const handleUpdateStatus = () => {
             <div className="action-buttons">
 
               <button className="action-button button-primary" onClick={handleUpdateStatus}>
-                Cập nhật trạng thái đơn hàng a
+                Cập nhật trạng thái đơn hàng 
               </button>
               <button className="action-button button-success" onClick={handleCancelOrder}>
                 Huỷ đơn hàng

@@ -145,9 +145,13 @@ const ListUser = () => {
               </thead>
               <tbody>
                 {currentUsers.length > 0 ? (
-                  currentUsers.map((user) => (
-                    <tr key={user.user_id} className="adminuser-row">
-                      <td className="adminuser-text-center">{user.user_id}</td>
+                currentUsers.map((user,index) => (
+  <tr key={user.user_id} className="adminuser-row">
+  <td className="adminuser-text-center">
+  {(currentPage - 1) * usersPerPage + index + 1}
+</td>
+
+
                       <td className="adminuser-text-center">
                         <img
                           src={
