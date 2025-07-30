@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { axiosUser } from "../../utils/axiosConfig";
+import dataURLtoFile from "../../utils/dataURLtoFile";
 
 const initialState = {
   messages: [],
@@ -11,13 +12,23 @@ const initialState = {
 
 export const sendChatMessage = createAsyncThunk(
   "chatLive/sendMessage",
-  async ({ customer_id, message, sender }, thunkAPI) => {
+  async ({ customer_id, message, sender, attachments }, thunkAPI) => {
     try {
-      const response = await axiosUser.post("/support-chats/send", {
-        customer_id,
-        message,
-        sender,
+      const formData = new FormData();
+      formData.append("customer_id", customer_id);
+      formData.append("message", message);
+      formData.append("sender", sender);
+      attachments.forEach((imgBase64, i) => {
+        const file = dataURLtoFile(imgBase64, `attachment-${i}.png`);
+        formData.append("attachments[]", file);
       });
+
+      const response = await axiosUser.post("/support-chats/send", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -26,6 +37,7 @@ export const sendChatMessage = createAsyncThunk(
     }
   }
 );
+
 
 export const fetchChatMessage = createAsyncThunk(
   "chatLive/fetchChatMessage",
