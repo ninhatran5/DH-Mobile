@@ -536,16 +536,11 @@ class OrderController extends Controller
                     $order->status = 'Đã trả hàng';
                     $order->payment_status = 'Đã hoàn tiền';
 
-
                     // 3. Xử lý hoàn tiền vào ví
                     $wallet = Wallet::firstOrCreate(['user_id' => $userId], ['balance' => 0]);
                     $wallet->balance += $refundAmount;
                     $wallet->save();
-                    event(new ReturnRequestUpdated($order->order_id, [
-                        'status' => $order->status,
-                        'payment_status' => $order->payment_status,
-                        'updated_at' => now()
-                    ]));
+
                     // 4. Ghi log giao dịch ví
                     WalletTransaction::create([
                         'wallet_id' => $wallet->wallet_id,
@@ -559,7 +554,17 @@ class OrderController extends Controller
                 }
 
                 $order->save();
+
+                // ✅ Gọi sự kiện realtime ở đây cho mọi trạng thái
+                event(new ReturnRequestUpdated($order->order_id, [
+                    'status' => $order->status,
+                    'payment_status' => $order->payment_status,
+                    'return_status' => $newStatus,
+                    'refund_amount' => $newStatus === 'Đã hoàn lại' ? $refundAmount : 0,
+                    'updated_at' => now(),
+                ]));
             }
+
 
             DB::commit();
 
@@ -743,7 +748,8 @@ class OrderController extends Controller
     }
 
     // Chi tiết đơn hàng hoàn trả (admin)
-    public function getReturnOrderDetail($order_id){
+    public function getReturnOrderDetail($order_id)
+    {
         //Lấy đơn hàng với các quan hệ liên quan
         $order = Orders::with([
             'user',
