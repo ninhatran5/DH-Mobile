@@ -571,7 +571,8 @@
     "return-requested": "Đã yêu cầu trả hàng",
     "return-approved": "Đã chấp thuận",
     "return-processing": "Đang xử lý",
-    "return-refund": "Đã trả hàng"
+    "return-refund": "Đã trả hàng",
+    "return-rejected": "Đã từ chối"
   },
   "review": {
     "title": "Đánh giá sản phẩm",

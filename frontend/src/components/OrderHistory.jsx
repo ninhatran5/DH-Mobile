@@ -51,7 +51,9 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
       if (returnData.data) {
         setOrderData((prev) => ({
           ...prev,
-          status: returnData.data.status || prev.status,
+          status: returnData.data.status,
+          payment_status: returnData.data.payment_status, 
+          return_status: returnData.data.return_status,
         }));
       }
     },
@@ -148,6 +150,8 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
         return "order-status-return-approved";
       case "đang xử lý":
         return "order-status-return-processing";
+      case "đã từ chối":
+        return "order-status-return-rejected";
       default:
         return "order-status-default";
     }
