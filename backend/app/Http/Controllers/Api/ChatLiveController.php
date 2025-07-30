@@ -108,7 +108,7 @@ class ChatLiveController extends Controller
     
         // Nếu cả message và attachments đều không có thì báo lỗi
         if (
-            (empty($request->message) || trim($request->message) === '') // message rỗng hoặc chỉ có khoảng trắng
+            (empty($request->message) || trim($request->message) === '')
             && !$request->hasFile('attachments')
         ) {
             return response()->json(['message' => 'Tin nhắn hoặc ảnh không được để trống.'], 422);
