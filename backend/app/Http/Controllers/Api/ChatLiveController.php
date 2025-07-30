@@ -96,21 +96,22 @@ class ChatLiveController extends Controller
         if (!in_array($staff->role, ['admin', 'sale'])) {
             return response()->json(['message' => 'Bạn không có quyền trả lời.'], 403);
         }
-    
+
         $request->validate([
             'customer_id' => 'required|exists:users,user_id',
             'message' => 'nullable|string',
+            // Cho phép gửi 1 file hoặc nhiều file
             'attachments' => 'nullable',
-            'attachments.*' => 'file|mimes:jpg,jpeg,png,gif,svg,pdf,docx,txt|max:4096'
+            'attachments.*' => 'file|mimes:jpg,jpeg,png,gif,svg,pdf,docx,txt|max:4096',
         ]);
-    
+
         if (
             (empty($request->message) || trim($request->message) === '')
             && !$request->hasFile('attachments')
         ) {
             return response()->json(['message' => 'Tin nhắn hoặc ảnh không được để trống.'], 422);
         }
-    
+
         $chat = SupportChat::create([
             'customer_id' => $request->customer_id,
             'staff_id' => $staff->user_id,
@@ -119,7 +120,7 @@ class ChatLiveController extends Controller
             'sent_at' => now(),
             'is_read' => false,
         ]);
-    
+
         if ($request->hasFile('attachments')) {
             $cloudinary = app(Cloudinary::class);
             $files = $request->file('attachments');
@@ -127,6 +128,13 @@ class ChatLiveController extends Controller
                 $files = [$files];
             }
             foreach ($files as $file) {
+                // Validate từng file nếu cần
+                $validator = \Validator::make(['file' => $file], [
+                    'file' => 'file|mimes:jpg,jpeg,png,gif,svg,pdf,docx,txt|max:4096'
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(['message' => 'File không hợp lệ!'], 422);
+                }
                 try {
                     $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
                         'folder' => 'chat_attachments'
@@ -145,15 +153,15 @@ class ChatLiveController extends Controller
                 }
             }
         }
-    
+
         SupportChatNotification::create([
             'chat_id' => $chat->chat_id,
             'user_id' => $request->customer_id,
             'is_read' => false,
         ]);
-    
+
         broadcast(new SupportChatSent($chat->load('attachments')))->toOthers();
-    
+
         return response()->json([
             'success' => true,
             'chat' => $chat->load('attachments'),
