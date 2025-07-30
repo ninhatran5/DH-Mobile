@@ -19,7 +19,7 @@ const OrderTable = () => {
   const [tab, setTab] = useState("all");
   const [showFilter, setShowFilter] = useState(false);
 
-  const TABS = [
+  const Tabs = [
     { label: t("orderHistory.all"), value: "all" },
     { label: t("orderHistory.waitingConfirm"), value: "chờ xác nhận" },
     { label: t("orderHistory.confirmed"), value: "đã xác nhận" },
@@ -27,7 +27,16 @@ const OrderTable = () => {
     { label: t("orderHistory.delivered"), value: "đã giao hàng" },
     { label: t("orderHistory.completed"), value: "hoàn thành" },
     { label: t("orderHistory.cancelled"), value: "đã hủy" },
-    { label: t("orderHistory.refunded"), value: "đã hoàn tiền" },
+    {
+      label: t("orderHistory.refunded"),
+      value: [
+        "yêu cầu hoàn hàng",
+        "đã chấp thuận",
+        "đang xử lý",
+        "đã trả hàng",
+        "đã từ chối"
+      ]
+    },
   ];
 
   const handleCancelOrder = async (orderId) => {
@@ -63,11 +72,18 @@ const OrderTable = () => {
     }
   };
 
-  const filteredOrders = (orders?.orders || []).filter((order) =>
-    tab === "all"
-      ? true
-      : order.status && order.status.trim().toLowerCase() === tab
-  );
+  const filteredOrders = (orders?.orders || []).filter((order) => {
+    if (tab === "all") return true;
+    const status = order.status && order.status.trim().toLowerCase();
+    const tabObj = Tabs.find((t) =>
+      Array.isArray(t.value) ? t.value.includes(status) : t.value === tab
+    );
+    if (!tabObj) return false;
+    if (Array.isArray(tabObj.value)) {
+      return tabObj.value.includes(status);
+    }
+    return status === tab;
+  });
 
   const userId = localStorage.getItem("userId");
 
@@ -139,17 +155,20 @@ const OrderTable = () => {
                   {t("orderHistory.statusTitle")}:
                 </div>
                 <div className="order-table-filter-group">
-                  {TABS.map((t) => (
-                    <button
-                      key={t.value}
-                      className={`order-table-filter-btn${
-                        tab === t.value ? " active" : ""
-                      }`}
-                      onClick={() => setTab(t.value)}
-                    >
-                      {t.label}
-                    </button>
-                  ))}
+                  {Tabs.map((t) => {
+                    const isActive = Array.isArray(t.value)
+                      ? t.value.includes(tab)
+                      : tab === t.value;
+                    return (
+                      <button
+                        key={Array.isArray(t.value) ? t.value.join(',') : t.value}
+                        className={`order-table-filter-btn${isActive ? " active" : ""}`}
+                        onClick={() => setTab(Array.isArray(t.value) ? t.value[0] : t.value)}
+                      >
+                        {t.label}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
