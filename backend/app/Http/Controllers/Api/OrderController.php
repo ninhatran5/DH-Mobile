@@ -616,6 +616,21 @@ class OrderController extends Controller
         $order->status = 'Đã hủy';
         $order->cancel_reason = $request->cancel_reason; // sử dụng trường có sẵn
         $order->save();
+        // Nếu đã trả bằng ví thì hoàn tiền lại vào ví
+        if ($order->paid_by_wallet > 0) {
+            $wallet = Wallet::where('user_id', $order->user_id)->first();
+            if ($wallet) {
+                $wallet->balance += $order->paid_by_wallet;
+                $wallet->save();
+
+                WalletTransaction::create([
+                    'wallet_id' => $wallet->wallet_id,
+                    'type' => 'hoàn tiền',
+                    'amount' => $order->paid_by_wallet,
+                    'note' => 'Hoàn tiền do hủy đơn hàng #' . $order->order_code
+                ]);
+            }
+        }
         // Broadcast event for realtime update
         event(new OrderUpdated($order, $order->user_id));
         return response()->json([
@@ -999,6 +1014,22 @@ class OrderController extends Controller
         $order->status = 'Đã hủy';
         $order->cancel_reason = $request->cancel_reason;
         $order->save();
+
+        // Nếu đã trả bằng ví thì hoàn tiền lại vào ví
+        if ($order->paid_by_wallet > 0) {
+            $wallet = Wallet::where('user_id', $order->user_id)->first();
+            if ($wallet) {
+                $wallet->balance += $order->paid_by_wallet;
+                $wallet->save();
+
+                WalletTransaction::create([
+                    'wallet_id' => $wallet->wallet_id,
+                    'type' => 'hoàn tiền',
+                    'amount' => $order->paid_by_wallet,
+                    'note' => 'Hoàn tiền do hủy đơn hàng #' . $order->order_code
+                ]);
+            }
+        }
         // Broadcast event for realtime update
         event(new OrderUpdated($order, $order->user_id));
 

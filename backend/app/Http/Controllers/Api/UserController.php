@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function getuser(Request $request)
+    public function getuser()
     {
-        $user = User::all();
+        $user = User::orderBy('created_at', 'desc')->get();
         return response()->json([
             'message' => 'Lấy thông tin người dùng thành công.',
             'user' =>  $user
