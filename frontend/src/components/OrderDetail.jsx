@@ -47,6 +47,7 @@ const OrderDetail = () => {
   const [refreshFlag, setRefreshFlag] = useState(0);
   const [hasReviewableProduct, setHasReviewableProduct] = useState(false);
   const [orderDetail, setOrderDetail] = useState(reduxOrderDetail);
+  console.log("🚀 ~ OrderDetail ~ orderDetail:", orderDetail)
 
   useEffect(() => {
     if (!id) return;
@@ -68,11 +69,13 @@ const OrderDetail = () => {
         cancel_reason: orderUpdate.cancel_reason,
       }));
     },
-    onReturnUpdate: (returnData) => {
+     onReturnUpdate: (returnData) => {
       if (returnData.data) {
         setOrderDetail((prev) => ({
           ...prev,
-          status: returnData.data.status || prev.status,
+          status: returnData.data.status,
+          payment_status: returnData.data.payment_status, 
+          return_status: returnData.data.return_status,
         }));
       }
     },
@@ -127,6 +130,8 @@ const OrderDetail = () => {
         return "order-status-refunded";
       case "đã trả hàng":
         return "order-status-return-refund";
+      case "đã từ chối":
+        return "order-status-return-rejected";  
       default:
         return "order-status-default";
     }
@@ -150,28 +155,42 @@ const OrderDetail = () => {
     "order-status-return-requested",
     "order-status-return-approved",
     "order-status-return-processing",
-    "order-status-return-refund"
+    "order-status-return-refund",
+    "order-status-return-rejected"
   ].includes(getStatusClass(orderDetail?.status));
 
+  const isRejected = getStatusClass(orderDetail?.status) === "order-status-return-rejected";
   const statusOrder = isCanceled
-    ? ["pending", "confirmed", "canceled"]
+    ? ["pending", "canceled"]
     : isReturn
-      ? [
-          "return-requested",
-          "return-approved",
-          "return-processing",
-          "return-refund"
-        ]
+      ? (
+          isRejected
+            ? [
+                "return-requested",
+                "return-rejected"
+              ]
+            : [
+                "return-requested",
+                "return-approved",
+                "return-processing",
+                "return-refund"
+              ]
+        )
       : ["pending", "confirmed", "shipping", "shipped", "delivered"];
 
   let currentStatusIndex;
   if (isReturn) {
-    const returnStatusMap = {
-      "order-status-return-requested": 0,
-      "order-status-return-approved": 1,
-      "order-status-return-processing": 2,
-      "order-status-return-refund": 3,
-    };
+    const returnStatusMap = isRejected
+      ? {
+          "order-status-return-requested": 0,
+          "order-status-return-rejected": 1,
+        }
+      : {
+          "order-status-return-requested": 0,
+          "order-status-return-approved": 1,
+          "order-status-return-processing": 2,
+          "order-status-return-refund": 3,
+        };
     currentStatusIndex = returnStatusMap[getStatusClass(orderDetail?.status)] ?? 0;
   } else {
     currentStatusIndex = statusOrder.indexOf(currentStatusKey);

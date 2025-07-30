@@ -154,3 +154,7 @@
   color: #ff5722; /* cam đậm hoặc chọn màu bạn thích */
   font-weight: bold;
 }
+.order-status-return-rejected {
+  color: #d32f2f; /* đỏ đậm */
+  font-weight: bold;
+}

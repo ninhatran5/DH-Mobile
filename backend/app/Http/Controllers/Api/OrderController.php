@@ -536,16 +536,11 @@ class OrderController extends Controller
                     $order->status = 'Đã trả hàng';
                     $order->payment_status = 'Đã hoàn tiền';
 
-
                     // 3. Xử lý hoàn tiền vào ví
                     $wallet = Wallet::firstOrCreate(['user_id' => $userId], ['balance' => 0]);
                     $wallet->balance += $refundAmount;
                     $wallet->save();
-                    event(new ReturnRequestUpdated($order->order_id, [
-                        'status' => $order->status,
-                        'payment_status' => $order->payment_status,
-                        'updated_at' => now()
-                    ]));
+
                     // 4. Ghi log giao dịch ví
                     WalletTransaction::create([
                         'wallet_id' => $wallet->wallet_id,
@@ -559,7 +554,17 @@ class OrderController extends Controller
                 }
 
                 $order->save();
+
+                // ✅ Gọi sự kiện realtime ở đây cho mọi trạng thái
+                event(new ReturnRequestUpdated($order->order_id, [
+                    'status' => $order->status,
+                    'payment_status' => $order->payment_status,
+                    'return_status' => $newStatus,
+                    'refund_amount' => $newStatus === 'Đã hoàn lại' ? $refundAmount : 0,
+                    'updated_at' => now(),
+                ]));
             }
+
 
             DB::commit();
 
@@ -611,6 +616,21 @@ class OrderController extends Controller
         $order->status = 'Đã hủy';
         $order->cancel_reason = $request->cancel_reason; // sử dụng trường có sẵn
         $order->save();
+        // Nếu đã trả bằng ví thì hoàn tiền lại vào ví
+        if ($order->paid_by_wallet > 0) {
+            $wallet = Wallet::where('user_id', $order->user_id)->first();
+            if ($wallet) {
+                $wallet->balance += $order->paid_by_wallet;
+                $wallet->save();
+
+                WalletTransaction::create([
+                    'wallet_id' => $wallet->wallet_id,
+                    'type' => 'hoàn tiền',
+                    'amount' => $order->paid_by_wallet,
+                    'note' => 'Hoàn tiền do hủy đơn hàng #' . $order->order_code
+                ]);
+            }
+        }
         // Broadcast event for realtime update
         event(new OrderUpdated($order, $order->user_id));
         return response()->json([
@@ -743,7 +763,8 @@ class OrderController extends Controller
     }
 
     // Chi tiết đơn hàng hoàn trả (admin)
-    public function getReturnOrderDetail($order_id){
+    public function getReturnOrderDetail($order_id)
+    {
         //Lấy đơn hàng với các quan hệ liên quan
         $order = Orders::with([
             'user',
@@ -824,7 +845,8 @@ class OrderController extends Controller
                 : null,
             'order_status' => $order->status,
             'payment_status' => $order->payment_status,
-            'payment_method' => optional($order->paymentMethods)->name,
+            'payment_method_name' => optional($order->paymentMethods)->name,
+            'payment_method_description' => optional($order->paymentMethods)->description,
             'cancel_reason' => $order->cancel_reason,
             'order_created_at' => $order->created_at
                 ? $order->created_at->format('d/m/Y H:i:s')
@@ -992,6 +1014,22 @@ class OrderController extends Controller
         $order->status = 'Đã hủy';
         $order->cancel_reason = $request->cancel_reason;
         $order->save();
+
+        // Nếu đã trả bằng ví thì hoàn tiền lại vào ví
+        if ($order->paid_by_wallet > 0) {
+            $wallet = Wallet::where('user_id', $order->user_id)->first();
+            if ($wallet) {
+                $wallet->balance += $order->paid_by_wallet;
+                $wallet->save();
+
+                WalletTransaction::create([
+                    'wallet_id' => $wallet->wallet_id,
+                    'type' => 'hoàn tiền',
+                    'amount' => $order->paid_by_wallet,
+                    'note' => 'Hoàn tiền do hủy đơn hàng #' . $order->order_code
+                ]);
+            }
+        }
         // Broadcast event for realtime update
         event(new OrderUpdated($order, $order->user_id));
 

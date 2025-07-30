@@ -1,0 +1,1028 @@
+/* DetailOrderReturn.css */
+.detail-order-return-container {
+  margin: 0 auto;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  font-size: 15px; /* Giảm từ 16px */
+}
+
+/* Header Section */
+.header-section {
+  background: white;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Nút quay lại đơn giản như trong hình */
+.back-button {
+  background: #ff5722; /* Màu cam giống trong hình */
+  border: none;
+  cursor: pointer;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  background: #e64a19;
+  transform: none; /* Bỏ hiệu ứng transform */
+}
+
+.back-button:active {
+  background: #d84315;
+}
+
+.page-title {
+  font-size: 20px; /* Giảm từ 22px */
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  flex: 1;
+  margin-left: 16px;
+}
+
+.header-status {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.status-returned, .status-refunded {
+  font-size: 14px; /* Giảm từ 15px */
+  font-weight: 500;
+  color: #6b7280;
+}
+
+/* Main Content Layout */
+.main-content {
+  display: flex;
+  gap: 24px;
+  padding: 24px;
+  align-items: flex-start;
+}
+
+.left-column {
+  flex: 2.2;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.right-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Card Styling */
+.info-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.card-icon {
+  font-size: 18px; /* Giảm từ 20px */
+}
+
+.card-title {
+  font-size: 17px; /* Giảm từ 18px */
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.order-code {
+  color: #6b7280;
+  font-size: 14px; /* Giảm từ 15px */
+  font-weight: 500;
+}
+
+/* Order Info Grid */
+.order-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 40px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-label {
+  font-size: 14px; /* Giảm từ 15px */
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 15px; /* Giảm từ 16px */
+  color: #111827;
+  font-weight: 500;
+}
+
+.info-value.highlight {
+  color: #dc2626;
+  font-weight: 600;
+  font-size: 17px; /* Giảm từ 18px */
+}
+
+.refund-amount {
+  color: #16a34a !important;
+  font-weight: 600;
+}
+
+/* Payment Method */
+.payment-method {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #dcfce7;
+  color: #166534;
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 13px; /* Giảm từ 14px */
+  font-weight: 500;
+  border: 1px solid #bbf7d0;
+  width: 270px;
+}
+
+.payment-icon {
+  font-size: 14px; /* Giảm từ 16px */
+}
+
+.status-returned-text {
+  color: #dc2626;
+  font-weight: 600;
+  font-size: 15px; /* Giảm từ 16px */
+}
+
+/* Product Card */
+.product-card {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fafafa;
+  margin-bottom: 16px;
+  transition: all 0.2s ease;
+}
+
+.product-card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.product-card:last-child {
+  margin-bottom: 0;
+}
+
+.product-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.product-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.product-name {
+  font-size: 16px; /* Giảm từ 17px */
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.4;
+}
+
+.product-specs {
+  display: flex;
+  gap: 20px;
+  font-size: 14px; /* Giảm từ 15px */
+  color: #6b7280;
+}
+
+.product-price-info {
+  display: flex;
+  gap: 20px;
+  font-size: 14px; /* Giảm từ 15px */
+  color: #374151;
+  margin-top: 4px;
+}
+
+.product-quantity, .product-unit-price {
+  font-weight: 500;
+}
+
+.product-total {
+  font-size: 16px; /* Giảm từ 17px */
+  font-weight: 600;
+  color: #dc2626;
+  text-align: right;
+  align-self: flex-start;
+  flex-shrink: 0;
+}
+
+/* Return Request Card */
+.return-request-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  background: #fafafa;
+  margin-bottom: 16px;
+}
+
+.return-request-card:last-child {
+  margin-bottom: 0;
+}
+
+.request-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.request-number {
+  font-size: 15px; /* Giảm từ 16px */
+  font-weight: 600;
+  color: #111827;
+}
+
+.request-date {
+  font-size: 13px; /* Giảm từ 14px */
+  color: #6b7280;
+}
+
+.request-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+  margin-bottom: 16px;
+}
+
+.request-reason {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #dc2626;
+  font-size: 14px; /* Giảm từ 15px */
+  font-weight: 500;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: #fef2f2;
+  border-radius: 6px;
+  border: 1px solid #fecaca;
+}
+
+.reason-icon {
+  color: #dc2626;
+  font-size: 14px; /* Giảm từ 16px */
+}
+
+.request-status {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.status-completed {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #16a34a;
+  font-size: 14px; /* Giảm từ 15px */
+  font-weight: 500;
+  background: #dcfce7;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #bbf7d0;
+}
+
+.status-icon {
+  color: #16a34a;
+  font-size: 14px; /* Giảm từ 16px */
+}
+
+/* History Section */
+.history-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.history-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 0;
+  position: relative;
+}
+
+.history-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 16px;
+  top: 48px;
+  bottom: -16px;
+  width: 2px;
+  background: #e5e7eb;
+}
+
+.history-item.completed .history-icon {
+  background: #dcfce7;
+  color: #16a34a;
+  border: 2px solid #bbf7d0;
+}
+
+.history-item.pending .history-icon {
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 2px solid #d1d5db;
+}
+
+.history-icon {
+  width: 32px; /* Giảm từ 36px */
+  height: 32px; /* Giảm từ 36px */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px; /* Giảm từ 16px */
+  font-weight: 600;
+  flex-shrink: 0;
+  z-index: 1;
+  position: relative;
+}
+
+.history-content {
+  flex: 1;
+  padding-top: 2px;
+}
+
+.history-title {
+  font-size: 15px; /* Giảm từ 16px */
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 4px 0;
+}
+
+.history-time {
+  font-size: 13px; /* Giảm từ 14px */
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.history-amount {
+  font-size: 13px; /* Giảm từ 14px */
+  font-weight: 600;
+  color: #16a34a;
+}
+
+.history-reason, .history-order-code {
+  font-size: 12px; /* Giảm từ 13px */
+  color: #6b7280;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.action-button {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px; /* Giảm từ 15px */
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.button-primary {
+  background: #2563eb;
+  color: white;
+}
+
+.button-primary:hover {
+  background: #1ecf39;
+  transform: translateY(-1px);
+}
+
+.button-success {
+  background: #ff0000;
+  color: white;
+}
+
+.button-success:hover {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+.button-orange {
+  background: #ea580c;
+  color: white;
+}
+
+.button-orange:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.button-icon {
+  font-size: 16px; /* Giảm từ 18px */
+}
+
+/* Summary Section */
+.summary-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.summary-label {
+  font-size: 15px; /* Giảm từ 16px */
+  color: #374151;
+  font-weight: 500;
+}
+
+.summary-value {
+  font-size: 15px; /* Giảm từ 16px */
+  color: #111827;
+  font-weight: 500;
+}
+
+.summary-value.highlight {
+  font-weight: 600;
+  color: #16a34a;
+}
+
+.divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 8px 0;
+}
+
+.summary-row.final {
+  padding-top: 8px;
+  border-top: 2px solid #e5e7eb;
+}
+
+.final-amount {
+  font-size: 17px !important; /* Giảm từ 18px */
+  font-weight: 700 !important;
+}
+
+/* Error Styling */
+.error {
+  background-color: #fef2f2;
+  color: #dc2626;
+  padding: 16px 20px;
+  border-radius: 8px;
+  border: 1px solid #fecaca;
+  text-align: center;
+  font-weight: 500;
+  font-size: 15px; /* Giảm từ 16px */
+  margin: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .main-content {
+    flex-direction: column;
+  }
+  
+  .right-column {
+    order: -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-section {
+    padding: 12px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .header-status {
+    align-self: stretch;
+    justify-content: space-between;
+  }
+  
+  .main-content {
+    padding: 16px;
+  }
+  
+  .order-info-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .request-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .product-card {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+  
+  .product-specs {
+    justify-content: center;
+  }
+  
+  .product-price-info {
+    justify-content: center;
+  }
+  
+  .product-total {
+    text-align: center;
+  }
+  
+  .back-button {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    font-size: 18px; /* Giảm từ 20px */
+  }
+  
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .product-specs {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .product-price-info {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .back-button {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+}
+/* DetailOrderReturn.css - Thêm vào file CSS hiện tại */
+
+/* Timeline enhancements */
+.history-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 0;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.history-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 16px;
+  top: 48px;
+  bottom: -16px;
+  width: 2px;
+  background: #e5e7eb;
+  z-index: 0;
+}
+
+.history-item.completed .history-icon {
+  background: #dcfce7;
+  color: #16a34a;
+  border: 2px solid #16a34a;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+}
+
+.history-item.pending .history-icon {
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 2px solid #d1d5db;
+}
+
+.history-item.active .history-icon {
+  background: #dbeafe;
+  color: #2563eb;
+  border: 2px solid #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(37, 99, 235, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  }
+}
+
+.history-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+  z-index: 1;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.history-content {
+  flex: 1;
+  padding-top: 2px;
+}
+
+.history-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 4px 0;
+}
+
+.history-item.completed .history-title {
+  color: #16a34a;
+}
+
+.history-item.pending .history-title {
+  color: #6b7280;
+}
+
+.history-item.active .history-title {
+  color: #2563eb;
+}
+
+.history-time {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.history-description {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+  font-style: italic;
+}
+
+.history-amount {
+  font-size: 13px;
+  font-weight: 600;
+  color: #16a34a;
+}
+
+.history-reason, .history-order-code {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Status indicators for rejected items */
+.history-item.rejected .history-icon {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 2px solid #dc2626;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+}
+
+.history-item.rejected .history-title {
+  color: #dc2626;
+}
+
+/* Hover effects */
+.history-item:hover {
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+  margin: 0 -8px;
+  padding: 16px 8px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .history-item {
+    gap: 12px;
+  }
+  
+  .history-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+  
+  .history-item:not(:last-child)::after {
+    left: 14px;
+  }
+}
+/* DetailOrderReturn.css - Thêm vào file CSS hiện tại */
+
+/* Timeline enhancements */
+.history-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 0;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.history-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 16px;
+  top: 48px;
+  bottom: -16px;
+  width: 2px;
+  background: #e5e7eb;
+  z-index: 0;
+}
+
+.history-item.completed .history-icon {
+  background: #dcfce7;
+  color: #16a34a;
+  border: 2px solid #16a34a;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+}
+
+.history-item.pending .history-icon {
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 2px solid #d1d5db;
+}
+
+.history-item.active .history-icon {
+  background: #dbeafe;
+  color: #2563eb;
+  border: 2px solid #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  animation: pulse 2s infinite;
+}
+
+/* Style riêng cho trạng thái từ chối */
+.history-item.rejected .history-icon {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 2px solid #dc2626;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+}
+
+.history-item.rejected .history-title {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.history-item.rejected .history-description {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.history-item.rejected {
+  background: rgba(220, 38, 38, 0.05);
+  border-radius: 8px;
+  margin: 0 -8px;
+  padding: 16px 8px;
+}
+
+/* Không hiển thị connecting line cho rejected vì chỉ có 1 item */
+.history-item.rejected::after {
+  display: none;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(37, 99, 235, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  }
+}
+
+.history-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+  z-index: 1;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.history-content {
+  flex: 1;
+  padding-top: 2px;
+}
+
+.history-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 4px 0;
+}
+
+.history-item.completed .history-title {
+  color: #16a34a;
+}
+
+.history-item.pending .history-title {
+  color: #6b7280;
+}
+
+.history-item.active .history-title {
+  color: #2563eb;
+}
+
+.history-time {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.history-description {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+  font-style: italic;
+}
+
+.history-amount {
+  font-size: 13px;
+  font-weight: 600;
+  color: #16a34a;
+}
+
+.history-reason, .history-order-code {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Style đặc biệt cho lý do từ chối */
+.history-item.rejected .history-reason {
+  color: #dc2626;
+  font-weight: 500;
+  background: #fee2e2;
+  padding: 6px 8px;
+  border-radius: 4px;
+  margin-top: 8px;
+  border: 1px solid #fecaca;
+}
+
+/* Hover effects */
+.history-item:hover:not(.rejected) {
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+  margin: 0 -8px;
+  padding: 16px 8px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .history-item {
+    gap: 12px;
+  }
+  
+  .history-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+  
+  .history-item:not(:last-child)::after {
+    left: 14px;
+  }
+}
+/* Thêm vào file CSS */
+.request-images {
+  margin: 16px 0;
+}
+
+.images-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 12px;
+}
+
+.images-icon {
+  font-size: 16px;
+}
+
+.images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.return-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.return-image:hover {
+  transform: scale(1.05);
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: 13px;
+  padding: 8px 12px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+}
+
+@media (max-width: 768px) {
+  .images-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .images-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .return-image {
+    height: 200px;
+  }
+}

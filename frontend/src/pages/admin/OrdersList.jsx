@@ -61,6 +61,7 @@ const OrdersList = () => {
         (normalizeString(order.order_code).includes(normalizeString(searchTerm)) ||
           normalizeString(order.customer).includes(normalizeString(searchTerm))) &&
         (selectedStatusTab === "Tất cả" || normalizedStatus === normalizeString(selectedStatusTab))
+        
       );
     });
   }, [orders, searchTerm, selectedStatusTab]);
