@@ -51,7 +51,9 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
       if (returnData.data) {
         setOrderData((prev) => ({
           ...prev,
-          status: returnData.data.status || prev.status,
+          status: returnData.data.status,
+          payment_status: returnData.data.payment_status, 
+          return_status: returnData.data.return_status,
         }));
       }
     },
