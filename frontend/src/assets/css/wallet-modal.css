@@ -105,3 +105,167 @@
   color: #888;
   padding: 32px 0;
 }
+/* Thêm CSS này vào file wallet-modal.css */
+
+.wallet-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  padding: 16px 0;
+  border-top: 1px solid #e5e7eb;
+}
+
+.wallet-pagination-info {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.wallet-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.wallet-pagination-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #374151;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.wallet-pagination-btn:hover:not(:disabled):not(.active) {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  color: #111827;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.wallet-pagination-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.wallet-pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: #f9fafb;
+  color: #9ca3af;
+  transform: none;
+  box-shadow: none;
+}
+
+.wallet-pagination-btn.active {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: #ffffff;
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  font-weight: 600;
+}
+
+.wallet-pagination-btn.active:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  border-color: #2563eb;
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.2);
+  transform: translateY(-1px);
+}
+
+.wallet-pagination-prev,
+.wallet-pagination-next {
+  min-width: 40px;
+  padding: 0;
+}
+
+.wallet-pagination-prev svg,
+.wallet-pagination-next svg {
+  stroke-width: 2.5;
+}
+
+.wallet-pagination-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  color: #9ca3af;
+  font-weight: 600;
+  user-select: none;
+}
+
+/* Hover effects cho prev/next buttons */
+.wallet-pagination-prev:hover:not(:disabled),
+.wallet-pagination-next:hover:not(:disabled) {
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  border-color: #d1d5db;
+}
+
+/* Focus states */
+.wallet-pagination-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+}
+
+.wallet-pagination-btn.active:focus {
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15), 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Responsive cho mobile */
+@media (max-width: 768px) {
+  .wallet-pagination {
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px 0;
+  }
+  
+  .wallet-pagination-info {
+    font-size: 13px;
+    text-align: center;
+  }
+  
+  .wallet-pagination-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2px;
+  }
+  
+  .wallet-pagination-btn {
+    min-width: 36px;
+    height: 36px;
+    font-size: 13px;
+    border-radius: 6px;
+  }
+  
+  .wallet-pagination-dots {
+    min-width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .wallet-pagination-btn {
+    min-width: 32px;
+    height: 32px;
+    font-size: 12px;
+    border-radius: 4px;
+  }
+  
+  .wallet-pagination-dots {
+    min-width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+}

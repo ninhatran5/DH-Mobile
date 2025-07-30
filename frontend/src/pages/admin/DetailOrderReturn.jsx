@@ -245,9 +245,11 @@ const handleUpdateStatus = () => {
     email,
     total_amount,
     order_status,
+
     payment_status,
     payment_method_name,
     payment_method_description,
+
     order_created_at,
     products,
     return_requests,
@@ -279,7 +281,7 @@ const handleUpdateStatus = () => {
                 <span className="card-icon">📋</span>
                 <h2 className="card-title">Thông tin đơn hàng</h2>
               </div>
-              <div className="order-code">Mã đơn: {order_code}</div>
+              <div className="order-code">Mã đơn: <span className="fw-bold">{order_code}</span></div>
             </div>
             
             <div className="order-info-grid">
@@ -304,7 +306,7 @@ const handleUpdateStatus = () => {
               </div>
               
               <div className="info-item">
-                <span className="info-label">Phương thức thanh toán</span>
+                <span className="info-label mb-2">Phương thức thanh toán</span>
                 <div className="payment-method">
                   <span className="payment-icon">🇻🇳</span>
                   {payment_method_name}( {payment_method_description })
@@ -525,11 +527,13 @@ const handleUpdateStatus = () => {
             </div>
             
             <div className="action-buttons">
+
               <button className="action-button button-primary" onClick={handleUpdateStatus}>
                 Cập nhật trạng thái đơn hàng a
               </button>
               <button className="action-button button-success" onClick={handleCancelOrder}>
                 Huỷ đơn hàng
+
               </button>
               
             </div>
