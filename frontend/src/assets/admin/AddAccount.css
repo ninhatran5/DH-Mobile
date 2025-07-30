@@ -93,9 +93,10 @@
   border: 3px solid #e5e7eb;
 }
 .avatar-preview {
-  width: 100px;
-  height: 100px;
+  width: 95px;
+  height: 95px;
   border-radius: 50%;
+  overflow: hidden;
   margin: 0 auto;
 }
 
@@ -129,23 +130,28 @@
   transform: scale(1.1);
 }
 
-.remove-btn {
+.remove-btn{
   position: absolute;
-  top: -8px;
-  right: -8px;
-  width: 24px;
-  height: 24px;
+  top: -1px;
+  right: -1px;
+  width: 20px;
+  height: 20px;
   background: #ef4444;
   color: white;
   border: none;
-  border-radius: 100%;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
   cursor: pointer;
+  font-size: 5px;
   transition: all 0.2s;
   z-index: 1;
+}
+
+.remove-btn span {
+  font-size: 20px; 
+  margin-top: -2px;
 }
 
 .remove-btn:hover {
