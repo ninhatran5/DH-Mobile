@@ -176,7 +176,7 @@
   font-size: 13px; /* Giảm từ 14px */
   font-weight: 500;
   border: 1px solid #bbf7d0;
-  width: 200px;
+  width: 270px;
 }
 
 .payment-icon {
@@ -442,17 +442,17 @@
 }
 
 .button-primary {
-  background: #3b82f6;
+  background: #2563eb;
   color: white;
 }
 
 .button-primary:hover {
-  background: #2563eb;
+  background: #1ecf39;
   transform: translateY(-1px);
 }
 
 .button-success {
-  background: #16a34a;
+  background: #ff0000;
   color: white;
 }
 
@@ -620,5 +620,409 @@
   .back-button {
     padding: 8px 14px;
     font-size: 13px;
+  }
+}
+/* DetailOrderReturn.css - Thêm vào file CSS hiện tại */
+
+/* Timeline enhancements */
+.history-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 0;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.history-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 16px;
+  top: 48px;
+  bottom: -16px;
+  width: 2px;
+  background: #e5e7eb;
+  z-index: 0;
+}
+
+.history-item.completed .history-icon {
+  background: #dcfce7;
+  color: #16a34a;
+  border: 2px solid #16a34a;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+}
+
+.history-item.pending .history-icon {
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 2px solid #d1d5db;
+}
+
+.history-item.active .history-icon {
+  background: #dbeafe;
+  color: #2563eb;
+  border: 2px solid #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(37, 99, 235, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  }
+}
+
+.history-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+  z-index: 1;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.history-content {
+  flex: 1;
+  padding-top: 2px;
+}
+
+.history-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 4px 0;
+}
+
+.history-item.completed .history-title {
+  color: #16a34a;
+}
+
+.history-item.pending .history-title {
+  color: #6b7280;
+}
+
+.history-item.active .history-title {
+  color: #2563eb;
+}
+
+.history-time {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.history-description {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+  font-style: italic;
+}
+
+.history-amount {
+  font-size: 13px;
+  font-weight: 600;
+  color: #16a34a;
+}
+
+.history-reason, .history-order-code {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Status indicators for rejected items */
+.history-item.rejected .history-icon {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 2px solid #dc2626;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+}
+
+.history-item.rejected .history-title {
+  color: #dc2626;
+}
+
+/* Hover effects */
+.history-item:hover {
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+  margin: 0 -8px;
+  padding: 16px 8px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .history-item {
+    gap: 12px;
+  }
+  
+  .history-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+  
+  .history-item:not(:last-child)::after {
+    left: 14px;
+  }
+}
+/* DetailOrderReturn.css - Thêm vào file CSS hiện tại */
+
+/* Timeline enhancements */
+.history-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 0;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.history-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 16px;
+  top: 48px;
+  bottom: -16px;
+  width: 2px;
+  background: #e5e7eb;
+  z-index: 0;
+}
+
+.history-item.completed .history-icon {
+  background: #dcfce7;
+  color: #16a34a;
+  border: 2px solid #16a34a;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+}
+
+.history-item.pending .history-icon {
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 2px solid #d1d5db;
+}
+
+.history-item.active .history-icon {
+  background: #dbeafe;
+  color: #2563eb;
+  border: 2px solid #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  animation: pulse 2s infinite;
+}
+
+/* Style riêng cho trạng thái từ chối */
+.history-item.rejected .history-icon {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 2px solid #dc2626;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+}
+
+.history-item.rejected .history-title {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.history-item.rejected .history-description {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.history-item.rejected {
+  background: rgba(220, 38, 38, 0.05);
+  border-radius: 8px;
+  margin: 0 -8px;
+  padding: 16px 8px;
+}
+
+/* Không hiển thị connecting line cho rejected vì chỉ có 1 item */
+.history-item.rejected::after {
+  display: none;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(37, 99, 235, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  }
+}
+
+.history-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+  z-index: 1;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.history-content {
+  flex: 1;
+  padding-top: 2px;
+}
+
+.history-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 4px 0;
+}
+
+.history-item.completed .history-title {
+  color: #16a34a;
+}
+
+.history-item.pending .history-title {
+  color: #6b7280;
+}
+
+.history-item.active .history-title {
+  color: #2563eb;
+}
+
+.history-time {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.history-description {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+  font-style: italic;
+}
+
+.history-amount {
+  font-size: 13px;
+  font-weight: 600;
+  color: #16a34a;
+}
+
+.history-reason, .history-order-code {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Style đặc biệt cho lý do từ chối */
+.history-item.rejected .history-reason {
+  color: #dc2626;
+  font-weight: 500;
+  background: #fee2e2;
+  padding: 6px 8px;
+  border-radius: 4px;
+  margin-top: 8px;
+  border: 1px solid #fecaca;
+}
+
+/* Hover effects */
+.history-item:hover:not(.rejected) {
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+  margin: 0 -8px;
+  padding: 16px 8px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .history-item {
+    gap: 12px;
+  }
+  
+  .history-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+  
+  .history-item:not(:last-child)::after {
+    left: 14px;
+  }
+}
+/* Thêm vào file CSS */
+.request-images {
+  margin: 16px 0;
+}
+
+.images-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 12px;
+}
+
+.images-icon {
+  font-size: 16px;
+}
+
+.images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.return-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.return-image:hover {
+  transform: scale(1.05);
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: 13px;
+  padding: 8px 12px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+}
+
+@media (max-width: 768px) {
+  .images-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .images-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .return-image {
+    height: 200px;
   }
 }
