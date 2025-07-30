@@ -423,15 +423,15 @@ class OrderController extends Controller
                 'message' => 'Lý do hoàn hàng không hợp lệ.'
             ], 400);
         }
-        if ($reason === 'Lý do khác') {
+      
             if (empty($request->return_reason_other)) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Vui lòng nhập lý do hoàn hàng cụ thể.'
                 ], 400);
             }
-            $reason = $reason . ': ' . $request->return_reason_other;
-        }
+              $reason2 = $request->return_reason_other;
+      
 
         // Kiểm tra đã có yêu cầu hoàn hàng cho đơn này chưa
         $existingRequest = DB::table('return_requests')
@@ -450,6 +450,7 @@ class OrderController extends Controller
             'order_id' => $order->order_id,
             'user_id' => $request->user()->user_id,
             'reason' => $reason,
+            'return_reason_other' => $reason2,
             'status' => 'đã yêu cầu',
             'refund_amount' => $order->total_amount, // Lưu tổng tiền đã thanh toán vào refund_amount
             'upload_url' => json_encode($imageUrls),
