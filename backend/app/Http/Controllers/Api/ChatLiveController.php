@@ -23,19 +23,15 @@ class ChatLiveController extends Controller
             return response()->json(['message' => 'Bạn không có quyền gửi tin nhắn.'], 403);
         }
     
-        // Kiểm tra attachments có thể là file hoặc mảng
-        $isMultiple = is_array($request->attachments);
-    
-        // Validate: message và attachments đều có thể nullable, nhưng phải có ít nhất 1 cái
+        // Validate: Cho phép gửi message, ảnh, hoặc cả hai. Nếu cả hai đều rỗng thì báo lỗi.
         $request->validate([
             'message' => 'nullable|string',
-            'attachments' => ['nullable', $isMultiple ? 'array' : 'file'],
+            'attachments' => 'nullable',
             'attachments.*' => 'file|mimes:jpg,jpeg,png,gif,svg,pdf,docx,txt|max:4096'
         ]);
     
-        // Nếu cả message và attachments đều không có thì báo lỗi
         if (
-            (empty($request->message) || trim($request->message) === '') // message rỗng hoặc chỉ có khoảng trắng
+            (empty($request->message) || trim($request->message) === '')
             && !$request->hasFile('attachments')
         ) {
             return response()->json(['message' => 'Tin nhắn hoặc ảnh không được để trống.'], 422);
@@ -51,14 +47,14 @@ class ChatLiveController extends Controller
     
         if ($request->hasFile('attachments')) {
             $cloudinary = app(Cloudinary::class);
-    
-            $files = $isMultiple ? $request->file('attachments') : [$request->file('attachments')];
-    
+            $files = $request->file('attachments');
+            if (!is_array($files)) {
+                $files = [$files];
+            }
             foreach ($files as $file) {
                 $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
                     'folder' => 'chat_attachments'
                 ]);
-    
                 if (isset($result['secure_url'])) {
                     SupportChatAttachment::create([
                         'chat_id' => $chat->chat_id,
@@ -95,18 +91,13 @@ class ChatLiveController extends Controller
             return response()->json(['message' => 'Bạn không có quyền trả lời.'], 403);
         }
     
-        // Kiểm tra attachments có thể là file hoặc mảng
-        $isMultiple = is_array($request->attachments);
-    
-        // Validate: message và attachments đều có thể nullable, nhưng phải có ít nhất 1 cái
         $request->validate([
             'customer_id' => 'required|exists:users,user_id',
             'message' => 'nullable|string',
-            'attachments' => ['nullable', $isMultiple ? 'array' : 'file'],
+            'attachments' => 'nullable',
             'attachments.*' => 'file|mimes:jpg,jpeg,png,gif,svg,pdf,docx,txt|max:4096'
         ]);
     
-        // Nếu cả message và attachments đều không có thì báo lỗi
         if (
             (empty($request->message) || trim($request->message) === '')
             && !$request->hasFile('attachments')
@@ -123,17 +114,16 @@ class ChatLiveController extends Controller
             'is_read' => false,
         ]);
     
-        // Xử lý file đính kèm nếu có
         if ($request->hasFile('attachments')) {
             $cloudinary = app(Cloudinary::class);
-    
-            $files = $isMultiple ? $request->file('attachments') : [$request->file('attachments')];
-    
+            $files = $request->file('attachments');
+            if (!is_array($files)) {
+                $files = [$files];
+            }
             foreach ($files as $file) {
                 $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
                     'folder' => 'chat_attachments'
                 ]);
-    
                 if (isset($result['secure_url'])) {
                     SupportChatAttachment::create([
                         'chat_id' => $chat->chat_id,
