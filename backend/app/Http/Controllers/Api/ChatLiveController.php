@@ -18,23 +18,29 @@ class ChatLiveController extends Controller
     public function sendMessage(Request $request)
     {
         $user = Auth::user();
-
+    
         if ($user->role !== 'customer') {
             return response()->json(['message' => 'Bạn không có quyền gửi tin nhắn.'], 403);
         }
-
+    
         // Kiểm tra attachments có thể là file hoặc mảng
         $isMultiple = is_array($request->attachments);
+    
+        // Validate: message và attachments đều có thể nullable, nhưng phải có ít nhất 1 cái
         $request->validate([
             'message' => 'nullable|string',
-            'attachments' => 'nullable' . ($isMultiple ? '|array' : '|file'),
+            'attachments' => ['nullable', $isMultiple ? 'array' : 'file'],
             'attachments.*' => 'file|mimes:jpg,jpeg,png,gif,svg,pdf,docx,txt|max:4096'
         ]);
-
-        if (!$request->message && !$request->hasFile('attachments')) {
-            return response()->json(['message' => 'Tin nhắn không được để trống.'], 422);
+    
+        // Nếu cả message và attachments đều không có thì báo lỗi
+        if (
+            (empty($request->message) || trim($request->message) === '') // message rỗng hoặc chỉ có khoảng trắng
+            && !$request->hasFile('attachments')
+        ) {
+            return response()->json(['message' => 'Tin nhắn hoặc ảnh không được để trống.'], 422);
         }
-
+    
         $chat = SupportChat::create([
             'customer_id' => $user->user_id,
             'sender' => 'customer',
@@ -42,17 +48,17 @@ class ChatLiveController extends Controller
             'sent_at' => now(),
             'is_read' => false,
         ]);
-
+    
         if ($request->hasFile('attachments')) {
             $cloudinary = app(Cloudinary::class);
-
+    
             $files = $isMultiple ? $request->file('attachments') : [$request->file('attachments')];
-
+    
             foreach ($files as $file) {
                 $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
                     'folder' => 'chat_attachments'
                 ]);
-
+    
                 if (isset($result['secure_url'])) {
                     SupportChatAttachment::create([
                         'chat_id' => $chat->chat_id,
@@ -62,7 +68,7 @@ class ChatLiveController extends Controller
                 }
             }
         }
-
+    
         $staffList = User::whereIn('role', ['admin', 'sale'])->pluck('user_id');
         foreach ($staffList as $staffId) {
             SupportChatNotification::create([
@@ -71,9 +77,9 @@ class ChatLiveController extends Controller
                 'is_read' => false,
             ]);
         }
-
+    
         broadcast(new SupportChatSent($chat->load('attachments')))->toOthers();
-
+    
         return response()->json([
             'success' => true,
             'chat' => $chat->load('attachments')
