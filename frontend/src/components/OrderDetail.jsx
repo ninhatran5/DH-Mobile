@@ -68,11 +68,13 @@ const OrderDetail = () => {
         cancel_reason: orderUpdate.cancel_reason,
       }));
     },
-    onReturnUpdate: (returnData) => {
+     onReturnUpdate: (returnData) => {
       if (returnData.data) {
         setOrderDetail((prev) => ({
           ...prev,
-          status: returnData.data.status || prev.status,
+          status: returnData.data.status,
+          payment_status: returnData.data.payment_status, 
+          return_status: returnData.data.return_status,
         }));
       }
     },
