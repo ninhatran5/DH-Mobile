@@ -12,7 +12,7 @@ import "../../assets/admin/AddAccount.css";
 import { IoEyeSharp } from "react-icons/io5";
 import { BsEyeSlashFill } from "react-icons/bs";
 import Loading from "../../components/Loading";
-
+import cancel from '../../assets/images/cancel-close-svgrepo-com.svg';
 const AddAccount = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -256,7 +256,7 @@ const AddAccount = () => {
                         }}
                         className="remove-btn"
                       >
-                        ×
+                       <><span>×</span></>
                       </button>
                     </div>
                   ) : (
