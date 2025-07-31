@@ -10,3 +10,8 @@ Broadcast::channel('chat.user.{userId}', function ($user, $userId) {
 Broadcast::channel('chat.admin', function ($user) {
     return  in_array(  $user->role,['admin' , 'sale']);
 });
+
+
+Broadcast::channel('chatbot.{userId}', function ($user, $userId) {
+    return (int)$user->id === (int)$userId; // chỉ cho user đúng subscribe
+});
