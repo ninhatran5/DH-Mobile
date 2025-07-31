@@ -7,7 +7,6 @@ export const fetchAdminOrders = createAsyncThunk(
     try {
       const token = localStorage.getItem("adminToken");
 
-      // Gọi trang đầu tiên
       const firstPageRes = await axiosAdmin.get(`/admin/orders?page=1`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -17,20 +16,14 @@ export const fetchAdminOrders = createAsyncThunk(
       const firstPageOrders = firstPageRes.data.orders || [];
       const pagination = firstPageRes.data.pagination || {};
       
-      // ✅ SỬA: Lấy đúng field last_page thay vì totalPage
       const totalPages = pagination.last_page || 
                         pagination.totalPage || 
                         pagination.total_pages || 1;
-
-      console.log("📦 Số đơn trang 1:", firstPageOrders.length);
-      console.log("📄 Tổng số trang (FIXED):", totalPages);
-      console.log("📊 Total records:", pagination.total);
 
       const allOrders = [...firstPageOrders];
       const pageRequests = [];
 
       for (let page = 2; page <= totalPages; page++) {
-        console.log(`⏳ Chuẩn bị gọi trang ${page}`);
         pageRequests.push(
           axiosAdmin.get(`/admin/orders?page=${page}`, {
             headers: {
@@ -40,18 +33,15 @@ export const fetchAdminOrders = createAsyncThunk(
         );
       }
 
-      console.log(`🚀 Số requests sẽ gọi: ${pageRequests.length}`);
 
       if (pageRequests.length > 0) {
         const remainingPages = await Promise.all(pageRequests);
         remainingPages.forEach((res, index) => {
           const pageData = res.data.orders || [];
-          console.log(`📦 Trang ${index + 2}: ${pageData.length} đơn hàng`);
           allOrders.push(...pageData);
         });
       }
 
-      console.log(`✅ TỔNG KẾT: ${allOrders.length}/${pagination.total} đơn hàng từ ${totalPages} trang`);
 
       return {
         orders: allOrders,
@@ -67,8 +57,33 @@ export const fetchAdminOrders = createAsyncThunk(
   }
 );
 
+export const fetchPaginatedAdminOrders = createAsyncThunk(
+  "adminOrders/fetchPaginated",
+  async (page = 1, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      const res = await axiosAdmin.get(`/admin/orders?page=${page}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-
+      return {
+        orders: res.data.orders,
+        pagination: {
+          currentPage: res.data.pagination.current_page,
+          lastPage: res.data.pagination.last_page,
+          perPage: res.data.pagination.per_page,
+          total: res.data.pagination.total,
+        },
+      };
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Lỗi khi lấy đơn hàng phân trang"
+      );
+    }
+  }
+);
 
 
 // Cập nhật trạng thái đơn hàng
@@ -175,6 +190,12 @@ const adminOrderSlice = createSlice({
   name: "adminOrder",
   initialState: {
     orders: [],
+     pagination: {
+      currentPage: 1,
+      lastPage: 1,
+      perPage: 15,
+      total: 0,
+    },
     completedOrders: [],
     order: null,
     returnOrders: [],
@@ -303,6 +324,18 @@ const adminOrderSlice = createSlice({
       .addCase(cancelOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Lỗi khi huỷ đơn hàng";
+      })
+       .addCase(fetchPaginatedAdminOrders.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchPaginatedAdminOrders.fulfilled, (state, action) => {
+        state.loading = false;
+        state.orders = action.payload.orders;
+        state.pagination = action.payload.pagination;
+      })
+      .addCase(fetchPaginatedAdminOrders.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

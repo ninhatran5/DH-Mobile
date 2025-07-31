@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAdminOrders, updateOrderStatus, cancelOrder } from "../../slices/adminOrderSlice";
+import { fetchPaginatedAdminOrders, updateOrderStatus, cancelOrder } from "../../slices/adminOrderSlice";
 import "../../assets/admin/HomeAdmin.css";
 import "../../assets/admin/order.css";
 import "../../assets/admin/OrdersList.css";
@@ -38,11 +38,11 @@ const OrdersList = () => {
   // Lấy current page từ URL, mặc định là 1
   const currentPage = parseInt(searchParams.get("page")) || 1;
 
-  // useEffect đơn giản - chỉ fetch data khi currentPage thay đổi
+  // Sử dụng fetchPaginatedAdminOrders thay vì fetchAdminOrders
   useEffect(() => {
     console.log("=== FETCH DATA ===");
     console.log("Fetching orders for page:", currentPage);
-    dispatch(fetchAdminOrders(currentPage));
+    dispatch(fetchPaginatedAdminOrders(currentPage));
   }, [currentPage, dispatch]);
 
   // useEffect riêng để đảm bảo URL có page parameter
@@ -53,17 +53,16 @@ const OrdersList = () => {
     }
   }, [searchParams, setSearchParams]);
 
-  // Function chuyển trang - ĐÃ SỬA
+  // Function chuyển trang - đã được cập nhật
   const handlePageChange = (newPage) => {
     console.log("=== HANDLE PAGE CHANGE ===");
     console.log("Requested page:", newPage);
     console.log("Current page:", currentPage);
-    console.log("Total pages:", pagination?.totalPage);
+    console.log("Total pages:", pagination?.lastPage);
     
-    // Đơn giản hóa - bỏ validation phức tạp
     const pageNumber = parseInt(newPage);
     
-    if (pageNumber && pageNumber > 0) {
+    if (pageNumber && pageNumber > 0 && pageNumber <= pagination?.lastPage) {
       console.log("✅ Changing to page:", pageNumber);
       setSearchParams({ page: pageNumber.toString() });
     } else {
@@ -87,7 +86,7 @@ const OrdersList = () => {
     "Đã huỷ"
   ];
 
-  // ĐÃ THÊM: Danh sách các trạng thái cần ẩn
+  // Danh sách các trạng thái cần ẩn
   const hiddenStatuses = [
     "Yêu cầu hoàn hàng",
     "Đã chấp thuận",
@@ -96,7 +95,7 @@ const OrdersList = () => {
     "Đã trả hàng"
   ];
 
-  // ĐÃ CẬP NHẬT: filteredOrders để ẩn các trạng thái không mong muốn
+  // Cập nhật filteredOrders - chỉ filter client-side cho trang hiện tại
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
       const normalizedStatus = normalizeString(order.status);
@@ -106,15 +105,21 @@ const OrdersList = () => {
         normalizedStatus === normalizeString(hiddenStatus)
       );
       
-      // Lọc ra các đơn hàng không có trạng thái bị ẩn
-      return (
-        !isHiddenStatus &&
-        (normalizeString(order.order_code).includes(normalizeString(searchTerm)) ||
-         normalizeString(order.customer).includes(normalizeString(searchTerm))) &&
-        (selectedStatusTab === "Tất cả" || normalizedStatus === normalizeString(selectedStatusTab))
-      );
+      // Lọc theo search term và status tab
+      const matchesSearch = normalizeString(order.order_code).includes(normalizeString(searchTerm)) ||
+                           normalizeString(order.customer).includes(normalizeString(searchTerm));
+      
+      const matchesStatus = selectedStatusTab === "Tất cả" || 
+                           normalizedStatus === normalizeString(selectedStatusTab);
+      
+      return !isHiddenStatus && matchesSearch && matchesStatus;
     });
   }, [orders, searchTerm, selectedStatusTab, hiddenStatuses]);
+
+  // Hàm refresh data sau khi cập nhật
+  const refreshCurrentPage = () => {
+    dispatch(fetchPaginatedAdminOrders(currentPage));
+  };
 
   const handleViewOrder = (order) => {
     navigate(`/admin/orderdetail/${order.order_id}`, {
@@ -142,7 +147,7 @@ const OrdersList = () => {
             if (action?.type?.endsWith("/fulfilled")) {
               setSelectedOrder(null);
               Swal.fire("Thành công", "Trạng thái đơn hàng đã được cập nhật.", "success");
-              dispatch(fetchAdminOrders(currentPage));
+              refreshCurrentPage(); // Refresh trang hiện tại
             } else {
               Swal.fire("Lỗi", "Cập nhật trạng thái đơn hàng thất bại.", "error");
             }
@@ -172,7 +177,7 @@ const OrdersList = () => {
         setShowCancelModal(false);
         setOrderToCancel(null);
         Swal.fire("Đã huỷ đơn hàng", "Đơn hàng đã được huỷ thành công.", "success");
-        dispatch(fetchAdminOrders(currentPage));
+        refreshCurrentPage(); // Refresh trang hiện tại
       })
       .finally(() => {
         setIsUpdatingStatus(false);
@@ -254,7 +259,7 @@ const OrdersList = () => {
         </div>
       </div>
 
-      {/* Status tabs - ĐÃ CẬP NHẬT count để loại trừ hidden statuses */}
+      {/* Status tabs - Đơn giản hóa count (chỉ đếm orders hiện tại) */}
       <div className="admin_order-status-tabs" style={{ margin: '16px 0', width: '100%', maxWidth: 1200 }}>
         {statusTabs.map((status) => (
           <button
@@ -291,7 +296,6 @@ const OrdersList = () => {
                   const normalizedOrderStatus = normalizeString(order.status);
                   const normalizedTabStatus = normalizeString(status);
                   
-                  // Loại trừ hidden statuses khỏi count
                   const isHiddenStatus = hiddenStatuses.some(hiddenStatus => 
                     normalizedOrderStatus === normalizeString(hiddenStatus)
                   );
@@ -303,8 +307,6 @@ const OrdersList = () => {
           </button>
         ))}
       </div>
-
-     
 
       {/* Orders table */}
       {loading ? (
@@ -333,7 +335,7 @@ const OrdersList = () => {
             <tbody>
               {filteredOrders.length > 0 ? (
                 filteredOrders.map((order, idx) => {
-                  const stt = (currentPage - 1) * 15 + idx + 1;
+                  const stt = (currentPage - 1) * (pagination?.perPage || 15) + idx + 1;
                   return (
                     <tr key={order.order_id}>
                       <td>
@@ -473,6 +475,7 @@ const OrdersList = () => {
         </div>
       )}
 
+      {/* Pagination - cập nhật để sử dụng pagination từ server */}
       <div style={{ 
         marginTop: '20px', 
         width: '100%',
@@ -489,12 +492,30 @@ const OrdersList = () => {
           gap: '10px',
           flexWrap: 'wrap'
         }}>
+          {/* First page button */}
           <button
-            onClick={(e) => {
-              e.preventDefault();
-              console.log("⬅️ PREVIOUS CLICKED");
-              handlePageChange(currentPage - 1);
+            onClick={() => handlePageChange(1)}
+            disabled={currentPage <= 1}
+            style={{
+              padding: '8px 12px',
+              border: '1px solid #007aff',
+              borderRadius: '6px',
+              background: currentPage <= 1 ? '#f5f5f5' : '#007aff',
+              color: currentPage <= 1 ? '#999' : '#fff',
+              cursor: currentPage <= 1 ? 'not-allowed' : 'pointer',
+              fontSize: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
             }}
+          >
+            <FiChevronsLeft size={16} />
+            Đầu
+          </button>
+
+          {/* Previous button */}
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage <= 1}
             style={{
               padding: '8px 12px',
@@ -527,18 +548,15 @@ const OrdersList = () => {
 
           {/* Next button */}
           <button
-            onClick={(e) => {
-              e.preventDefault();
-              console.log("➡️ NEXT CLICKED");
-              handlePageChange(currentPage + 1);
-            }}
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage >= (pagination?.lastPage || 1)}
             style={{
               padding: '8px 12px',
               border: '1px solid #007aff',
               borderRadius: '6px',
-              background: '#007aff',
-              color: '#fff',
-              cursor: 'pointer',
+              background: currentPage >= (pagination?.lastPage || 1) ? '#f5f5f5' : '#007aff',
+              color: currentPage >= (pagination?.lastPage || 1) ? '#999' : '#fff',
+              cursor: currentPage >= (pagination?.lastPage || 1) ? 'not-allowed' : 'pointer',
               fontSize: '14px',
               display: 'flex',
               alignItems: 'center',
@@ -548,6 +566,27 @@ const OrdersList = () => {
             Sau
             <FiChevronRight size={16} />
           </button>
+
+          {/* Last page button */}
+          <button
+            onClick={() => handlePageChange(pagination?.lastPage || 1)}
+            disabled={currentPage >= (pagination?.lastPage || 1)}
+            style={{
+              padding: '8px 12px',
+              border: '1px solid #007aff',
+              borderRadius: '6px',
+              background: currentPage >= (pagination?.lastPage || 1) ? '#f5f5f5' : '#007aff',
+              color: currentPage >= (pagination?.lastPage || 1) ? '#999' : '#fff',
+              cursor: currentPage >= (pagination?.lastPage || 1) ? 'not-allowed' : 'pointer',
+              fontSize: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+          >
+            Cuối
+            <FiChevronsRight size={16} />
+          </button>
         </div>
 
         {/* Page info */}
@@ -556,17 +595,17 @@ const OrdersList = () => {
           color: '#666',
           textAlign: 'center'
         }}>
-          Trang {currentPage} - Hiển thị {filteredOrders.length} đơn hàng
+          Trang {currentPage} / {pagination?.lastPage || 1} - 
+          Hiển thị {filteredOrders.length} đơn hàng
           {pagination && (
             <div style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>
-              Tổng: {pagination.totalItems || orders.length} đơn hàng | 
-              {pagination.totalPage || 1} trang
+              Tổng: {pagination.total || 0} đơn hàng
             </div>
           )}
         </div>
       </div>
 
-      {/* Các modal giữ nguyên */}
+      {/* Modal sửa trạng thái đơn hàng */}
       {selectedOrder && (
         <div className="adminorder-modal-backdrop">
           <div className="adminorder-modal">
@@ -686,6 +725,14 @@ const OrdersList = () => {
                 rows={3}
                 className="adminorder-cancel-reason-textarea"
                 disabled={isUpdatingStatus}
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  resize: 'vertical',
+                  fontFamily: 'inherit'
+                }}
               />
             </div>
             <div className="adminorder-modal-actions">
