@@ -130,7 +130,7 @@
   transform: scale(1.1);
 }
 
-.remove-btn{
+.remove-btn {
   position: absolute;
   top: -1px;
   right: -1px;
@@ -150,7 +150,7 @@
 }
 
 .remove-btn span {
-  font-size: 20px; 
+  font-size: 20px;
   margin-top: -2px;
 }
 
@@ -246,8 +246,8 @@
 
 .error-text {
   color: #ef4444;
-  font-size: 12px;
-  margin-top: 4px;
+  font-size: 13px;
+  margin-top: 8px;
   display: block;
 }
 
