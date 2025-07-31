@@ -716,10 +716,22 @@
     "type": "Loại giao dịch",
     "amount": "Số tiền",
     "note": "Ghi chú",
+    "emptyTransaction": "Chưa có giao dịch nào",
+    "noResults": "Không tìm thấy giao dịch nào phù hợp",
     "pagination": {
       "showing": "Hiển thị {{start}}-{{end}} của {{total}} giao dịch",
       "previous": "Trang trước",
       "next": "Trang sau"
+    },
+    "search": {
+      "placeholder": "Tìm kiếm giao dịch..."
+    },
+    "filter": {
+      "allTypes": "Tất cả loại",
+      "clear": "Xóa bộ lọc",
+      "results": "Tìm thấy {{count}} giao dịch",
+      "searchFor": "Tìm kiếm:",
+      "type": "Loại:"
     }
   },
   "modal": {
