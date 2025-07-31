@@ -33,10 +33,10 @@ class ChatMessageSent implements ShouldBroadcast
     public function broadcastOn()
     {
         if ($this->userId) {
-            return new PrivateChannel("chat.{$this->userId}");
+            return new PrivateChannel("chatbot.{$this->userId}");
         }
         
-        return new Channel("chat.guest.{session()->getId()}");
+        return new Channel("chatbot.guest.{session()->getId()}");
     }
 
     public function broadcastWith()
