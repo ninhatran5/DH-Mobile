@@ -5,7 +5,7 @@ import "../../assets/admin/HomeAdmin.css";
 import "../../assets/admin/order.css";
 import "../../assets/admin/OrdersList.css";
 import "../../assets/admin/order-status-colors.css";
-import { FiEdit, FiEye, FiX } from "react-icons/fi";
+import { FiEdit, FiEye, FiX, FiChevronLeft, FiChevronRight, FiChevronsLeft, FiChevronsRight } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
@@ -14,6 +14,7 @@ import DefaultImage from "../../assets/images/adminacccount.jpg";
 import CodImage from "../../assets/images/COD.webp";
 import VnpayImage from "../../assets/images/vnpay.jpg";
 import Loading from "../../components/Loading";
+import { useSearchParams } from "react-router-dom";
 
 const OrdersList = () => {
   const dispatch = useDispatch();
@@ -21,8 +22,7 @@ const OrdersList = () => {
     (state) => state.adminOrder
   );
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
   const [statusFilter, setStatusFilter] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -31,11 +31,45 @@ const OrdersList = () => {
   const [cancelReason, setCancelReason] = useState("");
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const navigate = useNavigate();
 
+  // Lấy current page từ URL, mặc định là 1
+  const currentPage = parseInt(searchParams.get("page")) || 1;
+
+  // useEffect đơn giản - chỉ fetch data khi currentPage thay đổi
   useEffect(() => {
+    console.log("=== FETCH DATA ===");
+    console.log("Fetching orders for page:", currentPage);
     dispatch(fetchAdminOrders(currentPage));
-  }, [dispatch, currentPage]);
+  }, [currentPage, dispatch]);
+
+  // useEffect riêng để đảm bảo URL có page parameter
+  useEffect(() => {
+    if (!searchParams.has("page")) {
+      console.log("No page param, setting to 1");
+      setSearchParams({ page: "1" }, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
+  // Function chuyển trang - ĐÃ SỬA
+  const handlePageChange = (newPage) => {
+    console.log("=== HANDLE PAGE CHANGE ===");
+    console.log("Requested page:", newPage);
+    console.log("Current page:", currentPage);
+    console.log("Total pages:", pagination?.totalPage);
+    
+    // Đơn giản hóa - bỏ validation phức tạp
+    const pageNumber = parseInt(newPage);
+    
+    if (pageNumber && pageNumber > 0) {
+      console.log("✅ Changing to page:", pageNumber);
+      setSearchParams({ page: pageNumber.toString() });
+    } else {
+      console.log("❌ Invalid page:", pageNumber);
+    }
+  };
 
   const normalizeString = (str) =>
     str?.toLowerCase()
@@ -45,7 +79,7 @@ const OrdersList = () => {
 
   const statusTabs = [
     "Tất cả",
-    "Chờ xác nhận",
+    "Chờ xác nhận", 
     "Đã xác nhận",
     "Đang vận chuyển",
     "Đã giao hàng",
@@ -53,37 +87,34 @@ const OrdersList = () => {
     "Đã huỷ"
   ];
 
+  // ĐÃ THÊM: Danh sách các trạng thái cần ẩn
+  const hiddenStatuses = [
+    "Yêu cầu hoàn hàng",
+    "Đã chấp thuận",
+    "Đã từ chối", 
+    "Đang xử lý",
+    "Đã trả hàng"
+  ];
+
+  // ĐÃ CẬP NHẬT: filteredOrders để ẩn các trạng thái không mong muốn
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
       const normalizedStatus = normalizeString(order.status);
+      
+      // Kiểm tra xem trạng thái có trong danh sách ẩn không
+      const isHiddenStatus = hiddenStatuses.some(hiddenStatus => 
+        normalizedStatus === normalizeString(hiddenStatus)
+      );
+      
+      // Lọc ra các đơn hàng không có trạng thái bị ẩn
       return (
-        normalizedStatus !== normalizeString("Đã trả hàng") &&
+        !isHiddenStatus &&
         (normalizeString(order.order_code).includes(normalizeString(searchTerm)) ||
-          normalizeString(order.customer).includes(normalizeString(searchTerm))) &&
+         normalizeString(order.customer).includes(normalizeString(searchTerm))) &&
         (selectedStatusTab === "Tất cả" || normalizedStatus === normalizeString(selectedStatusTab))
-        
       );
     });
-  }, [orders, searchTerm, selectedStatusTab]);
-
-  // Pagination client-side
-  const ORDERS_PER_PAGE = 15;
-  const totalOrders = filteredOrders.length;
-  const lastPage = Math.ceil(totalOrders / ORDERS_PER_PAGE) || 1;
-  const paginatedOrders = filteredOrders.slice(
-    (currentPage - 1) * ORDERS_PER_PAGE,
-    currentPage * ORDERS_PER_PAGE
-  );
-
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= lastPage) {
-      setCurrentPage(page);
-    }
-  };
-
-  const handleEditOrder = (order) => {
-    navigate(`/admin/editorder/${order.order_id}`);
-  };
+  }, [orders, searchTerm, selectedStatusTab, hiddenStatuses]);
 
   const handleViewOrder = (order) => {
     navigate(`/admin/orderdetail/${order.order_id}`, {
@@ -148,7 +179,6 @@ const OrdersList = () => {
       });
   };
 
-  // Format currency
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -156,43 +186,50 @@ const OrdersList = () => {
     }).format(amount);
   };
 
-  // Toggle filter panel
   const handleFilterToggle = () => {
     setShowFilters(!showFilters);
   };
 
-  // Get color class for status
-
-  // Hàm lấy class màu theo trạng thái
   const getStatusColorClass = (status) => {
     switch (normalizeString(status)) {
       case 'cho-xac-nhan':
-        return 'admin_order-status-pending'; // vàng
+        return 'admin_order-status-pending';
       case 'đa-xac-nhan':
-        return 'admin_order-status-confirmed'; // xanh dương
+        return 'admin_order-status-confirmed';
       case 'đang-van-chuyen':
-        return 'admin_order-status-shipping'; // cam
+        return 'admin_order-status-shipping';
       case 'đa-giao-hang':
-        return 'admin_order-status-delivered'; // xanh lá
+        return 'admin_order-status-delivered';
       case 'hoan-thanh':
-        return 'admin_order-status-success'; // xanh đậm
+        return 'admin_order-status-success';
       case 'đa-huy':
-        return 'admin_order-status-cancel'; // đỏ
+        return 'admin_order-status-cancel';
       default:
         return 'admin_order-status-default';
     }
   };
 
+  // Debug logs
+  console.log("=== RENDER INFO ===");
+  console.log("Current Page:", currentPage);
+  console.log("Pagination:", pagination);
+  console.log("Orders length:", orders.length);
+  console.log("Filtered orders length:", filteredOrders.length);
+  console.log("Hidden statuses:", hiddenStatuses);
+  console.log("Search params:", searchParams.toString());
+
   return (
     <div className="admin_order-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       {isUpdatingStatus && <Loading />}
+      
       <div className="admin_order-header">
         <div className="admin_order-title">
           <h1>Danh sách đơn hàng</h1>
           <p className="text-muted">Quản lý tất cả các đơn hàng trong hệ thống</p>
         </div>
       </div>
-      {/* Thanh tìm kiếm sát trái và kéo dài */}
+
+      {/* Search box */}
       <div style={{ width: '100%', maxWidth: 1200, margin: '0 auto', marginBottom: 16 }}>
         <div className="admin_order-search-box" style={{ width: '100%', position: 'relative', display: 'flex', alignItems: 'center' }}>
           <i
@@ -216,7 +253,8 @@ const OrdersList = () => {
           />
         </div>
       </div>
-      {/* Thêm tabs filter trạng thái */}
+
+      {/* Status tabs - ĐÃ CẬP NHẬT count để loại trừ hidden statuses */}
       <div className="admin_order-status-tabs" style={{ margin: '16px 0', width: '100%', maxWidth: 1200 }}>
         {statusTabs.map((status) => (
           <button
@@ -249,14 +287,26 @@ const OrdersList = () => {
                   display: 'inline-block'
                 }}
               >
-                {orders.filter(order => normalizeString(order.status) === normalizeString(status)).length}
+                {orders.filter(order => {
+                  const normalizedOrderStatus = normalizeString(order.status);
+                  const normalizedTabStatus = normalizeString(status);
+                  
+                  // Loại trừ hidden statuses khỏi count
+                  const isHiddenStatus = hiddenStatuses.some(hiddenStatus => 
+                    normalizedOrderStatus === normalizeString(hiddenStatus)
+                  );
+                  
+                  return !isHiddenStatus && normalizedOrderStatus === normalizedTabStatus;
+                }).length}
               </span>
             )}
           </button>
         ))}
       </div>
+
      
 
+      {/* Orders table */}
       {loading ? (
         <div className="admin_order-loading">
           <div className="spinner-border text-primary" role="status">
@@ -281,9 +331,9 @@ const OrdersList = () => {
               </tr>
             </thead>
             <tbody>
-              {paginatedOrders.length > 0 ? (
-                paginatedOrders.map((order, idx) => {
-                  const stt = (currentPage - 1) * ORDERS_PER_PAGE + idx + 1;
+              {filteredOrders.length > 0 ? (
+                filteredOrders.map((order, idx) => {
+                  const stt = (currentPage - 1) * 15 + idx + 1;
                   return (
                     <tr key={order.order_id}>
                       <td>
@@ -318,8 +368,7 @@ const OrdersList = () => {
                           <span className="admin_order-payment">{order.payment_method}</span>
                         )}
                       </td>
-                  <td><span className="admin_order-payment1">{order.payment_status}</span></td>
-
+                      <td><span className="admin_order-payment1">{order.payment_status}</span></td>
                       <td>
                         <span className={`admin_order-status ${getStatusColorClass(order.status)}`}>
                           {order.status}
@@ -411,7 +460,7 @@ const OrdersList = () => {
                 })
               ) : (
                 <tr>
-                  <td colSpan="7" className="admin_order-empty">
+                  <td colSpan="9" className="admin_order-empty">
                     <div>
                       <i className="bi bi-inbox" style={{ fontSize: '2rem', opacity: 0.5 }}></i>
                       <p>Không tìm thấy đơn hàng nào</p>
@@ -423,30 +472,101 @@ const OrdersList = () => {
           </table>
         </div>
       )}
-      {/* Pagination */}
-      <div className="admin_order-count">
-        Hiển thị {paginatedOrders.length} trong tổng số {filteredOrders.length} đơn hàng
+
+      <div style={{ 
+        marginTop: '20px', 
+        width: '100%',
+        maxWidth: 1200,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '15px'
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '10px',
+          flexWrap: 'wrap'
+        }}>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              console.log("⬅️ PREVIOUS CLICKED");
+              handlePageChange(currentPage - 1);
+            }}
+            disabled={currentPage <= 1}
+            style={{
+              padding: '8px 12px',
+              border: '1px solid #007aff',
+              borderRadius: '6px',
+              background: currentPage <= 1 ? '#f5f5f5' : '#007aff',
+              color: currentPage <= 1 ? '#999' : '#fff',
+              cursor: currentPage <= 1 ? 'not-allowed' : 'pointer',
+              fontSize: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+          >
+            <FiChevronLeft size={16} />
+            Trước
+          </button>
+
+          {/* Current page indicator */}
+          <div style={{
+            padding: '8px 16px',
+            backgroundColor: '#007aff',
+            color: 'white',
+            borderRadius: '6px',
+            fontWeight: 'bold',
+            border: '2px solid #007aff'
+          }}>
+            {currentPage}
+          </div>
+
+          {/* Next button */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              console.log("➡️ NEXT CLICKED");
+              handlePageChange(currentPage + 1);
+            }}
+            style={{
+              padding: '8px 12px',
+              border: '1px solid #007aff',
+              borderRadius: '6px',
+              background: '#007aff',
+              color: '#fff',
+              cursor: 'pointer',
+              fontSize: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+          >
+            Sau
+            <FiChevronRight size={16} />
+          </button>
+        </div>
+
+        {/* Page info */}
+        <div style={{
+          fontSize: '14px',
+          color: '#666',
+          textAlign: 'center'
+        }}>
+          Trang {currentPage} - Hiển thị {filteredOrders.length} đơn hàng
+          {pagination && (
+            <div style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>
+              Tổng: {pagination.totalItems || orders.length} đơn hàng | 
+              {pagination.totalPage || 1} trang
+            </div>
+          )}
+        </div>
       </div>
-      <div className="adminorder-pagination">
-        <button
-          className="adminorder-page-btn"
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          Trang trước
-        </button>
-        <span className="adminorder-page-info">
-          {currentPage} / {lastPage}
-        </span>
-        <button
-          className="adminorder-page-btn"
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === lastPage}
-        >
-          Trang sau
-        </button>
-      </div>
-      {/* Modal giữ nguyên */}
+
+      {/* Các modal giữ nguyên */}
       {selectedOrder && (
         <div className="adminorder-modal-backdrop">
           <div className="adminorder-modal">
@@ -549,6 +669,7 @@ const OrdersList = () => {
           </div>
         </div>
       )}
+
       {/* Modal huỷ đơn hàng */}
       {showCancelModal && (
         <div className="adminorder-modal-backdrop">
