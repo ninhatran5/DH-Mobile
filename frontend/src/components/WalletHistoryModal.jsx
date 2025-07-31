@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import "../assets/css/wallet-modal.css";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { fetchBalanceFluctuation, fetchWallet } from "../slices/walletSlice";
 import numberFormat from "../../utils/numberFormat";
 import Loading from "./Loading";
@@ -10,7 +10,11 @@ import dayjs from "dayjs";
 const WalletHistoryModal = ({ show, onClose }) => {
   const [closing, setClosing] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10); // Số item mỗi trang
+  const [itemsPerPage] = useState(10);
+
+  // Thêm state cho tìm kiếm và lọc
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedType, setSelectedType] = useState("");
 
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -26,12 +30,42 @@ const WalletHistoryModal = ({ show, onClose }) => {
     }
   }, [dispatch, wallets?.wallet_id]);
 
-  // Reset về trang 1 khi modal mở
   useEffect(() => {
     if (show) {
       setCurrentPage(1);
+      setSearchTerm("");
+      setSelectedType("");
     }
   }, [show]);
+
+  // Lấy danh sách các loại giao dịch duy nhất
+  const transactionTypes = useMemo(() => {
+    const types = [...new Set(balanceFluctuation.map((item) => item.type))];
+    return types.filter((type) => type); // Loại bỏ giá trị null/undefined
+  }, [balanceFluctuation]);
+
+  // Lọc dữ liệu dựa trên tìm kiếm và loại giao dịch
+  const filteredData = useMemo(() => {
+    let filtered = balanceFluctuation;
+
+    // Lọc theo từ khóa tìm kiếm
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase().trim();
+      filtered = filtered.filter(
+        (item) =>
+          item.type?.toLowerCase().includes(searchLower) ||
+          item.note?.toLowerCase().includes(searchLower) ||
+          item.amount?.toString().includes(searchTerm)
+      );
+    }
+
+    // Lọc theo loại giao dịch
+    if (selectedType) {
+      filtered = filtered.filter((item) => item.type === selectedType);
+    }
+
+    return filtered;
+  }, [balanceFluctuation, searchTerm, selectedType]);
 
   const handleClose = () => {
     setClosing(true);
@@ -41,21 +75,23 @@ const WalletHistoryModal = ({ show, onClose }) => {
     }, 300);
   };
 
-  // Tính toán phân trang
-  const totalItems = balanceFluctuation.length;
+  const totalItems = filteredData.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentItems = balanceFluctuation.slice(startIndex, endIndex);
+  const currentItems = filteredData.slice(startIndex, endIndex);
 
-  // Xử lý chuyển trang
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
     }
   };
 
-  // Tạo danh sách các trang để hiển thị
+  // Reset về trang 1 khi filter thay đổi
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedType]);
+
   const getPageNumbers = () => {
     const pages = [];
     const maxVisiblePages = 5;
@@ -96,6 +132,11 @@ const WalletHistoryModal = ({ show, onClose }) => {
       : "#16a34a";
   };
 
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setSelectedType("");
+  };
+
   return (
     <>
       {loading && <Loading />}
@@ -111,10 +152,93 @@ const WalletHistoryModal = ({ show, onClose }) => {
               &times;
             </button>
           </div>
+
+          {/* Thêm phần filter và search */}
+          <div className="wallet-modal-filters">
+            <div className="wallet-filter-row">
+              <div className="wallet-search-box">
+                <input
+                  type="text"
+                  placeholder={
+                    t("walletHistory.search.placeholder") ||
+                    "Tìm kiếm giao dịch..."
+                  }
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="wallet-search-input"
+                />
+                <svg
+                  className="wallet-search-icon"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
+              </div>
+
+              <div className="wallet-type-filter">
+                <select
+                  value={selectedType}
+                  onChange={(e) => setSelectedType(e.target.value)}
+                  className="wallet-type-select"
+                >
+                  <option value="">
+                    {t("walletHistory.filter.allTypes") || "Tất cả loại"}
+                  </option>
+                  {transactionTypes.map((type, index) => (
+                    <option key={index} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {(searchTerm || selectedType) && (
+                <button
+                  onClick={handleClearFilters}
+                  className="wallet-clear-filters-btn"
+                  title={t("walletHistory.filter.clear") || "Xóa bộ lọc"}
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              )}
+            </div>
+
+            {(searchTerm || selectedType) && (
+              <div className="wallet-filter-results">
+                {t("walletHistory.filter.results", { count: totalItems })}
+                {selectedType && (
+                  <span className="wallet-filter-tag">
+                    {t("walletHistory.filter.type")} {selectedType}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+
           <div className="wallet-modal-body">
-            {balanceFluctuation.length === 0 ? (
+            {filteredData.length === 0 ? (
               <div className="wallet-modal-empty">
-                {t("walletHistory.empty")}
+                {searchTerm || selectedType
+                  ? t("walletHistory.noResults") ||
+                    "Không tìm thấy giao dịch nào phù hợp"
+                  : t("walletHistory.emptyTransaction") ||
+                    "Chưa có giao dịch nào"}
               </div>
             ) : (
               <>
@@ -154,7 +278,6 @@ const WalletHistoryModal = ({ show, onClose }) => {
                   </tbody>
                 </table>
 
-                {/* Phân trang */}
                 {totalPages > 1 && (
                   <div className="wallet-pagination">
                     <div className="wallet-pagination-info">

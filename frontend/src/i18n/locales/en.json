@@ -573,7 +573,6 @@
     "return-processing": "Processing",
     "return-refund": "Returned",
     "return-rejected": "Rejected"
-
   },
   "review": {
     "title": "Product Review",
@@ -717,10 +716,22 @@
     "type": "Transaction Type",
     "amount": "Amount",
     "note": "Note",
+    "emptyTransaction": "No transactions yet",
+    "noResults": "No matching transactions found",
     "pagination": {
       "showing": "Showing {{start}}-{{end}} of {{total}} transactions",
       "previous": "Previous page",
       "next": "Next page"
+    },
+    "search": {
+      "placeholder": "Search transactions..."
+    },
+    "filter": {
+      "allTypes": "All Types",
+      "clear": "Clear filters",
+      "results": "Found {{count}} transactions",
+      "searchFor": "Search for:",
+      "type": "Type:"
     }
   },
   "modal": {
