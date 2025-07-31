@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Form, Button, Container, Row, Col, Card } from "react-bootstrap";
@@ -12,7 +10,7 @@ import "../../assets/admin/AddAccount.css";
 import { IoEyeSharp } from "react-icons/io5";
 import { BsEyeSlashFill } from "react-icons/bs";
 import Loading from "../../components/Loading";
-import cancel from '../../assets/images/cancel-close-svgrepo-com.svg';
+
 const AddAccount = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -42,8 +40,12 @@ const AddAccount = () => {
   const [selectedWard, setSelectedWard] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [formErrors, setFormErrors] = useState({});
+  const [addressErrors, setAddressErrors] = useState({
+    province: "",
+    district: "",
+    ward: "",
+  });
 
-  // Các useEffect và functions validation giống như cũ...
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
@@ -74,6 +76,7 @@ const AddAccount = () => {
             provinces.find((p) => p.code === Number(selectedProvince))?.name ||
             "";
           setFormData((prev) => ({ ...prev, city: provinceName }));
+          setAddressErrors((prev) => ({ ...prev, province: "" }));
         } catch (error) {
           console.error("Error fetching districts:", error);
           toast.error("Không thể tải danh sách quận/huyện");
@@ -83,7 +86,7 @@ const AddAccount = () => {
         setSelectedDistrict("");
         setWards([]);
         setSelectedWard("");
-        setFormData((prev) => ({ ...prev, city: "" }));
+        setFormData((prev) => ({ ...prev, city: "", district: "", ward: "" }));
       }
     };
     fetchDistricts();
@@ -102,6 +105,7 @@ const AddAccount = () => {
             districts.find((d) => d.code === Number(selectedDistrict))?.name ||
             "";
           setFormData((prev) => ({ ...prev, district: districtName }));
+          setAddressErrors((prev) => ({ ...prev, district: "" }));
         } catch (error) {
           console.error("Error fetching wards:", error);
           toast.error("Không thể tải danh sách phường/xã");
@@ -109,7 +113,7 @@ const AddAccount = () => {
       } else {
         setWards([]);
         setSelectedWard("");
-        setFormData((prev) => ({ ...prev, district: "" }));
+        setFormData((prev) => ({ ...prev, district: "", ward: "" }));
       }
     };
     fetchWards();
@@ -120,6 +124,7 @@ const AddAccount = () => {
       const wardName =
         wards.find((w) => w.code === Number(selectedWard))?.name || "";
       setFormData((prev) => ({ ...prev, ward: wardName }));
+      setAddressErrors((prev) => ({ ...prev, ward: "" }));
     } else {
       setFormData((prev) => ({ ...prev, ward: "" }));
     }
@@ -157,7 +162,19 @@ const AddAccount = () => {
         error =
           "Mật khẩu phải từ 8-16 ký tự, có chữ hoa, chữ thường, số, ký tự đặc biệt và không chứa khoảng trắng!";
     }
+    if (name === "role") {
+      if (!value.trim()) error = "Vai trò là bắt buộc";
+    }
     return error;
+  };
+
+  const validateAddressFields = () => {
+    const errors = {};
+    if (!selectedProvince) errors.province = "Vui lòng chọn tỉnh/thành phố";
+    if (!selectedDistrict) errors.district = "Vui lòng chọn quận/huyện";
+    if (!selectedWard) errors.ward = "Vui lòng chọn phường/xã";
+    setAddressErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleInputChange = (e) => {
@@ -184,13 +201,22 @@ const AddAccount = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate all fields
     const errors = {};
     Object.keys(formData).forEach((key) => {
       const err = validateField(key, formData[key]);
       if (err) errors[key] = err;
     });
     setFormErrors(errors);
-    if (Object.keys(errors).length > 0) return;
+
+    // Validate address fields
+    const isAddressValid = validateAddressFields();
+
+    if (Object.keys(errors).length > 0 || !isAddressValid) {
+      toast.error("Vui lòng điền đầy đủ và chính xác thông tin");
+      return;
+    }
 
     setLoading(true);
     try {
@@ -198,15 +224,37 @@ const AddAccount = () => {
       Object.keys(formData).forEach((key) => {
         formDataToSend.append(key, formData[key] ?? "");
       });
+
       const resultAction = await dispatch(addUser(formDataToSend));
+
       if (addUser.fulfilled.match(resultAction)) {
         toast.success("Tạo tài khoản thành công!");
         navigate("/admin/accounts");
       } else {
-        toast.error(resultAction.payload || "Không thể tạo tài khoản");
+        const errorMessage = resultAction.payload || "Không thể tạo tài khoản";
+        toast.error(errorMessage);
+
+        // Handle specific error cases
+        if (errorMessage.includes("username")) {
+          setFormErrors((prev) => ({
+            ...prev,
+            username: "Tên đăng nhập đã tồn tại",
+          }));
+        } else if (errorMessage.includes("email")) {
+          setFormErrors((prev) => ({
+            ...prev,
+            email: "Email đã được sử dụng",
+          }));
+        } else if (errorMessage.includes("phone")) {
+          setFormErrors((prev) => ({
+            ...prev,
+            phone: "Số điện thoại đã được sử dụng",
+          }));
+        }
       }
     } catch (error) {
-      toast.error("Lỗi khi tạo tài khoản");
+      console.error("Error creating account:", error);
+      toast.error("Lỗi khi tạo tài khoản. Vui lòng thử lại sau.");
     } finally {
       setLoading(false);
     }
@@ -237,7 +285,6 @@ const AddAccount = () => {
           <div className="form-card">
             <form onSubmit={handleSubmit}>
               {/* Avatar Upload Section - Centered */}
-
               <div className="avatar-section">
                 <div className="avatar-preview2">
                   {imagePreview ? (
@@ -256,7 +303,9 @@ const AddAccount = () => {
                         }}
                         className="remove-btn"
                       >
-                       <><span>×</span></>
+                        <>
+                          <span>×</span>
+                        </>
                       </button>
                     </div>
                   ) : (
@@ -325,9 +374,7 @@ const AddAccount = () => {
                       value={formData.username}
                       onChange={handleInputChange}
                       placeholder="Nhập tên đăng nhập"
-                      className={`form-input ${
-                        formErrors.username ? "error" : ""
-                      }`}
+                      className={`form-input ${formErrors.username}`}
                     />
                     {formErrors.username && (
                       <span className="error-text">{formErrors.username}</span>
@@ -365,9 +412,7 @@ const AddAccount = () => {
                       value={formData.full_name}
                       onChange={handleInputChange}
                       placeholder="Nhập họ và tên đầy đủ"
-                      className={`form-input ${
-                        formErrors.full_name ? "error" : ""
-                      }`}
+                      className={`form-input ${formErrors.full_name}`}
                     />
                     {formErrors.full_name && (
                       <span className="error-text">{formErrors.full_name}</span>
@@ -407,9 +452,7 @@ const AddAccount = () => {
                       value={formData.email}
                       onChange={handleInputChange}
                       placeholder="example@email.com"
-                      className={`form-input ${
-                        formErrors.email ? "error" : ""
-                      }`}
+                      className={`form-input ${formErrors.email}`}
                     />
                     {formErrors.email && (
                       <span className="error-text">{formErrors.email}</span>
@@ -438,9 +481,7 @@ const AddAccount = () => {
                       value={formData.phone}
                       onChange={handleInputChange}
                       placeholder="0123456789"
-                      className={`form-input ${
-                        formErrors.phone ? "error" : ""
-                      }`}
+                      className={`form-input ${formErrors.phone}`}
                     />
                     {formErrors.phone && (
                       <span className="error-text">{formErrors.phone}</span>
@@ -472,9 +513,7 @@ const AddAccount = () => {
                         value={formData.password}
                         onChange={handleInputChange}
                         placeholder="Nhập mật khẩu"
-                        className={`form-input ${
-                          formErrors.password ? "error" : ""
-                        }`}
+                        className={`form-input ${formErrors.password}`}
                       />
                       <button
                         type="button"
@@ -521,7 +560,7 @@ const AddAccount = () => {
                       name="role"
                       value={formData.role}
                       onChange={handleInputChange}
-                      className="form-select"
+                      className={`form-select ${formErrors.role}`}
                       style={{
                         height: "53px",
                         border: "1px solid #ccc",
@@ -533,6 +572,9 @@ const AddAccount = () => {
                       <option value="admin">Quản trị viên</option>
                       <option value="staff">Nhân viên</option>
                     </select>
+                    {formErrors.role && (
+                      <span className="error-text">{formErrors.role}</span>
+                    )}
                   </div>
                 </div>
 
@@ -564,7 +606,7 @@ const AddAccount = () => {
                       <select
                         value={selectedProvince}
                         onChange={(e) => setSelectedProvince(e.target.value)}
-                        className="form-select"
+                        className={`form-select ${addressErrors.province}`}
                         disabled={loading}
                       >
                         <option value="">Chọn tỉnh/thành phố</option>
@@ -574,6 +616,11 @@ const AddAccount = () => {
                           </option>
                         ))}
                       </select>
+                      {addressErrors.province && (
+                        <span className="error-text">
+                          {addressErrors.province}
+                        </span>
+                      )}
                     </div>
 
                     <div className="form-group mt-3">
@@ -584,7 +631,7 @@ const AddAccount = () => {
                         value={selectedDistrict}
                         onChange={(e) => setSelectedDistrict(e.target.value)}
                         disabled={!selectedProvince || loading}
-                        className="form-select"
+                        className={`form-select ${addressErrors.district}`}
                       >
                         <option value="">Chọn quận/huyện</option>
                         {districts.map((district) => (
@@ -593,8 +640,12 @@ const AddAccount = () => {
                           </option>
                         ))}
                       </select>
+                      {addressErrors.district && (
+                        <span className="error-text">
+                          {addressErrors.district}
+                        </span>
+                      )}
                     </div>
-
                     <div className="form-group mt-3">
                       <label className="form-label">
                         Phường/Xã <span className="required">*</span>
@@ -603,7 +654,7 @@ const AddAccount = () => {
                         value={selectedWard}
                         onChange={(e) => setSelectedWard(e.target.value)}
                         disabled={!selectedDistrict || loading}
-                        className="form-select"
+                        className={`form-select ${addressErrors.ward}`}
                       >
                         <option value="">Chọn phường/xã</option>
                         {wards.map((ward) => (
@@ -612,6 +663,9 @@ const AddAccount = () => {
                           </option>
                         ))}
                       </select>
+                      {addressErrors.ward && (
+                        <span className="error-text">{addressErrors.ward}</span>
+                      )}
                     </div>
                   </div>
 
@@ -625,9 +679,7 @@ const AddAccount = () => {
                       onChange={handleInputChange}
                       style={{ fontSize: "15px" }}
                       placeholder="Nhập số nhà, tên đường..."
-                      className={`form-textarea ${
-                        formErrors.address ? "error" : ""
-                      }`}
+                      className={`form-textarea ${formErrors.address}`}
                       rows="4"
                       disabled={loading}
                     />
@@ -662,6 +714,11 @@ const AddAccount = () => {
                     setSelectedDistrict("");
                     setSelectedWard("");
                     setFormErrors({});
+                    setAddressErrors({
+                      province: "",
+                      district: "",
+                      ward: "",
+                    });
                   }}
                   className="reset-btn"
                   disabled={loading}
