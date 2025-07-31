@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPaginatedAdminOrders, updateOrderStatus, cancelOrder } from "../../slices/adminOrderSlice";
+import { fetchAdminOrders, fetchPaginatedAdminOrders, updateOrderStatus, cancelOrder } from "../../slices/adminOrderSlice";
 import "../../assets/admin/HomeAdmin.css";
 import "../../assets/admin/order.css";
 import "../../assets/admin/OrdersList.css";
@@ -32,18 +32,31 @@ const OrdersList = () => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isFiltering, setIsFiltering] = useState(false); // Trạng thái để biết đang lọc hay phân trang
 
   const navigate = useNavigate();
 
   // Lấy current page từ URL, mặc định là 1
   const currentPage = parseInt(searchParams.get("page")) || 1;
 
-  // Sử dụng fetchPaginatedAdminOrders thay vì fetchAdminOrders
+  // Effect chính để fetch data
   useEffect(() => {
     console.log("=== FETCH DATA ===");
-    console.log("Fetching orders for page:", currentPage);
-    dispatch(fetchPaginatedAdminOrders(currentPage));
-  }, [currentPage, dispatch]);
+    console.log("Selected Status Tab:", selectedStatusTab);
+    console.log("Current Page:", currentPage);
+    
+    if (selectedStatusTab === "Tất cả") {
+      // Sử dụng phân trang khi không lọc trạng thái
+      console.log("Fetching paginated orders for page:", currentPage);
+      setIsFiltering(false);
+      dispatch(fetchPaginatedAdminOrders(currentPage));
+    } else {
+      // Sử dụng fetch tất cả khi lọc theo trạng thái
+      console.log("Fetching all orders for filtering by status:", selectedStatusTab);
+      setIsFiltering(true);
+      dispatch(fetchAdminOrders());
+    }
+  }, [selectedStatusTab, currentPage, dispatch]);
 
   // useEffect riêng để đảm bảo URL có page parameter
   useEffect(() => {
@@ -53,21 +66,40 @@ const OrdersList = () => {
     }
   }, [searchParams, setSearchParams]);
 
-  // Function chuyển trang - đã được cập nhật
+  // Function chuyển trang - cập nhật để xử lý cả hai trường hợp
   const handlePageChange = (newPage) => {
     console.log("=== HANDLE PAGE CHANGE ===");
     console.log("Requested page:", newPage);
     console.log("Current page:", currentPage);
-    console.log("Total pages:", pagination?.lastPage);
+    console.log("Is Filtering:", isFiltering);
     
     const pageNumber = parseInt(newPage);
     
-    if (pageNumber && pageNumber > 0 && pageNumber <= pagination?.lastPage) {
-      console.log("✅ Changing to page:", pageNumber);
-      setSearchParams({ page: pageNumber.toString() });
+    if (isFiltering) {
+      // Khi đang lọc trạng thái, chỉ cập nhật URL để hiển thị đúng trang
+      // Không cần gọi API vì đã có tất cả data
+      if (pageNumber && pageNumber > 0) {
+        console.log("✅ Changing page during filtering:", pageNumber);
+        setSearchParams({ page: pageNumber.toString() });
+      }
     } else {
-      console.log("❌ Invalid page:", pageNumber);
+      // Khi không lọc, sử dụng logic pagination bình thường
+      if (pageNumber && pageNumber > 0 && pageNumber <= (pagination?.lastPage || 1)) {
+        console.log("✅ Changing to page:", pageNumber);
+        setSearchParams({ page: pageNumber.toString() });
+      } else {
+        console.log("❌ Invalid page:", pageNumber);
+      }
     }
+  };
+
+  // Function để xử lý thay đổi tab trạng thái
+  const handleStatusTabChange = (status) => {
+    console.log("=== STATUS TAB CHANGE ===");
+    console.log("New status:", status);
+    setSelectedStatusTab(status);
+    // Reset về trang 1 khi thay đổi trạng thái
+    setSearchParams({ page: "1" });
   };
 
   const normalizeString = (str) =>
@@ -95,9 +127,9 @@ const OrdersList = () => {
     "Đã trả hàng"
   ];
 
-  // Cập nhật filteredOrders - chỉ filter client-side cho trang hiện tại
+  // Cập nhật filteredOrders để xử lý cả hai trường hợp
   const filteredOrders = useMemo(() => {
-    return orders.filter((order) => {
+    let filtered = orders.filter((order) => {
       const normalizedStatus = normalizeString(order.status);
       
       // Kiểm tra xem trạng thái có trong danh sách ẩn không
@@ -105,7 +137,42 @@ const OrdersList = () => {
         normalizedStatus === normalizeString(hiddenStatus)
       );
       
-      // Lọc theo search term và status tab
+      // Lọc theo search term
+      const matchesSearch = normalizeString(order.order_code).includes(normalizeString(searchTerm)) ||
+                           normalizeString(order.customer).includes(normalizeString(searchTerm));
+      
+      // Lọc theo status tab
+      const matchesStatus = selectedStatusTab === "Tất cả" || 
+                           normalizedStatus === normalizeString(selectedStatusTab);
+      
+      return !isHiddenStatus && matchesSearch && matchesStatus;
+    });
+
+    // Nếu đang lọc theo trạng thái (không phải "Tất cả"), thực hiện phân trang client-side
+    if (isFiltering && selectedStatusTab !== "Tất cả") {
+      const itemsPerPage = 15;
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      return filtered.slice(startIndex, endIndex);
+    }
+
+    return filtered;
+  }, [orders, searchTerm, selectedStatusTab, hiddenStatuses, isFiltering, currentPage]);
+
+  // Tính toán thông tin pagination cho client-side filtering
+  const clientPagination = useMemo(() => {
+    if (!isFiltering || selectedStatusTab === "Tất cả") {
+      return pagination;
+    }
+
+    // Lọc tất cả orders theo điều kiện (không phân trang)
+    const allFilteredOrders = orders.filter((order) => {
+      const normalizedStatus = normalizeString(order.status);
+      
+      const isHiddenStatus = hiddenStatuses.some(hiddenStatus => 
+        normalizedStatus === normalizeString(hiddenStatus)
+      );
+      
       const matchesSearch = normalizeString(order.order_code).includes(normalizeString(searchTerm)) ||
                            normalizeString(order.customer).includes(normalizeString(searchTerm));
       
@@ -114,11 +181,26 @@ const OrdersList = () => {
       
       return !isHiddenStatus && matchesSearch && matchesStatus;
     });
-  }, [orders, searchTerm, selectedStatusTab, hiddenStatuses]);
+
+    const itemsPerPage = 15;
+    const totalItems = allFilteredOrders.length;
+    const lastPage = Math.ceil(totalItems / itemsPerPage) || 1;
+
+    return {
+      currentPage: currentPage,
+      lastPage: lastPage,
+      perPage: itemsPerPage,
+      total: totalItems
+    };
+  }, [orders, searchTerm, selectedStatusTab, hiddenStatuses, isFiltering, currentPage, pagination]);
 
   // Hàm refresh data sau khi cập nhật
   const refreshCurrentPage = () => {
-    dispatch(fetchPaginatedAdminOrders(currentPage));
+    if (selectedStatusTab === "Tất cả") {
+      dispatch(fetchPaginatedAdminOrders(currentPage));
+    } else {
+      dispatch(fetchAdminOrders());
+    }
   };
 
   const handleViewOrder = (order) => {
@@ -147,7 +229,7 @@ const OrdersList = () => {
             if (action?.type?.endsWith("/fulfilled")) {
               setSelectedOrder(null);
               Swal.fire("Thành công", "Trạng thái đơn hàng đã được cập nhật.", "success");
-              refreshCurrentPage(); // Refresh trang hiện tại
+              refreshCurrentPage(); // Refresh data
             } else {
               Swal.fire("Lỗi", "Cập nhật trạng thái đơn hàng thất bại.", "error");
             }
@@ -177,7 +259,7 @@ const OrdersList = () => {
         setShowCancelModal(false);
         setOrderToCancel(null);
         Swal.fire("Đã huỷ đơn hàng", "Đơn hàng đã được huỷ thành công.", "success");
-        refreshCurrentPage(); // Refresh trang hiện tại
+        refreshCurrentPage(); // Refresh data
       })
       .finally(() => {
         setIsUpdatingStatus(false);
@@ -217,11 +299,11 @@ const OrdersList = () => {
   // Debug logs
   console.log("=== RENDER INFO ===");
   console.log("Current Page:", currentPage);
-  console.log("Pagination:", pagination);
+  console.log("Selected Status Tab:", selectedStatusTab);
+  console.log("Is Filtering:", isFiltering);
+  console.log("Pagination:", clientPagination);
   console.log("Orders length:", orders.length);
   console.log("Filtered orders length:", filteredOrders.length);
-  console.log("Hidden statuses:", hiddenStatuses);
-  console.log("Search params:", searchParams.toString());
 
   return (
     <div className="admin_order-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -259,13 +341,13 @@ const OrdersList = () => {
         </div>
       </div>
 
-      {/* Status tabs - Đơn giản hóa count (chỉ đếm orders hiện tại) */}
+      {/* Status tabs - cập nhật để sử dụng handleStatusTabChange */}
       <div className="admin_order-status-tabs" style={{ margin: '16px 0', width: '100%', maxWidth: 1200 }}>
         {statusTabs.map((status) => (
           <button
             key={status}
             className={`admin_order-status-tab${selectedStatusTab === status ? ' active' : ''}`}
-            onClick={() => setSelectedStatusTab(status)}
+            onClick={() => handleStatusTabChange(status)}
             style={{
               marginRight: 8,
               padding: '6px 16px',
@@ -335,7 +417,7 @@ const OrdersList = () => {
             <tbody>
               {filteredOrders.length > 0 ? (
                 filteredOrders.map((order, idx) => {
-                  const stt = (currentPage - 1) * (pagination?.perPage || 15) + idx + 1;
+                  const stt = (currentPage - 1) * (clientPagination?.perPage || 15) + idx + 1;
                   return (
                     <tr key={order.order_id}>
                       <td>
@@ -475,7 +557,7 @@ const OrdersList = () => {
         </div>
       )}
 
-      {/* Pagination - cập nhật để sử dụng pagination từ server */}
+      {/* Pagination - cập nhật để sử dụng clientPagination */}
       <div style={{ 
         marginTop: '20px', 
         width: '100%',
@@ -549,14 +631,14 @@ const OrdersList = () => {
           {/* Next button */}
           <button
             onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage >= (pagination?.lastPage || 1)}
+            disabled={currentPage >= (clientPagination?.lastPage || 1)}
             style={{
               padding: '8px 12px',
               border: '1px solid #007aff',
               borderRadius: '6px',
-              background: currentPage >= (pagination?.lastPage || 1) ? '#f5f5f5' : '#007aff',
-              color: currentPage >= (pagination?.lastPage || 1) ? '#999' : '#fff',
-              cursor: currentPage >= (pagination?.lastPage || 1) ? 'not-allowed' : 'pointer',
+              background: currentPage >= (clientPagination?.lastPage || 1) ? '#f5f5f5' : '#007aff',
+              color: currentPage >= (clientPagination?.lastPage || 1) ? '#999' : '#fff',
+              cursor: currentPage >= (clientPagination?.lastPage || 1) ? 'not-allowed' : 'pointer',
               fontSize: '14px',
               display: 'flex',
               alignItems: 'center',
@@ -569,15 +651,15 @@ const OrdersList = () => {
 
           {/* Last page button */}
           <button
-            onClick={() => handlePageChange(pagination?.lastPage || 1)}
-            disabled={currentPage >= (pagination?.lastPage || 1)}
+            onClick={() => handlePageChange(clientPagination?.lastPage || 1)}
+            disabled={currentPage >= (clientPagination?.lastPage || 1)}
             style={{
               padding: '8px 12px',
               border: '1px solid #007aff',
               borderRadius: '6px',
-              background: currentPage >= (pagination?.lastPage || 1) ? '#f5f5f5' : '#007aff',
-              color: currentPage >= (pagination?.lastPage || 1) ? '#999' : '#fff',
-              cursor: currentPage >= (pagination?.lastPage || 1) ? 'not-allowed' : 'pointer',
+              background: currentPage >= (clientPagination?.lastPage || 1) ? '#f5f5f5' : '#007aff',
+              color: currentPage >= (clientPagination?.lastPage || 1) ? '#999' : '#fff',
+              cursor: currentPage >= (clientPagination?.lastPage || 1) ? 'not-allowed' : 'pointer',
               fontSize: '14px',
               display: 'flex',
               alignItems: 'center',
@@ -595,17 +677,22 @@ const OrdersList = () => {
           color: '#666',
           textAlign: 'center'
         }}>
-          Trang {currentPage} / {pagination?.lastPage || 1} - 
+          Trang {currentPage} / {clientPagination?.lastPage || 1} - 
           Hiển thị {filteredOrders.length} đơn hàng
-          {pagination && (
+          {clientPagination && (
             <div style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>
-              Tổng: {pagination.total || 0} đơn hàng
+              Tổng: {clientPagination.total || 0} đơn hàng
+              {isFiltering && selectedStatusTab !== "Tất cả" && (
+                <span style={{ color: '#007aff', fontWeight: 500 }}>
+                  {" "}(Đang lọc theo: {selectedStatusTab})
+                </span>
+              )}
             </div>
           )}
         </div>
       </div>
 
-      {/* Modal sửa trạng thái đơn hàng */}
+      {/* Các modal giữ nguyên như code trước */}
       {selectedOrder && (
         <div className="adminorder-modal-backdrop">
           <div className="adminorder-modal">
