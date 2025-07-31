@@ -165,6 +165,7 @@ class OrderController extends Controller
                 'order_code' => $order->order_code,
                 'customer' =>  $order->customer,
                 "image_url" => $order->user->image_url,
+                'email' => $order->email,
                 'total_amount' => number_format($order->total_amount, 0, '.', ''),
                 'payment_status' => $order->payment_status,
                 'payment_method' => $order->paymentMethods ? $order->paymentMethods->name : null,
