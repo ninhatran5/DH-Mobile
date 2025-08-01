@@ -1,10 +1,9 @@
 import axios from "axios";
 
-// === Base ===
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const BASE_URL_ADDRESS = import.meta.env.VITE_BASE_URL_ADDRESS;
+const BASE_URL_BANK = import.meta.env.VITE_BASE_URL_BANK;
 
-// === Admin instance ===
 export const axiosAdmin = axios.create({
   baseURL: BASE_URL,
   timeout: 10000,
@@ -18,7 +17,6 @@ axiosAdmin.interceptors.request.use((config) => {
   return config;
 });
 
-// === User instance ===
 export const axiosUser = axios.create({
   baseURL: BASE_URL,
   timeout: 10000,
@@ -34,5 +32,10 @@ axiosUser.interceptors.request.use((config) => {
 
 export const axiosConfigAddress = axios.create({
   baseURL: BASE_URL_ADDRESS,
+  timeout: 10000,
+});
+
+export const axiosConfigBank = axios.create({
+  baseURL: BASE_URL_BANK,
   timeout: 10000,
 });
