@@ -786,6 +786,7 @@
     "no": "No",
     "selectBankPlaceholder": "Select a bank",
     "updateBankAccount": "Update Bank Account",
-    "bankAccountUpdated": "Bank account updated successfully"
+    "bankAccountUpdated": "Bank account updated successfully",
+    "editBankAccount": "Edit Bank Account"
   }
 }

@@ -786,6 +786,7 @@
     "no": "Không",
     "selectBankPlaceholder": "Chọn ngân hàng",
     "updateAccount": "Cập nhật tài khoản giao dịch",
-    "bankAccountUpdated": "Cập nhật tài khoản thành công"
+    "bankAccountUpdated": "Cập nhật tài khoản thành công",
+    "editBankAccount": "Chỉnh sửa tài khoản giao dịch"
   }
 }
