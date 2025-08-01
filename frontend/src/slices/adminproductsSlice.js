@@ -92,15 +92,18 @@ export const restoreAdminProduct = createAsyncThunk(
   async (productId, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      await axiosAdmin.post(`/products/restore/${productId}`, null, {
+      await axiosAdmin.post(`/products/restore/${productId}?_method=PUT`, null, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return productId;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Lỗi khi khôi phục sản phẩm");
+      return rejectWithValue(
+        err.response?.data?.message || "Lỗi khi khôi phục sản phẩm"
+      );
     }
   }
 );
+
 
 // Thêm sản phẩm
 export const addAdminProduct = createAsyncThunk(
