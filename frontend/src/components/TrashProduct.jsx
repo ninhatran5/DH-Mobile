@@ -26,11 +26,7 @@ const TrashList = () => {
     dispatch(fetchTrashedAdminProducts());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (error) {
-      toast.error(`Lỗi từ server: ${error}`);
-    }
-  }, [error]);
+
 
   const handleSelectAll = (e) => {
     if (e.target.checked) {
