@@ -20,25 +20,25 @@ class ChatLiveController extends Controller
     public function sendMessage(Request $request)
     {
         $user = Auth::user();
-    
+
         if ($user->role !== 'customer') {
             return response()->json(['message' => 'Bạn không có quyền gửi tin nhắn.'], 403);
         }
-    
+
         // Validate: Cho phép gửi message, ảnh, hoặc cả hai. Nếu cả hai đều rỗng thì báo lỗi.
         $request->validate([
             'message' => 'nullable|string',
             'attachments' => 'nullable',
             'attachments.*' => 'file|mimes:jpg,jpeg,png,gif,svg,pdf,docx,txt|max:4096'
         ]);
-    
+
         if (
             (empty($request->message) || trim($request->message) === '')
             && !$request->hasFile('attachments')
         ) {
             return response()->json(['message' => 'Tin nhắn hoặc ảnh không được để trống.'], 422);
         }
-    
+
         $chat = SupportChat::create([
             'customer_id' => $user->user_id,
             'sender' => 'customer',
@@ -46,7 +46,7 @@ class ChatLiveController extends Controller
             'sent_at' => now(),
             'is_read' => false,
         ]);
-    
+
         if ($request->hasFile('attachments')) {
             $cloudinary = app(Cloudinary::class);
             $files = $request->file('attachments');
@@ -72,7 +72,7 @@ class ChatLiveController extends Controller
                 }
             }
         }
-    
+
         $staffList = User::whereIn('role', ['admin', 'sale'])->pluck('user_id');
         foreach ($staffList as $staffId) {
             SupportChatNotification::create([
@@ -81,9 +81,9 @@ class ChatLiveController extends Controller
                 'is_read' => false,
             ]);
         }
-    
+
         broadcast(new SupportChatSent($chat->load('attachments')))->toOthers();
-    
+
         return response()->json([
             'success' => true,
             'chat' => $chat->load('attachments')
@@ -210,14 +210,17 @@ class ChatLiveController extends Controller
     //  Đánh dấu một tin nhắn là đã đọc
     public function markAsRead($userId)
     {
-        // $userId = Auth::id();
-        // Đánh dấu tất cả tin nhắn chưa đọc của user này là đã đọc
-        SupportChat::where('user_id', $userId)
+        // Xác định người này là staff hay customer
+        $isCustomer = Auth::user()->role === 'customer'; // Hoặc cách xác định khác tùy hệ thống của bạn
+
+        SupportChat::where($isCustomer ? 'customer_id' : 'staff_id', $userId)
+            ->where('sender', '!=', $userId) // Chỉ đánh dấu những tin nhắn không phải do chính người đó gửi
             ->where('is_read', false)
             ->update(['is_read' => true]);
 
         return response()->json(['success' => true]);
     }
+
 
     // danh sách user nhắn tin cho admin và sale
     public function getCustomersChatList()
@@ -294,7 +297,7 @@ class ChatLiveController extends Controller
         }
 
         // Đếm số tin nhắn chưa đọc từ customer này gửi đến staff hiện tại
-        $unreadCount = SupportChatNotification::where('user_id', $staff->user_id)
+        $unreadCount = SupportChat::where('user_id', $staff->user_id)
             ->where('is_read', false)
             ->whereHas('chat', function ($query) use ($customerId) {
                 $query->where('customer_id', $customerId);
