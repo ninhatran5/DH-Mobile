@@ -14,6 +14,7 @@ import { fetchRank } from "../slices/rankSlice";
 import WalletHistoryModal from "../components/WalletHistoryModal";
 import { fetchWallet } from "../slices/walletSlice";
 import numberFormat from "../../utils/numberFormat";
+import WithdrawModal from "../components/WithdrawModal";
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -26,6 +27,7 @@ const Profile = () => {
   const { wallets } = useSelector((state) => state.wallet);
   const { orders } = useSelector((state) => state.order);
   const [showWalletModal, setShowWalletModal] = useState(false);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
   const personalInformations = [
     {
@@ -54,16 +56,20 @@ const Profile = () => {
       id: 1,
       label: t("profile.statisticals.orders"),
       value: `${orders?.orders?.length ?? 0} ${t("profile.order")}`,
+      desc: t("profile.orderStats"),
     },
     {
       id: 2,
       label: t("profile.statisticals.wallet"),
       value: numberFormat(wallets?.balance || 0),
+      withdrawMoney: t("profile.withdrawMoney"),
+      onWithdrawClick: () => setShowWithdrawModal(true), // Thêm dòng này
     },
     {
       id: 3,
       label: t("profile.statisticals.likedProducts"),
       value: `${listFavorite?.length ?? 0} ${t("profile.product")}`,
+      desc: t("profile.orderStats"),
     },
   ];
 
@@ -284,12 +290,29 @@ const Profile = () => {
                         )}
                       </div>
                       <h2 className="profile-stat-value">{item.value}</h2>
-                      <span className="profile-muted-text">
-                        {t("profile.orderStats")}
-                      </span>
+                      <span className="profile-muted-text">{item.desc}</span>
+                      {item.withdrawMoney && (
+                        <span
+                          className="profile-wallet-history-link"
+                          style={{
+                            color: "#2563EB",
+                            cursor: "pointer",
+                            fontSize: 14,
+                            fontWeight: 800,
+                          }}
+                          onClick={item.onWithdrawClick}
+                        >
+                          {item.withdrawMoney}
+                        </span>
+                      )}
                     </div>
                   </div>
                 ))}
+                <WithdrawModal
+                  show={showWithdrawModal}
+                  onClose={() => setShowWithdrawModal(false)}
+                  currentBalance={wallets?.balance || 0}
+                />
                 <WalletHistoryModal
                   show={showWalletModal}
                   onClose={() => setShowWalletModal(false)}
