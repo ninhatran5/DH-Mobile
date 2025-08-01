@@ -197,7 +197,7 @@ class ChatLiveController extends Controller
     {
         $userId = Auth::id();
 
-        $count = SupportChatNotification::where('user_id', $userId)
+        $count = SupportChat::where('user_id', $userId)
             ->where('is_read', false)
             ->count();
 
