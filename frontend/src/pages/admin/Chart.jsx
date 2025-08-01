@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchUsers } from "../../slices/adminuserSlice";
 import { fetchAdminProducts } from "../../slices/adminproductsSlice";
 import { fetchAdminOrders } from "../../slices/adminOrderSlice";
+import { toast } from "react-toastify"; 
 import {
   AreaChart,
   Area,
@@ -37,52 +38,240 @@ const Chart = () => {
     isEnabled: false
   });
 
-  // Hàm lấy tên tháng hiện tại
+  // **HÀM CHUYỂN ĐỔI NGÀY ĐƯỢC SỬA ĐỂ HANDLE TẤT CẢ FORMAT**
+  const parseCreatedAt = (created_at) => {
+    if (!created_at) return null;
+    
+    try {
+      // Format ISO: "2025-07-29T18:31:51.000000Z"
+      if (created_at.includes('T') && created_at.includes('Z')) {
+        return new Date(created_at);
+      }
+      
+      // Format: "dd/mm/yyyy hh:mm:ss"
+      if (created_at.includes("/") && created_at.includes(" ")) {
+        const [datePart] = created_at.split(" ");
+        const [day, month, year] = datePart.split("/").map(Number);
+        return new Date(year, month - 1, day);
+      }
+      
+      // Format: "yyyy-mm-dd hh:mm:ss"
+      if (created_at.includes("-") && created_at.includes(" ")) {
+        const [datePart] = created_at.split(" ");
+        return new Date(datePart);
+      }
+      
+      // Format: "yyyy-mm-dd"
+      if (created_at.includes("-") && !created_at.includes(" ")) {
+        return new Date(created_at);
+      }
+      
+      // Thử parse trực tiếp
+      return new Date(created_at);
+    } catch (error) {
+      console.error('Lỗi parse created_at:', created_at, error);
+      return null;
+    }
+  };
+
+  const convertInputDateToDate = (inputDate) => {
+    if (!inputDate) return null;
+    // Input date có format YYYY-MM-DD
+    return new Date(inputDate);
+  };
+
+  // **THÊM HÀM LỌC USERS THEO NGÀY**
+  const getFilteredUsers = () => {
+    if (!dateFilter.isEnabled || !users) {
+      return users || [];
+    }
+
+    return users.filter(user => {
+      const userDate = parseCreatedAt(user.created_at);
+      if (!userDate) return false;
+
+      // Lọc theo ngày cụ thể
+      if (dateFilter.specificDate) {
+        const specificDate = convertInputDateToDate(dateFilter.specificDate);
+        if (!specificDate) return false;
+        
+        return (
+          userDate.getFullYear() === specificDate.getFullYear() &&
+          userDate.getMonth() === specificDate.getMonth() &&
+          userDate.getDate() === specificDate.getDate()
+        );
+      }
+
+      // Lọc theo khoảng thời gian
+      if (dateFilter.startDate && dateFilter.endDate) {
+        const startDate = convertInputDateToDate(dateFilter.startDate);
+        const endDate = convertInputDateToDate(dateFilter.endDate);
+        
+        if (!startDate || !endDate) return false;
+        
+        // Set time để so sánh chính xác
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+        userDate.setHours(12, 0, 0, 0); // Set giờ giữa ngày
+        
+        return userDate >= startDate && userDate <= endDate;
+      }
+
+      // Chỉ có startDate
+      if (dateFilter.startDate && !dateFilter.endDate) {
+        const startDate = convertInputDateToDate(dateFilter.startDate);
+        if (!startDate) return false;
+        
+        startDate.setHours(0, 0, 0, 0);
+        userDate.setHours(12, 0, 0, 0);
+        
+        return userDate >= startDate;
+      }
+
+      // Chỉ có endDate
+      if (!dateFilter.startDate && dateFilter.endDate) {
+        const endDate = convertInputDateToDate(dateFilter.endDate);
+        if (!endDate) return false;
+        
+        endDate.setHours(23, 59, 59, 999);
+        userDate.setHours(12, 0, 0, 0);
+        
+        return userDate <= endDate;
+      }
+
+      return true;
+    });
+  };
+
+  // **HÀM LỌC ORDERS THEO NGÀY (GIỮ NGUYÊN)**
+  const getFilteredOrders = () => {
+    if (!dateFilter.isEnabled || !orders) {
+      return orders || [];
+    }
+
+    return orders.filter(order => {
+      const orderDate = parseCreatedAt(order.created_at);
+      if (!orderDate) return false;
+
+      // Lọc theo ngày cụ thể
+      if (dateFilter.specificDate) {
+        const specificDate = convertInputDateToDate(dateFilter.specificDate);
+        if (!specificDate) return false;
+        
+        return (
+          orderDate.getFullYear() === specificDate.getFullYear() &&
+          orderDate.getMonth() === specificDate.getMonth() &&
+          orderDate.getDate() === specificDate.getDate()
+        );
+      }
+
+      // Lọc theo khoảng thời gian
+      if (dateFilter.startDate && dateFilter.endDate) {
+        const startDate = convertInputDateToDate(dateFilter.startDate);
+        const endDate = convertInputDateToDate(dateFilter.endDate);
+        
+        if (!startDate || !endDate) return false;
+        
+        // Set time để so sánh chính xác
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+        orderDate.setHours(12, 0, 0, 0); // Set giờ giữa ngày
+        
+        return orderDate >= startDate && orderDate <= endDate;
+      }
+
+      // Chỉ có startDate
+      if (dateFilter.startDate && !dateFilter.endDate) {
+        const startDate = convertInputDateToDate(dateFilter.startDate);
+        if (!startDate) return false;
+        
+        startDate.setHours(0, 0, 0, 0);
+        orderDate.setHours(12, 0, 0, 0);
+        
+        return orderDate >= startDate;
+      }
+
+      // Chỉ có endDate
+      if (!dateFilter.startDate && dateFilter.endDate) {
+        const endDate = convertInputDateToDate(dateFilter.endDate);
+        if (!endDate) return false;
+        
+        endDate.setHours(23, 59, 59, 999);
+        orderDate.setHours(12, 0, 0, 0);
+        
+        return orderDate <= endDate;
+      }
+
+      return true;
+    });
+  };
+
+  // **SỬA HÀM getCurrentMonthName ĐỂ PHẢN ÁNH BỘ LỌC**
   const getCurrentMonthName = () => {
+    if (!dateFilter.isEnabled) {
+      // Không có filter, trả về tháng hiện tại
+      const now = new Date();
+      const month = now.getMonth() + 1;
+      const year = now.getFullYear();
+      return `Tháng ${month}/${year}`;
+    }
+
+    // Có filter, trả về label phù hợp
+    if (dateFilter.specificDate) {
+      const specificDate = convertInputDateToDate(dateFilter.specificDate);
+      if (specificDate) {
+        const month = specificDate.getMonth() + 1;
+        const year = specificDate.getFullYear();
+        return `Ngày ${specificDate.getDate()}/${month}/${year}`;
+      }
+    }
+
+    if (dateFilter.startDate && dateFilter.endDate) {
+      const startDate = convertInputDateToDate(dateFilter.startDate);
+      const endDate = convertInputDateToDate(dateFilter.endDate);
+      
+      if (startDate && endDate) {
+        const startMonth = startDate.getMonth() + 1;
+        const startYear = startDate.getFullYear();
+        const endMonth = endDate.getMonth() + 1;
+        const endYear = endDate.getFullYear();
+        
+        // Nếu cùng tháng năm
+        if (startMonth === endMonth && startYear === endYear) {
+          return `Tháng ${startMonth}/${startYear}`;
+        }
+        
+        // Nếu khác tháng
+        return `${startMonth}/${startYear} - ${endMonth}/${endYear}`;
+      }
+    }
+
+    if (dateFilter.startDate && !dateFilter.endDate) {
+      const startDate = convertInputDateToDate(dateFilter.startDate);
+      if (startDate) {
+        const month = startDate.getMonth() + 1;
+        const year = startDate.getFullYear();
+        return `Từ ${month}/${year}`;
+      }
+    }
+
+    if (!dateFilter.startDate && dateFilter.endDate) {
+      const endDate = convertInputDateToDate(dateFilter.endDate);
+      if (endDate) {
+        const month = endDate.getMonth() + 1;
+        const year = endDate.getFullYear();
+        return `Đến ${month}/${year}`;
+      }
+    }
+
+    // Fallback
     const now = new Date();
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
     return `Tháng ${month}/${year}`;
   };
 
-  // Hàm lọc orders theo ngày
-  const getFilteredOrders = () => {
-    if (!dateFilter.isEnabled) {
-      return orders;
-    }
-
-    return orders.filter(order => {
-      if (!order.created_at) return false;
-
-      try {
-        const [datePart] = order.created_at.split(" ");
-        const [day, month, year] = datePart.split("/").map(Number);
-        const orderDate = new Date(year, month - 1, day);
-
-        if (dateFilter.specificDate) {
-          const [specificDay, specificMonth, specificYear] = dateFilter.specificDate.split("/").map(Number);
-          const specificDateObj = new Date(specificYear, specificMonth - 1, specificDay);
-          return orderDate.getTime() === specificDateObj.getTime();
-        }
-
-        if (dateFilter.startDate && dateFilter.endDate) {
-          const [startDay, startMonth, startYear] = dateFilter.startDate.split("/").map(Number);
-          const [endDay, endMonth, endYear] = dateFilter.endDate.split("/").map(Number);
-          const startDateObj = new Date(startYear, startMonth - 1, startDay);
-          const endDateObj = new Date(endYear, endMonth - 1, endDay);
-          
-          return orderDate >= startDateObj && orderDate <= endDateObj;
-        }
-
-        return true;
-      } catch (error) {
-        console.error('Lỗi parse ngày khi lọc:', error);
-        return false;
-      }
-    });
-  };
-
-  // Các hàm tính toán sử dụng filtered orders
+  // **CẬP NHẬT CÁC HÀM TÍNH TOÁN SỬ DỤNG parseCreatedAt**
   const getValidCompletedOrders = () => {
     const filteredOrders = getFilteredOrders();
     return filteredOrders.filter(order => {
@@ -117,32 +306,67 @@ const Chart = () => {
     return Math.round(totalRevenue / 12);
   };
 
+  // **SỬA CÁC HÀM THỐNG KÊ ĐỂ SỬ DỤNG DỮ LIỆU ĐÃ LỌC**
+  const getFilteredStatistics = () => {
+    const filteredOrders = getFilteredOrders();
+    const validCompletedOrders = filteredOrders.filter(order => {
+      const validStatuses = ["Hoàn thành", "Đã giao hàng"];
+      return validStatuses.includes(order.status) && 
+             order.total_amount && 
+             parseFloat(order.total_amount) > 0 &&
+             order.created_at;
+    });
+
+    const cancelledOrders = filteredOrders.filter(order => 
+      order.status === "Đã hủy"
+    );
+
+    // Tính tổng doanh thu
+    const totalRevenue = validCompletedOrders.reduce((sum, order) => {
+      return sum + (parseFloat(order.total_amount) || 0);
+    }, 0);
+
+    // Tính tổng sản phẩm đã bán
+    const totalSoldProducts = validCompletedOrders.reduce((total, order) => {
+      if (order.products && Array.isArray(order.products)) {
+        const orderTotal = order.products.reduce((orderSum, product) => {
+          return orderSum + (Number(product.quantity) || 0);
+        }, 0);
+        return total + orderTotal;
+      }
+      return total;
+    }, 0);
+
+    return {
+      revenue: totalRevenue,
+      soldProducts: totalSoldProducts,
+      completedOrders: validCompletedOrders.length,
+      cancelledOrders: cancelledOrders.length,
+      totalOrders: validCompletedOrders.length + cancelledOrders.length
+    };
+  };
+
+  // **GIỮ LẠI CÁC HÀM CŨ CHO TRƯỜNG HỢP KHÔNG FILTER**
   const getThisMonthSoldProducts = () => {
     const today = new Date();
     const validOrders = getValidCompletedOrders();
     
     return validOrders.reduce((total, order) => {
-      try {
-        const [datePart] = order.created_at.split(" ");
-        const [day, month, year] = datePart.split("/").map(Number);
-        const orderDate = new Date(year, month - 1, day);
-        
-        if (
-          orderDate.getFullYear() === today.getFullYear() &&
-          orderDate.getMonth() === today.getMonth()
-        ) {
-          if (order.products && Array.isArray(order.products)) {
-            const orderTotal = order.products.reduce((orderSum, product) => {
-              return orderSum + (Number(product.quantity) || 0);
-            }, 0);
-            return total + orderTotal;
-          }
+      const orderDate = parseCreatedAt(order.created_at);
+      if (!orderDate) return total;
+      
+      if (
+        orderDate.getFullYear() === today.getFullYear() &&
+        orderDate.getMonth() === today.getMonth()
+      ) {
+        if (order.products && Array.isArray(order.products)) {
+          const orderTotal = order.products.reduce((orderSum, product) => {
+            return orderSum + (Number(product.quantity) || 0);
+          }, 0);
+          return total + orderTotal;
         }
-        return total;
-      } catch (error) {
-        console.error('Lỗi tính sản phẩm bán trong tháng:', error);
-        return total;
       }
+      return total;
     }, 0);
   };
 
@@ -151,19 +375,13 @@ const Chart = () => {
     const validOrders = getValidCompletedOrders();
     
     return validOrders.filter(order => {
-      try {
-        const [datePart] = order.created_at.split(" ");
-        const [day, month, year] = datePart.split("/").map(Number);
-        const orderDate = new Date(year, month - 1, day);
-        
-        return (
-          orderDate.getFullYear() === today.getFullYear() &&
-          orderDate.getMonth() === today.getMonth()
-        );
-      } catch (error) {
-        console.error('Lỗi tính đơn hoàn thành trong tháng:', error);
-        return false;
-      }
+      const orderDate = parseCreatedAt(order.created_at);
+      if (!orderDate) return false;
+      
+      return (
+        orderDate.getFullYear() === today.getFullYear() &&
+        orderDate.getMonth() === today.getMonth()
+      );
     }).length;
   };
 
@@ -172,37 +390,38 @@ const Chart = () => {
     const filteredOrders = getFilteredOrders();
     
     return filteredOrders.filter(order => {
-      try {
-        if (order.status !== "Đã hủy" || !order.created_at) return false;
-        
-        const [datePart] = order.created_at.split(" ");
-        const [day, month, year] = datePart.split("/").map(Number);
-        const orderDate = new Date(year, month - 1, day);
-        
-        return (
-          orderDate.getFullYear() === today.getFullYear() &&
-          orderDate.getMonth() === today.getMonth()
-        );
-      } catch (error) {
-        console.error('Lỗi tính đơn hủy trong tháng:', error);
-        return false;
-      }
+      if (order.status !== "Đã hủy" || !order.created_at) return false;
+      
+      const orderDate = parseCreatedAt(order.created_at);
+      if (!orderDate) return false;
+      
+      return (
+        orderDate.getFullYear() === today.getFullYear() &&
+        orderDate.getMonth() === today.getMonth()
+      );
     }).length;
   };
 
+  // **SỬA HÀM getThisMonthStatistics ĐỂ SỬ DỤNG DỮ LIỆU FILTERED**
   const getThisMonthStatistics = () => {
-    const revenue = getThisMonthRevenue();
-    const soldProducts = getThisMonthSoldProducts();
-    const completedOrders = getThisMonthCompletedOrders();
-    const cancelledOrders = getThisMonthCancelledOrders();
-    
-    return {
-      revenue,
-      soldProducts,
-      completedOrders,
-      cancelledOrders,
-      totalOrders: completedOrders + cancelledOrders
-    };
+    if (dateFilter.isEnabled) {
+      // Nếu có filter, sử dụng dữ liệu đã lọc
+      return getFilteredStatistics();
+    } else {
+      // Nếu không có filter, sử dụng logic tháng hiện tại
+      const revenue = getThisMonthRevenue();
+      const soldProducts = getThisMonthSoldProducts();
+      const completedOrders = getThisMonthCompletedOrders();
+      const cancelledOrders = getThisMonthCancelledOrders();
+      
+      return {
+        revenue,
+        soldProducts,
+        completedOrders,
+        cancelledOrders,
+        totalOrders: completedOrders + cancelledOrders
+      };
+    }
   };
 
   const calculateRevenueStatistics = () => {
@@ -210,31 +429,27 @@ const Chart = () => {
     const monthlyRevenue = {};
     
     validOrders.forEach(order => {
-      try {
-        const [datePart] = order.created_at.split(" ");
-        const [day, month, year] = datePart.split("/").map(Number);
-        
-        if (!day || !month || !year) return;
-        
-        const monthKey = `${year}-${String(month).padStart(2, "0")}`;
-        const amount = parseFloat(order.total_amount);
-        
-        if (isNaN(amount)) return;
-        
-        if (!monthlyRevenue[monthKey]) {
-          monthlyRevenue[monthKey] = {
-            month: monthKey,
-            total: 0,
-            orderCount: 0,
-            monthName: `Tháng ${month}/${year}`
-          };
-        }
-        
-        monthlyRevenue[monthKey].total += amount;
-        monthlyRevenue[monthKey].orderCount += 1;
-      } catch (error) {
-        console.error('Lỗi parse ngày:', order.created_at, error);
+      const orderDate = parseCreatedAt(order.created_at);
+      if (!orderDate) return;
+      
+      const year = orderDate.getFullYear();
+      const month = orderDate.getMonth() + 1;
+      const monthKey = `${year}-${String(month).padStart(2, "0")}`;
+      const amount = parseFloat(order.total_amount);
+      
+      if (isNaN(amount)) return;
+      
+      if (!monthlyRevenue[monthKey]) {
+        monthlyRevenue[monthKey] = {
+          month: monthKey,
+          total: 0,
+          orderCount: 0,
+          monthName: `Tháng ${month}/${year}`
+        };
       }
+      
+      monthlyRevenue[monthKey].total += amount;
+      monthlyRevenue[monthKey].orderCount += 1;
     });
 
     const monthlyData = Object.values(monthlyRevenue);
@@ -270,23 +485,17 @@ const Chart = () => {
     const validOrders = getValidCompletedOrders();
     
     return validOrders.reduce((sum, order) => {
-      try {
-        const [datePart] = order.created_at.split(" ");
-        const [day, month, year] = datePart.split("/").map(Number);
-        const orderDate = new Date(year, month - 1, day);
-        
-        if (
-          orderDate.getFullYear() === today.getFullYear() &&
-          orderDate.getMonth() === today.getMonth() &&
-          orderDate.getDate() === today.getDate()
-        ) {
-          return sum + parseFloat(order.total_amount);
-        }
-        return sum;
-      } catch (error) {
-        console.error('Lỗi tính doanh thu hôm nay:', error);
-        return sum;
+      const orderDate = parseCreatedAt(order.created_at);
+      if (!orderDate) return sum;
+      
+      if (
+        orderDate.getFullYear() === today.getFullYear() &&
+        orderDate.getMonth() === today.getMonth() &&
+        orderDate.getDate() === today.getDate()
+      ) {
+        return sum + parseFloat(order.total_amount);
       }
+      return sum;
     }, 0);
   };
 
@@ -295,22 +504,16 @@ const Chart = () => {
     const validOrders = getValidCompletedOrders();
     
     return validOrders.reduce((sum, order) => {
-      try {
-        const [datePart] = order.created_at.split(" ");
-        const [day, month, year] = datePart.split("/").map(Number);
-        const orderDate = new Date(year, month - 1, day);
-        
-        if (
-          orderDate.getFullYear() === today.getFullYear() &&
-          orderDate.getMonth() === today.getMonth()
-        ) {
-          return sum + parseFloat(order.total_amount);
-        }
-        return sum;
-      } catch (error) {
-        console.error('Lỗi tính doanh thu tháng này:', error);
-        return sum;
+      const orderDate = parseCreatedAt(order.created_at);
+      if (!orderDate) return sum;
+      
+      if (
+        orderDate.getFullYear() === today.getFullYear() &&
+        orderDate.getMonth() === today.getMonth()
+      ) {
+        return sum + parseFloat(order.total_amount);
       }
+      return sum;
     }, 0);
   };
 
@@ -342,8 +545,8 @@ const Chart = () => {
   const getUserStatsFromOrders = () => {
     const userStats = {};
     const filteredOrders = getFilteredOrders();
-    
-    users.forEach(user => {
+    const filteredUsers = getFilteredUsers(); 
+    filteredUsers.forEach(user => {
       userStats[user.email] = {
         id: user.id,
         full_name: user.full_name,
@@ -451,16 +654,48 @@ const Chart = () => {
       .slice(0, limit);
   };
 
-  // Xử lý events cho bộ lọc ngày
+  // **CẢI THIỆN XỬ LÝ BỘ LỌC NGÀY**
   const handleDateFilterChange = (field, value) => {
-    setDateFilter(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setDateFilter(prev => {
+      const newFilter = { ...prev, [field]: value };
+      
+      // Reset các trường khác khi chọn ngày cụ thể
+      if (field === 'specificDate' && value) {
+        newFilter.startDate = '';
+        newFilter.endDate = '';
+      }
+      
+      // Reset ngày cụ thể khi chọn khoảng thời gian
+      if ((field === 'startDate' || field === 'endDate') && value) {
+        newFilter.specificDate = '';
+      }
+      
+      return newFilter;
+    });
   };
 
   const handleApplyFilter = () => {
+    // Kiểm tra xem có filter nào được set không
+    const hasFilter = dateFilter.startDate || dateFilter.endDate || dateFilter.specificDate;
+    
+    if (!hasFilter) {
+      toast.error('Vui lòng chọn thời gian để lọc!');
+      return;
+    }
+    
+    // Kiểm tra logic khoảng thời gian
+    if (dateFilter.startDate && dateFilter.endDate) {
+      const startDate = new Date(dateFilter.startDate);
+      const endDate = new Date(dateFilter.endDate);
+      
+      if (startDate > endDate) {
+        toast.error('Ngày bắt đầu không thể lớn hơn ngày kết thúc!');
+        return;
+      }
+    }
+    
     setDateFilter(prev => ({ ...prev, isEnabled: true }));
+    toast.success('🎯 Đã áp dụng bộ lọc thành công!');
     console.log('Áp dụng bộ lọc:', dateFilter);
   };
 
@@ -471,7 +706,15 @@ const Chart = () => {
       specificDate: '',
       isEnabled: false
     });
+    toast.info('🗑️ Đã xóa bộ lọc!');
     console.log('Đã xóa bộ lọc');
+  };
+
+  // **ĐỊNH DẠNG NGÀY ĐỂ HIỂN THỊ**
+  const formatDisplayDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN');
   };
 
   // USE EFFECTS
@@ -513,16 +756,17 @@ const Chart = () => {
     }, 700);
   };
 
-  // TÍNH TOÁN DỮ LIỆU CHO HIỂN THỊ
+  // **TÍNH TOÁN DỮ LIỆU CHO HIỂN THỊ - SỬ DỤNG FILTERED DATA**
   const revenueStats = calculateRevenueStatistics();
   const todayRevenue = getTodayRevenue();
   const thisMonthRevenue = getThisMonthRevenue();
   const validOrders = getValidCompletedOrders();
   const totalSoldProducts = getTotalSoldProducts();
   const yearlyAverageRevenue = getYearlyAverageRevenue();
-  const monthlyStats = getThisMonthStatistics();
+  const monthlyStats = getThisMonthStatistics(); // ✅ SỬ DỤNG HÀM ĐÃ SỬA
   const filteredOrders = getFilteredOrders();
-  const currentMonthName = getCurrentMonthName();
+  const filteredUsers = getFilteredUsers();
+  const currentMonthName = getCurrentMonthName(); // ✅ SỬ DỤNG HÀM ĐÃ SỬA
 
   return (
     <div className="chart-admin-dashboard">
@@ -532,8 +776,7 @@ const Chart = () => {
           <div className="chart-admin-date-group">
             <label>Từ ngày</label>
             <input 
-              type="text" 
-              placeholder="dd/mm/yyyy"
+              type="date" 
               value={dateFilter.startDate}
               onChange={(e) => handleDateFilterChange('startDate', e.target.value)}
             />
@@ -541,40 +784,43 @@ const Chart = () => {
           <div className="chart-admin-date-group">
             <label>Đến ngày</label>
             <input 
-              type="text" 
-              placeholder="dd/mm/yyyy"
+              type="date" 
               value={dateFilter.endDate}
               onChange={(e) => handleDateFilterChange('endDate', e.target.value)}
+              min={dateFilter.startDate}
             />
           </div>
           <div className="chart-admin-date-group">
             <label>Ngày cụ thể</label>
             <input 
-              type="text" 
-              placeholder="dd/mm/yyyy"
+              type="date" 
               value={dateFilter.specificDate}
               onChange={(e) => handleDateFilterChange('specificDate', e.target.value)}
             />
           </div>
           <button className="chart-admin-apply-button" onClick={handleApplyFilter}>
-            Áp dụng
+            🔍 Áp dụng
           </button>
           <button className="chart-admin-clear-button" onClick={handleClearFilter}>
-            Xóa lọc
+            🗑️ Xóa lọc
           </button>
         </div>
       </div>
 
-      {/* Filter Status */}
+      {/* **HIỂN THỊ TRẠNG THÁI LỌC ĐƯỢC CẢI THIỆN** */}
       {dateFilter.isEnabled && (
         <div className="chart-admin-filter-status">
           <div className="chart-admin-filter-info">
             🔍 <strong>Đang lọc:</strong>
-            {dateFilter.specificDate && ` Ngày ${dateFilter.specificDate}`}
+            {dateFilter.specificDate && ` Ngày ${formatDisplayDate(dateFilter.specificDate)}`}
             {dateFilter.startDate && dateFilter.endDate && 
-             ` Từ ${dateFilter.startDate} đến ${dateFilter.endDate}`}
+             ` Từ ${formatDisplayDate(dateFilter.startDate)} đến ${formatDisplayDate(dateFilter.endDate)}`}
+            {dateFilter.startDate && !dateFilter.endDate && 
+             ` Từ ${formatDisplayDate(dateFilter.startDate)} đến hiện tại`}
+            {!dateFilter.startDate && dateFilter.endDate && 
+             ` Đến ${formatDisplayDate(dateFilter.endDate)}`}
             <span className="chart-admin-filter-result">
-              ({filteredOrders.length} đơn hàng)
+              ({filteredUsers.length} tài khoản, {filteredOrders.length} đơn hàng)
             </span>
           </div>
           <button className="chart-admin-remove-filter" onClick={handleClearFilter}>
@@ -583,15 +829,17 @@ const Chart = () => {
         </div>
       )}
 
-      {/* KPI Cards */}
+      {/* **KPI Cards - SỬ DỤNG FILTERED DATA** */}
       <div className="chart-admin-kpi-section">
         <div className="chart-admin-kpi-card chart-admin-kpi-blue">
           <div className="chart-admin-kpi-icon">
             <i className="bi bi-people-fill"></i>
           </div>
           <div className="chart-admin-kpi-info">
-            <div className="chart-admin-kpi-title">Tổng tài khoản</div>
-            <div className="chart-admin-kpi-number">{users?.length?.toLocaleString() || '0'} tài khoản</div>
+            <div className="chart-admin-kpi-title">
+              {dateFilter.isEnabled ? 'Tài khoản đã lọc' : 'Tổng tài khoản'}
+            </div>
+            <div className="chart-admin-kpi-number">{filteredUsers?.length?.toLocaleString() || '0'} tài khoản</div>
           </div>
         </div>
 
@@ -627,19 +875,32 @@ const Chart = () => {
                 : '0 VND'
               }
             </div>
-           
           </div>
         </div>
       </div>
 
-      {/* Monthly Statistics Section */}
+      {/* **Monthly Statistics Section - ĐÃ CẬP NHẬT ĐỂ PHẢN ÁNH BỘ LỌC** */}
       <div className="chart-admin-monthly-stats-section">
-        <h3 className="chart-admin-section-title">📊 Thống Kê {currentMonthName}</h3>
+        <h3 className="chart-admin-section-title">
+          📊 Thống Kê {currentMonthName} 
+          {dateFilter.isEnabled && (
+            <span style={{ 
+              fontSize: '0.8em', 
+              color: '#f59e0b', 
+              marginLeft: '10px',
+              fontWeight: 'normal' 
+            }}>
+              (Đã lọc)
+            </span>
+          )}
+        </h3>
         <div className="chart-admin-monthly-stats-grid">
           <div className="chart-admin-monthly-stat-card">
             <div className="chart-admin-stat-icon">💸</div> 
             <div className="chart-admin-stat-info">
-              <div className="chart-admin-stat-label">Doanh thu {currentMonthName}</div>
+              <div className="chart-admin-stat-label">
+                Doanh thu {dateFilter.isEnabled ? '(Đã lọc)' : currentMonthName}
+              </div>
               <div className="chart-admin-stat-value">{(monthlyStats.revenue / 1000000).toFixed(1)}M VND</div>
             </div>
           </div>
@@ -647,7 +908,9 @@ const Chart = () => {
           <div className="chart-admin-monthly-stat-card">
             <div className="chart-admin-stat-icon">🛒</div> 
             <div className="chart-admin-stat-info">
-              <div className="chart-admin-stat-label">Sản phẩm đã bán {currentMonthName}</div>
+              <div className="chart-admin-stat-label">
+                Sản phẩm đã bán {dateFilter.isEnabled ? '(Đã lọc)' : currentMonthName}
+              </div>
               <div className="chart-admin-stat-value">{monthlyStats.soldProducts.toLocaleString()} sản phẩm</div>
             </div>
           </div>
@@ -655,7 +918,9 @@ const Chart = () => {
           <div className="chart-admin-monthly-stat-card">
             <div className="chart-admin-stat-icon">🎉</div> 
             <div className="chart-admin-stat-info">
-              <div className="chart-admin-stat-label">Đơn hoàn thành {currentMonthName}</div>
+              <div className="chart-admin-stat-label">
+                Đơn hoàn thành {dateFilter.isEnabled ? '(Đã lọc)' : currentMonthName}
+              </div>
               <div className="chart-admin-stat-value">{monthlyStats.completedOrders.toLocaleString()} đơn hàng</div>
             </div>
           </div>
@@ -663,8 +928,10 @@ const Chart = () => {
           <div className="chart-admin-monthly-stat-card">
             <div className="chart-admin-stat-icon">❌</div>
             <div className="chart-admin-stat-info">
-              <div className="chart-admin-stat-label">Đơn hủy {currentMonthName}</div>
-              <div className="chart-admin-stat-value">{monthlyStats.cancelledOrders.toLocaleString()} đơn huỷ</div>
+              <div className="chart-admin-stat-label">
+                Đơn hủy {dateFilter.isEnabled ? '(Đã lọc)' : currentMonthName}
+              </div>
+              <div className="chart-admin-stat-value">{monthlyStats.cancelledOrders.toLocaleString()} đơn hủy</div>
             </div>
           </div>
         </div>
