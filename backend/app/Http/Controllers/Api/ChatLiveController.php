@@ -197,7 +197,7 @@ class ChatLiveController extends Controller
     {
         $userId = Auth::id();
 
-        $count = SupportChat::where('user_id', $userId)
+        $count = SupportChatNotification::where('user_id', $userId)
             ->where('is_read', false)
             ->count();
 
@@ -297,7 +297,7 @@ class ChatLiveController extends Controller
         }
 
         // Đếm số tin nhắn chưa đọc từ customer này gửi đến staff hiện tại
-        $unreadCount = SupportChat::where('user_id', $staff->user_id)
+        $unreadCount = SupportChatNotification::where('user_id', $staff->user_id)
             ->where('is_read', false)
             ->whereHas('chat', function ($query) use ($customerId) {
                 $query->where('customer_id', $customerId);
