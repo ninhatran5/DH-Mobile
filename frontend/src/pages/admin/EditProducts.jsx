@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 
 import {
   fetchAdminProducts,
@@ -16,7 +17,6 @@ import {
 } from "../../slices/adminProductSpecificationsSlice";
 import { fetchCategories } from "../../slices/adminCategories";
 import { deleteAdminProductVariant } from "../../slices/AdminProductVariants";
-
 import { fetchVariantAttributeValues } from "../../slices/variantAttributeValueSlice";
 import { fetchAttributeValues } from "../../slices/attributeValueSlice";
 import "../../assets/admin/EditProducts.css";
@@ -425,11 +425,18 @@ const AdminProductEdit = () => {
   };
 
   const handleDeleteVariant = async (variantId) => {
-    if (
-      window.confirm(
-        "Bạn có chắc chắn muốn xóa biến thể này không? Thao tác này không thể hoàn tác."
-      )
-    ) {
+    const result = await Swal.fire({
+      title: "Bạn có chắc chắn muốn xóa biến thể này?",
+      text: "Hành động này không thể hoàn tác!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Xóa",
+      cancelButtonText: "Hủy",
+    });
+
+    if (result.isConfirmed) {
       try {
         await dispatch(deleteAdminProductVariant(variantId)).unwrap();
         await dispatch(fetchVariantAttributeValues());

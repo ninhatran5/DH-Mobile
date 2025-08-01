@@ -306,21 +306,7 @@ const AddVariant = () => {
               )}
             </div>
 
-            <div className="addvariant-active-section mb-4">
-              <div className="addvariant-checkbox form-check">
-                <input
-                  type="checkbox"
-                  className="addvariant-checkbox-input form-check-input"
-                  id="is_active"
-                  name="is_active"
-                  checked={formData.is_active === 1}
-                  onChange={handleInputChange}
-                />
-                <label className="addvariant-checkbox-label form-check-label" htmlFor="is_active">
-                  Kích hoạt
-                </label>
-              </div>
-            </div>
+          
 
             <div className="addvariant-actions d-flex gap-2">
               <button type="submit" className="addvariant-submit-btn btn btn-primary">

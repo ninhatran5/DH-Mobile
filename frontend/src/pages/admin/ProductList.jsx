@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAdminProducts,
   deleteAdminProduct,
+  softdeleteAdminProduct,
   fetchProductVariants,
 } from "../../slices/adminproductsSlice";
 import { fetchCategories } from "../../slices/adminCategories";
@@ -51,7 +52,6 @@ const ProductList = () => {
               dispatch(fetchProductVariants(product.product_id)).unwrap()
             )
           );
-
         } catch (error) {
           console.error("Lỗi khi lấy biến thể:", error);
         }
@@ -88,22 +88,25 @@ const ProductList = () => {
     }
   };
 
+  // Xóa mềm nhiều sản phẩm đã chọn
   const handleDeleteSelected = async () => {
     const result = await Swal.fire({
-      title: `Bạn có chắc muốn xóa ${selectedProducts.length} sản phẩm đã chọn?`,
+      title: `Bạn có chắc muốn chuyển ${selectedProducts.length} sản phẩm vào thùng rác?`,
+      text: "Bạn có thể khôi phục sau này từ thùng rác",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Xác nhận",
-      cancelButtonText: "Huỷ",
-      confirmButtonColor: "#dc2626",
+      confirmButtonText: "Chuyển vào thùng rác",
+      cancelButtonText: "Hủy",
+      confirmButtonColor: "#f59e0b",
       cancelButtonColor: "#e5e7eb",
       reverseButtons: true,
     });
+    
     if (result.isConfirmed) {
       try {
         for (const productId of selectedProducts) {
-          const resultAction = await dispatch(deleteAdminProduct(productId));
-          if (deleteAdminProduct.rejected.match(resultAction)) {
+          const resultAction = await dispatch(softdeleteAdminProduct(productId));
+          if (softdeleteAdminProduct.rejected.match(resultAction)) {
             toast.error(
               `Lỗi khi xóa sản phẩm ${productId}: ${resultAction.error.message}`
             );
@@ -112,53 +115,61 @@ const ProductList = () => {
         setSelectedProducts([]);
         Swal.fire({
           icon: "success",
-          title: "Đã xoá thành công!",
+          title: "Đã chuyển vào thùng rác!",
           showConfirmButton: false,
           timer: 1500,
         });
+        
+        // Tải lại danh sách sản phẩm
+        dispatch(fetchAdminProducts());
       } catch (error) {
         toast.error(`Lỗi từ server: ${error.message}`);
       }
     }
   };
 
+  // Xóa mềm một sản phẩm
   const handleDeleteSingle = async (productId) => {
     try {
       const fetchResult = await dispatch(
         fetchProductVariants(productId)
       ).unwrap();
-      // Lấy mảng biến thể thực tế
+      
       const variants = fetchResult.variants?.variants || [];
-
+      
       if (variants.length > 0) {
-        toast.warning(" Không thể xoá sản phẩm vì có biến thể.");
+        toast.warning("Không thể xóa sản phẩm vì có biến thể.");
         return;
       }
 
       const confirmResult = await Swal.fire({
-        title: "Bạn có chắc muốn xóa sản phẩm này?",
+        title: "Bạn có chắc muốn chuyển sản phẩm vào thùng rác?",
+        text: "Bạn có thể khôi phục sau này từ thùng rác",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "Xác nhận",
-        cancelButtonText: "Huỷ",
-        confirmButtonColor: "#dc2626",
+        confirmButtonText: "Chuyển vào thùng rác",
+        cancelButtonText: "Hủy",
+        confirmButtonColor: "#f59e0b",
         cancelButtonColor: "#e5e7eb",
         reverseButtons: true,
       });
 
       if (confirmResult.isConfirmed) {
-        await dispatch(deleteAdminProduct(productId));
+        await dispatch(softdeleteAdminProduct(productId));
         setSelectedProducts((prev) => prev.filter((id) => id !== productId));
 
         Swal.fire({
           icon: "success",
-          title: " Đã xoá thành công!",
+          title: "Đã chuyển vào thùng rác!",
           showConfirmButton: false,
           timer: 1500,
         });
+        
+        // Tải lại danh sách sản phẩm
+        dispatch(fetchAdminProducts());
       }
     } catch (error) {
-      toast.error(error.message || "❌ Lỗi khi kiểm tra biến thể sản phẩm");
+      toast.error(error.message || "Lỗi khi xóa sản phẩm");
     }
   };
 
@@ -170,7 +181,6 @@ const ProductList = () => {
   };
 
   const { adminProfile } = useSelector((state) => state.adminProfile);
-
   const checkRole = adminProfile?.user?.role;
 
   useEffect(() => {
@@ -205,7 +215,6 @@ const ProductList = () => {
               priceMatch = true;
           }
 
-          // Lọc theo danh mục
           const categoryMatch =
             filters.category === "all"
               ? true
@@ -235,8 +244,27 @@ const ProductList = () => {
           <h1>Sản phẩm</h1>
           <p className="text-muted">Quản lý danh sách sản phẩm của bạn</p>
         </div>
-        {checkRole !== "sale" && (
-          <div className="admin_dh-product-actions">
+        <div className="admin_dh-product-actions">
+          <Link
+            to="/admin/trashproduct"
+            className="admin_dh-btn admin_dh-btn-outline"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "10px 16px",
+              borderRadius: "8px",
+              border: "1px solid #f59e0b",
+              color: "#f59e0b",
+              marginRight: "12px",
+              transition: "all 0.2s ease",
+            }}
+          >
+            <i className="bi bi-trash" style={{ fontSize: "1.1rem" }}></i>
+            <span style={{ fontWeight: "500" }}>Thùng rác</span>
+          </Link>
+          
+          {checkRole !== "sale" && (
             <Link
               to="/admin/addproduct"
               className="admin_dh-btn admin_dh-btn-primary"
@@ -260,8 +288,8 @@ const ProductList = () => {
               ></i>
               <span style={{ fontWeight: "500" }}>Thêm sản phẩm</span>
             </Link>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <div
@@ -439,8 +467,12 @@ const ProductList = () => {
               <button
                 className="admin_dh-btn admin_dh-btn-danger"
                 onClick={handleDeleteSelected}
+                style={{
+                  backgroundColor: "#f59e0b",
+                  borderColor: "#f59e0b",
+                }}
               >
-                <i className="bi bi-trash" style={{ color: "#ffffff" }}></i> Xóa
+                <i className="bi bi-trash" style={{ color: "#ffffff" }}></i> Chuyển vào thùng rác
               </button>
             )}
           </div>
@@ -581,12 +613,12 @@ const ProductList = () => {
                       {checkRole !== "sale" && (
                         <button
                           className="admin_dh-action-btn admin_dh-delete-btn"
-                          title="Xóa"
+                          title="Chuyển vào thùng rác"
                           onClick={() => handleDeleteSingle(product.product_id)}
                         >
                           <i
                             className="bi bi-trash"
-                            style={{ color: "#ff3b30" }}
+                            style={{ color: "#f59e0b" }}
                           ></i>
                         </button>
                       )}
