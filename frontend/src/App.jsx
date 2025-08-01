@@ -76,6 +76,7 @@ import BlogDetailAdmin from "./pages/admin/BlogDetail";
 import TrashCan from "./pages/admin/TrashCan";
 import AdminDetailAcccount from "./pages/admin/AdminDetailAcccount.jsx";
 import DetailOrderReturn from "./pages/admin/DetailOrderReturn.jsx";
+import TrashProduct from "./components/TrashProduct.jsx";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -264,6 +265,10 @@ const routerConfig = [
       {
         path: "chatlive",
         element: <ChatLiveAdmin />,
+      },
+       {
+        path: "trashproduct",
+        element: <TrashProduct/>,
       },
       {
         path: "accounts",

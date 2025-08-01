@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import Loading from "../../components/Loading";
 import Swal from "sweetalert2";
+import { FaBars, FaTimes, FaEdit, FaTrash, FaUndo, FaTrashAlt, FaPlus, FaSearch } from "react-icons/fa";
 
 const CategoryList = () => {
   const dispatch = useDispatch();
@@ -16,6 +17,7 @@ const CategoryList = () => {
   const [showTrash, setShowTrash] = useState(false);
   const [productCounts, setProductCounts] = useState({});
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -130,156 +132,265 @@ const CategoryList = () => {
     cat.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "22/05/2025 10:00:00";
+    return new Date(dateString).toLocaleString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit", 
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
+  };
+
   return (
     <div className="admin_dh-categories-container">
       {isProcessing && <Loading />}
+      
+      {/* Header */}
       <div className="admin_dh-categories-header">
-        <h2 className="admin_dh-categories-title">
-          {showTrash ? "Thùng rác danh mục" : "Danh sách danh mục"}
-        </h2>
-        <div className="admin_dh-toolbar">
-          <input
-            type="text"
-            placeholder="Tìm kiếm danh mục..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="admin_dh-search-input"
-          />
-          <button
-            onClick={toggleTrash}
-            className="admin_dh-trash-btn"
-            style={{
-              padding: '8px 15px',
-              borderRadius: '4px',
-              border: 'none',
-              backgroundColor: showTrash ? '#666' : '#ff4444',
-              color: 'white',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '5px',
-              marginLeft: 'auto',
-              marginRight: '16px'
-            }}
-          >
-            {!showTrash && <i className="bi bi-trash"></i>}
-            {showTrash ? "Xem danh mục" : "Thùng rác"}
-          </button>
-          {!showTrash && (
-            <Link to="/admin/Addcategories" className="admin_dh-add-btn">
-              + Thêm danh mục
-            </Link>
-          )}
+        <div className="admin_dh-header-content">
+          <h2 className="admin_dh-categories-title">
+            {showTrash ? "Thùng rác danh mục" : "Danh sách danh mục"}
+          </h2>
+          
+          {/* Desktop Toolbar */}
+          <div className="admin_dh-toolbar-desktop">
+            <div className="admin_dh-search-wrapper">
+              <FaSearch className="admin_dh-search-icon" />
+              <input
+                type="text"
+                placeholder="Tìm kiếm danh mục..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="admin_dh-search-input"
+              />
+            </div>
+            <button
+              onClick={toggleTrash}
+              className="admin_dh-trash-btn"
+            >
+              <FaTrash />
+              <span>{showTrash ? "Xem danh mục" : "Thùng rác"}</span>
+            </button>
+            {!showTrash && (
+              <Link to="/admin/Addcategories" className="admin_dh-add-btn">
+                <FaPlus />
+                <span>Thêm danh mục</span>
+              </Link>
+            )}
+          </div>
+
+          {/* Mobile Toolbar Toggle */}
+          <div className="admin_dh-mobile-toolbar-toggle">
+            <button 
+              className="mobile-toolbar-btn"
+              onClick={() => setShowMobileFilters(!showMobileFilters)}
+            >
+              {showMobileFilters ? <FaTimes /> : <FaBars />}
+              <span>Công cụ</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Toolbar */}
+        <div className={`admin_dh-toolbar-mobile ${showMobileFilters ? 'show' : ''}`}>
+          <div className="admin_dh-search-wrapper-mobile">
+            <FaSearch className="admin_dh-search-icon" />
+            <input
+              type="text"
+              placeholder="Tìm kiếm danh mục..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="admin_dh-search-input"
+            />
+          </div>
+          <div className="admin_dh-mobile-actions">
+            <button
+              onClick={toggleTrash}
+              className="admin_dh-trash-btn-mobile"
+            >
+              <FaTrash />
+              <span>{showTrash ? "Xem danh mục" : "Thùng rác"}</span>
+            </button>
+            {!showTrash && (
+              <Link to="/admin/Addcategories" className="admin_dh-add-btn-mobile">
+                <FaPlus />
+                <span>Thêm danh mục</span>
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 
-      {loading && <p>Đang tải dữ liệu...</p>}
-      {error && <p style={{ color: "red" }}>Lỗi: {error}</p>}
+      {/* Loading & Error States */}
+      {loading && <div className="admin_dh-loading">Đang tải dữ liệu...</div>}
+      {error && <div className="admin_dh-error">Lỗi: {error}</div>}
       {!loading && filteredCategories.length === 0 && (
-        <p>{showTrash ? "Không có danh mục nào trong thùng rác." : "Không có danh mục nào."}</p>
+        <div className="admin_dh-no-data">
+          {showTrash ? "Không có danh mục nào trong thùng rác." : "Không có danh mục nào."}
+        </div>
       )}
 
       {!loading && filteredCategories.length > 0 && (
-        <table className="admin_dh-categories-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Hình ảnh</th>
-              <th>Tiêu danh mục</th>
-              <th>Liên kết</th>
-              <th>Số sản phẩm</th>
-              <th>Ngày tạo</th>
-              <th>Ngày cập nhật</th>
-              <th>Thao tác</th>
-            </tr>
-          </thead>
-          <tbody>
+        <>
+          {/* Desktop Table */}
+          <div className="admin_dh-table-wrapper desktop-table">
+            <table className="admin_dh-categories-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Hình ảnh</th>
+                  <th>Tên danh mục</th>
+                  <th>Mô tả</th>
+                  <th>Số sản phẩm</th>
+                  <th>Ngày tạo</th>
+                  <th>Ngày cập nhật</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredCategories.map((cat, index) => (
+                  <tr key={cat.category_id}>
+                    <td>{index + 1}</td>
+                    <td>
+                      <img
+                        src={cat.image_url}
+                        alt={cat.name}
+                        className="admin_dh-category-img"
+                      />
+                    </td>
+                    <td>
+                      <div className="admin_dh-category-title">{cat.name}</div>
+                    </td>
+                    <td>{cat.description || "Không có"}</td>
+                    <td className="admin_dh-text-center">{getProductCount(cat.category_id)}</td>
+                    <td>{formatDate(cat.created_at)}</td>
+                    <td>{formatDate(cat.updated_at)}</td>
+                    <td>
+                      <div className="admin_dh-actions">
+                        {showTrash ? (
+                          <>
+                            <button
+                              className="admin_dh-action-btn restore"
+                              onClick={() => handleRestore(cat.category_id)}
+                              title="Khôi phục"
+                            >
+                              <FaUndo />
+                            </button>
+                            <button
+                              className="admin_dh-action-btn force-delete"
+                              onClick={() => handleForceDelete(cat.category_id)}
+                              title="Xóa vĩnh viễn"
+                            >
+                              <FaTrashAlt />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <Link 
+                              to={`/admin/EditCategories/${cat.category_id}`} 
+                              className="admin_dh-action-btn edit" 
+                              title="Chỉnh sửa"
+                            >
+                              <FaEdit />
+                            </Link>
+                            <button
+                              className="admin_dh-action-btn delete"
+                              onClick={() => handleDelete(cat.category_id)}
+                              title="Xóa"
+                            >
+                              <FaTrash />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="admin_dh-mobile-cards">
             {filteredCategories.map((cat, index) => (
-              <tr key={cat.category_id}>
-                <td>{index + 1}</td>
-                <td>
+              <div key={cat.category_id} className="admin_dh-mobile-card">
+                <div className="mobile-card-header">
                   <img
                     src={cat.image_url}
                     alt={cat.name}
-                    className="admin_dh-category-img"
+                    className="mobile-category-image"
                   />
-                </td>
-                <td>
-                  <div className="admin_dh-category-title">{cat.name}</div>
-                </td>
-                <td>{cat.description || "Không có"}</td>
-                <td>{getProductCount(cat.category_id)}</td>
-                <td>{new Date(cat.created_at).toLocaleString("vi-VN", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  second: "2-digit"
-                }) || "22/05/2025 10:00:00"}</td>
-                <td>{new Date(cat.updated_at).toLocaleString("vi-VN", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  second: "2-digit"
-                }) || "22/05/2025 10:00:00"}</td>
-                <td>
-                  <div style={{ display: "flex", gap: "8px" }}>
+                  <div className="mobile-category-info">
+                    <h3>{cat.name}</h3>
+                    <p>{cat.description || "Không có mô tả"}</p>
+                  </div>
+                  <div className="mobile-actions">
                     {showTrash ? (
                       <>
                         <button
-                          className="admin_dh-action-btn restore"
+                          className="mobile-action-btn restore"
                           onClick={() => handleRestore(cat.category_id)}
                           title="Khôi phục"
-                          style={{
-                            backgroundColor: '#28a745',
-                            border: 'none',
-                            padding: '6px 12px',
-                            borderRadius: '4px',
-                            color: 'white',
-                            cursor: 'pointer'
-                          }}
                         >
-                          <i className="bi bi-arrow-counterclockwise"></i>
+                          <FaUndo />
                         </button>
                         <button
-                          className="admin_dh-action-btn force-delete"
+                          className="mobile-action-btn force-delete"
                           onClick={() => handleForceDelete(cat.category_id)}
                           title="Xóa vĩnh viễn"
-                          style={{
-                            backgroundColor: '#dc3545',
-                            border: 'none',
-                            padding: '6px 12px',
-                            borderRadius: '4px',
-                            color: 'white',
-                            cursor: 'pointer'
-                          }}
                         >
-                          <i className="bi bi-trash2-fill"></i>
+                          <FaTrashAlt />
                         </button>
                       </>
                     ) : (
                       <>
-                        <Link to={`/admin/EditCategories/${cat.category_id}`} className="admin_dh-action-btn edit" title="Chỉnh sửa">
-                          <i className="bi bi-pencil-fill"></i>
+                        <Link 
+                          to={`/admin/EditCategories/${cat.category_id}`} 
+                          className="mobile-action-btn edit"
+                          title="Chỉnh sửa"
+                        >
+                          <FaEdit />
                         </Link>
                         <button
-                          className="admin_dh-action-btn delete"
+                          className="mobile-action-btn delete"
                           onClick={() => handleDelete(cat.category_id)}
                           title="Xóa"
                         >
-                          <i className="bi bi-trash-fill"></i>
+                          <FaTrash />
                         </button>
                       </>
                     )}
                   </div>
-                </td>
-              </tr>
+                </div>
+                
+                <div className="mobile-card-content">
+                  <div className="mobile-info-row">
+                    <span className="mobile-label">STT:</span>
+                    <span className="mobile-value">{index + 1}</span>
+                  </div>
+                  
+                  <div className="mobile-info-row">
+                    <span className="mobile-label">Số sản phẩm:</span>
+                    <span className="mobile-value">{getProductCount(cat.category_id)}</span>
+                  </div>
+                  
+                  <div className="mobile-info-row">
+                    <span className="mobile-label">Ngày tạo:</span>
+                    <span className="mobile-value">{formatDate(cat.created_at)}</span>
+                  </div>
+                  
+                  <div className="mobile-info-row">
+                    <span className="mobile-label">Ngày cập nhật:</span>
+                    <span className="mobile-value">{formatDate(cat.updated_at)}</span>
+                  </div>
+                </div>
+              </div>
             ))}
-          </tbody>
-        </table>
+          </div>
+        </>
       )}
     </div>
   );

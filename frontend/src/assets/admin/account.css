@@ -1,47 +1,118 @@
+/* Reset và Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 /* Container */
 .adminuser-container {
-  padding: 24px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  width: 100%;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  color: #1d1d1f;
-  background-color: #f9f9f9;
 }
 
-/* Tiêu đề */
-.adminuser-title {
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 20px;
-}
-
-/* Header chứa nút thêm */
+/* Header */  
 .adminuser-header {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 12px;
+  margin-bottom: 30px;
 }
 
-/* Nút thêm tài khoản */
+.adminuser-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.adminuser-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+}
+
 .adminuser-add-button {
-  background-color: #007aff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #007bff;
   color: white;
-  padding: 8px 18px;
-  font-size: 14px;
   border: none;
   border-radius: 8px;
+  padding: 12px 20px;
   cursor: pointer;
-  transition: background 0.25s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
-.disabled-icon {
-  pointer-events: none;
+.adminuser-add-button:hover {
+  background: #0056b3;
+  transform: translateY(-1px);
 }
-/* Bảng */
+
+/* Filters Desktop */
+.adminuser-filters {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.adminuser-filters-desktop {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.adminuser-search input,
+.adminuser-role-dropdown select {
+  padding: 12px 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+  background: white;
+}
+
+.adminuser-search input {
+  width: 300px;
+}
+
+.adminuser-role-dropdown select {
+  width: 200px;
+}
+
+.adminuser-search input:focus,
+.adminuser-role-dropdown select:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+/* Mobile Filters - Hidden by default */
+.adminuser-mobile-filter-toggle {
+  display: none;
+}
+
+.adminuser-filters-mobile {
+  display: none;
+}
+
+/* Desktop Table */
 .adminuser-table-wrapper {
+  background: white;
+  border-radius: 12px;
   overflow-x: auto;
-  border-radius: 10px;
-  background-color: white;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  margin-bottom: 25px;
+}
+
+.desktop-table {
+  display: block;
 }
 
 .adminuser-table {
@@ -50,191 +121,490 @@
   min-width: 900px;
 }
 
-.adminuser-table th,
-.adminuser-table td {
-  padding: 10px 12px;
-  border-bottom: 1px solid #e5e5ea;
+.adminuser-table th {
+  background: #f8f9fa;
+  padding: 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #e9ecef;
   font-size: 14px;
-  text-align: center;
+  white-space: nowrap;
 }
 
-/* Avatar */
+.adminuser-table td {
+  padding: 16px;
+  border-bottom: 1px solid #e9ecef;
+  font-size: 14px;
+  color: #495057;
+  vertical-align: middle;
+}
+
+.adminuser-row:hover {
+  background-color: #f8f9fa;
+}
+
 .adminuser-avatar {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid #e9ecef;
 }
 
-/* Icon hành động */
-.adminuser-actions .adminuser-icon {
-  cursor: pointer;
-  margin: 0 4px;
-  font-size: 16px;
-  transition: transform 0.2s ease;
-}
-
-.adminuser-icon-edit {
-  color: #007aff;
-}
-.adminuser-icon-delete {
-  color: #ff3b30;
-}
-
-
-
-/* Trạng thái loading & lỗi */
-.adminuser-loading,
-.adminuser-error {
-  padding: 16px;
+.adminuser-text-center {
   text-align: center;
-  font-size: 14px;
 }
 
-/* Không có dữ liệu */
-.adminuser-no-data {
-  text-align: center;
-  padding: 16px;
-  font-size: 14px;
-  color: #888;
-}
-
-/* Phân trang */
-.adminuser-pagination {
-  margin-top: 16px;
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-}
-
-.pagination-btn {
-  padding: 6px 12px;
-  font-size: 13px;
-  border: 1px solid #d0d0d5;
-  border-radius: 6px;
-  background-color: white;
-  color: #007aff;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-
-
-.pagination-btn.active {
-  background-color: #007aff;
-  color: white;
-  font-weight: 600;
-}
-.adminuser-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.adminuser-title {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.adminuser-add-button {
-  padding: 8px 16px;
-  background-color: #007bff; /* Màu xanh */
-  color: white;
-  border: none;
+.adminuser-role-select {
+  padding: 6px 10px;
+  border: 1px solid #ddd;
   border-radius: 4px;
-  cursor: pointer;
+  background: white;
+  font-size: 13px;
+  min-width: 80px;
 }
 
-
-.adminuser-filters {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 20px 0;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.adminuser-search {
-  position: relative;
-  flex: 1;
-  max-width: 400px;
-}
-
-.adminuser-search input {
-  width: 100%;
-  padding: 10px 14px 10px 36px;
-  font-size: 15px;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  background-color: #f5f5f7;
-  transition: border 0.3s ease;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
-}
-
-.adminuser-search input:focus {
-  outline: none;
-  border-color: #007aff;
-  background-color: #fff;
-}
-
-.search-icon {
-  position: absolute;
-  top: 50%;
-  left: 12px;
-  transform: translateY(-50%);
-  font-size: 16px;
-  color: #888;
-}
-
-.adminuser-role-dropdown select {
-  padding: 10px 14px;
-  font-size: 15px;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  background-color: #f5f5f7;
-  cursor: pointer;
-  transition: border 0.3s ease;
-  min-width: 200px;
-}
-
-.adminuser-role-dropdown select:focus {
-  outline: none;
-  border-color: #007aff;
-  background-color: #fff;
-}
 .adminuser-icon-view {
-  font-size: 1.2rem;
   color: #007bff;
+  font-size: 16px;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: all 0.3s ease;
 }
 
 .adminuser-icon-view:hover {
   color: #0056b3;
+  transform: scale(1.1);
 }
-.adminuser-role-select {
-  padding: 6px 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background-color: #f9f9f9;
-  font-size: 14px;
-  font-family: inherit;
-  color: #333;
-  transition: all 0.2s ease-in-out;
+
+.adminuser-no-data {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Mobile Cards - Hidden by default */
+.adminuser-mobile-cards {
+  display: none;
+}
+
+/* Pagination Desktop */
+.adminuser-pagination {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.pagination-desktop {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pagination-mobile {
+  display: none;
+}
+
+.pagination-btn {
+  padding: 10px 16px;
+  border: 1px solid #ddd;
+  background: white;
+  color: #495057;
   cursor: pointer;
-  min-width: 100px;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.3s ease;
 }
 
-.adminuser-role-select:focus {
-  outline: none;
+.pagination-btn:hover:not(:disabled) {
+  background: #007bff;
+  color: white;
   border-color: #007bff;
-  box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
-  background-color: #fff;
 }
 
-.adminuser-role-select:hover {
-  background-color: #fff;
-  border-color: #999;
+.pagination-btn.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  font-size: 14px;
+  color: #6c757d;
+  text-align: center;
+}
+
+/* Loading states */
+.adminuser-loading,
+.adminuser-error {
+  text-align: center;
+  padding: 40px;
+  background: white;
+  border-radius: 12px;
+  margin: 20px 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.adminuser-loading p {
+  color: #007bff;
+  font-size: 16px;
+  margin: 0;
+}
+
+.adminuser-error p {
+  color: #dc3545;
+  font-size: 16px;
+  margin: 0;
+}
+
+/* ===============================
+   RESPONSIVE MOBILE STYLES 
+   =============================== */
+
+@media screen and (max-width: 768px) {
+  .adminuser-container {
+    padding: 15px;
+  }
+
+  /* Header Mobile */
+  .adminuser-header-content {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .adminuser-title {
+    font-size: 24px;
+    margin-bottom: 0;
+  }
+
+  .adminuser-add-button {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+  }
+
+  /* Filters Mobile */
+  .adminuser-filters-desktop {
+    display: none !important;
+  }
+
+  .adminuser-mobile-filter-toggle {
+    display: block !important;
+  }
+
+  .mobile-filter-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+    transition: background-color 0.3s ease;
+  }
+
+  .mobile-filter-btn:hover {
+    background: #0056b3;
+  }
+
+  .adminuser-filters-mobile {
+    display: none;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e9ecef;
+  }
+
+  .adminuser-filters-mobile.show {
+    display: block !important;
+    animation: slideDown 0.3s ease;
+  }
+
+  .adminuser-search-mobile input,
+  .adminuser-role-dropdown-mobile select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+    margin-bottom: 15px;
+  }
+
+  .adminuser-search-mobile input:focus,
+  .adminuser-role-dropdown-mobile select:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+
+  /* Hide Desktop Table */
+  .desktop-table {
+    display: none !important;
+  }
+
+  /* Show Mobile Cards */
+  .adminuser-mobile-cards {
+    display: block !important;
+  }
+
+  .adminuser-mobile-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e9ecef;
+  }
+
+  .mobile-card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 12px;
+  }
+
+  .mobile-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e9ecef;
+    flex-shrink: 0;
+  }
+
+  .mobile-user-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .mobile-user-info h3 {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-user-info p {
+    margin: 0;
+    font-size: 14px;
+    color: #6c757d;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-actions {
+    flex-shrink: 0;
+  }
+
+  .mobile-action-icon {
+    font-size: 18px;
+    color: #007bff;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+  }
+
+  .mobile-action-icon:hover {
+    background: #f8f9fa;
+    color: #0056b3;
+  }
+
+  .mobile-card-content {
+    border-top: 1px solid #f1f3f4;
+    padding-top: 15px;
+  }
+
+  .mobile-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f8f9fa;
+    min-height: 40px;
+  }
+
+  .mobile-info-row:last-child {
+    margin-bottom: 0;
+    border-bottom: none;
+  }
+
+  .mobile-label {
+    font-weight: 500;
+    color: #495057;
+    font-size: 14px;
+    min-width: 80px;
+    flex-shrink: 0;
+  }
+
+  .mobile-value {
+    color: #333;
+    font-size: 14px;
+    text-align: right;
+    flex: 1;
+    min-width: 0;
+    margin-left: 10px;
+    word-break: break-word;
+  }
+
+  .mobile-role-select {
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    font-size: 13px;
+    max-width: 120px;
+  }
+
+  .adminuser-no-data-mobile {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+    font-style: italic;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Mobile Pagination */
+  .pagination-desktop {
+    display: none !important;
+  }
+
+  .pagination-mobile {
+    display: flex !important;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .pagination-btn-mobile {
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    background: white;
+    color: #495057;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    min-width: 44px;
+    text-align: center;
+  }
+
+  .pagination-btn-mobile:hover:not(:disabled) {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
+
+  .pagination-btn-mobile.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
+
+  .pagination-btn-mobile:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .pagination-info {
+    font-size: 13px;
+    margin-top: 15px;
+    text-align: center;
+  }
+}
+
+/* Small Mobile */
+@media screen and (max-width: 480px) {
+  .adminuser-container {
+    padding: 10px;
+  }
+
+  .adminuser-title {
+    font-size: 22px;
+  }
+
+  .adminuser-add-button {
+    padding: 12px 16px;
+  }
+
+  .adminuser-add-text {
+    display: none;
+  }
+
+  .adminuser-add-icon {
+    font-size: 18px;
+  }
+
+  .adminuser-mobile-card {
+    padding: 12px;
+  }
+
+  .mobile-avatar {
+    width: 45px;
+    height: 45px;
+  }
+
+  .mobile-user-info h3 {
+    font-size: 15px;
+  }
+
+  .mobile-user-info p,
+  .mobile-label,
+  .mobile-value {
+    font-size: 13px;
+  }
+
+  .mobile-info-row {
+    min-height: 36px;
+  }
+
+  .mobile-role-select {
+    max-width: 100px;
+    font-size: 12px;
+  }
+
+  .pagination-btn-mobile {
+    padding: 8px 12px;
+    font-size: 13px;
+    min-width: 40px;
+  }
+
+  .pagination-info {
+    font-size: 12px;
+  }
+}
+
+/* Animation for mobile filters */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
