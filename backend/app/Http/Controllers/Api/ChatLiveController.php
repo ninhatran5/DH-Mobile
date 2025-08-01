@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
+use Cloudinary\Cloudinary;
 use App\Models\SupportChat;
 use Illuminate\Http\Request;
 use App\Events\SupportChatSent;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use App\Models\SupportChatAttachment;
 use App\Models\SupportChatNotification;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Cloudinary\Cloudinary;
+use Illuminate\Support\Facades\Validator;
+
 
 class ChatLiveController extends Controller
 {
@@ -129,7 +131,7 @@ class ChatLiveController extends Controller
             }
             foreach ($files as $file) {
                 // Validate từng file nếu cần
-                $validator = \Validator::make(['file' => $file], [
+                $validator = Validator::make(['file' => $file], [
                     'file' => 'file|mimes:jpg,jpeg,png,gif,svg,pdf,docx,txt|max:4096'
                 ]);
                 if ($validator->fails()) {
@@ -206,12 +208,11 @@ class ChatLiveController extends Controller
     }
 
     //  Đánh dấu một tin nhắn là đã đọc
-    public function markAsRead($chatId)
+    public function markAsRead($userId)
     {
-        $userId = Auth::id();
-
+        // $userId = Auth::id();
         // Đánh dấu tất cả tin nhắn chưa đọc của user này là đã đọc
-        SupportChatNotification::where('user_id', $userId)
+        SupportChat::where('user_id', $userId)
             ->where('is_read', false)
             ->update(['is_read' => true]);
 
