@@ -42,7 +42,7 @@ export const deleteAdminProduct = createAsyncThunk(
   async (productId, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
-      await axiosAdmin.delete(`/products/${productId}`, {
+      await axiosAdmin.delete(`/products/forceDelete/${productId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return productId;

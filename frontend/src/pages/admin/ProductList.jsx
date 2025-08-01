@@ -254,8 +254,8 @@ const ProductList = () => {
               gap: "8px",
               padding: "10px 16px",
               borderRadius: "8px",
-              border: "1px solid #f59e0b",
-              color: "#f59e0b",
+              border: "1px solid #dc3545",
+              color: "#ff0018",
               marginRight: "12px",
               transition: "all 0.2s ease",
             }}
