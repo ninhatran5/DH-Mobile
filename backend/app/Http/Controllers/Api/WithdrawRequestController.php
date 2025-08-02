@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Models\Wallet;
+use Illuminate\Http\Request;
+use App\Models\WithdrawRequest;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+
+class WithdrawRequestController extends Controller
+{
+    public function addBank(Request $request)
+    {
+        // Validate the request data
+        $validatedData = $request->validate([
+            'bank_name' => 'required|string|max:255',
+            'bank_account_number' => 'required|string|max:255',
+            'bank_account_name' => 'required|string|max:255',
+            'beneficiary_bank' => 'required|string|max:255',
+        ]);
+
+        $wallet = Wallet::where('user_id', Auth::id())->firstOrFail();
+
+        WithdrawRequest::create([
+            'user_id' => Auth::id(),
+            'wallet_id' => $wallet->wallet_id,
+            'amount' => 0,
+            'bank_name' => $validatedData['bank_name'],
+            'bank_account_number' => $validatedData['bank_account_number'],
+            'bank_account_name' => $validatedData['bank_account_name'],
+            'beneficiary_bank' => $validatedData['beneficiary_bank'],
+        ]);
+
+        return response()->json([
+            'message' => 'Thêm ngân hàng thành công',
+            'data' => $validatedData
+        ], 201);
+    }
+}
