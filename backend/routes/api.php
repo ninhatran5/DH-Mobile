@@ -31,6 +31,7 @@ use App\Http\Controllers\Api\ProductsViewsController;
 use App\Http\Controllers\Api\AttributevalueController;
 use App\Http\Controllers\Api\PercentVoucherController;
 use App\Http\Controllers\Api\ProductVariantsController;
+use App\Http\Controllers\Api\WithdrawRequestController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
 use App\Http\Controllers\Api\VariantAttributeValuesController;
 
@@ -355,9 +356,12 @@ Route::middleware('auth:sanctum')->get('/loyalty-summary', [LoyaltyTierControlle
 
 
 
-// wallet 
+// wallet, wallet transaction, withdraw
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/wallet', [WalletController::class, 'getWallet']);
     Route::get('/wallet/history/{id}', [WalletController::class, 'getHistoryWallet']);
+    Route::post('/wallet/add-bank', [WithdrawRequestController::class, 'addBank']);
+    Route::get('/wallet/get-bank', [WithdrawRequestController::class, 'getBank']);
+    Route::post('/withdraw/request', [WithdrawRequestController::class, 'requestWithdraw']);
 });

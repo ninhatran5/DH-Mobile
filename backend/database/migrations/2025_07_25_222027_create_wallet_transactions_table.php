@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('wallet_transactions', function (Blueprint $table) {
             $table->id('transaction_id');
             $table->unsignedBigInteger('wallet_id');
-            $table->enum('type', ['hoàn tiền', 'tiêu tiền']);
+            $table->enum('type', ['hoàn tiền', 'tiêu tiền', 'rút tiền']);
             $table->decimal('amount', 11, 2);
             $table->text('note')->nullable();
             $table->unsignedBigInteger('return_id')->nullable(); // Liên kết nếu từ hoàn hàng
