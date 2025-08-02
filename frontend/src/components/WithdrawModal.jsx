@@ -10,6 +10,8 @@ import { FaArrowRightToBracket } from "react-icons/fa6";
 import { IoIosAddCircle } from "react-icons/io";
 import { IoArrowBackCircle } from "react-icons/io5";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { addBankAccount, getListBankAccount } from "../slices/withDrawSlice";
 
 const MySwal = withReactContent(Swal);
 
@@ -17,8 +19,9 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
   const { t } = useTranslation();
   const ns = "withdrawModal";
   const [step, setStep] = useState("list");
-  const [bankAccounts, setBankAccounts] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState(null);
+  const dispatch = useDispatch();
+  const { bankAccount } = useSelector((state) => state.withDraw);
 
   const {
     register: registerBank,
@@ -66,13 +69,8 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
     }
   }, [step, resetBankForm, resetWithdrawForm, setValue, selectedAccount]);
 
-  const onSaveBankAccount = (data) => {
+  const onSaveBankAccount = async (data) => {
     if (step === "edit" && selectedAccount) {
-      setBankAccounts((prev) =>
-        prev.map((acc) =>
-          acc.id === selectedAccount.id ? { ...acc, ...data } : acc
-        )
-      );
       MySwal.fire({
         icon: "success",
         title: t(`${ns}.bankAccountUpdated`),
@@ -80,17 +78,28 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
     } else {
       const newAccount = {
         id: Date.now(),
-        bankName: data.bankName,
-        accountNumber: data.accountNumber,
-        accountHolderName: data.accountHolderName,
-        bankBranch: data.bankBranch,
+        bank_name: data.bankName,
+        bank_account_number: data.accountNumber,
+        bank_account_name: data.accountHolderName,
+        beneficiary_bank: data.bankBranch,
       };
-      setBankAccounts((prev) => [...prev, newAccount]);
-      MySwal.fire({
-        icon: "success",
-        title: t(`${ns}.bankAccountSaved`),
-      });
+
+      try {
+        await dispatch(addBankAccount(newAccount)).unwrap();
+        await dispatch(getListBankAccount());
+        MySwal.fire({
+          icon: "success",
+          title: t(`${ns}.bankAccountSaved`),
+        });
+      } catch (err) {
+        MySwal.fire({
+          icon: "error",
+          title: err?.message || t(`${ns}.saveFailed`),
+        });
+        return;
+      }
     }
+
     setStep("list");
     resetBankForm();
     setSelectedAccount(null);
@@ -126,7 +135,6 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
   };
 
   const handleDeleteAccount = (id) => {
-    setBankAccounts((prev) => prev.filter((acc) => acc.id !== id));
     if (selectedAccount?.id === id) setSelectedAccount(null);
     MySwal.fire({
       icon: "success",
@@ -173,6 +181,10 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
       : String(fixed).replace(/\.?0+$/, "");
   };
 
+  useEffect(() => {
+    dispatch(getListBankAccount());
+  }, [dispatch]);
+
   if (!show) return null;
 
   return (
@@ -206,34 +218,32 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
                 {numberFormat(currentBalance)}
               </p>
             </div>
-            {bankAccounts.length > 0 ? (
+            {bankAccount.length > 0 ? (
               <>
                 <h4 className="withdraw-accounts-title">
                   {t(`${ns}.bankAccounts`)}
                 </h4>
                 <div className="withdraw-accounts-container">
-                  {bankAccounts.map((account) => (
+                  {bankAccount.map((account, index) => (
                     <div
-                      key={account.id}
-                      className={`withdraw-account-card ${
-                        selectedAccount?.id === account.id ? "selected" : ""
-                      }`}
+                      key={index}
+                      className="withdraw-account-card"
                       onClick={() => setSelectedAccount(account)}
                     >
                       <div className="withdraw-account-card-content">
                         <div className="withdraw-account-info">
                           <p className="withdraw-account-bank-name">
-                            {account.bankName}
+                            {account.bank_name}
                           </p>
                           <p className="withdraw-account-number">
-                            {account.accountNumber}
+                            {account.bank_account_number}
                           </p>
                           <p className="withdraw-account-holder">
-                            {account.accountHolderName}
+                            {account.bank_account_name}
                           </p>
                           {account.bankBranch && (
                             <p className="withdraw-account-branch">
-                              {t(`${ns}.branch`)}: {account.bankBranch}
+                              {t(`${ns}.branch`)}: {account.beneficiary_bank}
                             </p>
                           )}
                         </div>

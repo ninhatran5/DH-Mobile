@@ -27,7 +27,7 @@ export const fetchBanks = createAsyncThunk(
   "wallet/fetchBanks ",
   async (_, thunkAPI) => {
     try {
-      const response = await axiosConfigBank.get(`/`);
+      const response = await axiosConfigBank.get(``);
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
