@@ -64,7 +64,6 @@ class WithdrawRequestController extends Controller
 
 
 
-
     public function requestWithdraw(Request $request)
     {
         $validatedData = $request->validate([
@@ -78,14 +77,12 @@ class WithdrawRequestController extends Controller
         $userId = Auth::id();
         $wallet = Wallet::where('user_id', $userId)->firstOrFail();
 
-        // ✅ Kiểm tra số dư
         if ($wallet->balance < $validatedData['amount']) {
             return response()->json([
                 'message' => 'Số dư không đủ để rút tiền',
             ], 400);
         }
 
-        // ✅ Kiểm tra ngân hàng có tồn tại trong DB không
         $bankExists = WithdrawRequest::where('user_id', $userId)
             ->where('bank_name', $validatedData['bank_name'])
             ->where('bank_account_number', $validatedData['bank_account_number'])
@@ -99,44 +96,101 @@ class WithdrawRequestController extends Controller
             ], 400);
         }
 
-        // ✅ Tạo yêu cầu rút tiền
-        $withdraw = WithdrawRequest::create([
-            'user_id' => $userId,
-            'wallet_id' => $wallet->wallet_id,
-            'amount' => '-' . $validatedData['amount'],
-            'bank_name' => $validatedData['bank_name'],
-            'bank_account_number' => $validatedData['bank_account_number'],
-            'bank_account_name' => $validatedData['bank_account_name'],
-            'beneficiary_bank' => $validatedData['beneficiary_bank'],
-            'status' => 'Chờ xử lý',
-            'img_qr' => 'https://img.vietqr.io/image/' . str_replace(' ', '', strtolower($validatedData['bank_name'])) . '-' . $validatedData['bank_account_number'] . '-compact2.png?amount=' . $validatedData['amount'] . '&addInfo=<Rut tien thanh cong>&accountName=' . $validatedData['bank_account_name'], // Chưa có hình ảnh QR, có thể cập nhật sau
-        ]);
+        DB::beginTransaction();
 
-        // ✅ Trừ tiền trong ví
-        $wallet->balance -= $validatedData['amount'];
-        $wallet->save();
+        try {
+            // ✅ Trừ tiền ví
+            $wallet->balance -= $validatedData['amount'];
+            $wallet->save();
 
-        // ✅ Ghi vào bảng wallet_transactions
-        DB::table('wallet_transactions')->insert([
-            'wallet_id' => $wallet->wallet_id,
-            'type' => 'rút tiền',
-            'amount' => $validatedData['amount'],
-            'note' => 'Yêu cầu rút tiền đang chờ xử lý',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+            // ✅ Ghi log giao dịch ví
+            $transactionId = DB::table('wallet_transactions')->insertGetId([
+                'wallet_id' => $wallet->wallet_id,
+                'type' => 'rút tiền',
+                'amount' => $validatedData['amount'],
+                'note' => 'Yêu cầu rút tiền đang chờ xử lý',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // ✅ Tạo yêu cầu rút tiền
+            $withdraw = WithdrawRequest::create([
+                'user_id' => $userId,
+                'wallet_id' => $wallet->wallet_id,
+                'transaction_id' => $transactionId, // Gán transaction_id vào
+                'amount' => '-' . $validatedData['amount'],
+                'bank_name' => $validatedData['bank_name'],
+                'bank_account_number' => $validatedData['bank_account_number'],
+                'bank_account_name' => $validatedData['bank_account_name'],
+                'beneficiary_bank' => $validatedData['beneficiary_bank'],
+                'status' => 'Chờ xử lý',
+                'img_qr' => 'https://img.vietqr.io/image/' .
+                    str_replace(' ', '', strtolower($validatedData['bank_name'])) . '-' .
+                    $validatedData['bank_account_number'] .
+                    '-compact2.png?amount=' . $validatedData['amount'] .
+                    '&addInfo=<Rut tien thanh cong>&accountName=' .
+                    urlencode($validatedData['bank_account_name']),
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Yêu cầu rút tiền đã được tạo thành công và số dư đã được trừ.',
+                'data' => [
+                    'withdraw_id' => $withdraw->withdraw_id,
+                    'amount' => $withdraw->amount,
+                    'bank_name' => $withdraw->bank_name,
+                    'bank_account_number' => $withdraw->bank_account_number,
+                    'bank_account_name' => $withdraw->bank_account_name,
+                    'beneficiary_bank' => $withdraw->beneficiary_bank,
+                    'status' => $withdraw->status,
+                    'transaction_id' => $transactionId,
+                ]
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Đã xảy ra lỗi: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
+
+    public function getWithdrawalManagement()
+    {
+        $withdrawals = WithdrawRequest::with('user')
+            ->whereIn('status', ['Chờ xử lý', 'Đã hoàn tất']) // lọc theo status
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return response()->json([
-            'message' => 'Yêu cầu rút tiền đã được tạo thành công và số dư đã được trừ.',
-            'data' => [
-                'withdraw_id' => $withdraw->withdraw_id,
-                'amount' => $withdraw->amount,
-                'bank_name' => $withdraw->bank_name,
-                'bank_account_number' => $withdraw->bank_account_number,
-                'bank_account_name' => $withdraw->bank_account_name,
-                'beneficiary_bank' => $withdraw->beneficiary_bank,
-                'status' => $withdraw->status,
-            ]
-        ], 201);
+            'message' => 'Lấy danh sách yêu cầu rút tiền thành công',
+            'data' => $withdrawals
+        ], 200);
+    }
+
+    public function postWithdrawalManagement(Request $request, $id)
+    {
+        $withdraw = WithdrawRequest::findOrFail($id);
+
+
+        $validatedData = $request->validate([
+            'status' => 'required|in:Đã hoàn tất',
+        ]);
+
+
+        $withdraw->status = $validatedData['status'];
+        $withdraw->save();
+        
+        if ($withdraw->transaction_id) {
+            DB::table('wallet_transactions')
+                ->where('transaction_id', $withdraw->transaction_id)
+                ->update(['note' => 'Rút tiền thành công']);
+        }
+        return response()->json([
+            'message' => 'Cập nhật trạng thái yêu cầu rút tiền thành công',
+            'data' => $withdraw
+        ], 200);
     }
 }
