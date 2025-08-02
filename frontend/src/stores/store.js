@@ -47,6 +47,7 @@ import adminProfileReducer from "../slices/adminProfile";
 import chatLiveReducer from "../slices/chatLiveSlice";
 import rankReducer from "../slices/rankSlice";
 import walletReducer from "../slices/walletSlice";
+import withDrawReducer from "../slices/withDrawSlice";
 
 export const store = configureStore({
   reducer: {
@@ -72,6 +73,7 @@ export const store = configureStore({
     cart: cartReducer,
     review: reviewReducer,
     rank: rankReducer,
+    withDraw: withDrawReducer,
     favoriteProduct: favoriteProductReducer,
     viewProduct: viewProductReducer,
     voucher: voucherReducer,
