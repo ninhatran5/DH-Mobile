@@ -17,6 +17,9 @@ return new class extends Migration {
                 ->constrained('wallets', 'wallet_id')
                 ->cascadeOnDelete()
                 ->comment('Ví liên kết');
+                $table->foreignId('transaction_id')
+                ->constrained('wallet_transactions', 'transaction_id')
+                ->cascadeOnDelete();
             $table->decimal('amount', 11, 2)->comment('Số tiền yêu cầu rút');
             $table->string('bank_name', 100)->comment('Tên ngân hàng');
             $table->string('bank_account_number', 50)->comment('Số tài khoản');
