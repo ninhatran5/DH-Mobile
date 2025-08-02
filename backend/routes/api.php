@@ -364,6 +364,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/wallet/add-bank', [WithdrawRequestController::class, 'addBank']);
     Route::get('/wallet/get-bank', [WithdrawRequestController::class, 'getBank']);
     Route::post('/withdraw/request', [WithdrawRequestController::class, 'requestWithdraw']);
+    Route::delete('/withdraw/deleteBank/{id}', [WithdrawRequestController::class, 'deleteBankWithdraw']);
 });
 
 Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
