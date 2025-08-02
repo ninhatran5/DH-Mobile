@@ -22,8 +22,8 @@ return new class extends Migration {
             $table->string('bank_account_number', 50)->comment('Số tài khoản');
             $table->string('bank_account_name', 100)->comment('Chủ tài khoản');
             $table->string('beneficiary_bank', 100)->comment('Ngân hàng thụ hưởng');
-            $table->enum('status', ['Chờ xử lý', 'Đã hoàn tất'])
-                ->default('Chờ xử lý')
+            $table->enum('status', ['Thêm thông tin','Chờ xử lý', 'Đã hoàn tất'])
+                ->default('Thêm thông tin')
                 ->comment('Trạng thái xử lý');
             $table->timestamps();
         });
