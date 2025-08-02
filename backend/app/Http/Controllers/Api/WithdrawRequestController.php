@@ -69,6 +69,29 @@ class WithdrawRequestController extends Controller
             'data' => $banks
         ], 200);
     }
+
+    public function getDetailbank($id)
+    {
+        $withdraw = WithdrawRequest::findOrFail($id);
+
+        if ($withdraw->user_id !== Auth::id()) {
+            return response()->json([
+                'message' => 'Bạn không có quyền truy cập thông tin ngân hàng này',
+            ], 403);
+        }
+
+        return response()->json([
+            'message' => 'Lấy thông tin ngân hàng thành công',
+            'data' => [
+                'withdraw_id' => $withdraw->withdraw_id,
+                'bank_name' => $withdraw->bank_name,
+                'bank_account_number' => $withdraw->bank_account_number,
+                'bank_account_name' => $withdraw->bank_account_name,
+                'beneficiary_bank' => $withdraw->beneficiary_bank,
+            ]
+        ], 200);
+    }
+
     public function deleteBankWithdraw($id)
     {
         $withdraw = WithdrawRequest::findOrFail($id);
