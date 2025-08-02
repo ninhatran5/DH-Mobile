@@ -802,20 +802,44 @@ const Homeadmin = () => {
                     <span>Bình Luận</span>
                   </Link>
                 </div>
-                <div
-                  className={
-                    location.pathname === "/admin/comments" ? "active" : ""
-                  }
-                >
-                  <Link
-                    to="/admin/trash-can"
-                    className="admin_dh-nav-link"
-                    data-title="Dashboard"
+                {checkRole !== "sale" && (
+                  <div
+                    className={
+                      location.pathname === "/admin/comments" ? "active" : ""
+                    }
                   >
-                    <i class="bi bi-trash3-fill" style={{color: "#ff3737"}}></i>
-                    <span>Thùng Rác</span>
-                  </Link>
-                </div>
+                    <Link
+                      to="/admin/trash-can"
+                      className="admin_dh-nav-link"
+                      data-title="Dashboard"
+                    >
+                      <i
+                        class="bi bi-trash3-fill"
+                        style={{ color: "#ff3737" }}
+                      ></i>
+                      <span>Thùng Rác</span>
+                    </Link>
+                  </div>
+                )}
+                {checkRole !== "sale" && (
+                  <div
+                    className={
+                      location.pathname === "/admin/comments" ? "active" : ""
+                    }
+                  >
+                    <Link
+                      to="/admin/withdraw-money"
+                      className="admin_dh-nav-link"
+                      data-title="Dashboard"
+                    >
+                      <i
+                        className="bi bi-cash-coin"
+                        style={{ color: "#ff9f0a" }}
+                      />
+                      <span>Rút tiền</span>
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -1018,16 +1042,19 @@ const Homeadmin = () => {
                     <div className="Homeadmin-user123">
                       Xin chào {adminProfile?.user?.username}
                     </div>
-                        <li>
-      <Link
-        to={`/admin/detailacccount/${adminProfile?.user?.id}`}
-        className="dropdown-item"
-        style={{ textAlign: "left", width: "100%" }}
-      >
-        <i className="bi bi-person-circle me-2" style={{ color: "#0d6efd" }}></i>
-        Trang cá nhân
-      </Link>
-    </li>
+                    <li>
+                      <Link
+                        to={`/admin/detailacccount/${adminProfile?.user?.id}`}
+                        className="dropdown-item"
+                        style={{ textAlign: "left", width: "100%" }}
+                      >
+                        <i
+                          className="bi bi-person-circle me-2"
+                          style={{ color: "#0d6efd" }}
+                        ></i>
+                        Trang cá nhân
+                      </Link>
+                    </li>
                     <li>
                       <button
                         className="dropdown-item"
