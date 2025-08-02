@@ -344,7 +344,14 @@
   animation: withdraw-spin 1s ease-in-out infinite;
   margin-right: 8px;
 }
+.withdraw-account-card {
+  transition: all 0.3s ease;
+}
 
+.withdraw-account-card.active {
+  background-color: #e6f3ff;
+  border: 1px solid #2563eb;
+}
 @keyframes withdraw-spin {
   to {
     transform: rotate(360deg);

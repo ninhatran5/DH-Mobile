@@ -15,6 +15,7 @@ import {
   addBankAccount,
   deleteBankAccount,
   getListBankAccount,
+  getDetailBankAccount,
 } from "../slices/withDrawSlice";
 
 const MySwal = withReactContent(Swal);
@@ -24,6 +25,7 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
   const ns = "withdrawModal";
   const [step, setStep] = useState("list");
   const [selectedAccount, setSelectedAccount] = useState(null);
+  const [accountDetail, setAccountDetail] = useState(null);
   const dispatch = useDispatch();
   const { bankAccount } = useSelector((state) => state.withDraw);
 
@@ -72,6 +74,25 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
       resetWithdrawForm();
     }
   }, [step, resetBankForm, resetWithdrawForm, setValue, selectedAccount]);
+
+  useEffect(() => {
+    if (step === "withdraw" && selectedAccount?.withdraw_id) {
+      dispatch(getDetailBankAccount(selectedAccount.withdraw_id))
+        .unwrap()
+        .then((data) => {
+          setAccountDetail(data);
+        })
+        // eslint-disable-next-line no-unused-vars
+        .catch((error) => {
+          MySwal.fire({
+            icon: "error",
+            title:
+              t(`${ns}.fetchDetailFailed`) || "Failed to fetch account detail",
+          });
+        });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, selectedAccount, dispatch]);
 
   const onSaveBankAccount = async (data) => {
     if (step === "edit" && selectedAccount) {
@@ -126,6 +147,22 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
       });
       return;
     }
+    const {
+      withdraw_id,
+      bank_name,
+      bank_account_number,
+      bank_account_name,
+      beneficiary_bank,
+    } = accountDetail || {};
+    console.log("Withdraw Confirmation Info:", {
+      withdraw_id,
+      bank_name,
+      bank_account_number,
+      bank_account_name,
+      beneficiary_bank,
+      withdrawAmount: amount,
+    });
+
     MySwal.fire({
       icon: "success",
       title: t(`${ns}.withdrawRequestProcessing`, {
@@ -142,7 +179,6 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
     if (!id) return;
 
     try {
-      // (Tuỳ UX) hỏi xác nhận trước khi xóa
       const result = await MySwal.fire({
         icon: "warning",
         title: t(`${ns}.confirmDelete`),
@@ -153,17 +189,17 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
       });
       if (!result.isConfirmed) return;
       await dispatch(deleteBankAccount(id)).unwrap();
-      await dispatch(getListBankAccount()).unwrap();
+      await dispatch(getListBankAccount());
 
       MySwal.fire({
         icon: "success",
         title: t(`${ns}.accountDeleted1`),
+        showConfirmButton: false,
       });
     } catch (error) {
-      console.error("Delete bank account failed:", error);
       MySwal.fire({
         icon: "error",
-        title: t(`${ns}.accountDeleteFail`),
+        title: error,
       });
     }
   };
@@ -244,7 +280,7 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
                 {numberFormat(currentBalance)}
               </p>
             </div>
-            {bankAccount.length > 0 ? (
+            {bankAccount?.length > 0 ? (
               <>
                 <h4 className="withdraw-accounts-title">
                   {t(`${ns}.bankAccounts`)}
@@ -253,21 +289,27 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
                   {bankAccount.map((account) => (
                     <div
                       key={account.withdraw_id}
-                      className="withdraw-account-card"
+                      className={`withdraw-account-card ${
+                        selectedAccount?.withdraw_id === account.withdraw_id
+                          ? "active"
+                          : ""
+                      }`}
                       onClick={() => setSelectedAccount(account)}
                     >
                       <div className="withdraw-account-card-content">
                         <div className="withdraw-account-info">
                           <p className="withdraw-account-bank-name">
-                            {account.bank_name}
+                            {t(`${ns}.bank`)}: {account.bank_name}
                           </p>
                           <p className="withdraw-account-number">
+                            {t(`${ns}.accountNumber`)}:{" "}
                             {account.bank_account_number}
                           </p>
                           <p className="withdraw-account-holder">
+                            {t(`${ns}.accountHolderName`)}:{" "}
                             {account.bank_account_name}
                           </p>
-                          {account.bankBranch && (
+                          {account.beneficiary_bank && (
                             <p className="withdraw-account-branch">
                               {t(`${ns}.branch`)}: {account.beneficiary_bank}
                             </p>
@@ -442,22 +484,30 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
           </form>
         )}
 
-        {/* Step: Withdraw Money */}
         {step === "withdraw" && selectedAccount && (
           <form onSubmit={handleSubmitWithdraw(onConfirmWithdraw)}>
             <div className="withdraw-selected-account">
               <h4 className="withdraw-selected-account-title">
                 {t(`${ns}.recipientAccount`)}:{" "}
                 <span className="ms-1">
-                  {selectedAccount.accountHolderName}
+                  {accountDetail?.bank_account_name ||
+                    selectedAccount.bank_account_name}
                 </span>
               </h4>
               <p className="withdraw-selected-account-bank">
-                {t(`${ns}.bank`)}: {selectedAccount.bankName}
+                {t(`${ns}.bank`)}:{" "}
+                {accountDetail?.bank_name || selectedAccount.bank_name}
               </p>
               <p className="withdraw-selected-account-details">
-                {t(`${ns}.accountNumber`)}: {selectedAccount.accountNumber}
+                {t(`${ns}.accountNumber`)}:{" "}
+                {accountDetail?.bank_account_number ||
+                  selectedAccount.bank_account_number}
               </p>
+              {accountDetail?.beneficiary_bank && (
+                <p className="withdraw-selected-account-details">
+                  {t(`${ns}.branch`)}: {accountDetail.beneficiary_bank}
+                </p>
+              )}
             </div>
 
             <div className="withdraw-form-group last">
@@ -465,7 +515,6 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
                 {t(`${ns}.withdrawAmount`)}{" "}
                 <span className="withdraw-required">*</span>
               </label>
-
               <Controller
                 name="withdrawAmount"
                 control={controlWithdraw}
@@ -494,12 +543,10 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
                         {...field}
                         value={displayValue}
                         onChange={(e) => {
-                          // allow digits and dot, strip commas
                           const raw = e.target.value.replace(/,/g, "");
-                          // optionally restrict to pattern: number with up to 2 decimals
                           const sanitized = raw
-                            .replace(/[^\d.]/g, "") // remove non-number/dot
-                            .replace(/(\..*)\./g, "$1") // only one dot
+                            .replace(/[^\d.]/g, "")
+                            .replace(/(\..*)\./g, "$1")
                             .replace(
                               /^(\d+)\.(\d{0,2}).*$/,
                               (_, int, dec) => `${int}.${dec}`

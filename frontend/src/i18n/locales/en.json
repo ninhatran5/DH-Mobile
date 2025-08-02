@@ -792,6 +792,7 @@
     "confirmDeleteText": "This action cannot be undone.",
     "yesDelete": "Delete",
     "accountDeleted1": "Bank account has been deleted",
+    "saveFailed": "Failed to save bank account",
     "accountDeleteFail": "Failed to delete bank account"
   }
 }

@@ -4,6 +4,7 @@ import { axiosUser } from "../../utils/axiosConfig";
 const initialState = {
   withDraws: null,
   bankAccount: null,
+  detailBank: null,
   loading: false,
   error: null,
 };
@@ -27,6 +28,20 @@ export const getListBankAccount = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const response = await axiosUser.get("/wallet/get-bank");
+      return response.data.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Đã có lỗi xảy ra"
+      );
+    }
+  }
+);
+
+export const getDetailBankAccount = createAsyncThunk(
+  "withDraw/getDetailBankAccount",
+  async (id, thunkAPI) => {
+    try {
+      const response = await axiosUser.get(`/wallet/getDetailbank/${id}`);
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -89,6 +104,18 @@ export const withDrawSlice = createSlice({
         state.bankAccount = action.payload;
       })
       .addCase(deleteBankAccount.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Đã có lỗi xảy ra";
+      })
+      .addCase(getDetailBankAccount.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getDetailBankAccount.fulfilled, (state, action) => {
+        state.loading = false;
+        state.detailBank = action.payload;
+      })
+      .addCase(getDetailBankAccount.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
       });
