@@ -115,13 +115,15 @@ const WalletHistoryModal = ({ show, onClose }) => {
   const getSignByType = (type) => {
     const normalized = type?.toLowerCase();
     if (normalized === "hoàn tiền") return "+ ";
-    if (normalized === "trả tiền" || normalized === "tiêu tiền") return "- ";
+    if (normalized === "rút tiền" || normalized === "tiêu tiền") return "- ";
     return "";
   };
 
   const getColorByType = (type) => {
     const normalized = type?.toLowerCase();
-    return normalized === "trả tiền" || normalized === "tiêu tiền"
+    return normalized === "trả tiền" ||
+      normalized === "rút tiền" ||
+      normalized === "tiêu tiền"
       ? "#dc2626"
       : "#16a34a";
   };
@@ -130,16 +132,27 @@ const WalletHistoryModal = ({ show, onClose }) => {
     setSearchTerm("");
     setSelectedType("");
   };
+  const typeLabelMap = {
+    "rút tiền": "Rút tiền",
+    "tiêu tiền": "Tiêu tiền",
+    "hoàn tiền": "Hoàn tiền",
+  };
 
-  const isPendingWithdraw = (note) =>
-    note?.toLowerCase().includes("yêu cầu rút tiền đang chờ xử lý");
+  const getTypeLabel = (type) => {
+    if (!type) return "-";
+    const key = type.toLowerCase();
+    return typeLabelMap[key] ?? type;
+  };
 
   const getNoteStyle = (note) => {
-    if (isPendingWithdraw(note)) {
-      return {
-        color: "#e0a514",
-        fontWeight: 500,
-      };
+    if (note && note.toLowerCase().includes("rút tiền thành công")) {
+      return { color: "#d32f2f", fontWeight: 600 };
+    }
+    if (
+      note &&
+      note.toLowerCase().includes("yêu cầu rút tiền đang chờ xử lý")
+    ) {
+      return { color: "#e0a514", fontWeight: 500 };
     }
     return {};
   };
@@ -165,10 +178,7 @@ const WalletHistoryModal = ({ show, onClose }) => {
               <div className="wallet-search-box">
                 <input
                   type="text"
-                  placeholder={
-                    t("walletHistory.search.placeholder") ||
-                    "Tìm kiếm giao dịch..."
-                  }
+                  placeholder={t("walletHistory.search.placeholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="wallet-search-input"
@@ -198,7 +208,7 @@ const WalletHistoryModal = ({ show, onClose }) => {
                   </option>
                   {transactionTypes.map((type, index) => (
                     <option key={index} value={type}>
-                      {type}
+                      {getTypeLabel(type)}
                     </option>
                   ))}
                 </select>
@@ -272,7 +282,7 @@ const WalletHistoryModal = ({ show, onClose }) => {
                               "HH:mm - DD/MM/YYYY"
                             )}
                           </td>
-                          <td>{transaction?.type}</td>
+                          <td>{getTypeLabel(transaction?.type)}</td>
                           <td style={{ color, fontWeight: 600 }}>
                             {sign}
                             {amount}

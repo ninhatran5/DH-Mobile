@@ -1,5 +1,5 @@
 .detail-order-return-container {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background-color: #f8f9fa;
   min-height: 100vh;
   padding: 0;
@@ -40,7 +40,6 @@
   font-weight: 500;
   cursor: pointer;
   padding: 0;
- 
 }
 
 .back-button:hover {
@@ -109,7 +108,6 @@
 
 .fw-bold {
   font-weight: 600;
-  color: #007aff;
 }
 
 .order-info-grid {
@@ -380,25 +378,26 @@
     flex-direction: column;
     padding: 16px;
   }
-  
+
   .order-info-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .product-card {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .product-total {
     text-align: center;
   }
 }
-.productdetails1{
+.productdetails1 {
   display: flex;
   margin: 10px;
 }
-.success-message, .cancelled-message {
+.success-message,
+.cancelled-message {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -419,7 +418,8 @@
   color: #721c24;
 }
 
-.success-icon, .cancelled-icon {
+.success-icon,
+.cancelled-icon {
   font-size: 20px;
 }
 
@@ -432,13 +432,13 @@
 .action-buttons > * {
   width: 100%;
 }
-.success-message p{
+.success-message p {
   margin-left: 20px;
-  margin-top:6px;
+  margin-top: 6px;
 }
-.cancelled-message p{
+.cancelled-message p {
   margin-left: 20px;
-  margin-top:6px;
+  margin-top: 6px;
 }
 /* Styles cho các trạng thái mới */
 .cancelled-section {
