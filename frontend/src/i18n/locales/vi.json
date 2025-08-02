@@ -787,6 +787,11 @@
     "selectBankPlaceholder": "Chọn ngân hàng",
     "updateAccount": "Cập nhật tài khoản giao dịch",
     "bankAccountUpdated": "Cập nhật tài khoản thành công",
-    "editBankAccount": "Chỉnh sửa tài khoản giao dịch"
+    "editBankAccount": "Chỉnh sửa tài khoản giao dịch",
+    "confirmDelete": "Bạn có chắc muốn xóa tài khoản này?",
+    "confirmDeleteText": "Thao tác này không thể hoàn tác.",
+    "yesDelete": "Xóa",
+    "accountDeleted1": "Tài khoản ngân hàng đã được xóa",
+    "accountDeleteFail": "Xóa tài khoản ngân hàng thất bại"
   }
 }

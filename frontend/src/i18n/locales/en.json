@@ -787,6 +787,11 @@
     "selectBankPlaceholder": "Select a bank",
     "updateBankAccount": "Update Bank Account",
     "bankAccountUpdated": "Bank account updated successfully",
-    "editBankAccount": "Edit Bank Account"
+    "editBankAccount": "Edit Bank Account",
+    "confirmDelete": "Are you sure you want to delete this account?",
+    "confirmDeleteText": "This action cannot be undone.",
+    "yesDelete": "Delete",
+    "accountDeleted1": "Bank account has been deleted",
+    "accountDeleteFail": "Failed to delete bank account"
   }
 }

@@ -35,6 +35,20 @@ export const getListBankAccount = createAsyncThunk(
     }
   }
 );
+
+export const deleteBankAccount = createAsyncThunk(
+  "withDraw/deleteBankAccount",
+  async (id, thunkAPI) => {
+    try {
+      const response = await axiosUser.delete(`/withdraw/deleteBank/${id}`);
+      return response.data.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Đã có lỗi xảy ra"
+      );
+    }
+  }
+);
 export const withDrawSlice = createSlice({
   name: "withDraw",
   initialState,
@@ -63,6 +77,18 @@ export const withDrawSlice = createSlice({
         state.bankAccount = action.payload;
       })
       .addCase(getListBankAccount.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Đã có lỗi xảy ra";
+      })
+      .addCase(deleteBankAccount.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteBankAccount.fulfilled, (state, action) => {
+        state.loading = false;
+        state.bankAccount = action.payload;
+      })
+      .addCase(deleteBankAccount.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
       });
