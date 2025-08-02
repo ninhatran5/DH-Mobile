@@ -11,7 +11,11 @@ import { IoIosAddCircle } from "react-icons/io";
 import { IoArrowBackCircle } from "react-icons/io5";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { addBankAccount, getListBankAccount } from "../slices/withDrawSlice";
+import {
+  addBankAccount,
+  deleteBankAccount,
+  getListBankAccount,
+} from "../slices/withDrawSlice";
 
 const MySwal = withReactContent(Swal);
 
@@ -134,12 +138,34 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
     onClose();
   };
 
-  const handleDeleteAccount = (id) => {
-    if (selectedAccount?.id === id) setSelectedAccount(null);
-    MySwal.fire({
-      icon: "success",
-      title: t(`${ns}.accountDeleted`),
-    });
+  const handleDeleteAccount = async (id) => {
+    if (!id) return;
+
+    try {
+      // (Tuỳ UX) hỏi xác nhận trước khi xóa
+      const result = await MySwal.fire({
+        icon: "warning",
+        title: t(`${ns}.confirmDelete`),
+        showCancelButton: true,
+        confirmButtonText: t(`${ns}.yesDelete`),
+        cancelButtonText: t(`${ns}.cancel`),
+        reverseButtons: true,
+      });
+      if (!result.isConfirmed) return;
+      await dispatch(deleteBankAccount(id)).unwrap();
+      await dispatch(getListBankAccount()).unwrap();
+
+      MySwal.fire({
+        icon: "success",
+        title: t(`${ns}.accountDeleted1`),
+      });
+    } catch (error) {
+      console.error("Delete bank account failed:", error);
+      MySwal.fire({
+        icon: "error",
+        title: t(`${ns}.accountDeleteFail`),
+      });
+    }
   };
 
   const handleClose = () => {
@@ -224,9 +250,9 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
                   {t(`${ns}.bankAccounts`)}
                 </h4>
                 <div className="withdraw-accounts-container">
-                  {bankAccount.map((account, index) => (
+                  {bankAccount.map((account) => (
                     <div
-                      key={index}
+                      key={account.withdraw_id}
                       className="withdraw-account-card"
                       onClick={() => setSelectedAccount(account)}
                     >
@@ -260,10 +286,9 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
                             <BiSolidEdit />
                           </button>
                           <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteAccount(account.id);
-                            }}
+                            onClick={() =>
+                              handleDeleteAccount(account.withdraw_id)
+                            }
                             className="withdraw-account-delete-btn"
                             aria-label={t(`${ns}.accountDeleted`)}
                           >
