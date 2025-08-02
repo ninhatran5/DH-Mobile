@@ -22,7 +22,6 @@ import ChangePassword from "./pages/ChangePassword";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import ProductDetail from "./pages/ProductDetail";
-
 import HomeAdmin from "./pages/admin/HomeAdmin";
 import Chart from "./pages/admin/Chart";
 import AddProduct from "./pages/admin/AddProduct";
@@ -77,6 +76,7 @@ import TrashCan from "./pages/admin/TrashCan";
 import AdminDetailAcccount from "./pages/admin/AdminDetailAcccount.jsx";
 import DetailOrderReturn from "./pages/admin/DetailOrderReturn.jsx";
 import TrashProduct from "./components/TrashProduct.jsx";
+import WithdrawMoney from "./pages/admin/WithdrawMoney.jsx";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -266,9 +266,9 @@ const routerConfig = [
         path: "chatlive",
         element: <ChatLiveAdmin />,
       },
-       {
+      {
         path: "trashproduct",
-        element: <TrashProduct/>,
+        element: <TrashProduct />,
       },
       {
         path: "accounts",
@@ -320,12 +320,10 @@ const routerConfig = [
         ),
       },
       {
-        path:"detailorderreturn/:returnId",
-        element:<DetailOrderReturn/>
+        path: "detailorderreturn/:returnId",
+        element: <DetailOrderReturn />,
       },
 
-
-     
       {
         path: "addvoucher",
         element: (
@@ -462,7 +460,7 @@ const routerConfig = [
         path: "detailacccount/:id",
         element: (
           <RequireNotSaleRole>
-            <AdminDetailAcccount/>
+            <AdminDetailAcccount />
           </RequireNotSaleRole>
         ),
       },
@@ -479,6 +477,14 @@ const routerConfig = [
         element: (
           <RequireNotSaleRole>
             <TrashCan />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "withdraw-money",
+        element: (
+          <RequireNotSaleRole>
+            <WithdrawMoney />
           </RequireNotSaleRole>
         ),
       },

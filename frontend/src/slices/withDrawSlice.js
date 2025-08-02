@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axiosUser } from "../../utils/axiosConfig";
+import { axiosAdmin, axiosUser } from "../../utils/axiosConfig";
 
 const initialState = {
   withDraws: null,
   bankAccount: null,
   detailBank: null,
+  adminWithdraws: null,
   loading: false,
   error: null,
 };
@@ -82,6 +83,34 @@ export const withdrawMoney = createAsyncThunk(
   }
 );
 
+export const adminListWithdrawal = createAsyncThunk(
+  "withDraw/adminListWithdrawal",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axiosAdmin.get("Withdrawal-Management");
+      return response.data.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Đã có lỗi xảy ra"
+      );
+    }
+  }
+);
+
+export const confirmWithdrawal = createAsyncThunk(
+  "withDraw/confirmWithdrawal",
+  async (id, thunkAPI) => {
+    try {
+      const response = await axiosAdmin.post(`Withdrawal-Management/${id}`);
+      return response.data.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Đã có lỗi xảy ra"
+      );
+    }
+  }
+);
+
 export const withDrawSlice = createSlice({
   name: "withDraw",
   initialState,
@@ -146,6 +175,30 @@ export const withDrawSlice = createSlice({
         state.detailBank = action.payload;
       })
       .addCase(withdrawMoney.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Đã có lỗi xảy ra";
+      })
+      .addCase(adminListWithdrawal.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(adminListWithdrawal.fulfilled, (state, action) => {
+        state.loading = false;
+        state.adminWithdraws = action.payload;
+      })
+      .addCase(adminListWithdrawal.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Đã có lỗi xảy ra";
+      })
+      .addCase(confirmWithdrawal.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(confirmWithdrawal.fulfilled, (state, action) => {
+        state.loading = false;
+        state.adminWithdraws = action.payload;
+      })
+      .addCase(confirmWithdrawal.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
       });
