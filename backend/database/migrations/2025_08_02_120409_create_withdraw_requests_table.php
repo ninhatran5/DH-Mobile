@@ -21,10 +21,11 @@ return new class extends Migration {
             $table->string('bank_name', 100)->comment('Tên ngân hàng');
             $table->string('bank_account_number', 50)->comment('Số tài khoản');
             $table->string('bank_account_name', 100)->comment('Chủ tài khoản');
-            $table->string('beneficiary_bank', 100)->comment('Ngân hàng thụ hưởng');
-            $table->enum('status', ['Thêm thông tin','Chờ xử lý', 'Đã hoàn tất'])
+            $table->string('beneficiary_bank', 100)->nullable()->comment('Ngân hàng thụ hưởng');
+            $table->enum('status', ['Thêm thông tin', 'Chờ xử lý', 'Đã hoàn tất'])
                 ->default('Thêm thông tin')
                 ->comment('Trạng thái xử lý');
+            $table->string('img_qr', 255)->nullable()->comment('URL hình ảnh liên quan đến yêu cầu rút tiền');
             $table->timestamps();
         });
     }

@@ -18,7 +18,7 @@ class WithdrawRequestController extends Controller
             'bank_name' => 'required|string|max:255',
             'bank_account_number' => 'required|string|max:255',
             'bank_account_name' => 'required|string|max:255',
-            'beneficiary_bank' => 'required|string|max:255',
+            'beneficiary_bank' => 'nullable|string|max:255',
         ]);
 
         $wallet = Wallet::where('user_id', Auth::id())->firstOrFail();
@@ -109,6 +109,7 @@ class WithdrawRequestController extends Controller
             'bank_account_name' => $validatedData['bank_account_name'],
             'beneficiary_bank' => $validatedData['beneficiary_bank'],
             'status' => 'Chờ xử lý',
+            'img_qr' => 'https://img.vietqr.io/image/' . str_replace(' ', '', strtolower($validatedData['bank_name'])) . '-' . $validatedData['bank_account_number'] . '-compact2.png?amount=' . $validatedData['amount'] . '&addInfo=<Rut tien thanh cong>&accountName=' . $validatedData['bank_account_name'], // Chưa có hình ảnh QR, có thể cập nhật sau
         ]);
 
         // ✅ Trừ tiền trong ví
@@ -127,7 +128,15 @@ class WithdrawRequestController extends Controller
 
         return response()->json([
             'message' => 'Yêu cầu rút tiền đã được tạo thành công và số dư đã được trừ.',
-            'data' => $withdraw,
+            'data' => [
+                'withdraw_id' => $withdraw->withdraw_id,
+                'amount' => $withdraw->amount,
+                'bank_name' => $withdraw->bank_name,
+                'bank_account_number' => $withdraw->bank_account_number,
+                'bank_account_name' => $withdraw->bank_account_name,
+                'beneficiary_bank' => $withdraw->beneficiary_bank,
+                'status' => $withdraw->status,
+            ]
         ], 201);
     }
 }
