@@ -12,7 +12,6 @@ const WalletHistoryModal = ({ show, onClose }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
-  // Thêm state cho tìm kiếm và lọc
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("");
 
@@ -38,17 +37,14 @@ const WalletHistoryModal = ({ show, onClose }) => {
     }
   }, [show]);
 
-  // Lấy danh sách các loại giao dịch duy nhất
   const transactionTypes = useMemo(() => {
     const types = [...new Set(balanceFluctuation.map((item) => item.type))];
-    return types.filter((type) => type); // Loại bỏ giá trị null/undefined
+    return types.filter((type) => type);
   }, [balanceFluctuation]);
 
-  // Lọc dữ liệu dựa trên tìm kiếm và loại giao dịch
   const filteredData = useMemo(() => {
     let filtered = balanceFluctuation;
 
-    // Lọc theo từ khóa tìm kiếm
     if (searchTerm.trim()) {
       const searchLower = searchTerm.toLowerCase().trim();
       filtered = filtered.filter(
@@ -59,7 +55,6 @@ const WalletHistoryModal = ({ show, onClose }) => {
       );
     }
 
-    // Lọc theo loại giao dịch
     if (selectedType) {
       filtered = filtered.filter((item) => item.type === selectedType);
     }
@@ -87,7 +82,6 @@ const WalletHistoryModal = ({ show, onClose }) => {
     }
   };
 
-  // Reset về trang 1 khi filter thay đổi
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, selectedType]);
@@ -137,6 +131,19 @@ const WalletHistoryModal = ({ show, onClose }) => {
     setSelectedType("");
   };
 
+  const isPendingWithdraw = (note) =>
+    note?.toLowerCase().includes("yêu cầu rút tiền đang chờ xử lý");
+
+  const getNoteStyle = (note) => {
+    if (isPendingWithdraw(note)) {
+      return {
+        color: "#e0a514",
+        fontWeight: 500,
+      };
+    }
+    return {};
+  };
+
   return (
     <>
       {loading && <Loading />}
@@ -153,7 +160,6 @@ const WalletHistoryModal = ({ show, onClose }) => {
             </button>
           </div>
 
-          {/* Thêm phần filter và search */}
           <div className="wallet-modal-filters">
             <div className="wallet-filter-row">
               <div className="wallet-search-box">
@@ -271,7 +277,9 @@ const WalletHistoryModal = ({ show, onClose }) => {
                             {sign}
                             {amount}
                           </td>
-                          <td>{transaction?.note || "-"}</td>
+                          <td style={getNoteStyle(transaction?.note)}>
+                            {transaction?.note || "-"}
+                          </td>
                         </tr>
                       );
                     })}
@@ -334,9 +342,6 @@ const WalletHistoryModal = ({ show, onClose }) => {
 
                       {currentPage < totalPages - 2 && (
                         <>
-                          {currentPage < totalPages - 3 && (
-                            <span className="wallet-pagination-dots">...</span>
-                          )}
                           <button
                             className="wallet-pagination-btn"
                             onClick={() => handlePageChange(totalPages)}
