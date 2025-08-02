@@ -16,6 +16,7 @@ import {
   deleteBankAccount,
   getListBankAccount,
   getDetailBankAccount,
+  withdrawMoney,
 } from "../slices/withDrawSlice";
 
 const MySwal = withReactContent(Swal);
@@ -71,7 +72,7 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
       setValue("bankBranch", selectedAccount.bankBranch);
     }
     if (step === "withdraw") {
-      resetWithdrawForm();
+      resetWithdrawForm({ withdrawAmount: "" }); // Explicitly reset withdrawAmount to empty string
     }
   }, [step, resetBankForm, resetWithdrawForm, setValue, selectedAccount]);
 
@@ -119,7 +120,7 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
       } catch (err) {
         MySwal.fire({
           icon: "error",
-          title: err?.message || t(`${ns}.saveFailed`),
+          title: err,
         });
         return;
       }
@@ -147,32 +148,33 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
       });
       return;
     }
-    const {
-      withdraw_id,
-      bank_name,
-      bank_account_number,
-      bank_account_name,
-      beneficiary_bank,
-    } = accountDetail || {};
-    console.log("Withdraw Confirmation Info:", {
-      withdraw_id,
-      bank_name,
-      bank_account_number,
-      bank_account_name,
-      beneficiary_bank,
-      withdrawAmount: amount,
-    });
+    const { withdraw_id } = accountDetail || {};
 
-    MySwal.fire({
-      icon: "success",
-      title: t(`${ns}.withdrawRequestProcessing`, {
-        amount: numberFormat(amount),
-      }),
-    });
-    setSelectedAccount(null);
-    setStep("list");
-    resetWithdrawForm();
-    onClose();
+    dispatch(
+      withdrawMoney({
+        withdraw_id,
+        amount,
+      })
+    )
+      .unwrap()
+      .then(() => {
+        MySwal.fire({
+          icon: "success",
+          title: t(`${ns}.withdrawRequestProcessing`, {
+            amount: numberFormat(amount),
+          }),
+        });
+        setSelectedAccount(null);
+        setStep("list");
+        resetWithdrawForm({ withdrawAmount: "" }); // Reset after successful withdraw
+        onClose();
+      })
+      .catch((err) => {
+        MySwal.fire({
+          icon: "error",
+          title: err || t(`${ns}.withdrawFailed`),
+        });
+      });
   };
 
   const handleDeleteAccount = async (id) => {
@@ -218,7 +220,7 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
         if (result.isConfirmed) {
           setStep("list");
           resetBankForm();
-          resetWithdrawForm();
+          resetWithdrawForm({ withdrawAmount: "" }); // Reset withdraw form on close
           setSelectedAccount(null);
           onClose();
         }
@@ -226,7 +228,7 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
     } else {
       setStep("list");
       resetBankForm();
-      resetWithdrawForm();
+      resetWithdrawForm({ withdrawAmount: "" }); // Reset withdraw form on close
       setSelectedAccount(null);
       onClose();
     }
@@ -252,7 +254,6 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
   return (
     <div className="withdraw-modal-overlay">
       <div className="withdraw-modal-content">
-        {/* Header */}
         <div className="withdraw-modal-header">
           <h3 className="withdraw-modal-title">
             {step === "add"

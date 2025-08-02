@@ -64,6 +64,24 @@ export const deleteBankAccount = createAsyncThunk(
     }
   }
 );
+
+export const withdrawMoney = createAsyncThunk(
+  "withDraw/withdrawMoney",
+  async ({ withdraw_id, amount }, thunkAPI) => {
+    try {
+      const response = await axiosUser.post("withdraw/request", {
+        withdraw_id,
+        amount,
+      });
+      return response.data.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Đã có lỗi xảy ra"
+      );
+    }
+  }
+);
+
 export const withDrawSlice = createSlice({
   name: "withDraw",
   initialState,
@@ -116,6 +134,18 @@ export const withDrawSlice = createSlice({
         state.detailBank = action.payload;
       })
       .addCase(getDetailBankAccount.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Đã có lỗi xảy ra";
+      })
+      .addCase(withdrawMoney.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(withdrawMoney.fulfilled, (state, action) => {
+        state.loading = false;
+        state.detailBank = action.payload;
+      })
+      .addCase(withdrawMoney.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đã có lỗi xảy ra";
       });
