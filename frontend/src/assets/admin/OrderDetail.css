@@ -497,3 +497,50 @@
   color: #dc2626;
   font-weight: 600;
 }
+/* Style cho trạng thái đã hủy */
+.history-item.cancelled {
+  border-left: 4px solid #dc3545;
+  background-color: #f8d7da;
+  width: 300px;
+  border-radius: 5px;
+}
+
+.history-item.cancelled .history-icon {
+  background-color: #d9a5aa;
+  color: white;
+  margin-left: 10px;
+}
+
+.history-item.cancelled .history-title {
+  color: #721c24;
+  font-weight: bold;
+}
+
+.history-item.cancelled .history-description {
+  color: #721c24;
+}
+
+.history-item.cancelled .history-icon span {
+  color: white;
+}
+
+/* Style cho thông báo hủy đơn */
+.cancelled-message {
+  text-align: center;
+  padding: 15px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+  color: #721c24;
+}
+
+.cancelled-message p {
+  margin: 0;
+  font-weight: bold;
+}
+
+.cancelled-message .cancel-reason {
+  margin-top: 8px;
+  font-weight: normal;
+  font-style: italic;
+}

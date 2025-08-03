@@ -84,7 +84,7 @@ const ProfileAdmin = () => {
   return (
     <div className="container">
       <button onClick={goBack} className="back-button">
-        <FaArrowLeft className="icon-detailacccount" style={{ color: '#007bff' }} />
+        <FaArrowLeft className="icon-detailacccount" style={{ color: '#fffff' }} />
         Quay lại
       </button>
 
@@ -115,10 +115,7 @@ const ProfileAdmin = () => {
               <FaUserTie className="icon-detailacccount" style={{ color: '#17a2b8' }} />
               {role}
             </span>
-            <span className="tier">
-              <FaStar className="icon-detailacccount" style={{ color: '#ffc107' }} />
-              Hạng {tier_id}
-            </span>
+           
             <span className="points">
               <FaCoins className="icon-detailacccount" style={{ color: '#28a745' }} />
               {loyalty_points} điểm

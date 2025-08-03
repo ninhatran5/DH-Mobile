@@ -14,7 +14,7 @@ const ORDER_STATUS_OPTIONS = [
   "Đã xác nhận", 
   "Đang vận chuyển",
   "Đã giao hàng",
-  "Hoàn thành",  // Thêm trạng thái mới
+  "Hoàn thành",
   "Đã hủy"
 ];
 
@@ -22,7 +22,7 @@ const getNextStatus = (current) => {
   const idx = ORDER_STATUS_OPTIONS.indexOf(current);
   if (idx === -1 || idx === ORDER_STATUS_OPTIONS.length - 1) return null;
   if (current === "Đã hủy") return null;
-  if (current === "Hoàn thành") return null; // Thêm điều kiện cho "Hoàn thành"
+  if (current === "Hoàn thành") return null;
   const next = ORDER_STATUS_OPTIONS[idx + 1];
   if (next === "Đã hủy") return null;
   return next;
@@ -115,8 +115,8 @@ const OrderDetails = () => {
     setUpdating(false);
   };
 
-  // Timeline status steps - CẬP NHẬT
-  const getStatusMilestones = (currentStatus) => {
+  // Timeline status steps - ĐÃ CẬP NHẬT để xử lý trạng thái hủy
+  const getStatusMilestones = (currentStatus, cancelReason = null) => {
     // Kiểm tra nếu đơn hàng đã bị hủy
     if (currentStatus === "Đã hủy") {
       return [
@@ -124,11 +124,12 @@ const OrderDetails = () => {
           key: 'cancelled',
           title: 'Đã hủy',
           icon: '❌',
-          description: 'Đơn hàng đã bị hủy',
+          description: cancelReason ? `Đơn hàng đã bị hủy. Lý do: ${cancelReason}` : 'Đơn hàng đã bị hủy',
           priority: 1,
           isCompleted: true,
           isActive: false,
-          isPending: false
+          isPending: false,
+          isCancelled: true // Flag để nhận diện trạng thái hủy
         }
       ];
     }
@@ -196,11 +197,13 @@ const OrderDetails = () => {
       ...milestone,
       isCompleted: milestone.priority < currentPriority,
       isActive: milestone.priority === currentPriority && currentPriority <= 5,
-      isPending: milestone.priority > currentPriority
+      isPending: milestone.priority > currentPriority,
+      isCancelled: false
     }));
   };
 
-  const statusMilestones = getStatusMilestones(order.status);
+  // Gọi hàm với cancel_reason
+  const statusMilestones = getStatusMilestones(order.status, order.cancel_reason);
 
   return (
     <div className="detail-order-return-container">
@@ -327,7 +330,7 @@ const OrderDetails = () => {
 
         {/* Right Column */}
         <div className="right-column">
-          {/* Processing History */}
+          {/* Processing History - ĐÃ CẬP NHẬT */}
           <div className="info-card">
             <div className="card-header">
               <div className="header-left">
@@ -339,12 +342,13 @@ const OrderDetails = () => {
             <div className="history-section">
               {statusMilestones.map((milestone, index) => (
                 <div key={milestone.key} className={`history-item ${
+                  milestone.isCancelled ? 'cancelled' :
                   milestone.isCompleted ? 'completed' : 
                   milestone.isActive ? 'active' : 'pending'
                 }`}>
                   <div className="history-icon">
                     <span>
-                      {milestone.isCompleted ? '✓' : milestone.icon}
+                      {milestone.isCompleted && !milestone.isCancelled ? '✓' : milestone.icon}
                     </span>
                   </div>
                   <div className="history-content">
@@ -359,92 +363,86 @@ const OrderDetails = () => {
           </div>
 
         {/* Action Buttons */}
-<div className="info-card">
-  <div className="card-header">
-    <div className="header-left">
-      <span className="card-icon">⚡</span>
-      <h2 className="card-title">Thao tác nhanh</h2>
-    </div>
-  </div>
-  
-  <div className="action-buttons">
-    {/* Debug để kiểm tra giá trị */}
-    {console.log('Current status:', order.status)}
-    {console.log('Next status:', nextStatus)}
-    
-    {/* Trạng thái "Chờ xác nhận" - Hiển thị CẢ HAI button */}
-    {order.status === "Chờ xác nhận" && (
-      <>
-        <button 
-          className="action-button button-primary" 
-          onClick={handleUpdateStatus}
-          disabled={updating}
-        >
-          {updating ? 'Đang cập nhật...' : 'Cập nhật sang "Đã xác nhận"'}
-        </button>
-        
-        <button 
-          className="action-button button-danger" 
-          onClick={handleCancelOrder}
-          disabled={updating}
-        >
-          {updating ? 'Đang xử lý...' : 'Huỷ đơn hàng'}
-        </button>
-      </>
-    )}
+        <div className="info-card">
+          <div className="card-header">
+            <div className="header-left">
+              <span className="card-icon">⚡</span>
+              <h2 className="card-title">Thao tác nhanh</h2>
+            </div>
+          </div>
+          
+          <div className="action-buttons">
+            {order.status === "Chờ xác nhận" && (
+              <>
+                <button 
+                  className="action-button button-primary" 
+                  onClick={handleUpdateStatus}
+                  disabled={updating}
+                >
+                  {updating ? 'Đang cập nhật...' : 'Cập nhật sang "Đã xác nhận"'}
+                </button>
+                
+                <button 
+                  className="action-button button-danger" 
+                  onClick={handleCancelOrder}
+                  disabled={updating}
+                >
+                  {updating ? 'Đang xử lý...' : 'Huỷ đơn hàng'}
+                </button>
+              </>
+            )}
 
-    {/* Trạng thái "Đã xác nhận" - CHỈ hiển thị button Cập nhật */}
-    {order.status === "Đã xác nhận" && (
-      <button 
-        className="action-button button-primary" 
-        onClick={handleUpdateStatus}
-        disabled={updating}
-      >
-        {updating ? 'Đang cập nhật...' : 'Cập nhật sang "Đang vận chuyển"'}
-      </button>
-    )}
+            {/* Trạng thái "Đã xác nhận" - CHỈ hiển thị button Cập nhật */}
+            {order.status === "Đã xác nhận" && (
+              <button 
+                className="action-button button-primary" 
+                onClick={handleUpdateStatus}
+                disabled={updating}
+              >
+                {updating ? 'Đang cập nhật...' : 'Cập nhật sang "Đang vận chuyển"'}
+              </button>
+            )}
 
-    {/* Trạng thái "Đang vận chuyển" - CHỈ hiển thị button Cập nhật */}
-    {order.status === "Đang vận chuyển" && (
-      <button 
-        className="action-button button-primary" 
-        onClick={handleUpdateStatus}
-        disabled={updating}
-      >
-        {updating ? 'Đang cập nhật...' : 'Cập nhật sang "Đã giao hàng"'}
-      </button>
-    )}
+            {/* Trạng thái "Đang vận chuyển" - CHỈ hiển thị button Cập nhật */}
+            {order.status === "Đang vận chuyển" && (
+              <button 
+                className="action-button button-primary" 
+                onClick={handleUpdateStatus}
+                disabled={updating}
+              >
+                {updating ? 'Đang cập nhật...' : 'Cập nhật sang "Đã giao hàng"'}
+              </button>
+            )}
 
-    {/* Trạng thái "Đã giao hàng" - Hiển thị thông báo thành công */}
-    {order.status === "Đã giao hàng" && (
-      <div className="success-message">
-        <p>Giao hàng thành công</p>
-      </div>
-    )}
+            {/* Trạng thái "Đã giao hàng" - Hiển thị thông báo thành công */}
+            {order.status === "Đã giao hàng" && (
+              <div className="success-message">
+                <p>Giao hàng thành công</p>
+              </div>
+            )}
 
-    {/* Trạng thái "Hoàn thành" - Hiển thị thông báo hoàn thành */}
-    {order.status === "Hoàn thành" && (
-      <div className="success-message">
-        <p>Đơn hàng đã hoàn thành</p>
-      </div>
-    )}
+            {/* Trạng thái "Hoàn thành" - Hiển thị thông báo hoàn thành */}
+            {order.status === "Hoàn thành" && (
+              <div className="success-message">
+                <p>Đơn hàng đã hoàn thành</p>
+              </div>
+            )}
 
-    {/* Trạng thái "Đã hủy" */}
-    {order.status === "Đã hủy" && (
-      <div className="cancelled-message">
-        <p>Đơn hàng đã bị hủy</p>
-      </div>
-    )}
+            {order.status === "Đã hủy" && (
+              <div className="cancelled-message">
+                <p>Đơn hàng đã bị hủy</p>
+              
+              </div>
+            )}
 
-    {/* Fallback cho các trạng thái khác */}
-    {!["Chờ xác nhận", "Đã xác nhận", "Đang vận chuyển", "Đã giao hàng", "Hoàn thành", "Đã hủy"].includes(order.status) && (
-      <div className="no-actions">
-        <p>Không có thao tác khả dụng cho trạng thái: {order.status}</p>
-      </div>
-    )}
-  </div>
-</div>
-
+            {/* Fallback cho các trạng thái khác */}
+            {!["Chờ xác nhận", "Đã xác nhận", "Đang vận chuyển", "Đã giao hàng", "Hoàn thành", "Đã hủy"].includes(order.status) && (
+              <div className="no-actions">
+                <p>Không có thao tác khả dụng cho trạng thái: {order.status}</p>
+              </div>
+            )}
+          </div>
+        </div>
 
           {/* Summary */}
           <div className="info-card">

@@ -424,9 +424,34 @@ const OrdersList = () => {
                         <div className="admin_order-stt">{stt}</div>
                       </td>
                       <td>
-                        <div className="admin_order-avatar">
-                          <img src={order.image_url || DefaultImage} alt={order.customer} />
-                        </div>
+                       <td>
+  <div 
+    className="admin_order-avatar"
+    style={{
+      width: '40px',
+      height: '40px',
+      borderRadius: '50%',
+      overflow: 'hidden',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#f0f0f0',
+      border: '2px solid #e0e0e0'
+    }}
+  >
+    <img 
+      src={order.image_url || DefaultImage} 
+      alt={order.customer}
+      style={{
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+        borderRadius: '50%'
+      }}
+    />
+  </div>
+</td>
+
                       </td>
                       <td>
                         <div className="admin_order-code">{order.order_code}</div>
@@ -649,7 +674,6 @@ const OrdersList = () => {
             <FiChevronRight size={16} />
           </button>
 
-          {/* Last page button */}
           <button
             onClick={() => handlePageChange(clientPagination?.lastPage || 1)}
             disabled={currentPage >= (clientPagination?.lastPage || 1)}
