@@ -23,25 +23,36 @@ const EditBanner = () => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
+  // Fetch banner data khi component mount
   useEffect(() => {
     if (id) {
       dispatch(fetchBannerById(id));
     }
   }, [id, dispatch]);
 
+  // Cập nhật form data khi selectedBanner thay đổi
   useEffect(() => {
     if (selectedBanner) {
+      // Kiểm tra và xử lý image_url an toàn
+      const imageUrl = selectedBanner.image_url && 
+                      selectedBanner.image_url.trim() !== "" 
+                      ? selectedBanner.image_url 
+                      : "";
+      
       setFormData({
         title: selectedBanner.title || "",
         link_url: selectedBanner.link_url || "",
         is_active: selectedBanner.is_active === 1 || selectedBanner.is_active === true,
-        image_url: selectedBanner.image_url || "",
+        image_url: imageUrl,
       });
-      setPreview(selectedBanner.image_url || "");
+      setPreview(imageUrl);
+      setImageError(false); // Reset image error khi load banner mới
     }
   }, [selectedBanner]);
 
+  // Xử lý thay đổi input
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -50,15 +61,18 @@ const EditBanner = () => {
     }));
   };
 
+  // Xử lý chọn file ảnh
   const handleFileChange = (selectedFile) => {
     if (selectedFile && selectedFile.type.startsWith('image/')) {
       setFile(selectedFile);
       setPreview(URL.createObjectURL(selectedFile));
+      setImageError(false); // Reset error khi chọn file mới
     } else {
       toast.error("Vui lòng chọn file ảnh hợp lệ!");
     }
   };
 
+  // Xử lý input file change
   const handleInputFileChange = (e) => {
     const selected = e.target.files[0];
     if (selected) {
@@ -87,14 +101,33 @@ const EditBanner = () => {
     }
   };
 
+  // Xóa ảnh đã chọn
   const removeImage = () => {
     setFile(null);
-    setPreview(selectedBanner?.image_url || "");
+    // Kiểm tra an toàn trước khi set preview về ảnh gốc
+    const originalImage = selectedBanner?.image_url && 
+                         selectedBanner.image_url.trim() !== "" 
+                         ? selectedBanner.image_url 
+                         : "";
+    setPreview(originalImage);
+    setImageError(false);
+    
     // Reset file input
     const fileInput = document.getElementById('file-input');
     if (fileInput) fileInput.value = '';
   };
 
+  // Xử lý lỗi load ảnh
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
+  // Xử lý khi ảnh load thành công
+  const handleImageLoad = () => {
+    setImageError(false);
+  };
+
+  // Xử lý submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -125,6 +158,7 @@ const EditBanner = () => {
     <div className="edit-banner-container">
       <h2>Chỉnh sửa Banner</h2>
       <form className="edit-banner-form" onSubmit={handleSubmit}>
+        {/* Tiêu đề */}
         <label>Tiêu đề:</label>
         <input
           type="text"
@@ -135,20 +169,27 @@ const EditBanner = () => {
           className="disabled-input"
         />
 
+        {/* Ảnh banner */}
         <label>Ảnh banner hiện tại:</label>
         
-        {/* Image Upload Area */}
         <div className="image-upload-section">
           <div 
-            className={`upload-area ${dragActive ? 'drag-active' : ''} ${preview ? 'has-image' : ''}`}
+            className={`upload-area ${dragActive ? 'drag-active' : ''} ${preview && !imageError ? 'has-image' : ''}`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
             onDrop={handleDrop}
           >
-            {preview ? (
+            {preview && !imageError ? (
+              // Hiển thị ảnh preview
               <div className="image-preview-container">
-                <img src={preview} alt="Preview" className="preview-image" />
+                <img 
+                  src={preview} 
+                  alt="Preview" 
+                  className="preview-image"
+                  onError={handleImageError}
+                  onLoad={handleImageLoad}
+                />
                 <div className="image-overlay">
                   <div className="image-actions">
                     <button 
@@ -178,7 +219,9 @@ const EditBanner = () => {
                 </div>
               </div>
             ) : (
+              // Hiển thị khu vực upload
               <div className="upload-placeholder">
+               
                 <div className="upload-icon">
                   <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
                     <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -209,6 +252,7 @@ const EditBanner = () => {
           />
         </div>
 
+        {/* Link Banner */}
         <label>Link Banner:</label>
         <input
           type="text"
@@ -218,6 +262,7 @@ const EditBanner = () => {
           placeholder="Nhập URL liên kết..."
         />
 
+        {/* Checkbox hiển thị */}
         <label className="checkbox-label">
           <input
             type="checkbox"
@@ -228,6 +273,7 @@ const EditBanner = () => {
           <span>Hiển thị banner</span>
         </label>
 
+        {/* Submit button */}
         <button type="submit" disabled={uploading} className="btn-submit">
           {uploading ? "Đang cập nhật..." : "Cập nhật Banner"}
         </button>
