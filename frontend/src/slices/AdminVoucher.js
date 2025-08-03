@@ -66,6 +66,32 @@ export const addAdminVoucher = createAsyncThunk(
   }
 );
 
+
+export const addVoucherPercent = createAsyncThunk(
+  "AdminVoucher/addVoucherPercent",
+  async (voucherData, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      if (!token) {
+        return rejectWithValue("Token không tồn tại hoặc hết hạn");
+      }
+      const data = {
+        ...voucherData,
+        discount_type: "percent",
+      };
+
+      const res = await axiosAdmin.post("voucher-percent", data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return res.data.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Lỗi khi thêm voucher phần trăm");
+    }
+  }
+);
+
 // Update voucher
 export const updateAdminVoucher = createAsyncThunk(
   "AdminVoucher/updateAdminVoucher",
@@ -140,6 +166,12 @@ const adminVoucherSlice = createSlice({
         if (index !== -1) {
           state.vouchers[index] = updatedVoucher;
         }
+      })
+      .addCase(addVoucherPercent.fulfilled, (state, action) => {
+        state.vouchers.push(action.payload);
+      })
+      .addCase(addVoucherPercent.rejected, (state, action) => {
+        state.error = action.payload;
       });
   },
 });

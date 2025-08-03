@@ -200,6 +200,10 @@ const VoucherList = () => {
                     <span>Số lượng:</span>
                     <strong>{voucher.quantity}</strong>
                   </div>
+                   <div className="adminvoucher-info-item">
+                    <span>Tối đa:</span>
+                    <strong>{voucher.max_discount || "Không có"}</strong>
+                  </div>
                 </div>
               </div>
 

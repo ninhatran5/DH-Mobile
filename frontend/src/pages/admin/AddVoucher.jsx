@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { addAdminVoucher } from "../../slices/AdminVoucher";
 import { toast, ToastContainer } from "react-toastify";
 import "../../assets/admin/AddVoucher.css";
+import { Link } from "react-router-dom";
 
 const AddVoucherPage = () => {
   const dispatch = useDispatch();
@@ -12,7 +13,6 @@ const AddVoucherPage = () => {
   const { loading, vouchers } = useSelector((state) => state.adminVoucher);
 
   const existingVoucherCodes = vouchers?.map((v) => v.code) || [];
-
   const [randomCode, setRandomCode] = useState("");
 
   const {
@@ -77,7 +77,7 @@ const AddVoucherPage = () => {
         ...data,
         discount_amount: parseFloat(data.discount_amount),
         min_order_value: parseInt(data.min_order_value),
-        quantity: parseInt(data.quantity), // Thêm dòng này
+        quantity: parseInt(data.quantity),
         is_active: Number(data.is_active),
       };
 
@@ -100,12 +100,12 @@ const AddVoucherPage = () => {
   };
 
   const fields = [
-    { name: "code", label: "Mã Voucher * ", type: "text", placeholder: "Nhập mã voucher", required: true },
-    { name: "title", label: "Tiêu đề * ", type: "text", placeholder: "Nhập tiêu đề voucher", required: true },
-    { name: "discount_amount", label: "Số tiền giảm * ", type: "number", step: "1000", placeholder: "Nhập số tiền giảm", required: true },
-    { name: "min_order_value", label: "Giá trị đơn tối thiểu * ", type: "number", placeholder: "Nhập giá trị đơn tối thiểu", required: true },
-    { name: "quantity", label: "Số lượng * ", type: "number", placeholder: "Nhập số lượng voucher", required: true }, // Thêm dòng này
-    { name: "start_date", label: "Ngày bắt đầu * ", type: "datetime-local", placeholder: "", required: true },
+    { name: "code", label: "Mã Voucher", type: "text", placeholder: "Nhập mã voucher", required: true },
+    { name: "title", label: "Tiêu đề", type: "text", placeholder: "Nhập tiêu đề voucher", required: true },
+    { name: "discount_amount", label: "Số tiền giảm", type: "number", step: "1000", placeholder: "Nhập số tiền giảm", required: true },
+    { name: "min_order_value", label: "Giá trị đơn tối thiểu", type: "number", placeholder: "Nhập giá trị đơn tối thiểu", required: true },
+    { name: "quantity", label: "Số lượng", type: "number", placeholder: "Nhập số lượng voucher", required: true },
+    { name: "start_date", label: "Ngày bắt đầu", type: "datetime-local", placeholder: "", required: true },
   ];
 
   return (
@@ -114,6 +114,9 @@ const AddVoucherPage = () => {
       <h2 className="addVoucher-title text-3xl font-bold text-center text-blue-600 mb-6">
         Thêm mã giảm giá mới
       </h2>
+      <Link to="/admin/addvoucherpercent" className="adminvoucher-add-btn">
+        + Thêm mã giảm giá phần trăm
+      </Link>
 
       <form onSubmit={handleSubmit(onSubmit)} className="addVoucher-form space-y-5">
         {fields.map(({ name, label, type, step, placeholder, required }) => {
@@ -122,7 +125,9 @@ const AddVoucherPage = () => {
           if (name === "code") {
             return (
               <div key={name} className="addVoucher-field flex flex-col relative">
-                <label className="addVoucher-label text-gray-700 font-medium mb-1">{label}</label>
+                <label className="addVoucher-label text-gray-700 font-medium mb-1">
+                  {label} {required && <span style={{ color: '#ef4444', fontWeight: 'bold' }}>*</span>}
+                </label>
                 <div className="flex items-center gap-2">
                   <input
                     type={type}
@@ -143,7 +148,6 @@ const AddVoucherPage = () => {
                     Tạo mã
                   </button>
                 </div>
-                {hasError && <span className="error-star">*</span>}
                 {hasError && (
                   <span className="addVoucher-error text-red-500 text-sm mt-1">{errors[name].message}</span>
                 )}
@@ -153,7 +157,9 @@ const AddVoucherPage = () => {
 
           return (
             <div key={name} className="addVoucher-field flex flex-col relative">
-              <label className="addVoucher-label text-gray-700 font-medium mb-1">{label}</label>
+              <label className="addVoucher-label text-gray-700 font-medium mb-1">
+                {label} {required && <span style={{ color: '#ef4444', fontWeight: 'bold' }}>*</span>}
+              </label>
               <input
                 type={type}
                 step={step}
@@ -165,7 +171,6 @@ const AddVoucherPage = () => {
                   hasError ? "focus:ring-red-400" : "focus:ring-blue-400"
                 }`}
               />
-              {hasError && <span className="error-star">*</span>}
               {hasError && (
                 <span className="addVoucher-error text-red-500 text-sm mt-1">{errors[name].message}</span>
               )}
@@ -174,7 +179,9 @@ const AddVoucherPage = () => {
         })}
 
         <div className="addVoucher-field flex flex-col relative">
-          <label className="addVoucher-label text-gray-700 font-medium mb-1">Ngày kết thúc *</label>
+          <label className="addVoucher-label text-gray-700 font-medium mb-1">
+            Ngày kết thúc <span style={{ color: '#ef4444', fontWeight: 'bold' }}>*</span>
+          </label>
           <input
             type="datetime-local"
             placeholder=""
@@ -191,14 +198,15 @@ const AddVoucherPage = () => {
               errors.end_date ? "focus:ring-red-400" : "focus:ring-blue-400"
             }`}
           />
-          {errors.end_date && <span className="error-star">*</span>}
           {errors.end_date && (
             <span className="addVoucher-error text-red-500 text-sm mt-1">{errors.end_date.message}</span>
           )}
         </div>
 
         <div className="addVoucher-field flex flex-col relative">
-          <label className="addVoucher-label text-gray-700 font-medium mb-1">Trạng thái *</label>
+          <label className="addVoucher-label text-gray-700 font-medium mb-1">
+            Trạng thái <span style={{ color: '#ef4444', fontWeight: 'bold' }}>*</span>
+          </label>
           <div className="flex items-center gap-2">
             <input
               type="checkbox"

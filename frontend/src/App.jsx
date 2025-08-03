@@ -78,6 +78,7 @@ import DetailOrderReturn from "./pages/admin/DetailOrderReturn.jsx";
 import TrashProduct from "./components/TrashProduct.jsx";
 import WithdrawMoney from "./pages/admin/WithdrawMoney.jsx";
 import TrashCategories from "./components/TrashCategories.jsx";
+import AddVoucherPercentPage from "./components/Adminvoucher.jsx";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -338,6 +339,14 @@ const routerConfig = [
         element: (
           <RequireNotSaleRole>
             <AddVoucher />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "addvoucherpercent",
+        element: (
+          <RequireNotSaleRole>
+            <AddVoucherPercentPage/>
           </RequireNotSaleRole>
         ),
       },
