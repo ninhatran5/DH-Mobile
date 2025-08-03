@@ -1062,7 +1062,6 @@ const Chart = () => {
           </div>
         </div>
 
-        {/* 🔴 Đơn hủy */}
         <div className="chart-admin-kpi-card chart-admin-kpi-red">
           <div className="chart-admin-kpi-icon">
             <i className="bi bi-x-circle-fill"></i>
@@ -1075,7 +1074,6 @@ const Chart = () => {
           </div>
         </div>
 
-        {/* 🟡 Đơn đã trả hàng */}
         <div className="chart-admin-kpi-card chart-admin-kpi-yellow">
           <div className="chart-admin-kpi-icon">
             <i className="bi bi-arrow-return-left"></i>
@@ -1084,11 +1082,10 @@ const Chart = () => {
             <div className="chart-admin-kpi-title">
               {dateFilter.isEnabled ? 'Đơn hoàn hàng (Đã lọc)' : 'Tổng đơn hoàn hàng'}
             </div>
-            <div className="chart-admin-kpi-number">{totalRefundedOrders.toLocaleString()} đơn hoàn hàng</div>
+            <div className="chart-admin-kpi-number">{totalRefundedOrders.toLocaleString()} đơn hàng</div>
           </div>
         </div>
 
-        {/* 🟠 SP đã bán */}
         <div className="chart-admin-kpi-card chart-admin-kpi-orange">
           <div className="chart-admin-kpi-icon">
             <i className="bi bi-box-seam"></i>
@@ -1101,7 +1098,6 @@ const Chart = () => {
           </div>
         </div>
 
-        {/* 🟣 Tổng sản phẩm */}
         <div className="chart-admin-kpi-card chart-admin-kpi-indigo">
           <div className="chart-admin-kpi-icon">
             <i className="bi bi-grid-3x3-gap-fill"></i>
@@ -1114,7 +1110,6 @@ const Chart = () => {
           </div>
         </div>
 
-        {/* 🟨 Tổng danh mục */}
         <div className="chart-admin-kpi-card chart-admin-kpi-pink">
           <div className="chart-admin-kpi-icon">
             <i className="bi bi-bookmark-fill"></i>
@@ -1127,7 +1122,6 @@ const Chart = () => {
           </div>
         </div>
 
-        {/* 🟪 Tổng doanh thu */}
         <div className="chart-admin-kpi-card chart-admin-kpi-purple">
           <div className="chart-admin-kpi-icon">
             <i className="bi bi-currency-dollar"></i>
@@ -1198,7 +1192,7 @@ const Chart = () => {
               <div className="chart-admin-stat-label">
                 Đơn đã trả hàng {dateFilter.isEnabled ? '(Đã lọc)' : currentMonthName}
               </div>
-              <div className="chart-admin-stat-value">{(monthlyStats.refundedOrders || 0).toLocaleString()} đơn trả hàng</div>
+              <div className="chart-admin-stat-value">{(monthlyStats.refundedOrders || 0).toLocaleString()} đơn hàng</div>
             </div>
           </div>
         </div>
