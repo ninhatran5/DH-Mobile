@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategories, deleteCategory } from "../../slices/adminCategories";
-import { fetchAdminProducts } from "../../slices/adminproductsSlice";
-import "../../assets/admin/Categories.css";
+import { fetchTrashedCategories, restoreCategory, forceDeleteCategory } from "../slices/adminCategories";
+import { fetchAdminProducts } from "../slices/adminproductsSlice";
+import "../assets/admin/Categories.css";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import Loading from "../../components/Loading";
+import Loading from "../components/Loading";
 import Swal from "sweetalert2";
-import { FaBars, FaTimes, FaEdit, FaTrash, FaPlus, FaSearch } from "react-icons/fa";
+import { FaBars, FaTimes, FaUndo, FaTrashAlt, FaArrowLeft, FaSearch } from "react-icons/fa";
 
-const CategoryList = () => {
+const TrashCategories = () => {
   const dispatch = useDispatch();
-  const { categories, loading, error } = useSelector((state) => state.category);
+  const { trashedCategories, loading, error } = useSelector((state) => state.category);
   const { adminproducts } = useSelector((state) => state.adminproduct);
   const [searchTerm, setSearchTerm] = useState("");
   const [productCounts, setProductCounts] = useState({});
@@ -19,7 +19,7 @@ const CategoryList = () => {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchCategories());
+    dispatch(fetchTrashedCategories());
     dispatch(fetchAdminProducts());
   }, [dispatch]);
 
@@ -52,29 +52,23 @@ const CategoryList = () => {
     });
   };
 
-  // ========== CATEGORY FUNCTIONS ==========
-  const handleDelete = async (id) => {
-    const productCount = getProductCount(id);
-    if (productCount > 0) {
-      toast.error(`Không thể xóa danh mục này vì còn ${productCount} sản phẩm thuộc danh mục này. Vui lòng xóa hoặc chuyển các sản phẩm sang danh mục khác trước.`);
-      return;
-    }
+  // ========== TRASH FUNCTIONS ==========
+  const handleRestore = async (id) => {
     const result = await Swal.fire({
-      title: "Bạn có chắc muốn xóa danh mục này không?",
-      text: "Danh mục sẽ được chuyển vào thùng rác.",
-      icon: "warning",
+      title: "Bạn có chắc muốn khôi phục danh mục này không?",
+      icon: "question",
       showCancelButton: true,
-      confirmButtonText: "Xóa",
+      confirmButtonText: "Khôi phục",
       cancelButtonText: "Hủy",
       reverseButtons: true
     });
     if (result.isConfirmed) {
       setIsProcessing(true);
-      dispatch(deleteCategory(id)).then(() => {
-        dispatch(fetchCategories());
+      dispatch(restoreCategory(id)).then(() => {
+        dispatch(fetchTrashedCategories());
         Swal.fire({
           icon: "success",
-          title: "Đã xóa danh mục thành công!",
+          title: "Khôi phục danh mục thành công!",
           showConfirmButton: false,
           timer: 1500
         });
@@ -82,27 +76,56 @@ const CategoryList = () => {
     }
   };
 
-  
-  const filteredCategories = categories.filter((cat) =>
+  const handleForceDelete = async (id) => {
+    const productCount = getProductCount(id);
+    if (productCount > 0) {
+      toast.error(`Không thể xóa vĩnh viễn danh mục này vì còn ${productCount} sản phẩm thuộc danh mục này. Vui lòng xóa hoặc chuyển các sản phẩm sang danh mục khác trước.`);
+      return;
+    }
+    const result = await Swal.fire({
+      title: "Bạn có chắc muốn xóa vĩnh viễn danh mục này không?",
+      text: "Hành động này không thể hoàn tác!",
+      icon: "error",
+      showCancelButton: true,
+      confirmButtonText: "Xóa vĩnh viễn",
+      cancelButtonText: "Hủy",
+      reverseButtons: true
+    });
+    if (result.isConfirmed) {
+      setIsProcessing(true);
+      dispatch(forceDeleteCategory(id)).then(() => {
+        dispatch(fetchTrashedCategories());
+        Swal.fire({
+          icon: "success",
+          title: "Xóa vĩnh viễn danh mục thành công!",
+          showConfirmButton: false,
+          timer: 1500
+        });
+      }).finally(() => setIsProcessing(false));
+    }
+  };
+
+  // ========== DATA FILTERING ==========
+  const filteredCategories = trashedCategories.filter((cat) =>
     cat.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
- 
+  // ========== RENDER ACTIONS ==========
   const renderActions = (cat) => (
     <>
-      <Link 
-        to={`/admin/EditCategories/${cat.category_id}`} 
-        className="admin_dh-action-btn edit" 
-        title="Chỉnh sửa"
-      >
-        <FaEdit />
-      </Link>
       <button
-        className="admin_dh-action-btn delete"
-        onClick={() => handleDelete(cat.category_id)}
-        title="Xóa"
+        className="admin_dh-action-btn restore"
+        onClick={() => handleRestore(cat.category_id)}
+        title="Khôi phục"
       >
-        <FaTrash />
+        <FaUndo />
+      </button>
+      <button
+        className="admin_dh-action-btn force-delete"
+        onClick={() => handleForceDelete(cat.category_id)}
+        title="Xóa vĩnh viễn"
+      >
+        <FaTrashAlt />
       </button>
     </>
   );
@@ -111,7 +134,7 @@ const CategoryList = () => {
   const renderHeader = () => (
     <div className="admin_dh-categories-header">
       <div className="admin_dh-header-content">
-        <h2 className="admin_dh-categories-title">Danh sách danh mục</h2>
+        <h2 className="admin_dh-categories-title">Thùng rác danh mục</h2>
         
         {/* Desktop Toolbar */}
         <div className="admin_dh-toolbar-desktop">
@@ -125,13 +148,9 @@ const CategoryList = () => {
               className="admin_dh-search-input"
             />
           </div>
-          <Link to="/admin/trashcategories" className="admin_dh-trash-btn">
-            <FaTrash />
-            <span>Thùng rác</span>
-          </Link>
-          <Link to="/admin/Addcategories" className="admin_dh-add-btn">
-            <FaPlus />
-            <span>Thêm danh mục</span>
+          <Link to="/admin/categories" className="admin_dh-back-btn">
+            <FaArrowLeft />
+            <span>Quay lại danh sách</span>
           </Link>
         </div>
 
@@ -160,20 +179,16 @@ const CategoryList = () => {
           />
         </div>
         <div className="admin_dh-mobile-actions">
-          <Link to="/admin/trashcategories" className="admin_dh-trash-btn-mobile">
-            <FaTrash />
-            <span>Thùng rác</span>
-          </Link>
-          <Link to="/admin/Addcategories" className="admin_dh-add-btn-mobile">
-            <FaPlus />
-            <span>Thêm danh mục</span>
+          <Link to="/admin/categories" className="admin_dh-back-btn-mobile">
+            <FaArrowLeft />
+            <span>Quay lại danh sách</span>
           </Link>
         </div>
       </div>
     </div>
   );
 
- 
+  // ========== RENDER TABLE ==========
   const renderDesktopTable = () => (
     <div className="admin_dh-table-wrapper desktop-table">
       <table className="admin_dh-categories-table">
@@ -218,7 +233,6 @@ const CategoryList = () => {
       </table>
     </div>
   );
-
 
   const renderMobileCards = () => (
     <div className="admin_dh-mobile-cards">
@@ -265,18 +279,16 @@ const CategoryList = () => {
     </div>
   );
 
-  // ========== MAIN RENDER ==========
   return (
     <div className="admin_dh-categories-container">
       {isProcessing && <Loading />}
       
       {renderHeader()}
 
-      {/* Loading & Error States */}
       {loading && <div className="admin_dh-loading">Đang tải dữ liệu...</div>}
       {error && <div className="admin_dh-error">Lỗi: {error}</div>}
       {!loading && filteredCategories.length === 0 && (
-        <div className="admin_dh-no-data">Không có danh mục nào.</div>
+        <div className="admin_dh-no-data">Không có danh mục nào trong thùng rác.</div>
       )}
 
       {!loading && filteredCategories.length > 0 && (
@@ -289,4 +301,4 @@ const CategoryList = () => {
   );
 };
 
-export default CategoryList;
+export default TrashCategories;
