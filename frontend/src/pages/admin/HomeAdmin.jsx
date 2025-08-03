@@ -684,44 +684,23 @@ const Homeadmin = () => {
                   </div>
                 </div>
 
-                <div
+              <div
                   className={
-                    location.pathname.includes("/admin/chatbot") ? "active" : ""
+                    location.pathname === "/admin/chatbot" ? "active" : ""
                   }
                 >
-                  <a
-                    href="#"
-                    className={`admin_dh-dropdown-toggle d-flex align-items-center justify-content-between ${
-                      isDropdownActive("chatbot") ? "show" : ""
-                    }`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      toggleDropdown("chatbot");
-                    }}
-                    data-title="Chatbot"
+                  <Link
+                    to="/admin/chatbot"
+                    className="admin_dh-nav-link"
+                    data-title="Dashboard"
                   >
-                    <div className="d-flex align-items-center">
-                      <i className="bi bi-robot" style={{ color: "#0071e3" }} />
-                      <span className="ms-3"> Hỗ trợ </span>
-                    </div>
-                    <i
-                      className={`bi bi-caret-${
-                        isDropdownActive("chatbot") ? "down" : "right"
-                      }-fill`}
-                    />
-                  </a>
-                  <div
-                    className={`admin_dh-submenu ${
-                      isDropdownActive("chatbot") ? "show" : ""
-                    }`}
-                  >
-                    {checkRole !== "sale" && (
-                      <div>
-                        <Link to="/admin/chatbot">Chatbot</Link>
-                      </div>
-                    )}
-                  </div>
+                   <i className="bi bi-robot" style={{ color: "#197fe6" }}></i>
+
+                    <span> Chat bot </span>
+                  </Link>
                 </div>
+
+                
                 <div
                   className={
                     location.pathname === "/admin/chatlive" ? "active" : ""
