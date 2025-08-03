@@ -79,14 +79,15 @@ const AddCategory = () => {
       <form onSubmit={handleSubmit} className="addcategories-form">
         <div className="addcategories-group">
           <label>
-            Tên danh mục * 
-            {showValidation && !name.trim() && <span className="required">*</span>}
+            Tên danh mục
+            <span className="required1">*</span>
           </label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Nhập tên danh mục"
+            className={showValidation && !name.trim() ? 'error' : ''}
           />
           {showValidation && !name.trim() && (
             <span className="validation-message">Tên danh mục là bắt buộc</span>
@@ -95,13 +96,14 @@ const AddCategory = () => {
 
         <div className="addcategories-group">
           <label>
-            Mô tả * 
-            {showValidation && !description.trim() && <span className="required">*</span>}
+            Mô tả
+            <span className="required1">*</span>
           </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Nhập mô tả danh mục"
+            className={showValidation && !description.trim() ? 'error' : ''}
           ></textarea>
           {showValidation && !description.trim() && (
             <span className="validation-message">Mô tả là bắt buộc</span>
@@ -110,11 +112,11 @@ const AddCategory = () => {
 
         <div className="addcategories-group">
           <label>
-            Hình ảnh *
-            {showValidation && !imageFile && <span className="required">*</span>}
+            Hình ảnh
+            <span className="required1">*</span>
           </label>
           
-          <div className="image-upload-container">
+          <div className={`image-upload-container ${showValidation && !imageFile ? 'error' : ''}`}>
             <label className="custom-file-upload">
               <input 
                 type="file" 
@@ -128,7 +130,7 @@ const AddCategory = () => {
                   <path d="M17 8L12 3L7 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   <path d="M12 3V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                <span>Chọn hình ảnh * </span>
+                <span>Chọn hình ảnh</span>
               </div>
             </label>
             
@@ -154,8 +156,6 @@ const AddCategory = () => {
             <span className="validation-message">Hình ảnh là bắt buộc</span>
           )}
         </div>
-
-       
 
         <button type="submit" className="addcategories-submit-btn">
           Thêm danh mục
