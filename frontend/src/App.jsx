@@ -79,6 +79,7 @@ import TrashProduct from "./components/TrashProduct.jsx";
 import WithdrawMoney from "./pages/admin/WithdrawMoney.jsx";
 import TrashCategories from "./components/TrashCategories.jsx";
 import AddVoucherPercentPage from "./components/Adminvoucher.jsx";
+import EditAccount from "./components/EditAcccount.jsx";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -288,7 +289,14 @@ const routerConfig = [
           </RequireNotSaleRole>
         ),
       },
-
+ {
+        path: "Editaccounts/:id",
+        element: (
+          <RequireNotSaleRole>
+            <EditAccount/>
+          </RequireNotSaleRole>
+        ),
+      },
       {
         path: "addaccount",
         element: (

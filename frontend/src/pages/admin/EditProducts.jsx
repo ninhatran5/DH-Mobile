@@ -9,7 +9,6 @@ import Swal from "sweetalert2";
 // CKEditor imports
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-
 import {
   fetchAdminProducts,
   updateAdminProduct,
@@ -28,7 +27,6 @@ import { fetchAdminOrders } from "../../slices/adminOrderSlice";
 import Loading from "../../components/Loading";
 import "../../assets/admin/EditProducts.css";
 
-// ✅ Enhanced VariantDisplay Component (giữ nguyên từ code gốc)
 const VariantDisplay = ({ variant, onEdit, onDelete, attributeValues, isInOrder, ordersLoading, ordersError, canCheckOrders }) => {
   const handleDelete = useCallback(() => {
     if (ordersLoading) {
@@ -169,7 +167,6 @@ const AdminProductEdit = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // ✅ Optimized Selectors (giữ nguyên)
   const { adminproducts, loading, error } = useSelector((state) => state.adminproduct);
   const { productSpecifications, loading: specsLoading, error: specsError } = useSelector(
     (state) => state.adminProductSpecifications
@@ -182,7 +179,6 @@ const AdminProductEdit = () => {
     (state) => state.variantAttributeValue
   );
 
-  // ✅ Optimized Orders Selector (giữ nguyên)
   const { adminOrders, loading: ordersLoading, error: ordersError } = useSelector((state) => {
     const orderState = state.adminOrder;
     if (!orderState) {
@@ -196,7 +192,6 @@ const AdminProductEdit = () => {
     };
   });
 
-  // ✅ Enhanced States với Price Display
   const [formData, setFormData] = useState({
     name: "",
     price: "",
@@ -350,35 +345,225 @@ const AdminProductEdit = () => {
 
   // ✅ CKEditor Configuration (giữ nguyên)
   const editorConfiguration = {
-    toolbar: {
-      items: [
-        'heading', '|',
-        'bold', 'italic', 'underline', '|',
-        'bulletedList', 'numberedList', '|',
-        'link', 'imageUpload', 'mediaEmbed', '|',
-        'blockQuote', 'insertTable', '|',
-        'undo', 'redo', '|',
-        'alignment', 'fontColor', 'fontBackgroundColor', '|',
-        'fontSize', 'fontFamily'
-      ]
-    },
-    image: {
-      toolbar: [
-        'imageStyle:inline',
-        'imageStyle:block',
-        'imageStyle:side',
-        '|',
-        'toggleImageCaption',
-        'imageTextAlternative'
-      ]
-    },
-    table: {
-      contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
-    },
-    ckfinder: {
-      uploadUrl: '/api/upload-image'
-    }
-  };
+  toolbar: {
+    items: [
+      'heading', '|',
+      'bold', 'italic', 'underline', '|',
+      'bulletedList', 'numberedList', '|',
+      'link', 'imageUpload', 'mediaEmbed', '|',
+      'blockQuote', 'insertTable', '|',
+      'undo', 'redo', '|',
+      'alignment', 'fontColor', 'fontBackgroundColor', '|',
+      'fontSize', 'fontFamily'
+    ]
+  },
+  
+  // ✅ Cấu hình chi tiết cho alignment (căn trái/phải/giữa/đều)
+  alignment: {
+    options: [
+      { name: 'left', className: 'text-left' },
+      { name: 'center', className: 'text-center' },
+      { name: 'right', className: 'text-right' },
+      { name: 'justify', className: 'text-justify' }
+    ]
+  },
+  
+  // ✅ Cấu hình chi tiết cho font family
+  fontFamily: {
+    options: [
+      'default',
+      'Arial, Helvetica, sans-serif',
+      'Courier New, Courier, monospace',
+      'Georgia, serif',
+      'Lucida Sans Unicode, Lucida Grande, sans-serif',
+      'Tahoma, Geneva, sans-serif',
+      'Times New Roman, Times, serif',
+      'Trebuchet MS, Helvetica, sans-serif',
+      'Verdana, Geneva, sans-serif',
+      // Thêm font tiếng Việt
+      'Be Vietnam Pro, sans-serif',
+      'Roboto, sans-serif',
+      'Open Sans, sans-serif'
+    ],
+    supportAllValues: true
+  },
+  
+  // ✅ Cấu hình chi tiết cho font size
+  fontSize: {
+    options: [
+      9, 10, 11, 12, 'default', 14, 16, 18, 20, 22, 24, 26, 28, 30, 36, 48, 72
+    ],
+    supportAllValues: true
+  },
+  
+  // ✅ Cấu hình font color với nhiều màu sắc
+  fontColor: {
+    colors: [
+      {
+        color: 'hsl(0, 0%, 0%)',
+        label: 'Black'
+      },
+      {
+        color: 'hsl(0, 0%, 30%)',
+        label: 'Dim grey'
+      },
+      {
+        color: 'hsl(0, 0%, 60%)',
+        label: 'Grey'
+      },
+      {
+        color: 'hsl(0, 0%, 90%)',
+        label: 'Light grey'
+      },
+      {
+        color: 'hsl(0, 0%, 100%)',
+        label: 'White',
+        hasBorder: true
+      },
+      {
+        color: 'hsl(0, 75%, 60%)',
+        label: 'Red'
+      },
+      {
+        color: 'hsl(30, 75%, 60%)',
+        label: 'Orange'
+      },
+      {
+        color: 'hsl(60, 75%, 60%)',
+        label: 'Yellow'
+      },
+      {
+        color: 'hsl(90, 75%, 60%)',
+        label: 'Light green'
+      },
+      {
+        color: 'hsl(120, 75%, 60%)',
+        label: 'Green'
+      },
+      {
+        color: 'hsl(150, 75%, 60%)',
+        label: 'Aquamarine'
+      },
+      {
+        color: 'hsl(180, 75%, 60%)',
+        label: 'Turquoise'
+      },
+      {
+        color: 'hsl(210, 75%, 60%)',
+        label: 'Light blue'
+      },
+      {
+        color: 'hsl(240, 75%, 60%)',
+        label: 'Blue'
+      },
+      {
+        color: 'hsl(270, 75%, 60%)',
+        label: 'Purple'
+      }
+    ]
+  },
+  
+  // ✅ Cấu hình font background color
+  fontBackgroundColor: {
+    colors: [
+      {
+        color: 'hsl(0, 0%, 0%)',
+        label: 'Black'
+      },
+      {
+        color: 'hsl(0, 0%, 30%)',
+        label: 'Dim grey'
+      },
+      {
+        color: 'hsl(0, 0%, 60%)',
+        label: 'Grey'
+      },
+      {
+        color: 'hsl(0, 0%, 90%)',
+        label: 'Light grey'
+      },
+      {
+        color: 'hsl(0, 0%, 100%)',
+        label: 'White',
+        hasBorder: true
+      },
+      {
+        color: 'hsl(0, 75%, 60%)',
+        label: 'Red'
+      },
+      {
+        color: 'hsl(30, 75%, 60%)',
+        label: 'Orange'
+      },
+      {
+        color: 'hsl(60, 75%, 60%)',
+        label: 'Yellow'
+      },
+      {
+        color: 'hsl(90, 75%, 60%)',
+        label: 'Light green'
+      },
+      {
+        color: 'hsl(120, 75%, 60%)',
+        label: 'Green'
+      },
+      {
+        color: 'hsl(150, 75%, 60%)',
+        label: 'Aquamarine'
+      },
+      {
+        color: 'hsl(180, 75%, 60%)',
+        label: 'Turquoise'
+      },
+      {
+        color: 'hsl(210, 75%, 60%)',
+        label: 'Light blue'
+      },
+      {
+        color: 'hsl(240, 75%, 60%)',
+        label: 'Blue'
+      },
+      {
+        color: 'hsl(270, 75%, 60%)',
+        label: 'Purple'
+      }
+    ]
+  },
+  
+  image: {
+    toolbar: [
+      'imageStyle:inline',
+      'imageStyle:block',
+      'imageStyle:side',
+      '|',
+      'toggleImageCaption',
+      'imageTextAlternative'
+    ]
+  },
+  
+  table: {
+    contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
+  },
+  
+  ckfinder: {
+    uploadUrl: '/api/upload-image'
+  },
+  
+  // ✅ Cấu hình thêm cho editor
+  placeholder: 'Nhập mô tả sản phẩm chi tiết...',
+  
+  // ✅ Cấu hình heading styles
+  heading: {
+    options: [
+      { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+      { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+      { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+      { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
+      { model: 'heading4', view: 'h4', title: 'Heading 4', class: 'ck-heading_heading4' }
+    ]
+  }
+};
+
 
   // ✅ Data loading effects (giữ nguyên từ code gốc)
   useEffect(() => {
@@ -444,7 +629,6 @@ const AdminProductEdit = () => {
     setSpecificationsData(specs);
   }, [adminproducts, productSpecifications, id, formatPrice]);
 
-  // ✅ Các effect và handlers khác (giữ nguyên từ code gốc)
   useEffect(() => {
     if ((ordersError || !adminOrders) && ordersLoadAttempted && !ordersLoading) {
       const retryTimer = setTimeout(() => {
@@ -508,7 +692,6 @@ const AdminProductEdit = () => {
     if (fileInput) fileInput.value = '';
   }, []);
 
-  // ✅ Specification handlers (giữ nguyên từ code gốc)
   const handleSpecificationChange = useCallback((index, field, value) => {
     setSpecificationsData((prev) =>
       prev.map((spec, i) => i === index ? { ...spec, [field]: value } : spec)
@@ -787,7 +970,6 @@ const AdminProductEdit = () => {
 
       {/* Main Content */}
       <div className="row g-4">
-        {/* ✅ Enhanced Form với Auto Format Price */}
         <div className="col-12">
           <div className="card shadow-sm">
             <div className="card-body">
@@ -867,7 +1049,6 @@ const AdminProductEdit = () => {
                           <i className="bi bi-calculator" /> Giá trị: <strong>{parseInt(formData.price_original, 10).toLocaleString('vi-VN')}₫</strong>
                         </small>
                       )}
-                      {/* ✅ Price Comparison Display */}
                       {formData.price && formData.price_original && (
                         <small className={`d-block mt-2 ${
                           parseInt(formData.price_original, 10) > parseInt(formData.price, 10) 
@@ -1008,9 +1189,7 @@ const AdminProductEdit = () => {
                           }}
                         />
                       </div>
-                      <div className="description-help-text">
-                        Bạn có thể sử dụng thanh công cụ để định dạng văn bản, chèn ảnh, tạo bảng và nhiều tính năng khác
-                      </div>
+                    
                     </div>
                   </div>
                 </div>
@@ -1018,7 +1197,7 @@ const AdminProductEdit = () => {
                 <div className="mt-4">
                   <button 
                     type="submit" 
-                    className="btn btn-success btn-lg px-4"
+                    className="updateproduct1 "
                   >
                     <i className="bi bi-check-lg" /> Cập nhật sản phẩm
                   </button>
@@ -1028,8 +1207,6 @@ const AdminProductEdit = () => {
           </div>
         </div>
 
-        {/* Phần thông số kỹ thuật và biến thể (giữ nguyên từ code gốc) */}
-        {/* ... (code của thông số kỹ thuật và biến thể giống hệt code gốc) ... */}
         
         {/* Thông số kỹ thuật */}
         <div className="col-12">
