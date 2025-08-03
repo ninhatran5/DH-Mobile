@@ -19,6 +19,10 @@ const ListUser = () => {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const usersPerPage = 10;
 
+  const displayData = (value) => {
+    return value && value.trim() !== "" ? value : "Chưa cập nhật";
+  };
+
   useEffect(() => {
     dispatch(fetchUsers());
   }, [dispatch]);
@@ -80,7 +84,7 @@ const ListUser = () => {
   };
 
   const filteredUsers = users.filter((user) => {
-    const matchesSearch = user.username.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (user.username || "").toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = selectedRole ? user.role === selectedRole : true;
     return matchesSearch && matchesRole;
   });
@@ -184,7 +188,6 @@ const ListUser = () => {
 
       {!loading && !error && (
         <>
-          {/* Desktop Table */}
           <div className="adminuser-table-wrapper desktop-table">
             <table className="adminuser-table">
               <thead>
@@ -218,14 +221,14 @@ const ListUser = () => {
                             e.target.onerror = null;
                             e.target.src = defaultAvatar;
                           }}
-                          alt={user.full_name || "User"}
+                          alt={displayData(user.full_name)}
                           className="adminuser-avatar"
                         />
                       </td>
-                      <td>{user.username}</td>
-                      <td>{user.full_name}</td>
-                      <td>{user.email}</td>
-                      <td>{user.phone}</td>
+                      <td>{displayData(user.username)}</td>
+                      <td>{displayData(user.full_name)}</td>
+                      <td>{displayData(user.email)}</td>
+                      <td>{displayData(user.phone)}</td>
                       <td className="adminuser-text-center">
                         {user.role === "sale" ? (
                           <select
@@ -238,11 +241,14 @@ const ListUser = () => {
                             <option value="customer">customer</option>
                           </select>
                         ) : (
-                          <span>{user.role}</span>
+                          <span>{displayData(user.role)}</span>
                         )}
                       </td>
                       <td className="adminuser-text-center">
-                        {new Date(user.created_at).toLocaleDateString('vi-VN')}
+                        {user.created_at 
+                          ? new Date(user.created_at).toLocaleDateString('vi-VN')
+                          : "Chưa cập nhật"
+                        }
                       </td>
                       <td className="adminuser-text-center adminuser-actions">
                         <FaEye
@@ -264,7 +270,6 @@ const ListUser = () => {
             </table>
           </div>
 
-          {/* Mobile Cards */}
           <div className="adminuser-mobile-cards">
             {currentUsers.length > 0 ? (
               currentUsers.map((user, index) => (
@@ -280,12 +285,12 @@ const ListUser = () => {
                         e.target.onerror = null;
                         e.target.src = defaultAvatar;
                       }}
-                      alt={user.full_name || "User"}
+                      alt={displayData(user.full_name)}
                       className="mobile-avatar"
                     />
                     <div className="mobile-user-info">
-                      <h3>{user.username}</h3>
-                      <p>{user.full_name}</p>
+                      <h3>{displayData(user.username)}</h3>
+                      <p>{displayData(user.full_name)}</p>
                     </div>
                     <div className="mobile-actions">
                       <FaEye
@@ -298,11 +303,11 @@ const ListUser = () => {
                   <div className="mobile-card-content">
                     <div className="mobile-info-row">
                       <span className="mobile-label">Email:</span>
-                      <span className="mobile-value">{user.email}</span>
+                      <span className="mobile-value">{displayData(user.email)}</span>
                     </div>
                     <div className="mobile-info-row">
                       <span className="mobile-label">SĐT:</span>
-                      <span className="mobile-value">{user.phone}</span>
+                      <span className="mobile-value">{displayData(user.phone)}</span>
                     </div>
                     <div className="mobile-info-row">
                       <span className="mobile-label">Vai trò:</span>
@@ -318,14 +323,17 @@ const ListUser = () => {
                             <option value="customer">customer</option>
                           </select>
                         ) : (
-                          <span>{user.role}</span>
+                          <span>{displayData(user.role)}</span>
                         )}
                       </span>
                     </div>
                     <div className="mobile-info-row">
                       <span className="mobile-label">Ngày tạo:</span>
                       <span className="mobile-value">
-                        {new Date(user.created_at).toLocaleDateString('vi-VN')}
+                        {user.created_at 
+                          ? new Date(user.created_at).toLocaleDateString('vi-VN')
+                          : "Chưa cập nhật"
+                        }
                       </span>
                     </div>
                   </div>
@@ -338,9 +346,7 @@ const ListUser = () => {
             )}
           </div>
 
-          {/* Pagination */}
           <div className="adminuser-pagination">
-            {/* Desktop pagination */}
             <div className="pagination-desktop">
               <button
                 className="pagination-btn"
@@ -369,7 +375,6 @@ const ListUser = () => {
               </button>
             </div>
 
-            {/* Mobile pagination */}
             <div className="pagination-mobile">
               <button
                 className="pagination-btn-mobile"
@@ -398,7 +403,6 @@ const ListUser = () => {
               </button>
             </div>
 
-            {/* Pagination info */}
             <div className="pagination-info">
               Trang {currentPage} / {totalPages} - Hiển thị {currentUsers.length} / {filteredUsers.length} user
             </div>

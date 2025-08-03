@@ -75,7 +75,7 @@ const UserDetail = () => {
            
               </div>
               <div className="user-detail-info-item">
-                <label>Số điện thoại: {user.phone}</label>
+                <label>Số điện thoại: {user.phone || "Chưa cập nhật"}</label>
            
               </div>
               <div className="user-detail-info-item">
