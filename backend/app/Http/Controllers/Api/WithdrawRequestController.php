@@ -211,27 +211,23 @@ class WithdrawRequestController extends Controller
         ], 200);
     }
 
-    public function postWithdrawalManagement(Request $request, $id)
-    {
-        $withdraw = WithdrawRequest::findOrFail($id);
+  public function postWithdrawalManagement(Request $request, $id)
+{
+    $withdraw = WithdrawRequest::findOrFail($id);
 
+    $withdraw->status = 'Đã hoàn tất';
+    $withdraw->save();
 
-        $validatedData = $request->validate([
-            'status' => 'required|in:Đã hoàn tất',
-        ]);
-
-
-        $withdraw->status = $validatedData['status'];
-        $withdraw->save();
-
-        if ($withdraw->transaction_id) {
-            DB::table('wallet_transactions')
-                ->where('transaction_id', $withdraw->transaction_id)
-                ->update(['note' => 'Rút tiền thành công']);
-        }
-        return response()->json([
-            'message' => 'Cập nhật trạng thái yêu cầu rút tiền thành công',
-            'data' => $withdraw
-        ], 200);
+    if ($withdraw->transaction_id) {
+        DB::table('wallet_transactions')
+            ->where('transaction_id', $withdraw->transaction_id)
+            ->update(['note' => 'Rút tiền thành công']);
     }
+
+    return response()->json([
+        'message' => 'Cập nhật trạng thái yêu cầu rút tiền thành công',
+        'data' => $withdraw
+    ], 200);
+}
+
 }
