@@ -590,7 +590,7 @@ const AdminAddProduct = () => {
                         className="admin-remove-image"
                         onClick={removeImage}
                       >
-                        <FaTimes />
+                       x
                       </button>
                     </div>
                   )}
