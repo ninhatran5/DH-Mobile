@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+
 use App\Models\Wallet;
 use Illuminate\Http\Request;
 use App\Models\WithdrawRequest;
@@ -9,6 +10,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Cloudinary\Cloudinary;
 
 class WithdrawRequestController extends Controller
 {
@@ -211,23 +213,50 @@ class WithdrawRequestController extends Controller
         ], 200);
     }
 
-  public function postWithdrawalManagement(Request $request, $id)
-{
-    $withdraw = WithdrawRequest::findOrFail($id);
+    public function postWithdrawalManagement(Request $request, $id)
+    {
+        $withdraw = WithdrawRequest::findOrFail($id);
 
-    $withdraw->status = 'Đã hoàn tất';
-    $withdraw->save();
+        $request->validate([
+            'img_bill' => 'required|image|max:2048',
+        ]);
 
-    if ($withdraw->transaction_id) {
-        DB::table('wallet_transactions')
-            ->where('transaction_id', $withdraw->transaction_id)
-            ->update(['note' => 'Rút tiền thành công']);
+        if ($request->hasFile('img_bill')) {
+            try {
+                // Khởi tạo Cloudinary
+                $cloudinary = app(Cloudinary::class);
+                $uploadApi = $cloudinary->uploadApi();
+
+                // Upload ảnh lên Cloudinary
+                $result = $uploadApi->upload($request->file('img_bill')->getRealPath(), [
+                    'folder' => 'img_bill',
+                    'public_id' => $withdraw->withdraw_id,
+                    'overwrite' => true,
+                ]);
+
+                // Gán URL ảnh vào bản ghi rút tiền
+                $withdraw->img_bill = $result['secure_url'];
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Lỗi khi upload ảnh: ' . $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ], 500);
+            }
+        }
+
+        $withdraw->status = 'Đã hoàn tất';
+        $withdraw->save();
+
+        if ($withdraw->transaction_id) {
+            DB::table('wallet_transactions')
+                ->where('transaction_id', $withdraw->transaction_id)
+                ->update(['note' => 'Rút tiền thành công']);
+        }
+
+        return response()->json([
+            'message' => 'Cập nhật trạng thái yêu cầu rút tiền thành công',
+            'data' => $withdraw
+        ], 200);
     }
-
-    return response()->json([
-        'message' => 'Cập nhật trạng thái yêu cầu rút tiền thành công',
-        'data' => $withdraw
-    ], 200);
-}
-
 }
