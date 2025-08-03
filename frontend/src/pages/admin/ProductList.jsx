@@ -38,9 +38,6 @@ const ProductList = () => {
   useEffect(() => {
     dispatch(fetchAdminProducts());
     dispatch(fetchCategories());
-    if (error) {
-      toast.error(`Lỗi từ server: ${error}`);
-    }
   }, [dispatch, error]);
 
   useEffect(() => {
@@ -267,21 +264,22 @@ const ProductList = () => {
           {checkRole !== "sale" && (
             <Link
               to="/admin/addproduct"
-              className="admin_dh-btn admin_dh-btn-primary"
+              className="adminproductadd"
               style={{
                 display: "flex",
                 alignItems: "center",
                 gap: "8px",
                 padding: "10px 16px",
                 borderRadius: "8px",
-                boxShadow: "0 4px 10px rgba(0, 113, 227, 0.3)",
                 transition: "all 0.2s ease",
+                backgroundColor: "#2563eb",
+                color: "#ffffff",
               }}
             >
               <i
                 className="bi bi-plus-lg"
                 style={{
-                  color: "#ffffff",
+                  color: "0502e0",
                   fontSize: "1.1rem",
                   fontWeight: "bold",
                 }}

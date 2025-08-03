@@ -158,53 +158,30 @@ function AttributePage() {
                 </div>
               )}
 
-              <div className="action-buttons">
-                <Link to={`/admin/Editattribute/${attr.attribute_id}`}>
-                  <button
-                    className="btn-edit"
-                    style={{
-                      padding: "8px 16px",
-                      border: "1px solid #eab308",
-                      borderRadius: "6px",
-                      backgroundColor: "#fef9c3",
-                      color: "#854d0e",
-                      fontSize: "15px",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "4px",
-                      textDecoration: "none",
-                    }}
-                  >
-                    <i className="bi bi-pencil"></i>
-                    Cập nhật thuộc tính
-                  </button>
-                </Link>
+           <div style={{ display: "flex", gap: "12px", marginTop: "12px", flexWrap: "wrap" }}>
+          <Link to={`/admin/Editattribute/${attr.attribute_id}`}>
+            <button className="btn-action btn-edit">
+              <i className="bi bi-pencil"></i>
+              Cập nhật thuộc tính
+            </button>
+          </Link>
 
-                <button
-                  className="btn-delete-attibute-value"
-                  onClick={() => handleDelete(attr.attribute_id)}
-                  style={{
-                    padding: "5px 10px",
-                    border: "1px solid #dc2626",
-                    borderRadius: "8px",
-                    backgroundColor: "#fee2e2",
-                    color: "#991b1b",
-                    fontSize: "15px",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
-                  }}
-                >
-                  <i className="bi bi-trash"></i>
-                  Xoá thuộc tính
-                </button>
+          <button
+            className="deleteAttribute"
+            onClick={() => handleDelete(attr.attribute_id)}
+          >
+            <i className="bi bi-trash"></i>
+            Xoá thuộc tính
+          </button>
 
-                <Link to={`/admin/AddAttributevalues/${attr.attribute_id}`}>
-                  <button className="btn-add-value ml">+ Thêm giá trị thuộc tính</button>
-                </Link>
-              </div>
+          <Link to={`/admin/AddAttributevalues/${attr.attribute_id}`}>
+            <button className="btn-action btn-add-value">
+              <i className="bi bi-plus"></i>
+              Thêm giá trị thuộc tính
+            </button>
+          </Link>
+        </div>
+
             </li>
           );
         })}
