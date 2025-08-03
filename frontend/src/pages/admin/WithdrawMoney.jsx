@@ -21,7 +21,8 @@ import {
 import dayjs from "dayjs";
 import numberFomat from "../../../utils/numberFormat";
 import Loading from "../../components/Loading";
-import { toast, ToastContainer } from "react-toastify"; // Import react-toastify
+import { toast, ToastContainer } from "react-toastify";
+import Swal from "sweetalert2";
 
 const WithdrawMoney = () => {
   const [showModal, setShowModal] = useState(false);
@@ -33,15 +34,17 @@ const WithdrawMoney = () => {
   const dispatch = useDispatch();
   const { adminWithdraws, loading } = useSelector((state) => state.withDraw);
 
-  const totalPages = Math.ceil(adminWithdraws?.length / itemsPerPage);
+  // Chuẩn hoá về mảng để tránh lỗi .slice
+  const withdrawList = Array.isArray(adminWithdraws)
+    ? adminWithdraws
+    : Array.isArray(adminWithdraws?.data)
+    ? adminWithdraws.data
+    : [];
+
+  const totalPages = Math.ceil(withdrawList.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = adminWithdraws?.slice(startIndex, endIndex);
-
-  const handleStatusChange = (withdrawId, newStatus) => {
-    console.log(`Changing status of withdraw ${withdrawId} to ${newStatus}`);
-    setOpenDropdown(null);
-  };
+  const currentData = withdrawList.slice(startIndex, endIndex);
 
   const openQrModal = (qrImageUrl, withdrawData) => {
     setSelectedQrImage(qrImageUrl);
@@ -56,6 +59,7 @@ const WithdrawMoney = () => {
   };
 
   const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
   };
 
@@ -94,7 +98,9 @@ const WithdrawMoney = () => {
     try {
       const link = document.createElement("a");
       link.href = selectedQrImage;
-      link.download = `qr-code-${selectedWithdraw?.withdraw_id || "unknown"}.png`;
+      link.download = `qr-code-${
+        selectedWithdraw?.withdraw_id || "unknown"
+      }.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -164,7 +170,56 @@ const WithdrawMoney = () => {
   };
 
   const handleConfirmWithdrawal = (id) => {
-    dispatch(confirmWithdrawal(id));
+    Swal.fire({
+      title: "Xác nhận rút tiền",
+      text: "Vui lòng tải hóa đơn để xác nhận thanh toán.",
+      input: "file",
+      inputAttributes: {
+        accept: "image/*,application/pdf",
+        "aria-label": "Tải lên hóa đơn",
+      },
+      showCancelButton: true,
+      confirmButtonText: "Xác nhận",
+      cancelButtonText: "Hủy",
+      reverseButtons: true,
+      showLoaderOnConfirm: true,
+      preConfirm: (file) => {
+        if (!file) {
+          Swal.showValidationMessage("Vui lòng tải lên tệp hóa đơn");
+          return false;
+        }
+        console.log("Tệp đã tải lên:", {
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          lastModified: file.lastModified,
+        });
+        return file;
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(confirmWithdrawal(id))
+          .unwrap()
+          .then(() => {
+            Swal.fire({
+              title: "Thành công!",
+              text: "Xác nhận thanh toán thành công.",
+              icon: "success",
+              confirmButtonText: "OK",
+            }).then(() => {
+              dispatch(adminListWithdrawal());
+            });
+          })
+          .catch((err) => {
+            Swal.fire({
+              title: "Lỗi",
+              text: "Xác nhận thất bại: " + (err?.message || ""),
+              icon: "error",
+              confirmButtonText: "OK",
+            });
+          });
+      }
+    });
   };
 
   useEffect(() => {
@@ -174,7 +229,7 @@ const WithdrawMoney = () => {
   return (
     <>
       {loading && <Loading />}
-      <ToastContainer /> {/* Add ToastContainer for notifications */}
+      <ToastContainer />
       <div className="withdraw-money-container">
         <div className="page-header">
           <h1 className="page-title">Quản lý trạng thái rút tiền</h1>
@@ -196,7 +251,7 @@ const WithdrawMoney = () => {
           </div>
 
           <div className="withdraw-money-body">
-            {currentData?.map((withdraw) => (
+            {currentData.map((withdraw) => (
               <div key={withdraw?.withdraw_id} className="withdraw-row">
                 <div className="desktop-row">
                   <div className="user-info">
@@ -241,16 +296,18 @@ const WithdrawMoney = () => {
                   </div>
 
                   <div className="actions-cell">
-                    <div className="dropdown">
-                      <button
-                        className="action-btn dropdown-btn"
-                        onClick={() =>
-                          handleConfirmWithdrawal(withdraw.withdraw_id)
-                        }
-                      >
-                        <span className="dropdown-text">Hoàn thành</span>
-                      </button>
-                    </div>
+                    {withdraw?.status === "Chờ xử lý" && (
+                      <div className="dropdown">
+                        <button
+                          className="action-btn dropdown-btn"
+                          onClick={() =>
+                            handleConfirmWithdrawal(withdraw.withdraw_id)
+                          }
+                        >
+                          <span className="dropdown-text">Hoàn thành</span>
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -280,39 +337,6 @@ const WithdrawMoney = () => {
                         >
                           <FaEllipsisV size={14} />
                         </button>
-                        <div
-                          className={`dropdown-menu ${
-                            openDropdown === withdraw.withdraw_id ? "show" : ""
-                          }`}
-                        >
-                          <button
-                            className="dropdown-item"
-                            onClick={() =>
-                              handleStatusChange(withdraw.withdraw_id, "Đang xử lý")
-                            }
-                          >
-                            <FaClock style={{ color: "#007BFF" }} size={12} />
-                            <span>Đang xử lý</span>
-                          </button>
-                          <button
-                            className="dropdown-item"
-                            onClick={() =>
-                              handleStatusChange(withdraw.withdraw_id, "Đã duyệt")
-                            }
-                          >
-                            <FaCheck style={{ color: "#28A745" }} size={12} />
-                            <span>Đã duyệt</span>
-                          </button>
-                          <button
-                            className="dropdown-item"
-                            onClick={() =>
-                              handleStatusChange(withdraw.withdraw_id, "Từ chối")
-                            }
-                          >
-                            <FaBan style={{ color: "#DC3545" }} size={12} />
-                            <span>Từ chối</span>
-                          </button>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -336,9 +360,7 @@ const WithdrawMoney = () => {
                     <div className="card-row">
                       <div className="card-item">
                         <span className="card-label">Ngân hàng</span>
-                        <span className="card-value">
-                          {withdraw.bank_name}
-                        </span>
+                        <span className="card-value">{withdraw.bank_name}</span>
                       </div>
                       <div className="card-item">
                         <span className="card-label">STK</span>
@@ -352,7 +374,9 @@ const WithdrawMoney = () => {
                       <div className="card-item">
                         <span className="card-label">Ngày yêu cầu</span>
                         <span className="card-value">
-                          {withdraw.created_at}
+                          {dayjs(withdraw.created_at).format(
+                            "HH:mm - DD/MM/YYYY"
+                          )}
                         </span>
                       </div>
                       <div className="card-item">
@@ -366,13 +390,16 @@ const WithdrawMoney = () => {
                 </div>
               </div>
             ))}
+            {withdrawList.length === 0 && !loading && (
+              <div className="no-data">Không có yêu cầu rút tiền nào.</div>
+            )}
           </div>
 
           <div className="pagination-container">
             <div className="pagination-info">
-              Hiển thị {startIndex + 1}-
-              {Math.min(endIndex, adminWithdraws?.length)} của{" "}
-              {adminWithdraws?.length} kết quả
+              Hiển thị {withdrawList.length === 0 ? 0 : startIndex + 1}-
+              {Math.min(endIndex, withdrawList.length)} của{" "}
+              {withdrawList.length} kết quả
             </div>
             <div className="pagination">{renderPagination()}</div>
           </div>
@@ -403,6 +430,7 @@ const WithdrawMoney = () => {
                       alt="QR Code"
                       className="qr-image"
                       onError={(e) => {
+                        // @ts-ignore
                         e.target.src =
                           "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOTk5Ij5RUiBDb2RlPC90ZXh0Pgo8L3N2Zz4K";
                       }}
