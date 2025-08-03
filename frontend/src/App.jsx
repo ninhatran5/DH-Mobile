@@ -77,6 +77,7 @@ import AdminDetailAcccount from "./pages/admin/AdminDetailAcccount.jsx";
 import DetailOrderReturn from "./pages/admin/DetailOrderReturn.jsx";
 import TrashProduct from "./components/TrashProduct.jsx";
 import WithdrawMoney from "./pages/admin/WithdrawMoney.jsx";
+import TrashCategories from "./components/TrashCategories.jsx";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -243,6 +244,14 @@ const routerConfig = [
         element: (
           <RequireNotSaleRole>
             <Categories />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "trashcategories",
+        element: (
+          <RequireNotSaleRole>
+            <TrashCategories />
           </RequireNotSaleRole>
         ),
       },

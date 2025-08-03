@@ -616,3 +616,51 @@
     transform: translateY(0);
   }
 }
+/* Nút quay lại cho desktop */
+.admin_dh-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #6c757d;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.admin_dh-back-btn:hover {
+  background: #5a6268;
+  color: white;
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+/* Nút quay lại cho mobile */
+.admin_dh-back-btn-mobile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #6c757d;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  justify-content: center;
+}
+
+.admin_dh-back-btn-mobile:hover {
+  background: #5a6268;
+  color: white;
+  text-decoration: none;
+}
