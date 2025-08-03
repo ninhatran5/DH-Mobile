@@ -17,6 +17,7 @@ import {
   FaLocationArrow,
   FaClock,
   FaExclamationTriangle,
+  FaEdit, // Thêm icon edit
 } from "react-icons/fa";
 import "../../assets/admin/AdminDetailAcccount.css";
 
@@ -37,8 +38,12 @@ const ProfileAdmin = () => {
     if (window.history.length > 1) {
       navigate(-1);
     } else {
-      alert("Không thể quay lại trang trước!");
+      toast.error("Không thể quay lại trang trước!");
     }
+  };
+
+  const handleEditAccount = () => {
+    navigate(`/admin/Editaccounts/${id}`);
   };
 
   if (loading)
@@ -83,10 +88,18 @@ const ProfileAdmin = () => {
 
   return (
     <div className="container">
-      <button onClick={goBack} className="back-button">
-        <FaArrowLeft className="icon-detailacccount" style={{ color: '#fffff' }} />
-        Quay lại
-      </button>
+      {/* Header với Back button và Edit button */}
+      <div className="profile-header-actions">
+        <button onClick={goBack} className="backdetailacccount">
+          <FaArrowLeft className="icon-detailacccount" style={{ color: '#ffffff' }} />
+          Quay lại
+        </button>
+        
+        <button onClick={handleEditAccount} className="edit-account-btn">
+          <FaEdit className="icon-detailacccount" style={{ color: '#ffffff' }} />
+          Chỉnh sửa tài khoản
+        </button>
+      </div>
 
       <div className="profile-card">
         <div className="profile-header">
@@ -121,6 +134,8 @@ const ProfileAdmin = () => {
               {loyalty_points} điểm
             </span>
           </div>
+
+         
 
           <div className="tongthe11">
             <div className="section">

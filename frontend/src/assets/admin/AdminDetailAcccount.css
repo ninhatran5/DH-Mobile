@@ -1,17 +1,17 @@
 
-
-.back-button {
+.backdetailacccount{
   display: flex;
   align-items: center;
   margin-bottom: 20px;
-  color: #2563eb;
+  color: #fcfcfc;
   font-weight: 500;
-  background: none;
+  background:#3b82f6 ;
   border: none;
   cursor: pointer;
+  border-radius: 10px;
 }
 
-.back-button .icon-detailacccount {
+.backdetailacccount .icon-detailacccount {
   margin-right: 8px;
   font-size: 16px;
 }
@@ -172,4 +172,109 @@
 }
 .section-content{
     display: flex;
+}
+/* Header actions container */
+.profile-header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 15px;
+}
+
+/* Edit account button ở header */
+.edit-account-btn {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.edit-account-btn:hover {
+  background: linear-gradient(135deg, #218838, #1ea085);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+}
+
+/* Profile actions container */
+.profile-actions {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  padding: 20px 0;
+  border-top: 1px solid #e9ecef;
+  border-bottom: 1px solid #e9ecef;
+}
+
+/* Edit button trong profile content */
+.profile-edit-btn {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 25px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3);
+}
+
+.profile-edit-btn:hover {
+  background: linear-gradient(135deg, #0056b3, #004085);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+/* Responsive cho mobile */
+@media (max-width: 768px) {
+  .profile-header-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .edit-account-btn,
+  .profile-edit-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .edit-account-btn {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+  
+  .profile-edit-btn {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-header-actions {
+    margin-bottom: 15px;
+  }
+  
+  .edit-account-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  .profile-edit-btn {
+    padding: 10px 16px;
+    font-size: 13px;
+    border-radius: 20px;
+  }
 }

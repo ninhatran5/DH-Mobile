@@ -389,8 +389,8 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.btn-success {
-  background:#0277bd;
+.btn-success1 {
+  background:#0804e3;
   border: none;
 }
 
@@ -976,3 +976,25 @@
     border: 1px solid #ccc;
   }
 }
+.updateproduct1{
+  background-color: #007bff;
+  color: white;
+  border-radius: 15px;
+}
+/* CSS hỗ trợ alignment */
+.ck-content .text-left {
+  text-align: left !important;
+}
+
+.ck-content .text-center {
+  text-align: center !important;
+}
+
+.ck-content .text-right {
+  text-align: right !important;
+}
+
+.ck-content .text-justify {
+  text-align: justify !important;
+}
+
