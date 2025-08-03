@@ -29,6 +29,7 @@ return new class extends Migration {
                 ->default('Thêm thông tin')
                 ->comment('Trạng thái xử lý');
             $table->string('img_qr', 255)->nullable()->comment('URL hình ảnh liên quan đến yêu cầu rút tiền');
+            $table->string('img_bill', 255)->nullable()->comment('URL hình ảnh hóa đơn');
             $table->timestamps();
         });
     }
