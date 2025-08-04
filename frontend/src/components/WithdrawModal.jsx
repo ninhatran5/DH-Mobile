@@ -7,7 +7,7 @@ import withReactContent from "sweetalert2-react-content";
 import numberFormat from "../../utils/numberFormat";
 import "../assets/css/banks.css";
 import BankSelect from "./BanksSelect";
-import { BiSolidTrashAlt, BiSolidEdit } from "react-icons/bi";
+import { BiSolidTrashAlt } from "react-icons/bi";
 import { FaArrowRightToBracket } from "react-icons/fa6";
 import { IoIosAddCircle } from "react-icons/io";
 import { IoArrowBackCircle } from "react-icons/io5";
@@ -20,6 +20,7 @@ import {
   getDetailBankAccount,
   withdrawMoney,
 } from "../slices/withDrawSlice";
+import { fetchWallet } from "../slices/walletSlice";
 
 const MySwal = withReactContent(Swal);
 
@@ -166,6 +167,8 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
             amount: numberFormat(amount),
           }),
         });
+        dispatch(getListBankAccount());
+        dispatch(fetchWallet());
         setSelectedAccount(null);
         setStep("list");
         resetWithdrawForm({ withdrawAmount: "" });
@@ -309,17 +312,6 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
                         </div>
                         <div className="withdraw-account-actions">
                           <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedAccount(account);
-                              setStep("edit");
-                            }}
-                            className="withdraw-account-edit-btn"
-                            aria-label={t(`${ns}.editAccount`)}
-                          >
-                            <BiSolidEdit />
-                          </button>
-                          <button
                             onClick={() =>
                               handleDeleteAccount(account.withdraw_id)
                             }
@@ -372,7 +364,7 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
           </div>
         )}
 
-        {(step === "add" || step === "edit") && (
+        {(step === "add") && (
           <form onSubmit={handleSubmitBank(onSaveBankAccount)}>
             <div className="withdraw-form-group">
               <label className="withdraw-form-label">
