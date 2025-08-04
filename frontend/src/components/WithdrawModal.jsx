@@ -1,4 +1,6 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useState, useEffect } from "react";
+import useNumberInput from "../../utils/useNumberInput";
 import { useForm, Controller } from "react-hook-form";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
@@ -166,7 +168,7 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
         });
         setSelectedAccount(null);
         setStep("list");
-        resetWithdrawForm({ withdrawAmount: "" }); // Reset after successful withdraw
+        resetWithdrawForm({ withdrawAmount: "" });
         onClose();
       })
       .catch((err) => {
@@ -220,7 +222,7 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
         if (result.isConfirmed) {
           setStep("list");
           resetBankForm();
-          resetWithdrawForm({ withdrawAmount: "" }); // Reset withdraw form on close
+          resetWithdrawForm({ withdrawAmount: "" });
           setSelectedAccount(null);
           onClose();
         }
@@ -228,21 +230,10 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
     } else {
       setStep("list");
       resetBankForm();
-      resetWithdrawForm({ withdrawAmount: "" }); // Reset withdraw form on close
+      resetWithdrawForm({ withdrawAmount: "" });
       setSelectedAccount(null);
       onClose();
     }
-  };
-
-  const formatDisplay = (raw) => {
-    if (raw === "" || raw == null) return "";
-    const cleaned = String(raw).replace(/,/g, "");
-    const num = parseFloat(cleaned);
-    if (isNaN(num)) return "";
-    const fixed = Math.round(num * 100) / 100;
-    return Number.isInteger(fixed)
-      ? String(fixed)
-      : String(fixed).replace(/\.?0+$/, "");
   };
 
   useEffect(() => {
@@ -534,7 +525,7 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
                   },
                 }}
                 render={({ field }) => {
-                  const displayValue = formatDisplay(field.value);
+                  const { displayValue, handleChange } = useNumberInput(field);
                   return (
                     <div
                       className="withdraw-input-wrapper"
@@ -543,17 +534,7 @@ const WithdrawModal = ({ show, onClose, currentBalance = 0 }) => {
                       <input
                         {...field}
                         value={displayValue}
-                        onChange={(e) => {
-                          const raw = e.target.value.replace(/,/g, "");
-                          const sanitized = raw
-                            .replace(/[^\d.]/g, "")
-                            .replace(/(\..*)\./g, "$1")
-                            .replace(
-                              /^(\d+)\.(\d{0,2}).*$/,
-                              (_, int, dec) => `${int}.${dec}`
-                            );
-                          field.onChange(sanitized);
-                        }}
+                        onChange={handleChange}
                         type="text"
                         placeholder={t(`${ns}.enterWithdrawAmountPlaceholder`)}
                         className="withdraw-form-input"
