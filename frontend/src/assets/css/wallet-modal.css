@@ -220,7 +220,8 @@
 }
 
 .wallet-pagination-btn.active:focus {
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15), 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15),
+    0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 /* Responsive cho mobile */
@@ -230,25 +231,25 @@
     gap: 12px;
     padding: 12px 0;
   }
-  
+
   .wallet-pagination-info {
     font-size: 13px;
     text-align: center;
   }
-  
+
   .wallet-pagination-controls {
     flex-wrap: wrap;
     justify-content: center;
     gap: 2px;
   }
-  
+
   .wallet-pagination-btn {
     min-width: 36px;
     height: 36px;
     font-size: 13px;
     border-radius: 6px;
   }
-  
+
   .wallet-pagination-dots {
     min-width: 36px;
     height: 36px;
@@ -262,7 +263,7 @@
     font-size: 12px;
     border-radius: 4px;
   }
-  
+
   .wallet-pagination-dots {
     min-width: 32px;
     height: 32px;
@@ -334,7 +335,6 @@
   padding-right: 32px;
 }
 
-
 .wallet-type-select:focus {
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
@@ -376,6 +376,94 @@
   font-size: 12px;
   font-weight: 500;
 }
+/* BILL MODAL */
+.bill-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease;
+}
+
+.bill-modal-content-inner {
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+  position: relative;
+  animation: slideIn 0.3s ease;
+}
+
+.bill-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.withdraw-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.bill-close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.bill-close-btn:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.bill-image {
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.bill-fallback {
+  display: none;
+  color: #6b7280;
+  padding: 40px 20px;
+  font-size: 16px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px dashed #d1d5db;
+  text-align: center;
+}
+
+.bill-fallback svg {
+  margin: 0 auto 10px;
+  display: block;
+  color: #9ca3af;
+}
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -383,14 +471,37 @@
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .wallet-search-box,
   .wallet-type-filter {
     min-width: unset;
   }
-  
+
   .wallet-clear-filters-btn {
     align-self: flex-end;
     width: fit-content;
   }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.bill-view-btn:hover {
+  transform: scale(1.1);
 }

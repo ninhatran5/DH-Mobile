@@ -6,6 +6,7 @@ import { fetchBalanceFluctuation, fetchWallet } from "../slices/walletSlice";
 import numberFormat from "../../utils/numberFormat";
 import Loading from "./Loading";
 import dayjs from "dayjs";
+import { RiBillLine } from "react-icons/ri";
 
 const WalletHistoryModal = ({ show, onClose }) => {
   const [closing, setClosing] = useState(false);
@@ -13,6 +14,7 @@ const WalletHistoryModal = ({ show, onClose }) => {
   const [itemsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("");
+  const [billModal, setBillModal] = useState({ show: false, imgUrl: "" });
 
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -69,6 +71,24 @@ const WalletHistoryModal = ({ show, onClose }) => {
       setClosing(false);
       onClose();
     }, 300);
+  };
+
+  const handleOpenBillModal = (transaction) => {
+    const imgUrl = transaction?.withdraw_request?.img_bill;
+    if (imgUrl) {
+      setBillModal({ show: true, imgUrl });
+    }
+  };
+
+  const handleCloseBillModal = () => {
+    setBillModal({ show: false, imgUrl: "" });
+  };
+
+  const hasWithdrawBill = (transaction) => {
+    return (
+      transaction?.note?.toLowerCase().includes("rút tiền thành công") &&
+      transaction?.withdraw_request?.img_bill
+    );
   };
 
   const totalItems = filteredData.length;
@@ -133,6 +153,7 @@ const WalletHistoryModal = ({ show, onClose }) => {
     setSearchTerm("");
     setSelectedType("");
   };
+
   const typeLabelMap = {
     "rút tiền": "Rút tiền",
     "tiêu tiền": "Tiêu tiền",
@@ -259,6 +280,7 @@ const WalletHistoryModal = ({ show, onClose }) => {
                       <th>{t("walletHistory.type")}</th>
                       <th>{t("walletHistory.amount")}</th>
                       <th>{t("walletHistory.note")}</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -281,9 +303,27 @@ const WalletHistoryModal = ({ show, onClose }) => {
                             {sign}
                             {amount}
                           </td>
-                          <td style={getNoteStyle(transaction?.note)}>
+                          <td
+                            style={getNoteStyle(transaction?.note)}
+                            className="d-flex align-items-center, gap-2"
+                          >
                             {transaction?.note || "-"}
                           </td>
+                          {hasWithdrawBill(transaction) ? (
+                            <td
+                              style={{
+                                cursor: "pointer",
+                                color: "#1860e1",
+                                fontWeight: 600,
+                                fontSize: "14px",
+                              }}
+                              onClick={() => handleOpenBillModal(transaction)}
+                            >
+                              {t("walletHistory.seeBill")}
+                            </td>
+                          ) : (
+                            <td></td>
+                          )}
                         </tr>
                       );
                     })}
@@ -344,7 +384,6 @@ const WalletHistoryModal = ({ show, onClose }) => {
                         </button>
                       ))}
 
-                      {/* Trailing dots and last page button */}
                       {getPageNumbers()[getPageNumbers().length - 1] <
                         totalPages && (
                         <>
@@ -386,6 +425,122 @@ const WalletHistoryModal = ({ show, onClose }) => {
           </div>
         </div>
       </div>
+
+      {billModal.show && (
+        <div
+          className="bill-modal-overlay"
+          onClick={handleCloseBillModal}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 10000,
+            animation: "fadeIn 0.3s ease",
+          }}
+        >
+          <div
+            className="bill-modal-content"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: "white",
+              borderRadius: "12px",
+              padding: "20px",
+              maxWidth: "90vw",
+              maxHeight: "90vh",
+              overflow: "auto",
+              position: "relative",
+              animation: "slideIn 0.3s ease",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "15px",
+                borderBottom: "1px solid #eee",
+                paddingBottom: "10px",
+              }}
+            >
+              <h3
+                style={{
+                  margin: 0,
+                  fontSize: "18px",
+                  fontWeight: 600,
+                  color: "#1f2937",
+                }}
+              >
+                {t("walletHistory.withdrawalReceipt")}
+              </h3>
+              <button
+                onClick={handleCloseBillModal}
+                style={{
+                  background: "none",
+                  border: "none",
+                  fontSize: "24px",
+                  cursor: "pointer",
+                  color: "#6b7280",
+                  padding: "0",
+                  width: "30px",
+                  height: "30px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "50%",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = "#f3f4f6";
+                  e.target.style.color = "#374151";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = "transparent";
+                  e.target.style.color = "#6b7280";
+                }}
+              >
+                &times;
+              </button>
+            </div>
+            <div style={{ textAlign: "center" }}>
+              <img
+                src={billModal.imgUrl}
+                alt="Hóa đơn rút tiền"
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "70vh",
+                  objectFit: "contain",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "8px",
+                  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                }}
+                onError={(e) => {
+                  e.target.style.display = "none";
+                  e.target.nextSibling.style.display = "block";
+                }}
+              />
+              <div
+                style={{
+                  display: "none",
+                  color: "#6b7280",
+                  padding: "40px 20px",
+                  fontSize: "16px",
+                  backgroundColor: "#f9fafb",
+                  borderRadius: "8px",
+                  border: "1px dashed #d1d5db",
+                }}
+              >
+                ...
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

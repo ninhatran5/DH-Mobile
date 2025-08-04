@@ -734,7 +734,10 @@
       "results": "Found {{count}} transactions",
       "searchFor": "Search for:",
       "type": "Type:"
-    }
+    },
+    "seeBill": "View Invoice",
+    "noBill": "Unable to load invoice",
+    "withdrawalReceipt": "Withdrawal Receipt"
   },
   "modal": {
     "walletInsufficientTitle": "Insufficient wallet balance",

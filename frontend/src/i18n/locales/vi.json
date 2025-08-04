@@ -734,7 +734,10 @@
       "results": "Tìm thấy {{count}} giao dịch",
       "searchFor": "Tìm kiếm:",
       "type": "Loại:"
-    }
+    },
+    "seeBill": "Xem hóa đơn",
+    "noBill": "Không tải được hóa đơn",
+    "withdrawalReceipt": "Hóa đơn rút tiền"
   },
   "modal": {
     "walletInsufficientTitle": "Số dư ví không đủ",
