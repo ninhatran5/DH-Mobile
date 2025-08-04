@@ -55,7 +55,7 @@ export default function Blogs({
         <div className="container-fluid">
           {showHeader && (
             <div className="row">
-              <div className="section-header d-flex align-items-center justify-content-between mt-5">
+              <div className="section-header d-flex align-items-center justify-content-between mt-5 ">
                 <h3 className="section-title">{t("home.blog")}</h3>
                 <div className="btn-wrap align-right">
                   <Link to={"/blogs"} className="btn-link text-decoration-none">

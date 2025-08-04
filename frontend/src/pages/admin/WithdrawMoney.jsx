@@ -6,7 +6,6 @@ import {
   FaChevronRight,
   FaDownload,
   FaCopy,
-  FaEllipsisV,
 } from "react-icons/fa";
 import "../../assets/admin/withdrawmoney.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,7 +30,6 @@ const WithdrawMoney = () => {
   const [selectedWithdraw, setSelectedWithdraw] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
-  const [openDropdown, setOpenDropdown] = useState(null);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [selectedWithdrawId, setSelectedWithdrawId] = useState(null);
   const [invoiceFile, setInvoiceFile] = useState(null);
@@ -138,9 +136,7 @@ const WithdrawMoney = () => {
     }
   };
 
-  const toggleDropdown = (withdrawId) => {
-    setOpenDropdown(openDropdown === withdrawId ? null : withdrawId);
-  };
+ 
 
   const renderPagination = () => {
     const pages = [];
@@ -256,18 +252,18 @@ const WithdrawMoney = () => {
           <div className="page-subtitle">
             Quản lý và xử lý các yêu cầu rút tiền từ người dùng
           </div>
-          <div className="search-filter-row" style={{display: 'flex', gap: 16, marginTop: 16, alignItems: 'center', flexWrap: 'wrap'}}>
+          <div className="search-filter-row">
             <input
               type="text"
               placeholder="Tìm kiếm theo tên người dùng..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              style={{padding: 8, borderRadius: 8, border: '1px solid #ccc', minWidth: "70vw", fontSize: 15, paddingLeft: 13}}
+              className="search-input"
             />
             <select
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value)}
-              style={{padding: 13, borderRadius: 8, border: '1px solid #ccc', minWidth: 190, fontSize: 15}}
+              className="status-select"
             >
               <option value="">Tất cả trạng thái</option>
               <option value="Chờ xử lý">Chờ xử lý</option>
@@ -302,7 +298,7 @@ const WithdrawMoney = () => {
                         <div className="email">{withdraw.user.email}</div>
                       </div>
                     </div>
-
+                    {/* ...existing code... */}
                     <div className="amount-info">
                       <div
                         className={`amount-display ${
@@ -316,7 +312,7 @@ const WithdrawMoney = () => {
                         {numberFomat(withdraw.amount)}
                       </div>
                     </div>
-
+                    {/* ...existing code... */}
                     <div className="bank-info">
                       <div className="bank-name d-flex">
                         {withdraw.bank_name}
@@ -331,11 +327,11 @@ const WithdrawMoney = () => {
                         {withdraw.bank_account_number}
                       </div>
                     </div>
-
+                    {/* ...existing code... */}
                     <div className="date-display">
                       {dayjs(withdraw.created_at).format("HH:mm - DD/MM/YYYY")}
                     </div>
-
+                    {/* ...existing code... */}
                     <div className="status-cell ">
                       <span
                         className={`status-badge ${
@@ -345,7 +341,7 @@ const WithdrawMoney = () => {
                         <span className="status-text">{withdraw.status}</span>
                       </span>
                     </div>
-
+                    {/* ...existing code... */}
                     <div className="actions-cell">
                       {withdraw?.status === "Chờ xử lý" && (
                         <div className="dropdown">
@@ -360,16 +356,8 @@ const WithdrawMoney = () => {
                         </div>
                       )}
                     </div>
-                    <InvoiceUploadModal
-                      show={showInvoiceModal}
-                      onClose={() => setShowInvoiceModal(false)}
-                      onSubmit={handleSubmitInvoice}
-                      uploading={uploading}
-                      invoiceFile={invoiceFile}
-                      setInvoiceFile={setInvoiceFile}
-                    />
                   </div>
-
+                  {/* ...existing code... */}
                   <div className="mobile-card">
                     <div className="card-header">
                       <div className="user-info">
@@ -385,17 +373,19 @@ const WithdrawMoney = () => {
                         <button
                           className="action-btn qr-btn"
                           onClick={() => openQrModal(withdraw.img_qr, withdraw)}
+                          title="Xem QR Code"
                         >
                           <FaQrcode size={16} />
                         </button>
-                        <div className="dropdown">
+                        {withdraw?.status === "Chờ xử lý" && (
                           <button
-                            className="action-btn more-btn"
-                            onClick={() => toggleDropdown(withdraw.withdraw_id)}
+                            className="action-btn dropdown-btn"
+                            style={{marginLeft: 8}}
+                            onClick={() => handleConfirmWithdrawal(withdraw.withdraw_id)}
                           >
-                            <FaEllipsisV size={14} />
+                            <span className="dropdown-text">Hoàn thành</span>
                           </button>
-                        </div>
+                        )}
                       </div>
                     </div>
 
@@ -403,7 +393,7 @@ const WithdrawMoney = () => {
                       <div className="card-row">
                         <div className="card-item">
                           <span className="card-label">Số tiền</span>
-                          <span className="card-value amount">
+                          <span className={`card-value amount ${withdraw.status === "Chờ xử lý" ? "amount-pending" : withdraw.status === "Đã hoàn tất" ? "amount-success" : ""}`}>
                             {numberFomat(withdraw.amount)}
                           </span>
                         </div>
@@ -441,7 +431,7 @@ const WithdrawMoney = () => {
                         </div>
                         <div className="card-item">
                           <span className="card-label">Trạng thái</span>
-                          <span className="status-badge mobile">
+                          <span className={`status-badge mobile ${statusClasses[withdraw.status]}`}>
                             <span className="status-text">
                               {withdraw.status}
                             </span>
@@ -463,6 +453,15 @@ const WithdrawMoney = () => {
                 </div>
               </>
             )}
+            {/* Đặt modal ngoài map để modal không bị lồng trong từng row */}
+            <InvoiceUploadModal
+              show={showInvoiceModal}
+              onClose={() => setShowInvoiceModal(false)}
+              onSubmit={handleSubmitInvoice}
+              uploading={uploading}
+              invoiceFile={invoiceFile}
+              setInvoiceFile={setInvoiceFile}
+            />
           </div>
 
           <div className="pagination-container">

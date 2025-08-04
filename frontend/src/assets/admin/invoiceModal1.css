@@ -1,7 +1,7 @@
 .invoice-modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.096);
+  background-color: rgba(0, 0, 0, 0.5);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -16,6 +16,45 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+@media (max-width: 600px) {
+  .invoice-modal {
+    max-width: 98vw;
+    border-radius: 8px;
+  }
+  .invoice-modal-header,
+  .invoice-modal-footer {
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 0.97rem;
+  }
+  .invoice-modal-footer {
+    width: 100%;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 10px 14px 10px;
+  }
+  .modal-action-btn {
+    padding: 10px 0;
+    font-size: 1rem;
+    width: 100%;
+    justify-content: center;
+  }
+  .modal-action-btn.primary {
+    margin-top: 2px;
+  }
+  .invoice-modal-body {
+    padding: 18px 10px 8px 10px;
+    min-height: 80px;
+  }
+  .modal-title {
+    font-size: 1rem;
+  }
+  .custom-file-upload {
+    padding: 9px 16px;
+    font-size: 0.98rem;
+  }
 }
 @keyframes modalFadeIn {
   from { opacity: 0; transform: translateY(40px); }
@@ -65,7 +104,7 @@
   flex-direction: column;
   align-items: center;
   min-height: 120px;
- background: #fafafa;
+ background: #ffffff;
 }
 .invoice-file-label {
   font-weight: 500;
@@ -78,7 +117,7 @@
   display: inline-block;
 }
 
-.custom-file-upload {
+.custom-file-upload1 {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -94,7 +133,7 @@
   outline: none;
   position: relative;
 }
-.custom-file-upload::before {
+.custom-file-upload1::before {
   content: '\f093'; 
   font-family: 'FontAwesome';
   font-weight: 900;
@@ -102,7 +141,7 @@
   font-size: 1.13em;
   display: inline-block;
 }
-.custom-file-upload:hover, .custom-file-upload:focus {
+.custom-file-upload1:hover, .custom-file-upload1:focus {
   color: #2984eb;
 }
 

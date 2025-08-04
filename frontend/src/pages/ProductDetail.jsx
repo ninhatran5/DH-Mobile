@@ -30,6 +30,15 @@ import "../assets/admin/product.css";
 import { calculateAverageRating } from "../../utils/reviewUtils";
 import { FaStar, FaRegStar } from "react-icons/fa";
 
+function stripHtmlTags(html) {
+  if (!html) {
+    return "";
+  }
+  const div = document.createElement("div");
+  div.innerHTML = html;
+  return div.textContent || div.innerText || "";
+}
+
 function getAllAttributes(variants) {
   const attrMap = {};
   variants.forEach((variant) => {
@@ -555,10 +564,9 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
                   {t("productDetail.product")}
                 </p>
               )}
-              <p className="text-muted">{productDetails.data?.description}</p>
               <div
                 className="card-coins-products d-flex align-items-center"
-                style={{ marginTop: "-15px", marginBottom: "-13px" }}
+                style={{ marginTop: "-20px", marginBottom: "-5px" }}
               >
                 <img style={{ width: 20 }} src={coins} />
                 <p
@@ -574,6 +582,23 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
                   }}
                 />
               </div>
+              <p style={{marginBottom: "10px"}}>
+                <span className="fw-bold"> {t("productDetail.describe")}: </span>{" "}
+                {productDetails.data?.description
+                  ? stripHtmlTags(productDetails.data.description)
+                  : ""}
+              </p>
+              <p style={{marginBottom: "-6px"}}>
+                <p style={{marginBottom: "6px"}} className="fw-bold">{t("productDetail.parameter")}:</p>
+                <ul className="">
+                  {specifications?.map((spec) => (
+                    <li key={spec.spec_id}>
+                      <span className="fw-bold me-2">{spec.spec_name}:</span>
+                      <span>{spec.spec_value}</span>
+                    </li>
+                  ))}
+                </ul>
+              </p>
             </div>
 
             <div className="mb-3">
@@ -636,7 +661,7 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
                 ))}
               </div>
             </div>
-            <div style={{ marginTop: 40 }}>
+            <div>
               <label className="font-weight-bold mb-2 me-3">
                 {t("productDetail.quantity")}:
               </label>
@@ -675,7 +700,6 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
           </div>
         </div>
 
-        {/* Ẩn các tab, mô tả, sản phẩm liên quan nếu là quick view hoặc hideExtraInfo */}
         {!isQuickView && (
           <>
             <div
@@ -722,7 +746,9 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
                 {activeTab === "description" && (
                   <div className="tab-pane fade show active">
                     <p className="desc_productdetai">
-                      {productDetails.data?.description}
+                      {productDetails.data?.description
+                        ? stripHtmlTags(productDetails.data.description)
+                        : ""}
                     </p>
                   </div>
                 )}
