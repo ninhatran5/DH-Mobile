@@ -19,6 +19,7 @@
   justify-content: center;
   padding: 20px;
   flex-shrink: 0;
+  position: relative;
 }
 
 .userVoucher-icon-bag {
@@ -148,12 +149,14 @@
   letter-spacing: 0.5px;
   z-index: 2;
 }
-.userVoucher-quantity {
+/* Badge always at top left of card, responsive */
+.userVoucher-quantity-on-bag {
   position: absolute;
-  top: 20px;
-  right: 450px;
-  width: 30px;
-  height: 30px;
+  left: 12px;
+  top: 40px;
+  /* Move badge even further down */
+  width: 26px;
+  height: 26px;
   background-color: #f0881f;
   color: #fff;
   border-radius: 50%;
@@ -217,11 +220,11 @@
     font-size: 12px;
   }
 
-  .userVoucher-quantity {
-    top: 25px;
-    right: 840px;
-    width: 25px;
-    height: 25px;
+  .userVoucher-quantity-on-bag {
+    left: 8px;
+    top: 28px;
+    width: 20px;
+    height: 20px;
     font-size: 11px;
   }
 }
@@ -264,11 +267,11 @@
     font-size: 18px;
   }
 
-  .userVoucher-quantity {
-    top: 23px;
-    right: 625px;
-    width: 20px;
-    height: 20px;
+  .userVoucher-quantity-on-bag {
+    left: 6px;
+    top: 18px;
+    width: 16px;
+    height: 16px;
     font-size: 9px;
   }
 }
@@ -321,11 +324,11 @@
     font-size: 16px;
   }
 
-  .userVoucher-quantity {
-    top: 13px;
-    right: 334px;
-    width: 18px;
-    height: 18px;
+  .userVoucher-quantity-on-bag {
+    left: 4px;
+    top: 12px;
+    width: 14px;
+    height: 14px;
     font-size: 8px;
   }
 
