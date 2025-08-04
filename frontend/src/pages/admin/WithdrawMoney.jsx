@@ -547,8 +547,8 @@ const WithdrawMoney = () => {
                   className="modal-action-btn secondary"
                   onClick={handleCopyAccountNumber}
                 >
-                  <FaCopy size={20} />
-                  <span>Sao chép số tài khoản</span>
+                  <FaCopy size={14} />
+                  <span>Sao chép STK</span>
                 </button>
                 <button
                   className="modal-action-btn primary"
