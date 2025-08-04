@@ -2,10 +2,6 @@ import { useEffect, useState } from "react";
 import {
   FaQrcode,
   FaTimes,
-  FaCheck,
-  FaClock,
-  FaBan,
-  FaChevronDown,
   FaChevronLeft,
   FaChevronRight,
   FaDownload,
@@ -22,24 +18,53 @@ import dayjs from "dayjs";
 import numberFomat from "../../../utils/numberFormat";
 import Loading from "../../components/Loading";
 import { toast, ToastContainer } from "react-toastify";
+import InvoiceUploadModal from "../../components/InvoiceUploadModal";
 import Swal from "sweetalert2";
+import { BsBank2 } from "react-icons/bs";
+
 
 const WithdrawMoney = () => {
   const [showModal, setShowModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const [selectedQrImage, setSelectedQrImage] = useState("");
   const [selectedWithdraw, setSelectedWithdraw] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [selectedWithdrawId, setSelectedWithdrawId] = useState(null);
+  const [invoiceFile, setInvoiceFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const dispatch = useDispatch();
   const { adminWithdraws, loading } = useSelector((state) => state.withDraw);
 
-  // Chuẩn hoá về mảng để tránh lỗi .slice
-  const withdrawList = Array.isArray(adminWithdraws)
+  let withdrawList = Array.isArray(adminWithdraws)
     ? adminWithdraws
     : Array.isArray(adminWithdraws?.data)
     ? adminWithdraws.data
     : [];
+
+  function removeVietnameseTones(str) {
+    return str
+      .normalize('NFD')
+      .replace(/\p{Diacritic}/gu, '')
+      .replace(/đ/g, 'd')
+      .replace(/Đ/g, 'D');
+  }
+
+  if (searchTerm) {
+    const search = removeVietnameseTones(searchTerm.toLowerCase());
+    withdrawList = withdrawList.filter((item) => {
+      const name = removeVietnameseTones(item.user?.full_name?.toLowerCase() || '');
+      return name.includes(search);
+    });
+  }
+  if (statusFilter) {
+    withdrawList = withdrawList.filter((item) =>
+      item.status === statusFilter
+    );
+  }
 
   const totalPages = Math.ceil(withdrawList.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -170,56 +195,51 @@ const WithdrawMoney = () => {
   };
 
   const handleConfirmWithdrawal = (id) => {
-    Swal.fire({
-      title: "Xác nhận rút tiền",
-      text: "Vui lòng tải hóa đơn để xác nhận thanh toán.",
-      input: "file",
-      inputAttributes: {
-        accept: "image/*,application/pdf",
-        "aria-label": "Tải lên hóa đơn",
-      },
-      showCancelButton: true,
-      confirmButtonText: "Xác nhận",
-      cancelButtonText: "Hủy",
-      reverseButtons: true,
-      showLoaderOnConfirm: true,
-      preConfirm: (file) => {
-        if (!file) {
-          Swal.showValidationMessage("Vui lòng tải lên tệp hóa đơn");
-          return false;
-        }
-        console.log("Tệp đã tải lên:", {
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          lastModified: file.lastModified,
-        });
-        return file;
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        dispatch(confirmWithdrawal(id))
-          .unwrap()
-          .then(() => {
-            Swal.fire({
-              title: "Thành công!",
-              text: "Xác nhận thanh toán thành công.",
-              icon: "success",
-              confirmButtonText: "OK",
-            }).then(() => {
-              dispatch(adminListWithdrawal());
-            });
-          })
-          .catch((err) => {
-            Swal.fire({
-              title: "Lỗi",
-              text: "Xác nhận thất bại: " + (err?.message || ""),
-              icon: "error",
-              confirmButtonText: "OK",
-            });
-          });
-      }
-    });
+    setSelectedWithdrawId(id);
+    setInvoiceFile(null);
+    setShowInvoiceModal(true);
+  };
+
+  const handleSubmitInvoice = async () => {
+    if (!invoiceFile) {
+      await Swal.fire({
+        icon: "error",
+        title: "Vui lòng chọn hóa đơn",
+        timer: 1800,
+        showConfirmButton: false,
+      });
+      return;
+    }
+    setUploading(true);
+    try {
+      await dispatch(
+        confirmWithdrawal({ id: selectedWithdrawId, img_bill: invoiceFile })
+      ).unwrap();
+      await Swal.fire({
+        icon: "success",
+        title: "Xác nhận rút tiền thành công.",
+        timer: 1800,
+        showConfirmButton: false,
+      });
+      setShowInvoiceModal(false);
+      setInvoiceFile(null);
+      setSelectedWithdrawId(null);
+      dispatch(adminListWithdrawal());
+    } catch (err) {
+      await Swal.fire({
+        icon: "error",
+        title: "Xác nhận thất bại",
+        text: err?.message || "",
+        timer: 2200,
+        showConfirmButton: false,
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+    const statusClasses = {
+    'Chờ xử lý': 'status-pending',
+    'Đã hoàn tất': 'status-completed',
   };
 
   useEffect(() => {
@@ -236,6 +256,24 @@ const WithdrawMoney = () => {
           <div className="page-subtitle">
             Quản lý và xử lý các yêu cầu rút tiền từ người dùng
           </div>
+          <div className="search-filter-row" style={{display: 'flex', gap: 16, marginTop: 16, alignItems: 'center', flexWrap: 'wrap'}}>
+            <input
+              type="text"
+              placeholder="Tìm kiếm theo tên người dùng..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              style={{padding: 8, borderRadius: 8, border: '1px solid #ccc', minWidth: "70vw", fontSize: 15, paddingLeft: 13}}
+            />
+            <select
+              value={statusFilter}
+              onChange={e => setStatusFilter(e.target.value)}
+              style={{padding: 13, borderRadius: 8, border: '1px solid #ccc', minWidth: 190, fontSize: 15}}
+            >
+              <option value="">Tất cả trạng thái</option>
+              <option value="Chờ xử lý">Chờ xử lý</option>
+              <option value="Đã hoàn tất">Đã hoàn tất</option>
+            </select>
+          </div>
         </div>
 
         <div className="withdraw-money-card">
@@ -251,147 +289,176 @@ const WithdrawMoney = () => {
           </div>
 
           <div className="withdraw-money-body">
-            {currentData.map((withdraw) => (
-              <div key={withdraw?.withdraw_id} className="withdraw-row">
-                <div className="desktop-row">
-                  <div className="user-info">
-                    <div className="user-avatar">
-                      <img src={withdraw?.user?.image_url} alt="" />
-                    </div>
-                    <div className="user-details">
-                      <h6>{withdraw.user.full_name}</h6>
-                      <div className="email">{withdraw.user.email}</div>
-                    </div>
-                  </div>
-
-                  <div className="amount-info">
-                    <div className="amount-display">
-                      {numberFomat(withdraw.amount)}
-                    </div>
-                  </div>
-
-                  <div className="bank-info">
-                    <div className="bank-name d-flex">
-                      {withdraw.bank_name}
-                      <button
-                        className="action-btn qr-btn"
-                        onClick={() => openQrModal(withdraw.img_qr, withdraw)}
-                      >
-                        <FaQrcode size={14} />
-                      </button>
-                    </div>
-                    <div className="bank-account">
-                      {withdraw.bank_account_number}
-                    </div>
-                  </div>
-
-                  <div className="date-display">
-                    {dayjs(withdraw.created_at).format("HH:mm - DD/MM/YYYY")}
-                  </div>
-
-                  <div className="status-cell">
-                    <span className="status-badge">
-                      <span className="status-text">{withdraw.status}</span>
-                    </span>
-                  </div>
-
-                  <div className="actions-cell">
-                    {withdraw?.status === "Chờ xử lý" && (
-                      <div className="dropdown">
-                        <button
-                          className="action-btn dropdown-btn"
-                          onClick={() =>
-                            handleConfirmWithdrawal(withdraw.withdraw_id)
-                          }
-                        >
-                          <span className="dropdown-text">Hoàn thành</span>
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="mobile-card">
-                  <div className="card-header">
+            {currentData.map((withdraw) => {
+              return (
+                <div key={withdraw?.withdraw_id} className="withdraw-row">
+                  <div className="desktop-row">
                     <div className="user-info">
                       <div className="user-avatar">
-                        {withdraw.user.avatar_letter}
+                        <img src={withdraw?.user?.image_url} alt="" />
                       </div>
                       <div className="user-details">
                         <h6>{withdraw.user.full_name}</h6>
                         <div className="email">{withdraw.user.email}</div>
                       </div>
                     </div>
-                    <div className="card-actions">
-                      <button
-                        className="action-btn qr-btn"
-                        onClick={() => openQrModal(withdraw.img_qr, withdraw)}
-                        title="Xem QR Code"
+
+                    <div className="amount-info">
+                      <div
+                        className={`amount-display ${
+                          withdraw.status === "Chờ xử lý"
+                            ? "amount-pending"
+                            : withdraw.status === "Đã hoàn tất"
+                            ? "amount-success"
+                            : ""
+                        }`}
                       >
-                        <FaQrcode size={16} />
-                      </button>
-                      <div className="dropdown">
+                        {numberFomat(withdraw.amount)}
+                      </div>
+                    </div>
+
+                    <div className="bank-info">
+                      <div className="bank-name d-flex">
+                        {withdraw.bank_name}
                         <button
-                          className="action-btn more-btn"
-                          onClick={() => toggleDropdown(withdraw.withdraw_id)}
+                          className="action-btn qr-btn"
+                          onClick={() => openQrModal(withdraw.img_qr, withdraw)}
                         >
-                          <FaEllipsisV size={14} />
+                          <FaQrcode size={14} />
                         </button>
                       </div>
+                      <div className="bank-account">
+                        {withdraw.bank_account_number}
+                      </div>
                     </div>
+
+                    <div className="date-display">
+                      {dayjs(withdraw.created_at).format("HH:mm - DD/MM/YYYY")}
+                    </div>
+
+                    <div className="status-cell ">
+                      <span
+                        className={`status-badge ${
+                          statusClasses[withdraw.status] 
+                        }`}
+                      >
+                        <span className="status-text">{withdraw.status}</span>
+                      </span>
+                    </div>
+
+                    <div className="actions-cell">
+                      {withdraw?.status === "Chờ xử lý" && (
+                        <div className="dropdown">
+                          <button
+                            className="action-btn dropdown-btn"
+                            onClick={() =>
+                              handleConfirmWithdrawal(withdraw.withdraw_id)
+                            }
+                          >
+                            <span className="dropdown-text">Hoàn thành</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    <InvoiceUploadModal
+                      show={showInvoiceModal}
+                      onClose={() => setShowInvoiceModal(false)}
+                      onSubmit={handleSubmitInvoice}
+                      uploading={uploading}
+                      invoiceFile={invoiceFile}
+                      setInvoiceFile={setInvoiceFile}
+                    />
                   </div>
 
-                  <div className="card-body">
-                    <div className="card-row">
-                      <div className="card-item">
-                        <span className="card-label">Số tiền</span>
-                        <span className="card-value amount">
-                          {numberFomat(withdraw.amount)}
-                        </span>
+                  <div className="mobile-card">
+                    <div className="card-header">
+                      <div className="user-info">
+                        <div className="user-avatar">
+                          <img src={withdraw?.user?.image_url} alt="" />
+                        </div>
+                        <div className="user-details">
+                          <h6>{withdraw.user.full_name}</h6>
+                          <div className="email">{withdraw.user.email}</div>
+                        </div>
                       </div>
-                      <div className="card-item">
-                        <span className="card-label">Mã GD</span>
-                        <span className="card-value">
-                          {withdraw.withdraw_id}
-                        </span>
+                      <div className="card-actions">
+                        <button
+                          className="action-btn qr-btn"
+                          onClick={() => openQrModal(withdraw.img_qr, withdraw)}
+                          title="Xem QR Code"
+                        >
+                          <FaQrcode size={16} />
+                        </button>
+                        <div className="dropdown">
+                          <button
+                            className="action-btn more-btn"
+                            onClick={() => toggleDropdown(withdraw.withdraw_id)}
+                          >
+                            <FaEllipsisV size={14} />
+                          </button>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="card-row">
-                      <div className="card-item">
-                        <span className="card-label">Ngân hàng</span>
-                        <span className="card-value">{withdraw.bank_name}</span>
+                    <div className="card-body">
+                      <div className="card-row">
+                        <div className="card-item">
+                          <span className="card-label">Số tiền</span>
+                          <span className="card-value amount">
+                            {numberFomat(withdraw.amount)}
+                          </span>
+                        </div>
+                        <div className="card-item">
+                          <span className="card-label">Mã GD</span>
+                          <span className="card-value">
+                            {withdraw.withdraw_id}
+                          </span>
+                        </div>
                       </div>
-                      <div className="card-item">
-                        <span className="card-label">STK</span>
-                        <span className="card-value">
-                          {withdraw.bank_account_number}
-                        </span>
-                      </div>
-                    </div>
 
-                    <div className="card-row">
-                      <div className="card-item">
-                        <span className="card-label">Ngày yêu cầu</span>
-                        <span className="card-value">
-                          {dayjs(withdraw.created_at).format(
-                            "HH:mm - DD/MM/YYYY"
-                          )}
-                        </span>
+                      <div className="card-row">
+                        <div className="card-item">
+                          <span className="card-label">Ngân hàng</span>
+                          <span className="card-value">
+                            {withdraw.bank_name}
+                          </span>
+                        </div>
+                        <div className="card-item">
+                          <span className="card-label">STK</span>
+                          <span className="card-value">
+                            {withdraw.bank_account_number}
+                          </span>
+                        </div>
                       </div>
-                      <div className="card-item">
-                        <span className="card-label">Trạng thái</span>
-                        <span className="status-badge mobile">
-                          <span className="status-text">{withdraw.status}</span>
-                        </span>
+
+                      <div className="card-row">
+                        <div className="card-item">
+                          <span className="card-label">Ngày yêu cầu</span>
+                          <span className="card-value">
+                            {dayjs(withdraw.created_at).format(
+                              "HH:mm - DD/MM/YYYY"
+                            )}
+                          </span>
+                        </div>
+                        <div className="card-item">
+                          <span className="card-label">Trạng thái</span>
+                          <span className="status-badge mobile">
+                            <span className="status-text">
+                              {withdraw.status}
+                            </span>
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             {withdrawList.length === 0 && !loading && (
+             <>
+              <div className="icon-no-data"><BsBank2 /></div>
               <div className="no-data">Không có yêu cầu rút tiền nào.</div>
+             </>
             )}
           </div>
 
@@ -430,7 +497,6 @@ const WithdrawMoney = () => {
                       alt="QR Code"
                       className="qr-image"
                       onError={(e) => {
-                        // @ts-ignore
                         e.target.src =
                           "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOTk5Ij5RUiBDb2RlPC90ZXh0Pgo8L3N2Zz4K";
                       }}
@@ -479,7 +545,7 @@ const WithdrawMoney = () => {
                   className="modal-action-btn secondary"
                   onClick={handleCopyAccountNumber}
                 >
-                  <FaCopy size={14} />
+                  <FaCopy size={20} />
                   <span>Sao chép số tài khoản</span>
                 </button>
                 <button
