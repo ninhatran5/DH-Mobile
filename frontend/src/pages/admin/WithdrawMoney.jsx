@@ -385,7 +385,6 @@ const WithdrawMoney = () => {
                         <button
                           className="action-btn qr-btn"
                           onClick={() => openQrModal(withdraw.img_qr, withdraw)}
-                          title="Xem QR Code"
                         >
                           <FaQrcode size={16} />
                         </button>
@@ -454,11 +453,15 @@ const WithdrawMoney = () => {
                 </div>
               );
             })}
-            {withdrawList.length === 0 && !loading && (
-             <>
-              <div className="icon-no-data"><BsBank2 /></div>
-              <div className="no-data">Không có yêu cầu rút tiền nào.</div>
-             </>
+            {currentData.length === 0 && !loading && (
+              <>
+                <div className="icon-no-data"><BsBank2 /></div>
+                <div className="no-data">
+                  {searchTerm || statusFilter
+                    ? "Không tìm thấy kết quả phù hợp."
+                    : "Không có yêu cầu rút tiền nào."}
+                </div>
+              </>
             )}
           </div>
 

@@ -28,9 +28,6 @@ const InvoiceUploadModal = ({
           </button>
         </div>
         <div className="invoice-modal-body">
-          <label htmlFor="invoice-file" className="invoice-file-label">
-            Chọn hóa đơn
-          </label>
           <label htmlFor="invoice-file" className="custom-file-upload">
             {invoiceFile ? 'Đổi file' : 'Chọn file'}
           </label>
