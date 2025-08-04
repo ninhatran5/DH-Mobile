@@ -21,12 +21,14 @@ const WalletHistoryModal = ({ show, onClose }) => {
   );
 
   useEffect(() => {
-    if (!wallets?.wallet_id) {
-      dispatch(fetchWallet());
-    } else {
-      dispatch(fetchBalanceFluctuation(wallets.wallet_id));
+    if (show) {
+      if (!wallets?.wallet_id) {
+        dispatch(fetchWallet());
+      } else {
+        dispatch(fetchBalanceFluctuation(wallets.wallet_id));
+      }
     }
-  }, [dispatch, wallets?.wallet_id]);
+  }, [dispatch, wallets?.wallet_id, show]);
 
   useEffect(() => {
     if (show) {
@@ -202,9 +204,7 @@ const WalletHistoryModal = ({ show, onClose }) => {
                   onChange={(e) => setSelectedType(e.target.value)}
                   className="wallet-type-select"
                 >
-                  <option value="">
-                    {t("walletHistory.filter.allTypes")}
-                  </option>
+                  <option value="">{t("walletHistory.filter.allTypes")}</option>
                   {transactionTypes.map((type, index) => (
                     <option key={index} value={type}>
                       {getTypeLabel(type)}
