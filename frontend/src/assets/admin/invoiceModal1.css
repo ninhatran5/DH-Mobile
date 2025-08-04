@@ -1,0 +1,159 @@
+.invoice-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.096);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.invoice-modal {
+  background: #fff;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 420px;
+  animation: modalFadeIn 0.2s;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.invoice-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 12px 24px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #faf9ff;
+}
+.modal-header-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.modal-icon {
+  color: #7c5dfa;
+  background: #ede9fe;
+  border-radius: 50%;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #3f3f46;
+}
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.modal-close-btn:hover {
+  color: #e11d48;
+}
+.invoice-modal-body {
+  padding: 28px 24px 12px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 120px;
+}
+.invoice-file-label {
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: #552bfa;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.18s;
+  font-size: 1.04rem;
+  display: inline-block;
+}
+
+.custom-file-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 28px;
+  background: linear-gradient(90deg, #f3f4f6 60%, #ede9fe 100%);
+  color: #6d28d9;
+  border: none;
+  border-radius: 999px;
+  font-size: 1.08rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 18px;
+  outline: none;
+  position: relative;
+}
+.custom-file-upload::before {
+  content: '\f093'; 
+  font-family: 'FontAwesome';
+  font-weight: 900;
+  margin-right: 7px;
+  font-size: 1.13em;
+  display: inline-block;
+}
+.custom-file-upload:hover, .custom-file-upload:focus {
+  color: #4f46e5;
+}
+
+.invoice-file-input {
+  display: none;
+}
+.invoice-file-chosen {
+  margin-bottom: 8px;
+  color: #444;
+  font-size: 0.97rem;
+  text-align: center;
+}
+.file-name {
+  color: #7c5dfa;
+  font-weight: 500;
+  margin-left: 4px;
+}
+.invoice-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 18px 24px 20px 24px;
+  background: #faf9ff;
+  border-top: 1px solid #f0f0f0;
+}
+.modal-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.modal-action-btn.primary {
+  background: #7c5dfa;
+  color: #fff;
+}
+.modal-action-btn.primary:disabled {
+  background: #bdb7f3;
+  color: #fff;
+  cursor: not-allowed;
+}
+.modal-action-btn.secondary {
+  background: #f3f4f6;
+  color: #444;
+}
+.modal-action-btn.secondary:disabled {
+  background: #f3f4f6;
+  color: #bbb;
+  cursor: not-allowed;
+}

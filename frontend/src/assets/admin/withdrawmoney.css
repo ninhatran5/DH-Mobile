@@ -122,9 +122,14 @@
 .amount-display {
   font-size: 16px;
   font-weight: 700;
-  color: #28a745;
+  color: #28a745; 
   margin-bottom: 4px;
 }
+
+.amount-pending {
+  color: #e53935 !important; 
+}
+
 
 .withdraw-id {
   font-size: 12px;
@@ -132,7 +137,6 @@
   font-family: "Courier New", monospace;
 }
 
-/* Bank Info */
 .bank-info {
   text-align: left;
 }
@@ -161,20 +165,34 @@
 .status-cell {
   display: flex;
   justify-content: flex-start;
+  
 }
 
 .status-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 12px;
-  border-radius: 20px;
+  padding: 7px 18px;
+  border-radius: 999px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border: 1px solid;
-  transition: all 0.2s ease;
+  letter-spacing: 1px;
+  border-width: 2px;
+  border-style: solid;
+  background: #f8f9fa;
+}
+
+.status-pending{
+  background: #fff5f2;
+  color: #e74c3c;
+  border-color: #ffb4a2;
+}
+
+.status-completed {
+  background: #eafcf3;
+  color: #1abc9c;
+  border-color: #7be7c7;
 }
 
 .status-text {
@@ -187,6 +205,7 @@
   align-items: center;
   gap: 8px;
   justify-content: flex-start;
+  
 }
 
 .action-btn {
@@ -221,15 +240,20 @@
   position: relative;
 }
 
-.dropdown-btn {
-  background-color: #f8f9fa;
-  color: #495057;
-  border: 1px solid #dee2e6;
+.action-btn:hover{
+  box-shadow: none !important;
 }
 
-.dropdown-btn:hover {
-  background-color: #e9ecef;
-  border-color: #adb5bd;
+.dropdown-btn {
+  background: #3a96cd;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+}
+
+ .dropdown-btn:hover {
+  background: #3a96cd;
+  color: #fff;
 }
 
 .more-btn {
@@ -276,7 +300,18 @@
   visibility: visible;
   transform: translateY(0);
 }
-
+.no-data{
+  text-align: center;
+  padding: 10px 10px 30px 20px;
+  font-size: 15px;
+}
+.icon-no-data{
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  font-size: 50px;
+  margin-top: 40px;
+}
 .dropdown-item {
   display: flex;
   align-items: center;
@@ -430,12 +465,13 @@
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   flex-shrink: 0;
+  background-color: #e3f2fd !important;
+  color: #0277bd !important;
 }
 
 .modal-title-section {
@@ -541,7 +577,7 @@
   align-items: center;
   padding: 8px 0;
   border-bottom: 1px solid #e9ecef;
-  gap: 8px;
+  gap: 5px;
 }
 
 .detail-row:last-child {
@@ -619,7 +655,7 @@
 }
 
 .modal-action-btn.primary {
-  background-color: #667eea;
+  background-color: #2984eb !important;
   color: white;
 }
 
