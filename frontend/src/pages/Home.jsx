@@ -347,7 +347,7 @@ const Home = () => {
               </Swiper>
             ) : (
               <div className="text-center text-muted py-4 fw-bold">
-                Bạn chưa có sản phẩm yêu thích nào.
+                {t("home.noLikedProducts")}
               </div>
             )}
           </div>
