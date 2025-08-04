@@ -11,7 +11,6 @@ const WalletHistoryModal = ({ show, onClose }) => {
   const [closing, setClosing] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
-
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("");
 
@@ -204,7 +203,7 @@ const WalletHistoryModal = ({ show, onClose }) => {
                   className="wallet-type-select"
                 >
                   <option value="">
-                    {t("walletHistory.filter.allTypes") || "Tất cả loại"}
+                    {t("walletHistory.filter.allTypes")}
                   </option>
                   {transactionTypes.map((type, index) => (
                     <option key={index} value={type}>
@@ -238,11 +237,6 @@ const WalletHistoryModal = ({ show, onClose }) => {
             {(searchTerm || selectedType) && (
               <div className="wallet-filter-results">
                 {t("walletHistory.filter.results", { count: totalItems })}
-                {selectedType && (
-                  <span className="wallet-filter-tag">
-                    {t("walletHistory.filter.type")} {selectedType}
-                  </span>
-                )}
               </div>
             )}
           </div>
@@ -324,7 +318,7 @@ const WalletHistoryModal = ({ show, onClose }) => {
                         </svg>
                       </button>
 
-                      {currentPage > 3 && (
+                      {getPageNumbers()[0] > 1 && (
                         <>
                           <button
                             className="wallet-pagination-btn"
@@ -332,7 +326,7 @@ const WalletHistoryModal = ({ show, onClose }) => {
                           >
                             1
                           </button>
-                          {currentPage > 4 && (
+                          {getPageNumbers()[0] > 2 && (
                             <span className="wallet-pagination-dots">...</span>
                           )}
                         </>
@@ -350,8 +344,14 @@ const WalletHistoryModal = ({ show, onClose }) => {
                         </button>
                       ))}
 
-                      {currentPage < totalPages - 2 && (
+                      {/* Trailing dots and last page button */}
+                      {getPageNumbers()[getPageNumbers().length - 1] <
+                        totalPages && (
                         <>
+                          {getPageNumbers()[getPageNumbers().length - 1] <
+                            totalPages - 1 && (
+                            <span className="wallet-pagination-dots">...</span>
+                          )}
                           <button
                             className="wallet-pagination-btn"
                             onClick={() => handlePageChange(totalPages)}

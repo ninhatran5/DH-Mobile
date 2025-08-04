@@ -279,7 +279,7 @@ const Profile = () => {
                             style={{
                               color: "#2563EB",
                               cursor: "pointer",
-                              fontSize: 13,
+                              fontSize: 14,
                               fontWeight: 800,
                               marginLeft: 8,
                             }}
