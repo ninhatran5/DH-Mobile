@@ -1,4 +1,3 @@
-
 .search-filter-row {
   display: flex;
   gap: 16px;
@@ -55,7 +54,8 @@
     align-items: stretch;
     gap: 10px;
   }
-  .search-input, .status-select {
+  .search-input,
+  .status-select {
     min-width: 0;
     max-width: 100%;
     width: 100%;
@@ -63,6 +63,118 @@
   }
   .status-select {
     padding: 10px;
+  }
+}
+
+/* Force mobile layout for screens <= 1024px (including 992x991, 853x1280, etc.) */
+@media (max-width: 1024px) {
+  .desktop-only {
+    display: none !important;
+  }
+  .desktop-row {
+    display: none !important;
+  }
+  .mobile-card-withdraw {
+    display: block !important;
+    background: white;
+    margin: 0 6px 12px 6px;
+    border-radius: 9px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+    border: 1px solid #e9ecef;
+    overflow: hidden;
+  }
+  .withdraw-row {
+    border: none;
+    padding: 0;
+  }
+  .withdraw-row:hover {
+    background: none;
+    border-left: none;
+  }
+  .card-header-withdraw {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px 10px 6px 10px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    gap: 8px;
+  }
+  .card-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 7px;
+    min-width: 90px;
+  }
+  .card-body-withdraw {
+    padding: 10px 10px 12px 10px;
+  }
+  .card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 7px;
+  }
+  .card-row:last-child {
+    margin-bottom: 0;
+  }
+  .card-item {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .card-item:first-child {
+    margin-right: 8px;
+  }
+  .card-label {
+    font-size: 12px;
+    color: #6c757d;
+    font-weight: 500;
+  }
+  .card-value {
+    font-size: 14px;
+    color: #222;
+    font-weight: 600;
+    word-break: break-all;
+  }
+  .card-value.amount {
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .status-badge.mobile {
+    padding: 6px 14px;
+    font-size: 11px;
+    border-width: 2px;
+    margin-top: 2px;
+  }
+  .dropdown-btn {
+    min-width: 90px;
+    font-size: 13px;
+    padding: 8px 0;
+    margin: 0;
+    text-align: center;
+  }
+  .qr-btn {
+    min-width: 44px;
+    min-height: 36px;
+    font-size: 15px;
+    margin-left: 0;
+    margin-bottom: 2px;
+  }
+  .user-avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 14px;
+  }
+  .user-details h6 {
+    font-size: 14px;
+  }
+  .email {
+    font-size: 12px;
   }
 }
 .withdraw-money-container {
@@ -102,7 +214,7 @@
   display: block;
 }
 
-.mobile-card {
+.mobile-card-withdraw {
   display: none;
 }
 
@@ -189,14 +301,13 @@
 .amount-display {
   font-size: 16px;
   font-weight: 700;
-  color: #28a745; 
+  color: #28a745;
   margin-bottom: 4px;
 }
 
 .amount-pending {
-  color: #e53935 !important; 
+  color: #e53935 !important;
 }
-
 
 .withdraw-id {
   font-size: 12px;
@@ -232,7 +343,6 @@
 .status-cell {
   display: flex;
   justify-content: flex-start;
-  
 }
 
 .status-badge {
@@ -250,7 +360,7 @@
   background: #f8f9fa;
 }
 
-.status-pending{
+.status-pending {
   background: #fff5f2;
   color: #e74c3c;
   border-color: #ffb4a2;
@@ -272,7 +382,6 @@
   align-items: center;
   gap: 8px;
   justify-content: flex-start;
-  
 }
 
 .action-btn {
@@ -307,7 +416,7 @@
   position: relative;
 }
 
-.action-btn:hover{
+.action-btn:hover {
   box-shadow: none !important;
 }
 
@@ -318,7 +427,7 @@
   border-radius: 8px;
 }
 
- .dropdown-btn:hover {
+.dropdown-btn:hover {
   background: #2984eb;
   color: #fff;
 }
@@ -367,12 +476,12 @@
   visibility: visible;
   transform: translateY(0);
 }
-.no-data{
+.no-data {
   text-align: center;
   padding: 10px 10px 30px 20px;
   font-size: 15px;
 }
-.icon-no-data{
+.icon-no-data {
   margin: 0 auto;
   display: flex;
   justify-content: center;
@@ -811,12 +920,12 @@
   }
 
   /* Show mobile card layout */
-  .mobile-card {
+  .mobile-card-withdraw {
     display: block;
     background: white;
     margin: 0 6px 12px 6px;
     border-radius: 9px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
     border: 1px solid #e9ecef;
     overflow: hidden;
   }
@@ -831,7 +940,7 @@
     border-left: none;
   }
 
-  .card-header {
+  .card-header-withdraw {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -848,7 +957,7 @@
     gap: 7px;
     min-width: 90px;
   }
-  .card-body {
+  .card-body-withdraw {
     padding: 10px 10px 12px 10px;
   }
   .card-row {
@@ -918,7 +1027,7 @@
     font-size: 12px;
   }
 
-  .card-body {
+  .card-body-withdraw {
     padding: 16px;
   }
 
@@ -1011,8 +1120,8 @@
   }
 
   .qr-image {
-   width: 200px;
-        height: 220px;
+    width: 200px;
+    height: 220px;
   }
 
   .qr-scan-line {
@@ -1072,13 +1181,13 @@
     padding: 8px;
   }
 
-  .mobile-card {
+  .mobile-card-withdraw {
     margin: 0 8px 12px 8px;
     border-radius: 8px;
   }
 
-  .card-header,
-  .card-body {
+  .card-header-withdraw,
+  .card-body-withdraw {
     padding: 12px;
   }
 
@@ -1114,7 +1223,7 @@
 
   .qr-image {
     width: 200px;
-        height: 220px;
+    height: 220px;
   }
 
   @keyframes scan {

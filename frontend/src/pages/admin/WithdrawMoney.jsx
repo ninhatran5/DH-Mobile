@@ -358,8 +358,8 @@ const WithdrawMoney = () => {
                     </div>
                   </div>
                   {/* ...existing code... */}
-                  <div className="mobile-card">
-                    <div className="card-header">
+                  <div className="mobile-card-withdraw">
+                    <div className="card-header-withdraw">
                       <div className="user-info">
                         <div className="user-avatar">
                           <img src={withdraw?.user?.image_url} alt="" />
@@ -389,7 +389,7 @@ const WithdrawMoney = () => {
                       </div>
                     </div>
 
-                    <div className="card-body">
+                    <div className="card-body-withdraw">
                       <div className="card-row">
                         <div className="card-item">
                           <span className="card-label">Số tiền</span>
