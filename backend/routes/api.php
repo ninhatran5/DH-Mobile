@@ -37,6 +37,10 @@ use App\Http\Controllers\Api\VariantAttributeValuesController;
 
 
 
+Route::get('/guest-session', function () {
+    return response()->json(['sessionId' => session()->getId()]);
+})->middleware('web');
+
 // API thanh toán
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/vnpay/checkout', [VnpayController::class, 'createPayment']);
