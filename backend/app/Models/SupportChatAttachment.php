@@ -13,6 +13,6 @@ class SupportChatAttachment extends Model
 
     public function chat()
     {
-        return $this->belongsTo(SupportChat::class, 'chat_id');
+        return $this->belongsTo(SupportChat::class, 'chat_id', 'chat_id');
     }
 }

@@ -24,7 +24,7 @@ class SupportChat extends Model
     ];
     public function attachments()
     {
-        return $this->hasMany(SupportChatAttachment::class, 'chat_id');
+        return $this->hasMany(SupportChatAttachment::class, 'chat_id', 'chat_id');
     }
 
     public function notifications()
