@@ -32,60 +32,40 @@ const OrdersList = () => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isFiltering, setIsFiltering] = useState(false); // Trạng thái để biết đang lọc hay phân trang
+  const [isFiltering, setIsFiltering] = useState(false); 
 
   const navigate = useNavigate();
 
-  // Lấy current page từ URL, mặc định là 1
   const currentPage = parseInt(searchParams.get("page")) || 1;
 
-  // Effect chính để fetch data
   useEffect(() => {
-    console.log("=== FETCH DATA ===");
-    console.log("Selected Status Tab:", selectedStatusTab);
-    console.log("Current Page:", currentPage);
+   
     
     if (selectedStatusTab === "Tất cả") {
-      // Sử dụng phân trang khi không lọc trạng thái
-      console.log("Fetching paginated orders for page:", currentPage);
       setIsFiltering(false);
       dispatch(fetchPaginatedAdminOrders(currentPage));
     } else {
-      // Sử dụng fetch tất cả khi lọc theo trạng thái
-      console.log("Fetching all orders for filtering by status:", selectedStatusTab);
       setIsFiltering(true);
       dispatch(fetchAdminOrders());
     }
   }, [selectedStatusTab, currentPage, dispatch]);
-
-  // useEffect riêng để đảm bảo URL có page parameter
   useEffect(() => {
     if (!searchParams.has("page")) {
-      console.log("No page param, setting to 1");
       setSearchParams({ page: "1" }, { replace: true });
     }
   }, [searchParams, setSearchParams]);
 
-  // Function chuyển trang - cập nhật để xử lý cả hai trường hợp
   const handlePageChange = (newPage) => {
-    console.log("=== HANDLE PAGE CHANGE ===");
-    console.log("Requested page:", newPage);
-    console.log("Current page:", currentPage);
-    console.log("Is Filtering:", isFiltering);
+    
     
     const pageNumber = parseInt(newPage);
     
     if (isFiltering) {
-      // Khi đang lọc trạng thái, chỉ cập nhật URL để hiển thị đúng trang
-      // Không cần gọi API vì đã có tất cả data
       if (pageNumber && pageNumber > 0) {
-        console.log("✅ Changing page during filtering:", pageNumber);
         setSearchParams({ page: pageNumber.toString() });
       }
     } else {
-      // Khi không lọc, sử dụng logic pagination bình thường
       if (pageNumber && pageNumber > 0 && pageNumber <= (pagination?.lastPage || 1)) {
-        console.log("✅ Changing to page:", pageNumber);
         setSearchParams({ page: pageNumber.toString() });
       } else {
         console.log("❌ Invalid page:", pageNumber);
@@ -95,8 +75,6 @@ const OrdersList = () => {
 
   // Function để xử lý thay đổi tab trạng thái
   const handleStatusTabChange = (status) => {
-    console.log("=== STATUS TAB CHANGE ===");
-    console.log("New status:", status);
     setSelectedStatusTab(status);
     // Reset về trang 1 khi thay đổi trạng thái
     setSearchParams({ page: "1" });

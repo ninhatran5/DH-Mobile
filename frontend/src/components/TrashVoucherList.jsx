@@ -1,18 +1,20 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  fetchAdminVouchers,
-  deleteAdminVoucher,
-} from "../../slices/AdminVoucher";
+  fetchTrashedVouchers,
+  restoreAdminVoucher,
+  forceDeleteAdminVoucher,
+} from "../slices/AdminVoucher";
 import { toast } from "react-toastify";
-import { FaEdit, FaTrash, FaSearch, FaFilter, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaUndo, FaTrash, FaSearch, FaFilter, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import "../../assets/admin/VoucherList.css";
+import "../assets/admin/VoucherList.css";
 import moment from "moment";
+import "../assets/admin/TrashVoucherList.css";
 
-const VoucherList = () => {
+const TrashVoucherList = () => {
   const dispatch = useDispatch();
-  const { vouchers, loading, error, pagination } = useSelector((state) => state.adminVoucher);
+  const { trashedVouchers, loading, error } = useSelector((state) => state.adminVoucher);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [discountFilter, setDiscountFilter] = useState("");
@@ -22,32 +24,43 @@ const VoucherList = () => {
   const [firstLoading, setFirstLoading] = useState(true);
   const pollingRef = useRef(false);
 
-  // Load vouchers khi component mount hoặc currentPage thay đổi
+  const vouchersPerPage = 10;
+
   useEffect(() => {
     setFirstLoading(true);
-    dispatch(fetchAdminVouchers(currentPage)).finally(() => {
+    dispatch(fetchTrashedVouchers()).finally(() => {
       setFirstLoading(false);
       pollingRef.current = true;
     });
-  }, [dispatch, currentPage]);
 
-  // Polling để cập nhật dữ liệu định kỳ
-  useEffect(() => {
     const interval = setInterval(() => {
       if (pollingRef.current) {
-        dispatch(fetchAdminVouchers(currentPage));
+        dispatch(fetchTrashedVouchers());
       }
-    }, 30000); // Giảm tần suất polling xuống 30 giây
-    return () => clearInterval(interval);
-  }, [dispatch, currentPage]);
+    }, 5000); // Polling mỗi 5 giây cho thùng rác
 
-  const handleDelete = (voucherId) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa voucher này không?")) {
-      dispatch(deleteAdminVoucher(voucherId)).then(() => {
-        // Reload trang hiện tại sau khi xóa
-        dispatch(fetchAdminVouchers(currentPage));
-        toast.success("Đã xóa voucher thành công!");
-      });
+    return () => clearInterval(interval);
+  }, [dispatch]);
+
+  const handleRestore = async (voucherId) => {
+    if (window.confirm("Bạn có chắc chắn muốn khôi phục voucher này không?")) {
+      try {
+        await dispatch(restoreAdminVoucher(voucherId)).unwrap();
+        toast.success("Đã khôi phục voucher thành công!");
+      } catch (error) {
+        toast.error("Lỗi khi khôi phục voucher: " + error);
+      }
+    }
+  };
+
+  const handleForceDelete = async (voucherId) => {
+    if (window.confirm("⚠️ CẢNH BÁO: Bạn có chắc chắn muốn xóa vĩnh viễn voucher này không? Hành động này không thể hoàn tác!")) {
+      try {
+        await dispatch(forceDeleteAdminVoucher(voucherId)).unwrap();
+        toast.success("Đã xóa vĩnh viễn voucher thành công!");
+      } catch (error) {
+        toast.error("Lỗi khi xóa vĩnh viễn voucher: " + error);
+      }
     }
   };
 
@@ -62,7 +75,6 @@ const VoucherList = () => {
     }).format(amount);
   };
 
-  // Filter logic - áp dụng cho dữ liệu hiện tại từ server
   const filteredVouchers = useMemo(() => {
     const today = new Date();
     const plusDays = (days) => {
@@ -71,7 +83,7 @@ const VoucherList = () => {
       return result;
     };
 
-    return vouchers.filter((v) => {
+    return trashedVouchers.filter((v) => {
       const endDate = new Date(v.end_date);
       const matchesSearch =
         v.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -103,69 +115,42 @@ const VoucherList = () => {
 
       return matchesSearch && matchesDiscount && matchesExpiry;
     });
-  }, [vouchers, searchTerm, discountFilter, expiryDaysFilter]);
+  }, [trashedVouchers, searchTerm, discountFilter, expiryDaysFilter]);
 
-  // Xử lý chuyển trang
-  const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= pagination.last_page) {
-      setCurrentPage(newPage);
-    }
-  };
+  const totalPages = Math.ceil(filteredVouchers.length / vouchersPerPage);
+  const paginatedVouchers = filteredVouchers.slice(
+    (currentPage - 1) * vouchersPerPage,
+    currentPage * vouchersPerPage
+  );
 
-  // Reset về trang 1 khi filter thay đổi
   useEffect(() => {
-    if (currentPage !== 1) {
-      setCurrentPage(1);
-    }
+    setCurrentPage(1);
   }, [searchTerm, discountFilter, expiryDaysFilter]);
 
-  // Tạo danh sách số trang để hiển thị
-  const getPageNumbers = () => {
-    const pages = [];
-    const totalPages = pagination.last_page;
-    const current = pagination.current_page;
-    
-    // Hiển thị tối đa 5 trang
-    let start = Math.max(1, current - 2);
-    let end = Math.min(totalPages, start + 4);
-    
-    // Điều chỉnh start nếu end đã chạm giới hạn
-    if (end - start < 4) {
-      start = Math.max(1, end - 4);
-    }
-    
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-    
-    return pages;
-  };
-
-  if (firstLoading) return <div className="adminvoucher-loading">Đang tải danh sách voucher...</div>;
+  if (firstLoading) return <div className="adminvoucher-loading">Đang tải thùng rác voucher...</div>;
   if (error) return <div className="adminvoucher-error">Lỗi: {error}</div>;
 
   return (
     <div className="adminvoucher-container">
-      <h1>Danh sách mã giảm giá</h1>
+      <div className="trash-header">
+        <h1>🗑️ Thùng rác - Voucher đã xóa</h1>
+        <Link to="/admin/vouchers" className="back-to-list-btn">
+          ← Quay lại danh sách
+        </Link>
+      </div>
 
       <div className="adminvoucher-header">
         <div className="adminvoucher-search-wrapper">
           <FaSearch className="adminvoucher-search-icon" />
           <input
             type="text"
-            placeholder="Tìm theo mã hoặc tiêu đề..."
+            placeholder="Tìm voucher đã xóa..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
         <div className="adminvoucher-actions">
-          <Link to="/admin/addvoucher" className="adminvoucher-add-btn">
-            + Thêm mã giảm giá
-          </Link>
-          <Link to="/admin/trashvouchers" className="trash1-btn1">
-            Thùng rác
-          </Link>
           <button 
             className="adminvoucher1-filter-btn1"
             onClick={() => setShowFilters(!showFilters)}
@@ -207,20 +192,19 @@ const VoucherList = () => {
         </div>
       )}
 
-      {/* Thông tin tổng quan */}
-      <div className="adminvoucher-summary">
-        <p>
-          Hiển thị {filteredVouchers.length} trong tổng số {pagination.total} voucher
-          (Trang {pagination.current_page} / {pagination.last_page})
-        </p>
-      </div>
-
-      {filteredVouchers.length === 0 ? (
-        <p className="adminvoucher-empty">Không tìm thấy mã giảm giá nào.</p>
+      {paginatedVouchers.length === 0 ? (
+        <div className="adminvoucher-empty">
+          <p>📭 Thùng rác trống.</p>
+          <p>Không có voucher nào được xóa.</p>
+        </div>
       ) : (
         <div className="adminvoucher-list">
-          {filteredVouchers.map((voucher) => (
-            <div className="adminvoucher-card" key={voucher.voucher_id}>
+          {paginatedVouchers.map((voucher) => (
+            <div className="adminvoucher-card trash-voucher-card" key={voucher.voucher_id}>
+              <div className="trash-overlay">
+                <span className="trash-label">ĐÃ XÓA</span>
+              </div>
+              
               <div className="adminvoucher-card-left">
                 <h2 className="adminvoucher-card-title">GIFT VOUCHER</h2>
                 <div className="adminvoucher-card-code">{voucher.code}</div>
@@ -234,12 +218,7 @@ const VoucherList = () => {
                 <div className="adminvoucher-info-row">
                   <div className="adminvoucher-info-item">
                     <span>Giảm giá:</span>
-                    <strong>
-                      {voucher.discount_type === 'percent' 
-                        ? `${voucher.discount_amount}%` 
-                        : formatCurrency(voucher.discount_amount)
-                      }
-                    </strong>
+                    <strong>{formatCurrency(voucher.discount_amount)}</strong>
                   </div>
                   <div className="adminvoucher-info-item">
                     <span>Đơn tối thiểu:</span>
@@ -251,12 +230,7 @@ const VoucherList = () => {
                   </div>
                   <div className="adminvoucher-info-item">
                     <span>Tối đa:</span>
-                    <strong>
-                      {voucher.max_discount 
-                        ? formatCurrency(voucher.max_discount) 
-                        : "Không có"
-                      }
-                    </strong>
+                    <strong>{voucher.max_discount || "Không có"}</strong>
                   </div>
                 </div>
               </div>
@@ -282,14 +256,21 @@ const VoucherList = () => {
                     </div>
                   </div>
                   
-                  <div className="adminvoucher-card-actions">
-                    <Link to={`/admin/EditVoucher/${voucher.voucher_id}`}>
-                      <FaEdit className="adminvoucher-icon-edit" />
-                    </Link>
-                    <FaTrash
-                      className="adminvoucher-icon-delete"
-                      onClick={() => handleDelete(voucher.voucher_id)}
-                    />
+                  <div className="adminvoucher-card-actions trash-actions">
+                    <button
+                      className="restore-btn"
+                      onClick={() => handleRestore(voucher.voucher_id)}
+                      title="Khôi phục voucher"
+                    >
+                      <FaUndo className="adminvoucher-icon-restore" />
+                    </button>
+                    <button
+                      className="force-delete-btn"
+                      onClick={() => handleForceDelete(voucher.voucher_id)}
+                      title="Xóa vĩnh viễn"
+                    >
+                      <FaTrash className="adminvoucher-icon-force-delete" />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -298,63 +279,25 @@ const VoucherList = () => {
         </div>
       )}
 
-      {/* Phân trang nâng cao */}
       <div className="adminvoucher-pagination">
-        {/* Nút First và Previous */}
         <button
-          disabled={pagination.current_page === 1}
-          onClick={() => handlePageChange(1)}
-          className="pagination-btn"
-        >
-          Đầu
-        </button>
-        <button
-          disabled={pagination.current_page === 1}
-          onClick={() => handlePageChange(pagination.current_page - 1)}
-          className="pagination-btn"
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage((p) => p - 1)}
         >
           <FaChevronLeft /> Trước
         </button>
-
-        {/* Số trang */}
-        <div className="pagination-numbers">
-          {getPageNumbers().map(pageNum => (
-            <button
-              key={pageNum}
-              className={`pagination-number ${pageNum === pagination.current_page ? 'active' : ''}`}
-              onClick={() => handlePageChange(pageNum)}
-            >
-              {pageNum}
-            </button>
-          ))}
-        </div>
-
-        {/* Nút Next và Last */}
+        <span>
+          Trang {currentPage} / {totalPages}
+        </span>
         <button
-          disabled={pagination.current_page === pagination.last_page}
-          onClick={() => handlePageChange(pagination.current_page + 1)}
-          className="pagination-btn"
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage((p) => p + 1)}
         >
           Sau <FaChevronRight />
         </button>
-        <button
-          disabled={pagination.current_page === pagination.last_page}
-          onClick={() => handlePageChange(pagination.last_page)}
-          className="pagination-btn"
-        >
-          Cuối
-        </button>
-      </div>
-
-      {/* Thông tin trang */}
-      <div className="pagination-info">
-        <span>
-          Trang {pagination.current_page} / {pagination.last_page} 
-          - Tổng {pagination.total} voucher
-        </span>
       </div>
     </div>
   );
 };
 
-export default VoucherList;
+export default TrashVoucherList;
