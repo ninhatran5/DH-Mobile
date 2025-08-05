@@ -269,7 +269,7 @@ class ChatLiveController extends Controller
                             ? 'Bạn: ' . $lastChat->message
                             : $lastChat->message;
                     } elseif ($lastChat->attachments->isNotEmpty()) {
-                        $lastMessage = '📎 Hình ảnh/ File';
+                        $lastMessage = 'Đã gửi một hình ảnh';
                         $lastImageUrl = $lastChat->attachments->first()->file_url;
                     }
                 }
