@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Voucher;
 use App\Models\User_vouchers;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
+
 class VoucherController extends Controller
 {
     /**
@@ -21,29 +21,41 @@ class VoucherController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $voucher = Voucher::where('is_active', 1)
-            ->orderBy('created_at', 'desc')->paginate(10);
+        $query = Voucher::query();
+
+        // Lọc theo trạng thái is_active nếu có
+        if ($request->has('is_active')) {
+            $query->where('is_active', $request->input('is_active'));
+        }
+
+        // Hiển thị voucher đã xóa mềm (trashed = 1 => chỉ trashed, all => cả hai)
+        if ($request->input('trashed') === 'only') {
+            $query->onlyTrashed();
+        } elseif ($request->input('trashed') === 'with') {
+            $query->withTrashed();
+        }
+
+        $voucher = $query->orderBy('created_at', 'desc')->paginate(10);
 
         // Định dạng discount_amount
-        $formattedVouchers = collect($voucher->items())->map(function ($item) {
+        $formattedVouchers = $voucher->map(function ($item) {
             $item->discount_amount = number_format($item->discount_amount, 0, '.', '');
             return $item;
         });
 
         return response()->json([
-            'message' => 'lấy danh sách voucher thành công',
-            'data' => $formattedVouchers, // sử dụng dữ liệu đã định dạng
+            'message' => 'Lấy danh sách voucher thành công',
+            'data' => $formattedVouchers,
             'meta' => [
-                'current_page' =>  $voucher->currentPage(),
-                'last_page' =>  $voucher->lastPage(),
-                'per_page' =>  $voucher->perPage(),
-                'total' =>  $voucher->total(),
+                'current_page' => $voucher->currentPage(),
+                'last_page' => $voucher->lastPage(),
+                'per_page' => $voucher->perPage(),
+                'total' => $voucher->total(),
             ],
             'status' => 200
-
-        ])->setStatusCode(200, 'OK',);
+        ], 200);
     }
 
     /**
@@ -72,13 +84,7 @@ class VoucherController extends Controller
      */
     public function store(Request $request)
     {
-        // Lấy toàn bộ dữ liệu từ form-data
-        $data = $request->all();
-
-        // Ép kiểu nếu cần (checkbox, boolean)
-        $data['is_active'] = isset($data['is_active']) && $data['is_active'] == '1' ? 1 : 0;
-
-        $validator = Validator::make($data, [
+        $validated = $request->validate([
             'code' => 'required|string|max:150|min:10|unique:vouchers,code',
             'title' => 'required|string|min:5|max:255',
             'discount_amount' => 'required|numeric',
@@ -86,23 +92,13 @@ class VoucherController extends Controller
             'min_order_value' => 'required|integer',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'max_discount' => 'nullable|integer',
             'is_active' => 'boolean',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $voucher = Voucher::create($validator->validated());
-
+        $voucher = Voucher::create($validated);
         return response()->json([
             'message' => 'Tạo voucher thành công',
             'data' => $voucher
-        ], 201);
+        ])->setStatusCode(201, 'Created');
     }
 
     /**
