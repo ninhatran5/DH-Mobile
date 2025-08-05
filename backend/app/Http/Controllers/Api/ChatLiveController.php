@@ -227,25 +227,26 @@ class ChatLiveController extends Controller
     {
         $staff = Auth::user();
 
-        // Kiểm tra quyền truy cập (chỉ admin hoặc sale mới được xem danh sách này)
+        // Chỉ admin hoặc sale mới được xem
         if (!in_array($staff->role, ['admin', 'sale'])) {
             return response()->json(['message' => 'Bạn không có quyền truy cập danh sách này.'], 403);
         }
 
-        // Lấy danh sách ID của các customer đã từng gửi tin nhắn
+        // Lấy danh sách ID customer đã từng nhắn tin
         $customerIds = SupportChat::where('sender', 'customer')
             ->select('customer_id')
             ->distinct()
             ->pluck('customer_id');
 
-        // Lấy thông tin chi tiết từng customer
+        // Lấy thông tin chi tiết
         $customers = User::whereIn('user_id', $customerIds)
             ->get()
             ->map(function ($customer) use ($staff) {
-                // Lấy lại user theo customer_id để đảm bảo đúng role
                 $customerUser = User::where('user_id', $customer->user_id)->first();
 
-                $lastChat = SupportChat::where('customer_id', $customer->user_id)
+                // Load last chat kèm attachments
+                $lastChat = SupportChat::with('attachments')
+                    ->where('customer_id', $customer->user_id)
                     ->orderBy('sent_at', 'desc')
                     ->first();
 
@@ -258,27 +259,42 @@ class ChatLiveController extends Controller
 
                 $avatarUrl = $customer->image_url;
 
+                // ✅ Xử lý last message
+                $lastMessage = '';
+                $lastImageUrl = null;
+
+                if ($lastChat) {
+                    if (!empty($lastChat->message)) {
+                        $lastMessage = ($lastChat->sender !== 'customer')
+                            ? 'Bạn: ' . $lastChat->message
+                            : $lastChat->message;
+                    } elseif ($lastChat->attachments->isNotEmpty()) {
+                        $lastMessage = '📎 Hình ảnh/ File';
+                        $lastImageUrl = $lastChat->attachments->first()->file_url;
+                    }
+                }
+
                 return [
                     'customer_id' => $customer->user_id,
                     'role' => $customerUser ? $customerUser->role : null,
                     'customer_name' => $customer->username,
                     'customer_full_name' => $customer->full_name,
                     'avatar_url' => $avatarUrl,
-                    'last_message' => isset($lastChat->message)
-                        ? (($lastChat->sender !== 'customer') ? 'Bạn: ' . $lastChat->message : $lastChat->message)
-                        : '',
+                    'last_message' => $lastMessage,
+                    'last_message_image' => $lastImageUrl,
                     'last_message_time' => $lastChat->sent_at ?? null,
                     'unread_count' => $unreadCount,
                 ];
             })
-            ->sortByDesc('last_message_time') // ✅ Sắp xếp theo người nhắn gần nhất
-            ->values(); // ✅ Reset lại index của mảng
+            ->sortByDesc('last_message_time')
+            ->values();
 
         return response()->json([
             'success' => true,
             'customers' => $customers,
         ]);
     }
+
 
     // đếm số tin nhắn chưa đọc theo từng id 
     public function getUnreadCountByCustomerId($customerId)
