@@ -80,7 +80,7 @@ class VoucherController extends Controller
             'min_order_value' => 'required|integer',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'is_active' => 'boolean',
+            'is_active' => 'nullable|boolean',
         ]);
         $voucher = Voucher::create($validated);
         return response()->json([
