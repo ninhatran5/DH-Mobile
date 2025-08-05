@@ -298,7 +298,7 @@ const WithdrawMoney = () => {
                         <div className="email">{withdraw.user.email}</div>
                       </div>
                     </div>
-                    {/* ...existing code... */}
+      
                     <div className="amount-info">
                       <div
                         className={`amount-display ${
@@ -312,7 +312,6 @@ const WithdrawMoney = () => {
                         {numberFomat(withdraw.amount)}
                       </div>
                     </div>
-                    {/* ...existing code... */}
                     <div className="bank-info">
                       <div className="bank-name d-flex">
                         {withdraw.bank_name}
@@ -327,11 +326,9 @@ const WithdrawMoney = () => {
                         {withdraw.bank_account_number}
                       </div>
                     </div>
-                    {/* ...existing code... */}
                     <div className="date-display">
                       {dayjs(withdraw.created_at).format("HH:mm - DD/MM/YYYY")}
                     </div>
-                    {/* ...existing code... */}
                     <div className="status-cell ">
                       <span
                         className={`status-badge ${
@@ -341,7 +338,6 @@ const WithdrawMoney = () => {
                         <span className="status-text">{withdraw.status}</span>
                       </span>
                     </div>
-                    {/* ...existing code... */}
                     <div className="actions-cell">
                       {withdraw?.status === "Chờ xử lý" && (
                         <div className="dropdown">
@@ -357,7 +353,6 @@ const WithdrawMoney = () => {
                       )}
                     </div>
                   </div>
-                  {/* ...existing code... */}
                   <div className="mobile-card-withdraw">
                     <div className="card-header-withdraw">
                       <div className="user-info">
@@ -373,7 +368,6 @@ const WithdrawMoney = () => {
                         <button
                           className="action-btn qr-btn"
                           onClick={() => openQrModal(withdraw.img_qr, withdraw)}
-                          title="Xem QR Code"
                         >
                           <FaQrcode size={16} />
                         </button>
