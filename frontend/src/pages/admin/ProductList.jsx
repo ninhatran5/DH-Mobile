@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+/* eslint-disable no-unused-vars */
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import "../../assets/admin/HomeAdmin.css";
 import "../../assets/admin/product.css";
@@ -6,7 +7,6 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAdminProducts,
-  deleteAdminProduct,
   softdeleteAdminProduct,
   fetchProductVariants,
 } from "../../slices/adminproductsSlice";
@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import { fetchProfileAdmin } from "../../slices/adminProfile";
 import Swal from "sweetalert2";
 import Loading from "../../components/Loading";
+import { FaEdit, FaEye, FaTrashAlt } from "react-icons/fa";
 
 const ProductList = () => {
   const dispatch = useDispatch();
@@ -103,17 +104,22 @@ const ProductList = () => {
           const fetchResult = await dispatch(
             fetchProductVariants(productId)
           ).unwrap();
-          
+
           const variants = fetchResult.variants?.variants || [];
-          
+
           if (variants.length > 0) {
-            const product = adminproducts.find(p => p.product_id === productId);
+            const product = adminproducts.find(
+              (p) => p.product_id === productId
+            );
             productsWithVariants.push(product?.name || `ID: ${productId}`);
           } else {
             validProductsToDelete.push(productId);
           }
         } catch (error) {
-          console.error(`Lỗi khi kiểm tra variants cho sản phẩm ${productId}:`, error);
+          console.error(
+            `Lỗi khi kiểm tra variants cho sản phẩm ${productId}:`,
+            error
+          );
           // Nếu có lỗi khi kiểm tra, bỏ qua sản phẩm này để đảm bảo an toàn
         }
       }
@@ -122,9 +128,12 @@ const ProductList = () => {
 
       // Nếu có sản phẩm có variants, hiển thị thông báo
       if (productsWithVariants.length > 0) {
-        const productList = productsWithVariants.slice(0, 3).join(', ');
-        const moreText = productsWithVariants.length > 3 ? ` và ${productsWithVariants.length - 3} sản phẩm khác` : '';
-        
+        const productList = productsWithVariants.slice(0, 3).join(", ");
+        const moreText =
+          productsWithVariants.length > 3
+            ? ` và ${productsWithVariants.length - 3} sản phẩm khác`
+            : "";
+
         await Swal.fire({
           icon: "warning",
           title: "Không thể xóa một số sản phẩm",
@@ -134,17 +143,20 @@ const ProductList = () => {
               <ul style="margin: 10px 0; padding-left: 20px;">
                 <li>${productList}${moreText}</li>
               </ul>
-              ${validProductsToDelete.length > 0 ? 
-                `<p><strong>Còn lại ${validProductsToDelete.length} sản phẩm có thể xóa.</strong></p>
-                <p>Bạn có muốn tiếp tục xóa những sản phẩm này không?</p>` : 
-                '<p>Không có sản phẩm nào có thể xóa.</p>'
+              ${
+                validProductsToDelete.length > 0
+                  ? `<p><strong>Còn lại ${validProductsToDelete.length} sản phẩm có thể xóa.</strong></p>
+                <p>Bạn có muốn tiếp tục xóa những sản phẩm này không?</p>`
+                  : "<p>Không có sản phẩm nào có thể xóa.</p>"
               }
             </div>
           `,
           showCancelButton: validProductsToDelete.length > 0,
-          confirmButtonText: validProductsToDelete.length > 0 ? "Tiếp tục xóa" : "Đóng",
+          confirmButtonText:
+            validProductsToDelete.length > 0 ? "Tiếp tục xóa" : "Đóng",
           cancelButtonText: "Hủy",
-          confirmButtonColor: validProductsToDelete.length > 0 ? "#f59e0b" : "#3085d6",
+          confirmButtonColor:
+            validProductsToDelete.length > 0 ? "#f59e0b" : "#3085d6",
           cancelButtonColor: "#e5e7eb",
           reverseButtons: true,
         });
@@ -174,41 +186,52 @@ const ProductList = () => {
           cancelButtonColor: "#e5e7eb",
           reverseButtons: true,
         });
-        
+
         if (result.isConfirmed) {
           setIsDeleting(true);
-          
+
           try {
             let successCount = 0;
             let errorCount = 0;
 
             for (const productId of validProductsToDelete) {
               try {
-                const resultAction = await dispatch(softdeleteAdminProduct(productId));
+                const resultAction = await dispatch(
+                  softdeleteAdminProduct(productId)
+                );
                 if (softdeleteAdminProduct.fulfilled.match(resultAction)) {
                   successCount++;
                 } else {
                   errorCount++;
-                  toast.error(`Lỗi khi xóa sản phẩm ${productId}: ${resultAction.error?.message || 'Lỗi không xác định'}`);
+                  toast.error(
+                    `Lỗi khi xóa sản phẩm ${productId}: ${
+                      resultAction.error?.message || "Lỗi không xác định"
+                    }`
+                  );
                 }
               } catch (error) {
                 errorCount++;
-                toast.error(`Lỗi khi xóa sản phẩm ${productId}: ${error.message}`);
+                toast.error(
+                  `Lỗi khi xóa sản phẩm ${productId}: ${error.message}`
+                );
               }
             }
 
             setSelectedProducts([]);
-            
+
             if (successCount > 0) {
               Swal.fire({
                 icon: "success",
                 title: `Đã chuyển ${successCount} sản phẩm vào thùng rác!`,
-                text: errorCount > 0 ? `Có ${errorCount} sản phẩm không thể xóa` : "",
+                text:
+                  errorCount > 0
+                    ? `Có ${errorCount} sản phẩm không thể xóa`
+                    : "",
                 showConfirmButton: false,
                 timer: 2000,
               });
             }
-            
+
             // Tải lại danh sách sản phẩm
             dispatch(fetchAdminProducts());
           } catch (error) {
@@ -229,15 +252,15 @@ const ProductList = () => {
   const handleDeleteSingle = async (productId) => {
     try {
       setIsDeleting(true);
-      
+
       const fetchResult = await dispatch(
         fetchProductVariants(productId)
       ).unwrap();
-      
+
       const variants = fetchResult.variants?.variants || [];
-      
+
       setIsDeleting(false);
-      
+
       if (variants.length > 0) {
         toast.warning("Không thể xóa sản phẩm vì có biến thể.");
         return;
@@ -257,7 +280,7 @@ const ProductList = () => {
 
       if (confirmResult.isConfirmed) {
         setIsDeleting(true);
-        
+
         try {
           await dispatch(softdeleteAdminProduct(productId));
           setSelectedProducts((prev) => prev.filter((id) => id !== productId));
@@ -268,7 +291,7 @@ const ProductList = () => {
             showConfirmButton: false,
             timer: 1500,
           });
-          
+
           // Tải lại danh sách sản phẩm
           dispatch(fetchAdminProducts());
         } catch (error) {
@@ -378,7 +401,7 @@ const ProductList = () => {
             <i className="bi bi-trash" style={{ fontSize: "1.1rem" }}></i>
             <span style={{ fontWeight: "500" }}>Thùng rác</span>
           </Link>
-          
+
           {checkRole !== "sale" && (
             <Link
               to="/admin/addproduct"
@@ -590,7 +613,7 @@ const ProductList = () => {
                   opacity: isDeleting ? 0.6 : 1,
                 }}
               >
-                <i className="bi bi-trash" style={{ color: "#ffffff" }}></i> 
+                <i className="bi bi-trash" style={{ color: "#ffffff" }}></i>
                 {isDeleting ? "Đang xử lý..." : "Chuyển vào thùng rác"}
               </button>
             )}
@@ -711,38 +734,28 @@ const ProductList = () => {
                         <Link
                           to={`/admin/EditProduct/${product.product_id}`}
                           className="admin_dh-action-btn admin_dh-edit-btn"
-                          title="Sửa"
+                          style={{ backgroundColor: "#2e00ff", color: "white" }}
+
                         >
-                          <i
-                            className="bi bi-pencil"
-                            style={{ color: "#0071e3" }}
-                          ></i>
+                          <FaEdit style={{ color: "white", fontSize: 15 }} />
                         </Link>
                       )}
                       <Link
                         to={`/admin/product/${product.product_id}`}
                         className="admin_dh-action-btn"
-                        title="Xem chi tiết"
+
                       >
-                        <i
-                          className="bi bi-eye"
-                          style={{ color: "#5ac8fa" }}
-                        ></i>
+                        <FaEye style={{ color: "white" }} />
                       </Link>
                       {checkRole !== "sale" && (
                         <button
                           className="admin_dh-action-btn admin_dh-delete-btn"
-                          title="Chuyển vào thùng rác"
                           onClick={() => handleDeleteSingle(product.product_id)}
                           disabled={isDeleting}
+                          style={{ backgroundColor: "red", color: "white" }}
+
                         >
-                          <i
-                            className="bi bi-trash"
-                            style={{ 
-                              color: "#f59e0b",
-                              opacity: isDeleting ? 0.6 : 1 
-                            }}
-                          ></i>
+                          <FaTrashAlt style={{ color: "white" }} />
                         </button>
                       )}
                     </div>

@@ -6,7 +6,7 @@
   box-shadow: var(--admin_dh-box-shadow);
   border: 1px solid var(--admin_dh-border);
   padding: var(--admin_dh-spacing-md);
-margin-bottom: var(--admin_dh-spacing-md);
+  margin-bottom: var(--admin_dh-spacing-md);
 
   transition: var(--admin_dh-transition);
   margin-left: auto;
@@ -248,7 +248,7 @@ margin-bottom: var(--admin_dh-spacing-md);
 }
 
 .admin_dh-product-checkbox:checked::after {
-  content: '\2714';
+  content: "\2714";
   color: white;
   font-size: 12px;
   position: absolute;
@@ -642,11 +642,11 @@ tr:hover .admin_dh-product-name {
   .admin_dh-top-row {
     flex-direction: column;
   }
-  
+
   .admin_dh-search-box {
     max-width: 100%;
   }
-  
+
   .admin_dh-product-grid {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
@@ -658,24 +658,24 @@ tr:hover .admin_dh-product-name {
     align-items: flex-start;
     gap: 1rem;
   }
-  
+
   .admin_dh-product-actions {
     width: 100%;
   }
-  
+
   .admin_dh-filters {
     flex-direction: column;
     width: 100%;
   }
-  
+
   .admin_dh-filter-item {
     width: 100%;
   }
-  
+
   .admin_dh-filter-select {
     width: 100%;
   }
-  
+
   .admin_dh-pagination {
     flex-direction: column;
     gap: 1rem;
@@ -732,9 +732,9 @@ tr:hover .admin_dh-product-name {
   cursor: not-allowed;
   color: #999;
 }
-.coins-products{
+.coins-products {
   margin-top: 17px;
 }
-.card-coins-products{
+.card-coins-products {
   gap: 5px;
 }
