@@ -14,6 +14,12 @@ const AddVoucherPage = () => {
 
   const existingVoucherCodes = vouchers?.map((v) => v.code) || [];
   const [randomCode, setRandomCode] = useState("");
+  
+  // State để lưu giá trị format cho display
+  const [formattedValues, setFormattedValues] = useState({
+    discount_amount: "",
+    min_order_value: ""
+  });
 
   const {
     register,
@@ -21,9 +27,16 @@ const AddVoucherPage = () => {
     watch,
     formState: { errors },
     setValue,
-  } = useForm();
+    getValues,
+  } = useForm({
+    defaultValues: {
+      is_active: true 
+    }
+  });
 
+  // Watch cả start_date và end_date để validation
   const startDateValue = watch("start_date");
+  const endDateValue = watch("end_date");
 
   useEffect(() => {
     if (randomCode) {
@@ -31,7 +44,26 @@ const AddVoucherPage = () => {
     }
   }, [randomCode, setValue]);
 
-  // Hàm tạo mã voucher ngẫu nhiên 16 ký tự (chữ hoa + số)
+  const formatNumber = (value) => {
+    if (!value) return "";
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
+
+  const handleNumberInput = (e, fieldName) => {
+    const inputValue = e.target.value.replace(/\./g, "");
+    
+    if (/^\d*$/.test(inputValue)) {
+      const formattedValue = formatNumber(inputValue);
+      
+      setFormattedValues(prev => ({
+        ...prev,
+        [fieldName]: formattedValue
+      }));
+      
+      setValue(fieldName, inputValue);
+    }
+  };
+
   const generateRandomCode = (length = 16) => {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let code = "";
@@ -41,7 +73,6 @@ const AddVoucherPage = () => {
     return code;
   };
 
-  // Tạo mã không trùng, thử tối đa 100 lần
   const generateUniqueCode = () => {
     let newCode = generateRandomCode();
     let attempts = 0;
@@ -63,6 +94,12 @@ const AddVoucherPage = () => {
     }
   };
 
+  // ✅ Hàm kiểm tra thứ tự ngày
+  const validateDateOrder = (startDate, endDate) => {
+    if (!startDate || !endDate) return true;
+    return new Date(startDate) <= new Date(endDate);
+  };
+
   const onSubmit = async (data) => {
     try {
       if (existingVoucherCodes.includes(data.code)) {
@@ -73,15 +110,27 @@ const AddVoucherPage = () => {
         return;
       }
 
+      // ✅ Kiểm tra thứ tự ngày trước khi gửi
+      if (!validateDateOrder(data.start_date, data.end_date)) {
+        toast.error("Ngày bắt đầu không được sau ngày kết thúc!", {
+          position: "top-right",
+          autoClose: 4000,
+        });
+        return;
+      }
+
       const formattedData = {
-        ...data,
-        discount_amount: parseFloat(data.discount_amount),
-        min_order_value: parseInt(data.min_order_value),
+        code: data.code,
+        title: data.title,
+        discount_amount: data.discount_amount ? parseFloat(data.discount_amount) : 0,
+        min_order_value: data.min_order_value ? parseInt(data.min_order_value) : 0,
         quantity: parseInt(data.quantity),
-        is_active: Number(data.is_active),
+        start_date: data.start_date,
+        end_date: data.end_date,
+        is_active: data.is_active
       };
 
-      await dispatch(addAdminVoucher(formattedData)).unwrap();
+      const result = await dispatch(addAdminVoucher(formattedData)).unwrap();
 
       toast.success("🎉 Thêm voucher thành công!", {
         position: "top-right",
@@ -91,8 +140,12 @@ const AddVoucherPage = () => {
       setTimeout(() => {
         navigate("/admin/vouchers");
       }, 2200);
+      
     } catch (err) {
-      toast.error("Lỗi: " + err, {
+      console.error("Lỗi khi thêm voucher:", err);
+      console.error("Error details:", err.message, err.stack);
+      
+      toast.error(`Lỗi: ${err.message || err}`, {
         position: "top-right",
         autoClose: 3000,
       });
@@ -102,8 +155,8 @@ const AddVoucherPage = () => {
   const fields = [
     { name: "code", label: "Mã Voucher", type: "text", placeholder: "Nhập mã voucher", required: true },
     { name: "title", label: "Tiêu đề", type: "text", placeholder: "Nhập tiêu đề voucher", required: true },
-    { name: "discount_amount", label: "Số tiền giảm", type: "number", step: "1000", placeholder: "Nhập số tiền giảm", required: true },
-    { name: "min_order_value", label: "Giá trị đơn tối thiểu", type: "number", placeholder: "Nhập giá trị đơn tối thiểu", required: true },
+    { name: "discount_amount", label: "Số tiền giảm", type: "text", placeholder: "Nhập số tiền giảm", isNumber: true },
+    { name: "min_order_value", label: "Giá trị đơn tối thiểu", type: "text", placeholder: "Nhập giá trị đơn tối thiểu", isNumber: true },
     { name: "quantity", label: "Số lượng", type: "number", placeholder: "Nhập số lượng voucher", required: true },
     { name: "start_date", label: "Ngày bắt đầu", type: "datetime-local", placeholder: "", required: true },
   ];
@@ -119,7 +172,7 @@ const AddVoucherPage = () => {
       </Link>
 
       <form onSubmit={handleSubmit(onSubmit)} className="addVoucher-form space-y-5">
-        {fields.map(({ name, label, type, step, placeholder, required }) => {
+        {fields.map(({ name, label, type, placeholder, required, isNumber }) => {
           const hasError = !!errors[name];
 
           if (name === "code") {
@@ -155,6 +208,34 @@ const AddVoucherPage = () => {
             );
           }
 
+          if (isNumber) {
+            return (
+              <div key={name} className="addVoucher-field flex flex-col relative">
+                <label className="addVoucher-label text-gray-700 font-medium mb-1">
+                  {label} {required && <span style={{ color: '#ef4444', fontWeight: 'bold' }}>*</span>}
+                </label>
+                <input
+                  type="text"
+                  placeholder={placeholder}
+                  value={formattedValues[name] || ""}
+                  onChange={(e) => handleNumberInput(e, name)}
+                  className={`addVoucher-input p-3 rounded-md border w-full ${
+                    hasError ? "border-red-500" : "border-gray-300"
+                  } focus:outline-none focus:ring-2 ${
+                    hasError ? "focus:ring-red-400" : "focus:ring-blue-400"
+                  }`}
+                />
+                <input
+                  type="hidden"
+                  {...register(name)}
+                />
+                {hasError && (
+                  <span className="addVoucher-error text-red-500 text-sm mt-1">{errors[name].message}</span>
+                )}
+              </div>
+            );
+          }
+
           return (
             <div key={name} className="addVoucher-field flex flex-col relative">
               <label className="addVoucher-label text-gray-700 font-medium mb-1">
@@ -162,7 +243,6 @@ const AddVoucherPage = () => {
               </label>
               <input
                 type={type}
-                step={step}
                 placeholder={placeholder}
                 {...register(name, { required: required ? `${label} là bắt buộc` : false })}
                 className={`addVoucher-input p-3 rounded-md border w-full ${
@@ -187,10 +267,13 @@ const AddVoucherPage = () => {
             placeholder=""
             {...register("end_date", {
               required: "Ngày kết thúc là bắt buộc",
+              // ✅ Validation ngay tại trường input  
               validate: (value) => {
-                if (!startDateValue) return true;
-                return new Date(value) >= new Date(startDateValue) || "Ngày kết thúc phải sau ngày bắt đầu";
-              },
+                if (startDateValue && value) {
+                  return validateDateOrder(startDateValue, value) || "Ngày kết thúc phải sau ngày bắt đầu";
+                }
+                return true;
+              }
             })}
             className={`addVoucher-input p-3 rounded-md border w-full ${
               errors.end_date ? "border-red-500" : "border-gray-300"
@@ -203,9 +286,17 @@ const AddVoucherPage = () => {
           )}
         </div>
 
+        {startDateValue && endDateValue && !validateDateOrder(startDateValue, endDateValue) && (
+          <div className="bg-red-50 border border-red-200 rounded-md p-3">
+            <p className="text-red-600 text-sm font-medium">
+              ⚠️ Ngày bắt đầu ({new Date(startDateValue).toLocaleString('vi-VN')}) không được sau ngày kết thúc ({new Date(endDateValue).toLocaleString('vi-VN')})
+            </p>
+          </div>
+        )}
+
         <div className="addVoucher-field flex flex-col relative">
           <label className="addVoucher-label text-gray-700 font-medium mb-1">
-            Trạng thái <span style={{ color: '#ef4444', fontWeight: 'bold' }}>*</span>
+            Trạng thái
           </label>
           <div className="flex items-center gap-2">
             <input
