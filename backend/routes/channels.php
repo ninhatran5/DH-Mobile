@@ -15,3 +15,7 @@ Broadcast::channel('chat.admin', function ($user) {
 Broadcast::channel('chatbot.{userId}', function ($user, $userId) {
     return (int)$user->id === (int)$userId; // chỉ cho user đúng subscribe
 });
+
+Broadcast::channel('chatbot.guest.{sessionId}', function ($user, $sessionId) {
+    return true; // Cho phép tất cả guest truy cập kênh guest
+});
