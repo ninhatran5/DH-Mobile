@@ -99,9 +99,13 @@ export const adminListWithdrawal = createAsyncThunk(
 
 export const confirmWithdrawal = createAsyncThunk(
   "withDraw/confirmWithdrawal",
-  async (id, thunkAPI) => {
+  async ({ id, img_bill }, thunkAPI) => {
     try {
-      const response = await axiosAdmin.post(`Withdrawal-Management/${id}`);
+      let formData = new FormData();
+      formData.append("img_bill", img_bill);
+      const response = await axiosAdmin.post(`Withdrawal-Management/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(

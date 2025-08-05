@@ -99,14 +99,7 @@
 
 
 
-.section-title {
-  display: flex;
-  align-items: center;
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  color: #111827;
-}
+
 
 .section-content {
   background: #f9fafb;

@@ -21,29 +21,41 @@ class VoucherController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $voucher = Voucher::where('is_active', 1)
-            ->orderBy('created_at', 'desc')->paginate(10);
+        $query = Voucher::query();
+
+        // Lọc theo trạng thái is_active nếu có
+        if ($request->has('is_active')) {
+            $query->where('is_active', $request->input('is_active'));
+        }
+
+        // Hiển thị voucher đã xóa mềm (trashed = 1 => chỉ trashed, all => cả hai)
+        if ($request->input('trashed') === 'only') {
+            $query->onlyTrashed();
+        } elseif ($request->input('trashed') === 'with') {
+            $query->withTrashed();
+        }
+
+        $voucher = $query->orderBy('created_at', 'desc')->paginate(10);
 
         // Định dạng discount_amount
-        $formattedVouchers = collect($voucher->items())->map(function ($item) {
+        $formattedVouchers = $voucher->map(function ($item) {
             $item->discount_amount = number_format($item->discount_amount, 0, '.', '');
             return $item;
         });
 
         return response()->json([
-            'message' => 'lấy danh sách voucher thành công',
-            'data' => $formattedVouchers, // sử dụng dữ liệu đã định dạng
+            'message' => 'Lấy danh sách voucher thành công',
+            'data' => $formattedVouchers,
             'meta' => [
-                'current_page' =>  $voucher->currentPage(),
-                'last_page' =>  $voucher->lastPage(),
-                'per_page' =>  $voucher->perPage(),
-                'total' =>  $voucher->total(),
+                'current_page' => $voucher->currentPage(),
+                'last_page' => $voucher->lastPage(),
+                'per_page' => $voucher->perPage(),
+                'total' => $voucher->total(),
             ],
             'status' => 200
-
-        ])->setStatusCode(200, 'OK',);
+        ], 200);
     }
 
     /**

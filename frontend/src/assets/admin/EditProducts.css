@@ -115,7 +115,7 @@
   cursor: pointer;
 }
 
-.btn-primary {
+.btn-primary1 {
   background-color: #007bff;
   color: white;
 }
@@ -394,10 +394,6 @@
   border: none;
 }
 
-.btn-primary {
-  background: linear-gradient(45deg, #3b82f6, #2563eb);
-  border: none;
-}
 
 .btn-warning {
   background: linear-gradient(45deg, #f59e0b, #d97706);

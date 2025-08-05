@@ -210,7 +210,7 @@
   display: block;
   margin-bottom: 6px;
   color: #374151;
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 500;
 }
 
@@ -313,19 +313,20 @@
 .withdraw-selected-account-title {
   margin: 0 0 8px 0;
   color: #1f2937;
-  font-size: 14px;
+  font-size: 15.5px;
 }
 
 .withdraw-selected-account-bank {
   margin: 0 0 4px 0;
   font-weight: 600;
   color: #1f2937;
+  font-size: 15.5px;
 }
 
 .withdraw-selected-account-details {
   margin: 0 0 4px 0;
   color: #6b7280;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 /* Required field indicator */

@@ -23,7 +23,8 @@
     "moblieTitle": "Khám Phá Thế Giới Di Động Tại DH Mobile!",
     "relatedProducts": "Sản Phẩm Liên Quan",
     "moblieDesc": "Chào mừng bạn đến với DH Mobile – điểm đến lý tưởng cho những tín đồ yêu thích công nghệ! Chúng tôi cung cấp một bộ sưu tập đa dạng các mẫu điện thoại thông minh từ những thương hiệu nổi tiếng như Samsung, Apple, Xiaomi và nhiều hơn nữa. Với giá cả hợp lý và dịch vụ tận tâm, chúng tôi cam kết mang đến trải nghiệm mua sắm tuyệt vời nhất cho bạn. Hãy tải ngay ứng dụng của chúng tôi để khám phá các ưu đãi hấp dẫn và sản phẩm mới nhất!",
-    "viewProduct": "Sản Phẩm Bạn Đã Xem"
+    "viewProduct": "Sản Phẩm Bạn Đã Xem",
+    "noLikedProducts": "Bạn chưa thích sản phẩm nào"
   },
   "header": {
     "home": "Trang chủ",
@@ -733,7 +734,10 @@
       "results": "Tìm thấy {{count}} giao dịch",
       "searchFor": "Tìm kiếm:",
       "type": "Loại:"
-    }
+    },
+    "seeBill": "Xem hóa đơn",
+    "noBill": "Không tải được hóa đơn",
+    "withdrawalReceipt": "Hóa đơn rút tiền"
   },
   "modal": {
     "walletInsufficientTitle": "Số dư ví không đủ",

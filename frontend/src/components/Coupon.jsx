@@ -10,11 +10,9 @@ import { useDispatch } from "react-redux";
 import { fetchVoucher, saveVoucher } from "../slices/voucherSlice";
 import Swal from "sweetalert2";
 import numberFormat from "../../utils/numberFormat";
-import { LuSaveOff } from "react-icons/lu";
 import { MdBlockFlipped } from "react-icons/md";
 
 const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
-  console.log("🚀 ~ Coupon ~ voucher:", voucher)
   const inputRef = useRef(null);
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -58,12 +56,18 @@ const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
       });
     }
   };
-
   return (
     <div className="col-lg-4 mb-5">
       <div className="userVoucher-card">
         <div className="userVoucher-leftSide">
           <RiShoppingBag3Fill className="userVoucher-icon-bag" />
+          <div className="userVoucher-quantity userVoucher-quantity-on-bag">
+            {showItemQuantity ? (
+              <span>{item.quantity}</span>
+            ) : (
+              <span>{voucher.quantity}</span>
+            )}
+          </div>
         </div>
 
         <div className="userVoucher-dashedLine">
@@ -73,17 +77,10 @@ const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
 
         <div className="userVoucher-content">
           <div className="userVoucher-copyBtn">
-            <div className="userVoucher-quantity">
-              {showItemQuantity ? (
-                <span>{item.quantity}</span>
-              ) : (
-                <span>{voucher.quantity}</span>
-              )}
-            </div>
             {isMyVoucher ? (
               voucher.is_active === 1 ? (
                 <div className="userVoucher-icon-wrapper">
-                 <MdBlockFlipped  className="userVoucher-icon"/>
+                  <MdBlockFlipped className="userVoucher-icon" />
 
                   <span className="userVoucher-tooltip">
                     {t("voucher.iconSaveClose")}

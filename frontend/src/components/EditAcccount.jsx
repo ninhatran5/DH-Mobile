@@ -375,7 +375,7 @@ const EditAccount = () => {
           <div className="form-actions">
             <button 
               type="button" 
-              className="btn-secondary"
+              className="btn-secondary1"
               onClick={() => navigate(`/admin/detailacccount/${id}`)}
               disabled={loading}
             >
@@ -383,7 +383,7 @@ const EditAccount = () => {
             </button>
             <button 
               type="submit" 
-              className="btn-primary"
+              className="btn-primary1"
               disabled={loading}
             >
               {loading ? 'Đang cập nhật...' : 'Cập nhật thông tin'}

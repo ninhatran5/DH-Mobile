@@ -1,3 +1,182 @@
+.search-filter-row {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 0;
+}
+
+.withdraw-money-container > .page-header > .search-filter-row {
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.search-input {
+  padding: 8px 8px 8px 13px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  width: 100%;
+  background: #fff;
+  transition: border-color 0.2s;
+  flex: 1 1 0%;
+  box-sizing: border-box;
+}
+.search-input:focus {
+  border-color: #2984eb;
+  outline: none;
+}
+
+.status-select {
+  padding: 13px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  width: 220px;
+  background: #fff;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+.status-select:focus {
+  border-color: #2984eb;
+  outline: none;
+}
+
+@media (max-width: 900px) {
+  .search-filter-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .search-input,
+  .status-select {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    font-size: 14px;
+  }
+  .status-select {
+    padding: 10px;
+  }
+}
+
+/* Force mobile layout for screens <= 1024px (including 992x991, 853x1280, etc.) */
+@media (max-width: 1024px) {
+  .desktop-only {
+    display: none !important;
+  }
+  .desktop-row {
+    display: none !important;
+  }
+  .mobile-card-withdraw {
+    display: block !important;
+    background: white;
+    margin: 0 6px 12px 6px;
+    border-radius: 9px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+    border: 1px solid #e9ecef;
+    overflow: hidden;
+  }
+  .withdraw-row {
+    border: none;
+    padding: 0;
+  }
+  .withdraw-row:hover {
+    background: none;
+    border-left: none;
+  }
+  .card-header-withdraw {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px 10px 6px 10px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    gap: 8px;
+  }
+  .card-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 7px;
+    min-width: 90px;
+  }
+  .card-body-withdraw {
+    padding: 10px 10px 12px 10px;
+  }
+  .card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 7px;
+  }
+  .card-row:last-child {
+    margin-bottom: 0;
+  }
+  .card-item {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .card-item:first-child {
+    margin-right: 8px;
+  }
+  .card-label {
+    font-size: 12px;
+    color: #6c757d;
+    font-weight: 500;
+  }
+  .card-value {
+    font-size: 14px;
+    color: #222;
+    font-weight: 600;
+    word-break: break-all;
+  }
+  .card-value.amount {
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .status-badge.mobile {
+    padding: 6px 14px;
+    font-size: 11px;
+    border-width: 2px;
+    margin-top: 2px;
+  }
+  .dropdown-btn {
+    min-width: 90px;
+    font-size: 13px;
+    padding: 8px 0;
+    margin: 0;
+    text-align: center;
+  }
+  .qr-btn {
+    min-width: 44px;
+    min-height: 36px;
+    font-size: 15px;
+    margin-left: 0;
+    margin-bottom: 2px;
+  }
+  .user-avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 14px;
+  }
+  .user-details h6 {
+    font-size: 14px;
+  }
+  .email {
+    font-size: 12px;
+  }
+}
 .withdraw-money-container {
   padding: 24px;
   background-color: #f8f9fa;
@@ -35,7 +214,7 @@
   display: block;
 }
 
-.mobile-card {
+.mobile-card-withdraw {
   display: none;
 }
 
@@ -126,13 +305,16 @@
   margin-bottom: 4px;
 }
 
+.amount-pending {
+  color: #e53935 !important;
+}
+
 .withdraw-id {
   font-size: 12px;
   color: #6c757d;
   font-family: "Courier New", monospace;
 }
 
-/* Bank Info */
 .bank-info {
   text-align: left;
 }
@@ -167,14 +349,27 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 12px;
-  border-radius: 20px;
+  padding: 7px 18px;
+  border-radius: 999px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border: 1px solid;
-  transition: all 0.2s ease;
+  letter-spacing: 1px;
+  border-width: 2px;
+  border-style: solid;
+  background: #f8f9fa;
+}
+
+.status-pending {
+  background: #fff5f2;
+  color: #e74c3c;
+  border-color: #ffb4a2;
+}
+
+.status-completed {
+  background: #eafcf3;
+  color: #1abc9c;
+  border-color: #7be7c7;
 }
 
 .status-text {
@@ -221,15 +416,20 @@
   position: relative;
 }
 
+.action-btn:hover {
+  box-shadow: none !important;
+}
+
 .dropdown-btn {
-  background-color: #f8f9fa;
-  color: #495057;
-  border: 1px solid #dee2e6;
+  background: #2984eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
 }
 
 .dropdown-btn:hover {
-  background-color: #e9ecef;
-  border-color: #adb5bd;
+  background: #2984eb;
+  color: #fff;
 }
 
 .more-btn {
@@ -276,7 +476,18 @@
   visibility: visible;
   transform: translateY(0);
 }
-
+.no-data {
+  text-align: center;
+  padding: 10px 10px 30px 20px;
+  font-size: 15px;
+}
+.icon-no-data {
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  font-size: 50px;
+  margin-top: 40px;
+}
 .dropdown-item {
   display: flex;
   align-items: center;
@@ -430,12 +641,13 @@
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   flex-shrink: 0;
+  background-color: #e3f2fd !important;
+  color: #0277bd !important;
 }
 
 .modal-title-section {
@@ -469,7 +681,6 @@
 }
 
 .modal-close-btn:hover {
-  background-color: #f8f9fa;
   color: #495057;
 }
 
@@ -541,7 +752,7 @@
   align-items: center;
   padding: 8px 0;
   border-bottom: 1px solid #e9ecef;
-  gap: 8px;
+  gap: 5px;
 }
 
 .detail-row:last-child {
@@ -619,7 +830,7 @@
 }
 
 .modal-action-btn.primary {
-  background-color: #667eea;
+  background-color: #2984eb !important;
   color: white;
 }
 
@@ -709,12 +920,12 @@
   }
 
   /* Show mobile card layout */
-  .mobile-card {
+  .mobile-card-withdraw {
     display: block;
     background: white;
-    margin: 0 16px 16px 16px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin: 0 6px 12px 6px;
+    border-radius: 9px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
     border: 1px solid #e9ecef;
     overflow: hidden;
   }
@@ -729,22 +940,94 @@
     border-left: none;
   }
 
-  .card-header {
+  .card-header-withdraw {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 16px;
+    align-items: flex-start;
+    padding: 10px 10px 6px 10px;
     background: #f8f9fa;
     border-bottom: 1px solid #e9ecef;
+    gap: 8px;
   }
 
   .card-actions {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 7px;
+    min-width: 90px;
+  }
+  .card-body-withdraw {
+    padding: 10px 10px 12px 10px;
+  }
+  .card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     gap: 8px;
+    margin-bottom: 7px;
+  }
+  .card-row:last-child {
+    margin-bottom: 0;
+  }
+  .card-item {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .card-item:first-child {
+    margin-right: 8px;
+  }
+  .card-label {
+    font-size: 12px;
+    color: #6c757d;
+    font-weight: 500;
+  }
+  .card-value {
+    font-size: 14px;
+    color: #222;
+    font-weight: 600;
+    word-break: break-all;
+  }
+  .card-value.amount {
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .status-badge.mobile {
+    padding: 6px 14px;
+    font-size: 11px;
+    border-width: 2px;
+    margin-top: 2px;
+  }
+  .dropdown-btn {
+    min-width: 90px;
+    font-size: 13px;
+    padding: 8px 0;
+    margin: 0;
+    text-align: center;
+  }
+  .qr-btn {
+    min-width: 44px;
+    min-height: 36px;
+    font-size: 15px;
+    margin-left: 0;
+    margin-bottom: 2px;
+  }
+  .user-avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 14px;
+  }
+  .user-details h6 {
+    font-size: 14px;
+  }
+  .email {
+    font-size: 12px;
   }
 
-  .card-body {
+  .card-body-withdraw {
     padding: 16px;
   }
 
@@ -837,8 +1120,8 @@
   }
 
   .qr-image {
-    width: 160px;
-    height: 160px;
+    width: 200px;
+    height: 220px;
   }
 
   .qr-scan-line {
@@ -870,7 +1153,6 @@
     min-width: 100%;
   }
 
-  /* Dropdown adjustments for mobile */
   .dropdown-menu {
     min-width: 120px;
     right: -8px;
@@ -881,7 +1163,6 @@
     font-size: 12px;
   }
 
-  /* Pagination adjustments for mobile */
   .pagination-btn {
     min-width: 36px;
     height: 32px;
@@ -900,13 +1181,13 @@
     padding: 8px;
   }
 
-  .mobile-card {
+  .mobile-card-withdraw {
     margin: 0 8px 12px 8px;
     border-radius: 8px;
   }
 
-  .card-header,
-  .card-body {
+  .card-header-withdraw,
+  .card-body-withdraw {
     padding: 12px;
   }
 
@@ -941,8 +1222,8 @@
   }
 
   .qr-image {
-    width: 140px;
-    height: 140px;
+    width: 200px;
+    height: 220px;
   }
 
   @keyframes scan {
