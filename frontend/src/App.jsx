@@ -80,6 +80,7 @@ import WithdrawMoney from "./pages/admin/WithdrawMoney.jsx";
 import TrashCategories from "./components/TrashCategories.jsx";
 import AddVoucherPercentPage from "./components/Adminvoucher.jsx";
 import EditAccount from "./components/EditAcccount.jsx";
+import TrashVoucherList from "./components/TrashVoucherList.jsx";
 const withLayoutClient = (Component, requireAuth = false) => {
   const wrappedComponent = (
     <Layout>
@@ -334,6 +335,14 @@ const routerConfig = [
         element: (
           <RequireNotSaleRole>
             <VoucherList />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "trashvouchers",
+        element: (
+          <RequireNotSaleRole>
+            <TrashVoucherList/>
           </RequireNotSaleRole>
         ),
       },
