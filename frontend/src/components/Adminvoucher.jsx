@@ -65,7 +65,6 @@ const AddVoucherPercentPage = () => {
     return code;
   };
 
-  // Tạo mã không trùng, thử tối đa 100 lần
   const generateUniqueCode = () => {
     let newCode = generateRandomCode();
     let attempts = 0;
@@ -89,7 +88,6 @@ const AddVoucherPercentPage = () => {
 
   const onSubmit = async (data) => {
     try {
-      // Kiểm tra mã voucher trùng
       if (existingVoucherCodes.includes(data.code)) {
         toast.error("Mã voucher đã tồn tại, vui lòng tạo mã khác hoặc nhập mã khác!", {
           position: "top-right",
@@ -98,7 +96,6 @@ const AddVoucherPercentPage = () => {
         return;
       }
 
-      // Validate phần trăm giảm (phải từ 1-100)
       const discountPercent = parseFloat(data.discount_amount);
       if (discountPercent < 1 || discountPercent > 100) {
         toast.error("Phần trăm giảm phải từ 1% đến 100%!", {
@@ -108,7 +105,6 @@ const AddVoucherPercentPage = () => {
         return;
       }
 
-      // Chuyển đổi giá trị đã format về số
       const maxDiscount = parseCurrency(data.max_discount);
       if (!maxDiscount || maxDiscount <= 0) {
         toast.error("Giá trị giảm tối đa phải lớn hơn 0!", {
@@ -145,7 +141,7 @@ const AddVoucherPercentPage = () => {
         quantity: quantity,
         start_date: data.start_date,
         end_date: data.end_date,
-        is_active: data.is_active ? 1 : 0,
+        is_active: data.is_active,
         discount_type: "percent",
       };
 
@@ -232,12 +228,12 @@ const AddVoucherPercentPage = () => {
       <h2 className="addVoucher-title text-3xl font-bold text-center text-green-600 mb-6">
         Thêm Voucher Giảm Theo Phần Trăm
       </h2>
-    <Link
-    to="/admin/addvoucher"
-    className="adminvoucher-add-btn px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-  >
-    + Thêm mã giảm giá khác
-  </Link>
+      <Link
+        to="/admin/addvoucher"
+        className="adminvoucher-add-btn px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+      >
+        + Thêm mã giảm giá khác
+      </Link>
       <div className="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
         <div className="flex">
           <div className="ml-3">

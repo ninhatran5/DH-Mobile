@@ -202,7 +202,6 @@ const AdminProductEdit = () => {
     imageFile: null,
   });
 
-  // ✅ State riêng để hiển thị giá đã format
   const [displayValues, setDisplayValues] = useState({
     price: "",
     price_original: "",
@@ -215,7 +214,6 @@ const AdminProductEdit = () => {
   const [newSpec, setNewSpec] = useState({ spec_name: "", spec_value: "" });
   const [ordersLoadAttempted, setOrdersLoadAttempted] = useState(false);
 
-  // ✅ Price Format Utility Functions
   const formatPrice = useCallback((value) => {
     if (!value) return '';
     const cleanValue = value.toString().replace(/\D/g, '');
@@ -234,7 +232,6 @@ const AdminProductEdit = () => {
     return cleaned !== '' && parseInt(cleaned, 10) >= 0;
   }, []);
 
-  // ✅ Enhanced Input Change Handler với Auto Format
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
 
@@ -265,7 +262,6 @@ const AdminProductEdit = () => {
     }
   }, [formatPrice, parsePrice, isValidPrice]);
 
-  // ✅ Handle price input focus - hiển thị số nguyên
   const handlePriceFocus = useCallback((e) => {
     const { name } = e.target;
     if (name === 'price' || name === 'price_original') {
@@ -273,7 +269,6 @@ const AdminProductEdit = () => {
     }
   }, [formData]);
 
-  // ✅ Handle price input blur - format lại
   const handlePriceBlur = useCallback((e) => {
     const { name, value } = e.target;
     if (name === 'price' || name === 'price_original') {
@@ -287,7 +282,6 @@ const AdminProductEdit = () => {
     }
   }, [formatPrice]);
 
-  // ✅ Enhanced Form Validation
   const validatePrices = useCallback(() => {
     if (!formData.price || !isValidPrice(formData.price)) {
       return "Giá khuyến mại không hợp lệ";
@@ -358,7 +352,6 @@ const AdminProductEdit = () => {
     ]
   },
   
-  // ✅ Cấu hình chi tiết cho alignment (căn trái/phải/giữa/đều)
   alignment: {
     options: [
       { name: 'left', className: 'text-left' },
@@ -368,7 +361,6 @@ const AdminProductEdit = () => {
     ]
   },
   
-  // ✅ Cấu hình chi tiết cho font family
   fontFamily: {
     options: [
       'default',
@@ -388,7 +380,6 @@ const AdminProductEdit = () => {
     supportAllValues: true
   },
   
-  // ✅ Cấu hình chi tiết cho font size
   fontSize: {
     options: [
       9, 10, 11, 12, 'default', 14, 16, 18, 20, 22, 24, 26, 28, 30, 36, 48, 72
@@ -396,7 +387,6 @@ const AdminProductEdit = () => {
     supportAllValues: true
   },
   
-  // ✅ Cấu hình font color với nhiều màu sắc
   fontColor: {
     colors: [
       {
@@ -463,7 +453,6 @@ const AdminProductEdit = () => {
     ]
   },
   
-  // ✅ Cấu hình font background color
   fontBackgroundColor: {
     colors: [
       {
@@ -565,7 +554,6 @@ const AdminProductEdit = () => {
 };
 
 
-  // ✅ Data loading effects (giữ nguyên từ code gốc)
   useEffect(() => {
     if (ordersLoadAttempted) return;
 
@@ -598,7 +586,6 @@ const AdminProductEdit = () => {
     loadAllData();
   }, [dispatch, adminproducts?.length, categories?.length, ordersLoadAttempted]);
 
-  // ✅ Effect để format giá trị ban đầu từ server
   useEffect(() => {
     if (!adminproducts?.length || !productSpecifications?.length) return;
 
