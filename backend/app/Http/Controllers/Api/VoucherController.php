@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Voucher;
 use App\Models\User_vouchers;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Validator;
 class VoucherController extends Controller
 {
     /**
@@ -72,10 +72,13 @@ class VoucherController extends Controller
      */
     public function store(Request $request)
     {
+        // Lấy toàn bộ dữ liệu từ form-data
         $data = $request->all();
-        $data['is_active'] = $request->boolean('is_active'); // ép boolean
 
-        $validated = validator($data, [
+        // Ép kiểu nếu cần (checkbox, boolean)
+        $data['is_active'] = isset($data['is_active']) && $data['is_active'] == '1' ? 1 : 0;
+
+        $validator = Validator::make($data, [
             'code' => 'required|string|max:150|min:10|unique:vouchers,code',
             'title' => 'required|string|min:5|max:255',
             'discount_amount' => 'required|numeric',
@@ -83,10 +86,19 @@ class VoucherController extends Controller
             'min_order_value' => 'required|integer',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
+            'max_discount' => 'nullable|integer',
             'is_active' => 'boolean',
-        ])->validate();
+        ]);
 
-        $voucher = Voucher::create($validated);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $voucher = Voucher::create($validator->validated());
+
         return response()->json([
             'message' => 'Tạo voucher thành công',
             'data' => $voucher
