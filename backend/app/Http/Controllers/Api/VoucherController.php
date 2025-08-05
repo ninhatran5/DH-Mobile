@@ -72,7 +72,10 @@ class VoucherController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $data = $request->all();
+        $data['is_active'] = $request->boolean('is_active'); // ép boolean
+
+        $validated = validator($data, [
             'code' => 'required|string|max:150|min:10|unique:vouchers,code',
             'title' => 'required|string|min:5|max:255',
             'discount_amount' => 'required|numeric',
@@ -80,13 +83,14 @@ class VoucherController extends Controller
             'min_order_value' => 'required|integer',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'is_active' => 'nullable|boolean',
-        ]);
+            'is_active' => 'boolean',
+        ])->validate();
+
         $voucher = Voucher::create($validated);
         return response()->json([
             'message' => 'Tạo voucher thành công',
             'data' => $voucher
-        ])->setStatusCode(201, 'Created');
+        ], 201);
     }
 
     /**
