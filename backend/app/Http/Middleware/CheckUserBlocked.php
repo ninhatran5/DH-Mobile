@@ -15,6 +15,15 @@ class CheckUserBlocked
      */
     public function handle(Request $request, Closure $next): Response
     {
+        $user = $request->user();
+
+        // Kiểm tra nếu tài khoản bị khóa
+        if ($user && $user->is_blocked) {
+            return response()->json([
+                'message' => 'Tài khoản của bạn đã bị khóa.'
+            ], 403);
+        }
+
         return $next($request);
     }
 }
