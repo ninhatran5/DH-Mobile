@@ -7,7 +7,14 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import Loading from "../../components/Loading";
 import Swal from "sweetalert2";
-import { FaBars, FaTimes, FaEdit, FaTrash, FaPlus, FaSearch } from "react-icons/fa";
+import {
+  FaBars,
+  FaTimes,
+  FaEdit,
+  FaTrash,
+  FaPlus,
+  FaSearch,
+} from "react-icons/fa";
 
 const CategoryList = () => {
   const dispatch = useDispatch();
@@ -25,7 +32,7 @@ const CategoryList = () => {
 
   useEffect(() => {
     const counts = {};
-    adminproducts.forEach(product => {
+    adminproducts.forEach((product) => {
       counts[product.category_id] = (counts[product.category_id] || 0) + 1;
     });
     setProductCounts(counts);
@@ -44,11 +51,11 @@ const CategoryList = () => {
     if (!dateString) return "22/05/2025 10:00:00";
     return new Date(dateString).toLocaleString("vi-VN", {
       day: "2-digit",
-      month: "2-digit", 
+      month: "2-digit",
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-      second: "2-digit"
+      second: "2-digit",
     });
   };
 
@@ -56,7 +63,9 @@ const CategoryList = () => {
   const handleDelete = async (id) => {
     const productCount = getProductCount(id);
     if (productCount > 0) {
-      toast.error(`Không thể xóa danh mục này vì còn ${productCount} sản phẩm thuộc danh mục này. Vui lòng xóa hoặc chuyển các sản phẩm sang danh mục khác trước.`);
+      toast.error(
+        `Không thể xóa danh mục này vì còn ${productCount} sản phẩm thuộc danh mục này. Vui lòng xóa hoặc chuyển các sản phẩm sang danh mục khác trước.`
+      );
       return;
     }
     const result = await Swal.fire({
@@ -66,33 +75,33 @@ const CategoryList = () => {
       showCancelButton: true,
       confirmButtonText: "Xóa",
       cancelButtonText: "Hủy",
-      reverseButtons: true
+      reverseButtons: true,
     });
     if (result.isConfirmed) {
       setIsProcessing(true);
-      dispatch(deleteCategory(id)).then(() => {
-        dispatch(fetchCategories());
-        Swal.fire({
-          icon: "success",
-          title: "Đã xóa danh mục thành công!",
-          showConfirmButton: false,
-          timer: 1500
-        });
-      }).finally(() => setIsProcessing(false));
+      dispatch(deleteCategory(id))
+        .then(() => {
+          dispatch(fetchCategories());
+          Swal.fire({
+            icon: "success",
+            title: "Đã xóa danh mục thành công!",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        })
+        .finally(() => setIsProcessing(false));
     }
   };
 
-  
   const filteredCategories = categories.filter((cat) =>
     cat.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
- 
   const renderActions = (cat) => (
     <>
-      <Link 
-        to={`/admin/EditCategories/${cat.category_id}`} 
-        className="admin_dh-action-btn edit" 
+      <Link
+        to={`/admin/EditCategories/${cat.category_id}`}
+        className="admin_dh-action-btn edit"
         title="Chỉnh sửa"
       >
         <FaEdit />
@@ -112,7 +121,7 @@ const CategoryList = () => {
     <div className="admin_dh-categories-header">
       <div className="admin_dh-header-content">
         <h2 className="admin_dh-categories-title">Danh sách danh mục</h2>
-        
+
         {/* Desktop Toolbar */}
         <div className="admin_dh-toolbar-desktop">
           <div className="admin_dh-search-wrapper">
@@ -137,7 +146,7 @@ const CategoryList = () => {
 
         {/* Mobile Toolbar Toggle */}
         <div className="admin_dh-mobile-toolbar-toggle">
-          <button 
+          <button
             className="mobile-toolbar-btn"
             onClick={() => setShowMobileFilters(!showMobileFilters)}
           >
@@ -148,7 +157,9 @@ const CategoryList = () => {
       </div>
 
       {/* Mobile Toolbar */}
-      <div className={`admin_dh-toolbar-mobile ${showMobileFilters ? 'show' : ''}`}>
+      <div
+        className={`admin_dh-toolbar-mobile ${showMobileFilters ? "show" : ""}`}
+      >
         <div className="admin_dh-search-wrapper-mobile">
           <FaSearch className="admin_dh-search-icon" />
           <input
@@ -160,7 +171,10 @@ const CategoryList = () => {
           />
         </div>
         <div className="admin_dh-mobile-actions">
-          <Link to="/admin/trashcategories" className="admin_dh-trash-btn-mobile">
+          <Link
+            to="/admin/trashcategories"
+            className="admin_dh-trash-btn-mobile"
+          >
             <FaTrash />
             <span>Thùng rác</span>
           </Link>
@@ -173,7 +187,6 @@ const CategoryList = () => {
     </div>
   );
 
- 
   const renderDesktopTable = () => (
     <div className="admin_dh-table-wrapper desktop-table">
       <table className="admin_dh-categories-table">
@@ -204,13 +217,13 @@ const CategoryList = () => {
                 <div className="admin_dh-category-title">{cat.name}</div>
               </td>
               <td>{cat.description || "Không có"}</td>
-              <td className="admin_dh-text-center">{getProductCount(cat.category_id)}</td>
+              <td className="admin_dh-text-center">
+                {getProductCount(cat.category_id)}
+              </td>
               <td>{formatDate(cat.created_at)}</td>
               <td>{formatDate(cat.updated_at)}</td>
               <td>
-                <div className="admin_dh-actions">
-                  {renderActions(cat)}
-                </div>
+                <div className="admin_dh-actions">{renderActions(cat)}</div>
               </td>
             </tr>
           ))}
@@ -218,7 +231,6 @@ const CategoryList = () => {
       </table>
     </div>
   );
-
 
   const renderMobileCards = () => (
     <div className="admin_dh-mobile-cards">
@@ -234,27 +246,27 @@ const CategoryList = () => {
               <h3>{cat.name}</h3>
               <p>{cat.description || "Không có mô tả"}</p>
             </div>
-            <div className="mobile-actions">
-              {renderActions(cat)}
-            </div>
+            <div className="mobile-actions">{renderActions(cat)}</div>
           </div>
-          
+
           <div className="mobile-card-content">
             <div className="mobile-info-row">
               <span className="mobile-label">STT:</span>
               <span className="mobile-value">{index + 1}</span>
             </div>
-            
+
             <div className="mobile-info-row">
               <span className="mobile-label">Số sản phẩm:</span>
-              <span className="mobile-value">{getProductCount(cat.category_id)}</span>
+              <span className="mobile-value">
+                {getProductCount(cat.category_id)}
+              </span>
             </div>
-            
+
             <div className="mobile-info-row">
               <span className="mobile-label">Ngày tạo:</span>
               <span className="mobile-value">{formatDate(cat.created_at)}</span>
             </div>
-            
+
             <div className="mobile-info-row">
               <span className="mobile-label">Ngày cập nhật:</span>
               <span className="mobile-value">{formatDate(cat.updated_at)}</span>
@@ -265,15 +277,14 @@ const CategoryList = () => {
     </div>
   );
 
-  // ========== MAIN RENDER ==========
   return (
     <div className="admin_dh-categories-container">
       {isProcessing && <Loading />}
-      
+
       {renderHeader()}
 
       {/* Loading & Error States */}
-      {loading && <div className="admin_dh-loading">Đang tải dữ liệu...</div>}
+      {loading && <Loading />}
       {error && <div className="admin_dh-error">Lỗi: {error}</div>}
       {!loading && filteredCategories.length === 0 && (
         <div className="admin_dh-no-data">Không có danh mục nào.</div>

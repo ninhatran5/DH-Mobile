@@ -6,12 +6,16 @@ import { FaEye, FaBars, FaTimes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import defaultAvatar from "../../assets/images/adminacccount.jpg";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 
 const ListUser = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { users = [], loading, error } = useSelector((state) => state.adminuser);
+  const {
+    users = [],
+    loading,
+    error,
+  } = useSelector((state) => state.adminuser);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -38,7 +42,11 @@ const ListUser = () => {
     }
 
     if (user.role !== "sale") {
-      Swal.fire("Thông báo", "Chỉ được cập nhật vai trò nếu user hiện tại là 'sale'.", "info");
+      Swal.fire(
+        "Thông báo",
+        "Chỉ được cập nhật vai trò nếu user hiện tại là 'sale'.",
+        "info"
+      );
       return;
     }
 
@@ -84,7 +92,9 @@ const ListUser = () => {
   };
 
   const filteredUsers = users.filter((user) => {
-    const matchesSearch = (user.username || "").toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (user.username || "")
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
     const matchesRole = selectedRole ? user.role === selectedRole : true;
     return matchesSearch && matchesRole;
   });
@@ -100,7 +110,7 @@ const ListUser = () => {
     const showPages = 3; // Show 3 pages on mobile
     let start = Math.max(1, currentPage - Math.floor(showPages / 2));
     let end = Math.min(totalPages, start + showPages - 1);
-    
+
     if (end - start + 1 < showPages) {
       start = Math.max(1, end - showPages + 1);
     }
@@ -137,6 +147,7 @@ const ListUser = () => {
           </div>
           <div className="adminuser-role-dropdown">
             <select
+              style={{ height: "55px" }}
               value={selectedRole}
               onChange={(e) => setSelectedRole(e.target.value)}
             >
@@ -150,7 +161,7 @@ const ListUser = () => {
 
         {/* Mobile filter toggle */}
         <div className="adminuser-mobile-filter-toggle">
-          <button 
+          <button
             className="mobile-filter-btn"
             onClick={() => setShowMobileFilters(!showMobileFilters)}
           >
@@ -160,7 +171,11 @@ const ListUser = () => {
         </div>
 
         {/* Mobile filters */}
-        <div className={`adminuser-filters-mobile ${showMobileFilters ? 'show' : ''}`}>
+        <div
+          className={`adminuser-filters-mobile ${
+            showMobileFilters ? "show" : ""
+          }`}
+        >
           <div className="adminuser-search-mobile">
             <input
               type="text"
@@ -183,8 +198,16 @@ const ListUser = () => {
         </div>
       </div>
 
-      {loading && <div className="adminuser-loading"><p>Đang tải dữ liệu...</p></div>}
-      {error && <div className="adminuser-error"><p>Lỗi: {error}</p></div>}
+      {loading && (
+        <div className="adminuser-loading">
+          <p>Đang tải dữ liệu...</p>
+        </div>
+      )}
+      {error && (
+        <div className="adminuser-error">
+          <p>Lỗi: {error}</p>
+        </div>
+      )}
 
       {!loading && !error && (
         <>
@@ -233,7 +256,9 @@ const ListUser = () => {
                         {user.role === "sale" ? (
                           <select
                             value={user.role}
-                            onChange={(e) => handleChangeRole(user, e.target.value)}
+                            onChange={(e) =>
+                              handleChangeRole(user, e.target.value)
+                            }
                             className="adminuser-role-select"
                           >
                             <option value="admin">admin</option>
@@ -245,17 +270,22 @@ const ListUser = () => {
                         )}
                       </td>
                       <td className="adminuser-text-center">
-                        {user.created_at 
-                          ? new Date(user.created_at).toLocaleDateString('vi-VN')
-                          : "Chưa cập nhật"
-                        }
+                        {user.created_at
+                          ? new Date(user.created_at).toLocaleDateString(
+                              "vi-VN"
+                            )
+                          : "Chưa cập nhật"}
                       </td>
                       <td className="adminuser-text-center adminuser-actions">
-                        <FaEye
-                          className="adminuser-icon adminuser-icon-view"
-                          onClick={() => navigate(`/admin/detailaccount/${user.user_id}`)}
-                          title="Xem chi tiết user"
-                        />
+                        <div className="background-btn">
+                          <FaEye
+                            style={{ color: "#fff", cursor: "pointer" }}
+                            className="adminuser-icon adminuser-icon-view"
+                            onClick={() =>
+                              navigate(`/admin/detailaccount/${user.user_id}`)
+                            }
+                          />
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -272,7 +302,7 @@ const ListUser = () => {
 
           <div className="adminuser-mobile-cards">
             {currentUsers.length > 0 ? (
-              currentUsers.map((user, index) => (
+              currentUsers.map((user) => (
                 <div key={user.user_id} className="adminuser-mobile-card">
                   <div className="mobile-card-header">
                     <img
@@ -295,7 +325,9 @@ const ListUser = () => {
                     <div className="mobile-actions">
                       <FaEye
                         className="mobile-action-icon"
-                        onClick={() => navigate(`/admin/detailaccount/${user.user_id}`)}
+                        onClick={() =>
+                          navigate(`/admin/detailaccount/${user.user_id}`)
+                        }
                         title="Xem chi tiết user"
                       />
                     </div>
@@ -303,11 +335,15 @@ const ListUser = () => {
                   <div className="mobile-card-content">
                     <div className="mobile-info-row">
                       <span className="mobile-label">Email:</span>
-                      <span className="mobile-value">{displayData(user.email)}</span>
+                      <span className="mobile-value">
+                        {displayData(user.email)}
+                      </span>
                     </div>
                     <div className="mobile-info-row">
                       <span className="mobile-label">SĐT:</span>
-                      <span className="mobile-value">{displayData(user.phone)}</span>
+                      <span className="mobile-value">
+                        {displayData(user.phone)}
+                      </span>
                     </div>
                     <div className="mobile-info-row">
                       <span className="mobile-label">Vai trò:</span>
@@ -315,7 +351,9 @@ const ListUser = () => {
                         {user.role === "sale" ? (
                           <select
                             value={user.role}
-                            onChange={(e) => handleChangeRole(user, e.target.value)}
+                            onChange={(e) =>
+                              handleChangeRole(user, e.target.value)
+                            }
                             className="mobile-role-select"
                           >
                             <option value="admin">admin</option>
@@ -330,19 +368,18 @@ const ListUser = () => {
                     <div className="mobile-info-row">
                       <span className="mobile-label">Ngày tạo:</span>
                       <span className="mobile-value">
-                        {user.created_at 
-                          ? new Date(user.created_at).toLocaleDateString('vi-VN')
-                          : "Chưa cập nhật"
-                        }
+                        {user.created_at
+                          ? new Date(user.created_at).toLocaleDateString(
+                              "vi-VN"
+                            )
+                          : "Chưa cập nhật"}
                       </span>
                     </div>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="adminuser-no-data-mobile">
-                Không có user nào.
-              </div>
+              <div className="adminuser-no-data-mobile">Không có user nào.</div>
             )}
           </div>
 
@@ -359,7 +396,9 @@ const ListUser = () => {
               {Array.from({ length: totalPages }, (_, i) => (
                 <button
                   key={i}
-                  className={`pagination-btn ${currentPage === i + 1 ? "active" : ""}`}
+                  className={`pagination-btn ${
+                    currentPage === i + 1 ? "active" : ""
+                  }`}
                   onClick={() => setCurrentPage(i + 1)}
                 >
                   {i + 1}
@@ -368,7 +407,9 @@ const ListUser = () => {
 
               <button
                 className="pagination-btn"
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
               >
                 Sau &raquo;
@@ -387,7 +428,9 @@ const ListUser = () => {
               {getPaginationRange().map((page) => (
                 <button
                   key={page}
-                  className={`pagination-btn-mobile ${currentPage === page ? "active" : ""}`}
+                  className={`pagination-btn-mobile ${
+                    currentPage === page ? "active" : ""
+                  }`}
                   onClick={() => setCurrentPage(page)}
                 >
                   {page}
@@ -396,7 +439,9 @@ const ListUser = () => {
 
               <button
                 className="pagination-btn-mobile"
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
               >
                 ›
@@ -404,7 +449,8 @@ const ListUser = () => {
             </div>
 
             <div className="pagination-info">
-              Trang {currentPage} / {totalPages} - Hiển thị {currentUsers.length} / {filteredUsers.length} user
+              Trang {currentPage} / {totalPages} - Hiển thị{" "}
+              {currentUsers.length} / {filteredUsers.length} user
             </div>
           </div>
         </>

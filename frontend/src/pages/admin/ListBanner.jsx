@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBanners } from "../../slices/BannerSlice";
-import '../../assets/admin/banner.css';
+import "../../assets/admin/banner.css";
 import { Link } from "react-router-dom";
+import { FaEdit } from "react-icons/fa";
+import dayjs from "dayjs";
 
 const ListBanner = () => {
   const dispatch = useDispatch();
@@ -61,18 +63,22 @@ const ListBanner = () => {
                   />
                 </td>
                 <td>
-                  <div className="adminbanner-banner-title">{banner.title}</div>
+                  <div className="adminbanner-banner-title">
+                    {banner.title
+                      .replace(/_/g, " ")
+                      .toLowerCase()
+                      .replace(/\b\w/g, (char) => char.toUpperCase())}
+                  </div>
                 </td>
                 <td>{banner.link_url || "Không có"}</td>
-                <td>{new Date(banner.created_at).toLocaleString("vi-VN")}</td>
-                <td>{new Date(banner.updated_at).toLocaleString("vi-VN")}</td>
+                <td>{dayjs(banner.created_at).format("HH:mm - DD/MM/YYYY")}</td>
+                <td>{dayjs(banner.updated_at).format("HH:mm - DD/MM/YYYY")}</td>
                 <td>
-                  <Link 
-                    to={`/admin/editbanner/${banner.banner_id}`} 
-                    className="adminbanner-action-btn edit" 
-                    title="Chỉnh sửa"
+                  <Link
+                    to={`/admin/editbanner/${banner.banner_id}`}
+                    className="adminbanner-action-btn edit"
                   >
-                    <i className="bi bi-pencil-fill"></i>
+                    <FaEdit style={{ fontSize: 15 }} />
                   </Link>
                 </td>
               </tr>

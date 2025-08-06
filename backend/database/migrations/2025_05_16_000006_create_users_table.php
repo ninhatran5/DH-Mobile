@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('district', 100)->nullable();
             $table->string('city', 100)->nullable();
             $table->enum('role', ['customer', 'admin', 'sale'])->default('customer');
+            $table->boolean('is_blocked')->default(false);
             $table->unsignedBigInteger('tier_id')->nullable();
             $table->integer('loyalty_points')->default(0);
             $table->foreign('tier_id')->references('tier_id')->on('loyalty_tiers')->nullOnDelete();

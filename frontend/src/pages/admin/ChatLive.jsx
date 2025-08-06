@@ -26,6 +26,7 @@ import {
   AiOutlineInfoCircle,
   AiFillInfoCircle,
 } from "react-icons/ai";
+import Loading from "../../components/Loading";
 
 const ChatLiveAdmin = () => {
   const removeVietnameseTones = (str) => {
@@ -288,9 +289,7 @@ const ChatLiveAdmin = () => {
               Tin nhắn
             </div>
             <div className="chat-live-admin-manage-chat-list-items">
-              {chatUsersLoading && (
-                <div className="text-center p-3">Đang tải danh sách...</div>
-              )}
+              {chatUsersLoading && <Loading />}
               {chatUsers
                 .filter((user) =>
                   removeVietnameseTones(

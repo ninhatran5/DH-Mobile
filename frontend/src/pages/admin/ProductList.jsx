@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+/* eslint-disable no-unused-vars */
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import "../../assets/admin/HomeAdmin.css";
 import "../../assets/admin/product.css";
@@ -6,7 +7,6 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAdminProducts,
-  deleteAdminProduct,
   softdeleteAdminProduct,
   fetchProductVariants,
 } from "../../slices/adminproductsSlice";
@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import { fetchProfileAdmin } from "../../slices/adminProfile";
 import Swal from "sweetalert2";
 import Loading from "../../components/Loading";
+import { FaEdit, FaEye, FaTrashAlt } from "react-icons/fa";
 
 const ProductList = () => {
   const dispatch = useDispatch();
@@ -101,10 +102,6 @@ const ProductList = () => {
       setSelectedProducts([...selectedProducts, productId]);
     }
   };
-
-  // Các hàm xử lý khác (handleDeleteSelected, handleDeleteSingle) giữ nguyên...
-  // [Giữ nguyên code logic xử lý từ phiên bản trước]
-
   const handleFilterChange = (filterType, value) => {
     setFilters((prev) => ({
       ...prev,
@@ -169,6 +166,7 @@ const ProductList = () => {
   }
 
   return (
+
     <div className="ProductsList1-container">
       {/* Header Section */}
       <div className="ProductsList1-header">
@@ -181,6 +179,7 @@ const ProductList = () => {
             <Link to="/admin/trashproduct" className="ProductsList1-btn ProductsList1-btn-outline-danger">
               <i className="bi bi-trash"></i>
               <span>Thùng rác</span>
+
             </Link>
             {checkRole !== "sale" && (
               <Link to="/admin/addproduct" className="ProductsList1-btn ProductsList1-btn-primary">
@@ -430,6 +429,7 @@ const ProductList = () => {
                           </Link>
                         )}
                         <Link
+
                           to={`/admin/product/${product.product_id}`}
                           className="ProductsList1-action-btn ProductsList1-view-btn"
                           title="Xem chi tiết"
@@ -453,6 +453,7 @@ const ProductList = () => {
               </tbody>
             </table>
           </div>
+
         )}
       </div>
 

@@ -383,4 +383,26 @@ class UserController extends Controller
 
         return null;
     }
+
+    // khóa/ mở khóa tài khoản 
+    public function toggleBlock($id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['message' => 'Người dùng không tồn tại.'], 404);
+        }
+
+        // Chỉ khóa customer hoặc sale
+        if (!in_array($user->role, ['customer', 'sale'])) {
+            return response()->json(['message' => 'Không thể khóa tài khoản này.'], 403);
+        }
+
+        $user->is_blocked = !$user->is_blocked;
+        $user->save();
+
+        return response()->json([
+            'message' => $user->is_blocked ? 'Đã khóa tài khoản.' : 'Đã mở khóa tài khoản.',
+            'user' => $user
+        ]);
+    }
 }

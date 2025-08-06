@@ -76,6 +76,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/trashuser', [UserController::class, 'trashuser']);
         Route::put('/restoreuser/{id}', [UserController::class, 'restoreuser']);
         Route::delete('/forceDeleteUser/{id}', [UserController::class, 'forceDeleteUser']);
+        Route::patch('/toggle-block/{id}', [UserController::class, 'toggleBlock']);
     });
 });
 // Client
