@@ -11,6 +11,8 @@ import { Link } from "react-router-dom";
 import "../assets/admin/VoucherList.css";
 import moment from "moment";
 import "../assets/admin/TrashVoucherList.css";
+import Loading from "./Loading";
+import Swal from "sweetalert2";
 
 const TrashVoucherList = () => {
   const dispatch = useDispatch();
@@ -22,6 +24,7 @@ const TrashVoucherList = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [firstLoading, setFirstLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
   const pollingRef = useRef(false);
 
   const vouchersPerPage = 10;
@@ -37,29 +40,180 @@ const TrashVoucherList = () => {
       if (pollingRef.current) {
         dispatch(fetchTrashedVouchers());
       }
-    }, 5000); // Polling mỗi 5 giây cho thùng rác
+    }, 5000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      pollingRef.current = false;
+    };
   }, [dispatch]);
 
-  const handleRestore = async (voucherId) => {
-    if (window.confirm("Bạn có chắc chắn muốn khôi phục voucher này không?")) {
+  const handleRestore = async (voucherId, voucherCode) => {
+    const result = await Swal.fire({
+      title: 'Khôi phục voucher?',
+      html: `
+        <p>Bạn có chắc chắn muốn khôi phục voucher này không?</p>
+        <p><strong>Mã voucher:</strong> ${voucherCode}</p>
+      `,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#28a745',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: ' Có, khôi phục!',
+      cancelButtonText: ' Hủy',
+      reverseButtons: true,
+      focusConfirm: false,
+      focusCancel: true
+    });
+
+    if (result.isConfirmed) {
+      Swal.fire({
+        title: 'Đang khôi phục...',
+        text: 'Vui lòng đợi trong giây lát',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
       try {
         await dispatch(restoreAdminVoucher(voucherId)).unwrap();
-        toast.success("Đã khôi phục voucher thành công!");
+        
+        Swal.close();
+        
+        toast.success(`✅ Đã khôi phục voucher ${voucherCode} thành công!`, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        
       } catch (error) {
-        toast.error("Lỗi khi khôi phục voucher: " + error);
+        Swal.close();
+        
+        toast.error(`❌ Lỗi khi khôi phục voucher: ${error}`, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
       }
     }
   };
 
-  const handleForceDelete = async (voucherId) => {
-    if (window.confirm("⚠️ CẢNH BÁO: Bạn có chắc chắn muốn xóa vĩnh viễn voucher này không? Hành động này không thể hoàn tác!")) {
-      try {
-        await dispatch(forceDeleteAdminVoucher(voucherId)).unwrap();
-        toast.success("Đã xóa vĩnh viễn voucher thành công!");
-      } catch (error) {
-        toast.error("Lỗi khi xóa vĩnh viễn voucher: " + error);
+  const handleForceDelete = async (voucherId, voucherCode) => {
+    // Bước 1: Cảnh báo đầu tiên
+    const firstWarning = await Swal.fire({
+      title: '⚠️ CẢNH BÁO NGHIÊM TRỌNG!',
+      html: `
+        <div style="text-align: left; color: #721c24;">
+          <p><strong>Bạn sắp xóa vĩnh viễn voucher:</strong></p>
+          <p style="background: #f8d7da; padding: 10px; border-radius: 5px; margin: 10px 0;">
+            <strong>Mã:</strong> ${voucherCode}
+          </p>
+          <p style="color: #dc3545; font-weight: bold;">
+            ⚠️ Hành động này sẽ XÓA VĨNH VIỄN voucher khỏi hệ thống!
+          </p>
+          <p style="color: #dc3545;">
+            • Không thể khôi phục sau khi xóa<br/>
+            • Tất cả dữ liệu liên quan sẽ bị mất<br/>
+            • Không thể hoàn tác thao tác này
+          </p>
+        </div>
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Tiếp tục',
+      cancelButtonText: 'Hủy bỏ',
+      reverseButtons: true,
+      focusCancel: true
+    });
+
+    if (firstWarning.isConfirmed) {
+      // Bước 2: Xác nhận lần cuối
+      const finalConfirm = await Swal.fire({
+        title: 'XÁC NHẬN LẦN CUỐI',
+        html: `
+          <div style="text-align: center;">
+            <p style="font-size: 18px; color: #dc3545; font-weight: bold;">
+              🗑️ XÓA VĨNH VIỄN VOUCHER
+            </p>
+            <p style="background: #f8d7da; padding: 15px; border-radius: 5px; margin: 15px 0;">
+              <strong>${voucherCode}</strong>
+            </p>
+            <p style="color: #721c24;">
+              Nhập "<strong>XOA VINH VIEN</strong>" để xác nhận:
+            </p>
+          </div>
+        `,
+        input: 'text',
+        inputPlaceholder: 'Nhập: XOA VINH VIEN',
+        icon: 'error',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#28a745',
+        confirmButtonText: '🗑️ Xóa vĩnh viễn',
+        cancelButtonText: '🛡️ Hủy bỏ (An toàn)',
+        reverseButtons: true,
+        focusCancel: true,
+        preConfirm: (inputValue) => {
+          if (inputValue !== 'XOA VINH VIEN') {
+            Swal.showValidationMessage('Vui lòng nhập chính xác "XOA VINH VIEN"');
+            return false;
+          }
+          return true;
+        }
+      });
+
+      if (finalConfirm.isConfirmed) {
+        // Hiển thị loading
+        Swal.fire({
+          title: 'Đang xóa vĩnh viễn...',
+          text: 'Vui lòng đợi trong giây lát',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+
+        try {
+          await dispatch(forceDeleteAdminVoucher(voucherId)).unwrap();
+          
+          // Đóng loading dialog
+          Swal.close();
+          
+          // Hiển thị toast thành công
+          toast.success(`🗑️ Đã xóa vĩnh viễn voucher ${voucherCode} thành công!`, {
+            position: "top-right",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+          
+        } catch (error) {
+          // Đóng loading dialog
+          Swal.close();
+          
+          // Hiển thị toast lỗi
+          toast.error(`❌ Lỗi khi xóa vĩnh viễn voucher: ${error}`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+        }
       }
     }
   };
@@ -127,16 +281,47 @@ const TrashVoucherList = () => {
     setCurrentPage(1);
   }, [searchTerm, discountFilter, expiryDaysFilter]);
 
-  if (firstLoading) return <div className="adminvoucher-loading">Đang tải thùng rác voucher...</div>;
+  // Loading states
+  if (firstLoading) return <Loading message="Đang tải thùng rác voucher..." />;
   if (error) return <div className="adminvoucher-error">Lỗi: {error}</div>;
 
   return (
     <div className="adminvoucher-container">
+      {/* Loading overlay cho các action */}
+      {actionLoading && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          zIndex: 9999,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
+          <Loading message="Đang xử lý..." />
+        </div>
+      )}
+
       <div className="trash-header">
-        <h1>🗑️ Thùng rác - Voucher đã xóa</h1>
-        <Link to="/admin/vouchers" className="back-to-list-btn">
-          ← Quay lại danh sách
-        </Link>
+        <h1> Thùng rác - Voucher đã xóa</h1>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <span style={{ 
+            fontSize: '14px', 
+            color: '#6c757d',
+            background: '#f8f9fa',
+            padding: '5px 10px',
+            borderRadius: '15px',
+            border: '1px solid #dee2e6'
+          }}>
+            Tổng: {filteredVouchers.length} voucher
+          </span>
+          <Link to="/admin/vouchers" className="back-to-list-btn">
+            ← Quay lại danh sách
+          </Link>
+        </div>
       </div>
 
       <div className="adminvoucher-header">
@@ -195,7 +380,31 @@ const TrashVoucherList = () => {
       {paginatedVouchers.length === 0 ? (
         <div className="adminvoucher-empty">
           <p>📭 Thùng rác trống.</p>
-          <p>Không có voucher nào được xóa.</p>
+          <p>Không có voucher nào được xóa{searchTerm || discountFilter || expiryDaysFilter ? ' phù hợp với bộ lọc' : ''}.</p>
+          {(searchTerm || discountFilter || expiryDaysFilter) && (
+            <button 
+              onClick={() => {
+                setSearchTerm('');
+                setDiscountFilter('');
+                setExpiryDaysFilter('');
+                toast.info("🔄 Đã xóa tất cả bộ lọc", {
+                  position: "top-right",
+                  autoClose: 2000,
+                });
+              }}
+              style={{
+                marginTop: '10px',
+                padding: '8px 16px',
+                background: '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              Xóa bộ lọc
+            </button>
+          )}
         </div>
       ) : (
         <div className="adminvoucher-list">
@@ -259,15 +468,17 @@ const TrashVoucherList = () => {
                   <div className="adminvoucher-card-actions trash-actions">
                     <button
                       className="restore-btn"
-                      onClick={() => handleRestore(voucher.voucher_id)}
+                      onClick={() => handleRestore(voucher.voucher_id, voucher.code)}
                       title="Khôi phục voucher"
+                      disabled={loading}
                     >
                       <FaUndo className="adminvoucher-icon-restore" />
                     </button>
                     <button
                       className="force-delete-btn"
-                      onClick={() => handleForceDelete(voucher.voucher_id)}
+                      onClick={() => handleForceDelete(voucher.voucher_id, voucher.code)}
                       title="Xóa vĩnh viễn"
+                      disabled={loading}
                     >
                       <FaTrash className="adminvoucher-icon-force-delete" />
                     </button>
@@ -279,23 +490,28 @@ const TrashVoucherList = () => {
         </div>
       )}
 
-      <div className="adminvoucher-pagination">
-        <button
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage((p) => p - 1)}
-        >
-          <FaChevronLeft /> Trước
-        </button>
-        <span>
-          Trang {currentPage} / {totalPages}
-        </span>
-        <button
-          disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage((p) => p + 1)}
-        >
-          Sau <FaChevronRight />
-        </button>
-      </div>
+      {totalPages > 1 && (
+        <div className="adminvoucher-pagination">
+          <button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((p) => p - 1)}
+          >
+            <FaChevronLeft /> Trước
+          </button>
+          <span>
+            Trang {currentPage} / {totalPages} 
+            <small style={{ marginLeft: '10px', color: '#6c757d' }}>
+              ({filteredVouchers.length} voucher)
+            </small>
+          </span>
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((p) => p + 1)}
+          >
+            Sau <FaChevronRight />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
