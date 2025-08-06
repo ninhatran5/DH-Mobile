@@ -1,20 +1,27 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAdminComments, deleteComment, clearError, fetchCommentReplyById, toggleCommentVisibility } from "../../slices/adminComments";
+import {
+  fetchAdminComments,
+  deleteComment,
+  clearError,
+  fetchCommentReplyById,
+  toggleCommentVisibility,
+} from "../../slices/adminComments";
 import { FiTrash2, FiEye, FiSearch } from "react-icons/fi";
 import { AiFillStar } from "react-icons/ai";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import "../../assets/admin/adminComment.css"
+import "../../assets/admin/adminComment.css";
 import DefaultImage from "../../assets/images/adminacccount.jpg";
+import Loading from "../../components/Loading";
 
 const MySwal = withReactContent(Swal);
 
 const CommentsList = () => {
   const dispatch = useDispatch();
-  const { comments, pagination, loading, error, deleteLoading, deleteError } = useSelector(
-    (state) => state.adminComments
-  );
+  const { comments, pagination, loading, error, deleteLoading, deleteError } =
+    useSelector((state) => state.adminComments);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedComment, setSelectedComment] = useState(null);
@@ -69,7 +76,6 @@ const CommentsList = () => {
     }
   };
 
-
   const handleDeleteComment = (commentId) => {
     MySwal.fire({
       title: "Xác nhận xóa",
@@ -88,8 +94,7 @@ const CommentsList = () => {
           .then(() => {
             MySwal.fire("Thành công", "Đã xóa bình luận thành công", "success");
           })
-          .catch((err) => {
-          });
+          .catch((err) => {});
       }
     });
   };
@@ -100,18 +105,28 @@ const CommentsList = () => {
     setReplySubmitting(true);
     try {
       await dispatch(
-        fetchCommentReplyById({ commentId: selectedComment.comment_id, reply: replyInput })
+        fetchCommentReplyById({
+          commentId: selectedComment.comment_id,
+          reply: replyInput,
+        })
       ).unwrap();
       setReplyInput("");
       dispatch(fetchAdminComments());
     } catch (err) {
+      MySwal.fire("Lỗi", err?.message || "Đã xảy ra lỗi", "error");
     }
     setReplySubmitting(false);
   };
 
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-    return new Date(dateString).toLocaleDateString('vi-VN', options);
+    const options = {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    };
+    return new Date(dateString).toLocaleDateString("vi-VN", options);
   };
 
   const renderStars = (rating) => {
@@ -148,12 +163,7 @@ const CommentsList = () => {
       </div>
 
       {loading ? (
-        <div className="admin-comments-loading">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Đang tải...</span>
-          </div>
-          <p>Đang tải dữ liệu...</p>
-        </div>
+        <Loading />
       ) : (
         <div className="admin-comments-table-wrapper">
           <table className="admin-comments-table">
@@ -182,47 +192,69 @@ const CommentsList = () => {
                             className="comment-user-avatar"
                           />
                           <div>
-                            <div className="comment-user-name">{comment.user.username}</div>
-                            <div className="comment-user-email">{comment.user.email}</div>
+                            <div className="comment-user-name">
+                              {comment.user.username}
+                            </div>
+                            <div className="comment-user-email">
+                              {comment.user.email}
+                            </div>
                           </div>
-                          <div className="comment-user-name">{comment.user.name}</div>
+                          <div className="comment-user-name">
+                            {comment.user.name}
+                          </div>
                         </div>
                       </td>
                       <td>
-                        <div className="comment-product-info comment-product-flex" style={{ fontSize: "0.92em" }}>
+                        <div
+                          className="comment-product-info comment-product-flex"
+                          style={{ fontSize: "0.92em" }}
+                        >
                           {comment.variant ? (
                             <>
-                              <a href={`/product-detail/${comment.product_id}`} target="_blank" rel="noopener noreferrer">
+                              <a
+                                href={`/product-detail/${comment.product_id}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
                                 <img
                                   src={comment.variant.image_url}
                                   alt={comment.variant.sku}
                                   className="comment-product-image"
                                 />
                               </a>
-                              <div className="comment-product-name" style={{ fontSize: "0.95em" }}>
+                              <div
+                                className="comment-product-name"
+                                style={{ fontSize: "0.95em" }}
+                              >
                                 <p>{comment?.product?.name}</p>
-                                {comment.variant_attributes && comment.variant_attributes.length > 0 && (
-                                  <div
-                                    className="comment-variant-attributes"
-                                    style={{
-                                      fontSize: "0.85em",
-                                      color: "#555",
-                                      display: "flex",
-                                      gap: "8px",
-                                      marginTop: "2px",
-                                      fontWeight: 500,
-                                      flexWrap: "wrap",
-                                      alignItems: "center"
-                                    }}
-                                  >
-                                    {comment.variant_attributes.map((attr, idx) => (
-
-                                      <span key={idx} style={{ whiteSpace: "nowrap" }}>
-                                        {attr.attribute_name}: {attr.attribute_value}
-                                      </span>
-                                    ))}
-                                  </div>
-                                )}
+                                {comment.variant_attributes &&
+                                  comment.variant_attributes.length > 0 && (
+                                    <div
+                                      className="comment-variant-attributes"
+                                      style={{
+                                        fontSize: "0.85em",
+                                        color: "#555",
+                                        display: "flex",
+                                        gap: "8px",
+                                        marginTop: "2px",
+                                        fontWeight: 500,
+                                        flexWrap: "wrap",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      {comment.variant_attributes.map(
+                                        (attr, idx) => (
+                                          <span
+                                            key={idx}
+                                            style={{ whiteSpace: "nowrap" }}
+                                          >
+                                            {attr.attribute_name}:{" "}
+                                            {attr.attribute_value}
+                                          </span>
+                                        )
+                                      )}
+                                    </div>
+                                  )}
                               </div>
                             </>
                           ) : (
@@ -232,7 +264,10 @@ const CommentsList = () => {
                                 alt={comment.product.name}
                                 className="comment-product-image"
                               />
-                              <div className="comment-product-name" style={{ fontSize: "0.95em" }}>
+                              <div
+                                className="comment-product-name"
+                                style={{ fontSize: "0.95em" }}
+                              >
                                 {comment.product.name}
                               </div>
                             </>
@@ -241,7 +276,9 @@ const CommentsList = () => {
                       </td>
                       <td>
                         <div
-                          className={`comment-content${!comment.reply ? " comment-content-pointer" : ""}`}
+                          className={`comment-content${
+                            !comment.reply ? " comment-content-pointer" : ""
+                          }`}
                           onClick={() => {
                             if (!comment.reply) {
                               setActiveReplyId(comment.comment_id);
@@ -258,7 +295,9 @@ const CommentsList = () => {
                         {comment.reply ? (
                           // Đã có phản hồi
                           <div className="comment-reply-bubble">
-                            <span className="comment-reply-label">Phản hồi:</span>
+                            <span className="comment-reply-label">
+                              Phản hồi:
+                            </span>
                             <span>{comment.reply}</span>
                           </div>
                         ) : (
@@ -266,18 +305,27 @@ const CommentsList = () => {
                             {activeReplyId === comment.comment_id ? (
                               <form
                                 className="comment-reply-form"
-                                onSubmit={async e => {
+                                onSubmit={async (e) => {
                                   e.preventDefault();
                                   if (!replyInput.trim()) return;
                                   setReplySubmitting(true);
                                   try {
                                     await dispatch(
-                                      fetchCommentReplyById({ commentId: comment.comment_id, reply: replyInput })
+                                      fetchCommentReplyById({
+                                        commentId: comment.comment_id,
+                                        reply: replyInput,
+                                      })
                                     ).unwrap();
                                     setReplyInput("");
                                     setActiveReplyId(null);
                                     dispatch(fetchAdminComments());
-                                  } catch (err) { }
+                                  } catch (err) {
+                                    MySwal.fire(
+                                      "Lỗi",
+                                      err?.message || "Đã xảy ra lỗi",
+                                      "error"
+                                    );
+                                  }
                                   setReplySubmitting(false);
                                 }}
                               >
@@ -285,7 +333,9 @@ const CommentsList = () => {
                                   type="text"
                                   placeholder="Nhập phản hồi..."
                                   value={replyInput}
-                                  onChange={e => setReplyInput(e.target.value)}
+                                  onChange={(e) =>
+                                    setReplyInput(e.target.value)
+                                  }
                                   className="comment-reply-input"
                                   disabled={replySubmitting}
                                   autoFocus
@@ -293,7 +343,9 @@ const CommentsList = () => {
                                 <button
                                   type="submit"
                                   className="comment-reply-btn"
-                                  disabled={replySubmitting || !replyInput.trim()}
+                                  disabled={
+                                    replySubmitting || !replyInput.trim()
+                                  }
                                 >
                                   {replySubmitting ? "..." : "Gửi"}
                                 </button>
@@ -328,10 +380,15 @@ const CommentsList = () => {
                         </div>
                       </td>
                       <td>
-                        <div className="comment-actions" style={{ display: "flex", gap: "6px" }}>
+                        <div
+                          className="comment-actions"
+                          style={{ display: "flex", gap: "6px" }}
+                        >
                           <button
                             className="comment-delete-btn"
-                            onClick={() => handleDeleteComment(comment.comment_id)}
+                            onClick={() =>
+                              handleDeleteComment(comment.comment_id)
+                            }
                             disabled={deleteLoading}
                             title="Xoá bình luận"
                             style={{
@@ -343,16 +400,24 @@ const CommentsList = () => {
                               cursor: "pointer",
                               fontSize: "0.9em",
                               display: "flex",
-                              alignItems: "center"
+                              alignItems: "center",
                             }}
                           >
                             <FiTrash2 size={14} />
                           </button>
 
                           <button
-                            className={`comment-toggle-btn ${!comment.is_visible ? "hidden" : "visible"}`}
-                            onClick={() => handleToggleVisibility(comment.comment_id)}
-                            title={comment.is_visible ? "Ẩn bình luận" : "Hiện bình luận"}
+                            className={`comment-toggle-btn ${
+                              !comment.is_visible ? "hidden" : "visible"
+                            }`}
+                            onClick={() =>
+                              handleToggleVisibility(comment.comment_id)
+                            }
+                            title={
+                              comment.is_visible
+                                ? "Ẩn bình luận"
+                                : "Hiện bình luận"
+                            }
                             style={{
                               display: "flex",
                               alignItems: "center",
@@ -363,24 +428,32 @@ const CommentsList = () => {
                               borderRadius: "4px",
                               backgroundColor: "#e6f5e6",
                               color: "#28a745",
-                              cursor: "pointer"
+                              cursor: "pointer",
                             }}
                           >
-                            <FiEye size={13} style={{ opacity: comment.is_visible ? 1 : 0.4, color: "#28a745" }} />
+                            <FiEye
+                              size={13}
+                              style={{
+                                opacity: comment.is_visible ? 1 : 0.4,
+                                color: "#28a745",
+                              }}
+                            />
                             <span style={{ fontWeight: 500 }}>
                               {comment.is_visible ? "Hiện" : "Ẩn"}
                             </span>
                           </button>
                         </div>
                       </td>
-
                     </tr>
                   </React.Fragment>
                 ))
               ) : (
                 <tr>
                   <td colSpan="8" className="admin-comments-empty">
-                    <i className="bi bi-chat-square-text" style={{ fontSize: "2rem" }}></i>
+                    <i
+                      className="bi bi-chat-square-text"
+                      style={{ fontSize: "2rem" }}
+                    ></i>
                     <p>Không tìm thấy bình luận nào</p>
                   </td>
                 </tr>
