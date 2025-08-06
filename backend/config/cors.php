@@ -10,8 +10,8 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:5173', 'https://dhmobile-website-production.up.railway.app'],
-    
+    'allowed_origins' => ['http://localhost:5173'],
+
     'allowed_origins_patterns' => [],
 
     'allowed_headers' => ['*'],
