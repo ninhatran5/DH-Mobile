@@ -66,6 +66,13 @@ class AuthController extends Controller
             ], 401);
         }
 
+        // ✅ Chặn đăng nhập nếu tài khoản đã bị khóa
+        if ($user->is_blocked) {
+            return response()->json([
+                'message' => 'Tài khoản của bạn đã bị khóa, vui lòng liên hệ quản trị viên.',
+            ], 403);
+        }
+
         // Tạo token mới
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -83,6 +90,7 @@ class AuthController extends Controller
             ]
         ]);
     }
+
 
     /**
      * @OA\Post(
@@ -151,7 +159,7 @@ class AuthController extends Controller
             'password_hash' => Hash::make($request->password),
             'phone' => $request->phone,
             'address' => $request->address,
-            'tier_id' => 1, 
+            'tier_id' => 1,
         ]);
 
 
@@ -345,8 +353,7 @@ class AuthController extends Controller
 
             // xoá token cũ
             $tokenModel->delete();
-            return $res ;
-
+            return $res;
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Có lỗi xảy ra khi làm mới token.'
