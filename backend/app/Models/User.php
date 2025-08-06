@@ -32,6 +32,7 @@ class User extends Authenticatable
         'tier_id', // khóa ngoại tới bảng loyalty_tiers
         'loyalty_points', // tổng điểm tích lũy của người dùng
         'image_url',
+        'is_blocked',
     ];
 
     protected $hidden = [
