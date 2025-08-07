@@ -516,12 +516,10 @@
   gap: 8px;
 }
 
-.price-current {
+.price1-current1 {
   font-size: 18px;
   font-weight: 700;
   color: #059669;
-  background: linear-gradient(45deg, #10b981, #059669);
-  -webkit-text-fill-color: transparent;
 }
 
 .price-original {

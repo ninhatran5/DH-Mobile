@@ -662,3 +662,58 @@ html,
   color: #1877f2;
   box-shadow: 0 2px 8px rgba(24, 119, 242, 0.08);
 }
+/* ✅ CSS cho hiển thị ảnh trong tin nhắn */
+.chat-message-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 250px;
+}
+
+.chat-message-images img {
+  transition: transform 0.2s ease;
+}
+
+.chat-message-images img:hover {
+  transform: scale(1.05);
+}
+
+/* ✅ CSS cho preview ảnh */
+.image-preview-container {
+  position: relative;
+  display: inline-block;
+}
+
+.image-preview-container .remove-image-btn {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  z-index: 10;
+}
+
+.image-preview-container .remove-image-btn:hover {
+  background: #ff0000;
+}
+
+.chat-last-message-preview {
+  font-size: 13px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.chat-last-message-preview img {
+  flex-shrink: 0;
+}

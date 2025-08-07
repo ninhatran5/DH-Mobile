@@ -15,7 +15,6 @@ import { toast } from "react-toastify";
 import { fetchProfileAdmin } from "../../slices/adminProfile";
 import Swal from "sweetalert2";
 import Loading from "../../components/Loading";
-import { FaEdit, FaEye, FaTrashAlt } from "react-icons/fa";
 
 const ProductList = () => {
   const dispatch = useDispatch();

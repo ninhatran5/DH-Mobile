@@ -78,7 +78,7 @@ const VariantDisplay = ({ variant, onEdit, onDelete, attributeValues, isInOrder,
           <div className="variant-details">
             <div className="variant-price">
               <span className="price-label">Giá:</span>
-              <span className="price-current">
+              <span className="price1-current1">
                 {formattedPrice}đ
               </span>
               {formattedOriginalPrice && (
@@ -310,7 +310,6 @@ const AdminProductEdit = () => {
     return null;
   }, [formData, isValidPrice]);
 
-  // ✅ Enhanced constraint checking (giữ nguyên từ code gốc)
   const checkVariantInOrders = useCallback((variantId) => {
     if (!Array.isArray(adminOrders) || adminOrders.length === 0) {
       return false;
@@ -337,7 +336,6 @@ const AdminProductEdit = () => {
     return !ordersLoading && !ordersError && Array.isArray(adminOrders);
   }, [ordersLoading, ordersError, adminOrders]);
 
-  // ✅ CKEditor Configuration (giữ nguyên)
   const editorConfiguration = {
   toolbar: {
     items: [
@@ -372,7 +370,6 @@ const AdminProductEdit = () => {
       'Times New Roman, Times, serif',
       'Trebuchet MS, Helvetica, sans-serif',
       'Verdana, Geneva, sans-serif',
-      // Thêm font tiếng Việt
       'Be Vietnam Pro, sans-serif',
       'Roboto, sans-serif',
       'Open Sans, sans-serif'
@@ -538,10 +535,8 @@ const AdminProductEdit = () => {
     uploadUrl: '/api/upload-image'
   },
   
-  // ✅ Cấu hình thêm cho editor
   placeholder: 'Nhập mô tả sản phẩm chi tiết...',
   
-  // ✅ Cấu hình heading styles
   heading: {
     options: [
       { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
@@ -603,7 +598,6 @@ const AdminProductEdit = () => {
 
       setFormData(initialFormData);
       
-      // Format display values
       setDisplayValues({
         price: product.price ? formatPrice(product.price) : "",
         price_original: product.price_original ? formatPrice(product.price_original) : "",
@@ -630,7 +624,6 @@ const AdminProductEdit = () => {
     [variantAttributeValues, id]
   );
 
-  // ✅ File handling (giữ nguyên từ code gốc)
   const handleFileChange = useCallback((selectedFile) => {
     if (selectedFile && selectedFile.type.startsWith('image/')) {
       if (selectedFile.size > 5 * 1024 * 1024) {
