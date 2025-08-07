@@ -403,7 +403,7 @@ export default function Header() {
                           >
                             {t("header.service")}
                           </a>
-                          <ul className="dropdown-menu" aria-labelledby="pages">
+                          <ul className="dropdown-menu" style={{width: "14vw"}} aria-labelledby="pages">
                             {services.map((service) => (
                               <li key={service.id}>
                                 <Link
@@ -563,7 +563,6 @@ export default function Header() {
         </div>
       </div>
       {loading && <Loading />}
-      {/* Desktop search results */}
       {searchResults.length > 0 && (
         <div
           className="search-results position-fixed bg-white border rounded w-100 d-none d-lg-block p-3"
@@ -578,7 +577,6 @@ export default function Header() {
           <div className="container-fluid">
             <div className="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
               {searchResults.map((product) => {
-                // Tìm variant phù hợp với product
                 const matchedVariant = productsVariants.find(
                   (variant) => variant.product_id === product.product_id
                 );
