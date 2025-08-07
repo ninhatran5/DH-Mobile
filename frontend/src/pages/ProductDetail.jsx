@@ -569,7 +569,7 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
                 style={{ marginTop: "-20px", marginBottom: "-5px" }}
               >
                 <img style={{ width: 20 }} src={coins} />
-                <p
+                <p style={{marginTop: 17, marginLeft: 8}}
                   className="coins-products"
                   dangerouslySetInnerHTML={{
                     __html: t("productDetail.coinReward", {
