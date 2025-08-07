@@ -373,7 +373,7 @@ const ChatLiveAdmin = () => {
           }
 
           // Play notification sound
-          if (sender !== "admin" && audioRef.current) {
+          if (sender !== "admin" && sender !== "sale" && audioRef.current) {
             audioRef.current.play().catch((e) => {
               console.warn("Không thể phát âm thanh:", e);
             });
@@ -580,7 +580,7 @@ const ChatLiveAdmin = () => {
                       const { text, images } = formatMessageDisplay(msg);
                       if (!text && images.length === 0) return null;
 
-                      const isAdmin = msg.sender === "admin";
+                      const isAdmin = msg.sender === "admin" || msg.sender === "sale";
                       const messageKey = `${msg.chat_id || idx}_${msg.sent_at}`;
 
                       return (

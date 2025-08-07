@@ -301,7 +301,7 @@ const chatLiveSlice = createSlice({
           }
         }
         
-        user.last_message = last_message.sender === "admin" 
+        user.last_message = (last_message.sender === "admin" || last_message.sender === "sale") 
           ? `Bạn: ${displayMessage}` 
           : displayMessage;
         
@@ -314,7 +314,7 @@ const chatLiveSlice = createSlice({
           user.last_message_time = last_message_time;
         }
         
-        if (last_message.sender !== "admin") {
+        if (last_message.sender !== "admin" && last_message.sender !== "sale") {
           user.unread_count = (user.unread_count || 0) + 1;
         }
         
