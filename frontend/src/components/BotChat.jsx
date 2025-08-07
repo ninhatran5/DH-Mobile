@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from "react";
-import Pusher from "pusher-js";
 const notificationAudio =
   typeof window !== "undefined"
     ? new Audio("/happy-message-ping-351298.mp3")
@@ -30,7 +29,7 @@ export default function BotChat() {
   const [messages, setMessages] = useState([]);
   const [loadingBot, setLoadingBot] = useState(false);
   const messagesEndRef = useRef(null);
-  const pusherRef = useRef();
+  const pollingRef = useRef();
 
   useEffect(() => {
     if (Array.isArray(response)) {
@@ -53,52 +52,6 @@ export default function BotChat() {
       });
     }
   }, [response]);
-
- useEffect(() => {
-  const initPusher = async () => {
-    const userId = localStorage.getItem("userID");
-    const isAuthenticated = !!userId;
-    let channelName = "";
-
-   if (isAuthenticated) {
-  channelName = `private-chatbot.${userId}`; // <-- Sửa: thêm 'private-'
-
-  await fetch(`${import.meta.env.VITE_BASE_URL_REAL_TIME}/sanctum/csrf-cookie`, {
-    credentials: 'include',
-  });
-}
- else {
-      let sessionId = localStorage.getItem("chatbot-session-id");
-      if (!sessionId) {
-        sessionId = Math.random().toString(36).substring(2) + Date.now();
-        localStorage.setItem("chatbot-session-id", sessionId);
-      }
-      channelName = `chatbot.guest.${sessionId}`;
-    }
-
-    const pusher = new Pusher(import.meta.env.VITE_PUSHER_KEY, {
-      cluster: import.meta.env.VITE_PUSHER_CLUSTER,
-      forceTLS: true,
-      ...(isAuthenticated && {
-        authEndpoint: `${import.meta.env.VITE_BASE_URL_REAL_TIME}/broadcasting/auth`,
-        auth: { withCredentials: true },
-      }),
-    });
-
-    const channel = pusher.subscribe(channelName);
-    channel.bind("pusher:subscription_succeeded", () => {
-      console.log("[PUSHER] Subscribed successfully to", channelName);
-    });
-    channel.bind("pusher:subscription_error", (status) => {
-      console.error("[PUSHER] Subscription error:", status);
-    });
-
-    pusherRef.current = pusher;
-  };
-
-  initPusher();
-}, [profile?.user?.id]);
-
 
   const prevBotMsgCount = useRef(0);
   useEffect(() => {
@@ -146,13 +99,60 @@ export default function BotChat() {
       return next;
     });
     setMessage("");
-    await dispatch(
+    const _result = await dispatch(
       chatBotPost({
         user_id: profile?.user?.id,
         message,
       })
     );
-    // Không cần polling nữa, bot sẽ trả về qua Pusher
+    let prevMsgCount = messages.length;
+    let prevLastBotMsg =
+      messages.filter((m) => m.sender === "bot").slice(-1)[0]?.message || null;
+    pollingRef.current = setInterval(async () => {
+      const fetchResult = await dispatch(fetchChatBot());
+      if (Array.isArray(fetchResult.payload)) {
+        const flat = [];
+        fetchResult.payload.forEach((item) => {
+          flat.push({
+            sender: "user",
+            message: item.message,
+            created_at: item.created_at,
+          });
+          flat.push({
+            sender: "bot",
+            message: item.response,
+            created_at: item.created_at,
+          });
+        });
+        setMessages((prev) => {
+          let next;
+          if (
+            prev.length > flat.length &&
+            prev[prev.length - 1].sender === "user" &&
+            (!flat.length ||
+              prev[prev.length - 1].message !== flat[flat.length - 1].message)
+          ) {
+            next = [...flat, prev[prev.length - 1]];
+          } else {
+            next = flat;
+          }
+          localStorage.setItem("chatbot-messages", JSON.stringify(next));
+          return next;
+        });
+        const lastBotMsg =
+          flat.filter((m) => m.sender === "bot").slice(-1)[0]?.message || null;
+        if (
+          flat.length > prevMsgCount ||
+          (lastBotMsg && lastBotMsg !== prevLastBotMsg)
+        ) {
+          clearInterval(pollingRef.current);
+          setSending(false);
+          setLoadingBot(false);
+        }
+        prevMsgCount = flat.length;
+        prevLastBotMsg = lastBotMsg;
+      }
+    }, 500);
   };
 
   const handleKeyDown = (e) => {
@@ -167,7 +167,6 @@ export default function BotChat() {
     dispatch(fetchChatBot());
   }, [dispatch]);
 
-  // Auto scroll đến cuối khi có tin nhắn mới
   useEffect(() => {
     if (messages.length > 0 && messagesEndRef.current) {
       setTimeout(() => {
@@ -227,7 +226,6 @@ export default function BotChat() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Modal preview ảnh */}
       <Modal show={show} onHide={handleClose} centered size="lg">
         <Modal.Body className="chat-with-modal-body">
           <button
