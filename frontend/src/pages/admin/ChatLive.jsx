@@ -44,7 +44,6 @@ const ChatLiveAdmin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
-  // ✅ Component States
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchMessageTerm, setSearchMessageTerm] = useState("");
@@ -55,13 +54,11 @@ const ChatLiveAdmin = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
 
-  // ✅ Refs
   const fileInputRef = useRef(null);
   const messageEndRef = useRef(null);
   const activeUserRef = useRef(null);
   const audioRef = useRef(null);
 
-  // ✅ Redux Selectors
   const { 
     chatUsers, 
     chatUsersLoading, 
@@ -71,7 +68,6 @@ const ChatLiveAdmin = () => {
   } = useSelector((state) => state.adminchatLive);
   const { adminProfile } = useSelector((state) => state.adminProfile);
 
-  // ✅ Initialize data khi component mount
   useEffect(() => {
     const fetchInitialData = async () => {
       const res = await dispatch(fetchChatUserList());
@@ -86,25 +82,21 @@ const ChatLiveAdmin = () => {
     fetchInitialData();
   }, [dispatch]);
 
-  // ✅ Fetch chat history khi active user thay đổi
   useEffect(() => {
     if (activeUser?.customer_id) {
       dispatch(fetchChatHistory(activeUser.customer_id));
     }
   }, [activeUser?.customer_id, dispatch]);
 
-  // ✅ Update active user ref
   useEffect(() => {
     activeUserRef.current = activeUser;
   }, [activeUser]);
 
-  // ✅ Get chat messages với memoization
   const chatMessages = useMemo(() => {
     if (!activeUser) return [];
     return chatHistory?.[activeUser.customer_id] || [];
   }, [chatHistory, activeUser]);
 
-  // ✅ Filter messages theo search term
   const filteredMessages = useMemo(() => {
     if (!searchMessageTerm.trim()) return chatMessages;
     const normalizedTerm = removeVietnameseTones(searchMessageTerm.toLowerCase());
@@ -113,14 +105,12 @@ const ChatLiveAdmin = () => {
     );
   }, [chatMessages, searchMessageTerm]);
 
-  // ✅ Auto scroll to bottom
   useEffect(() => {
     if (chatMessages.length > 0) {
       messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [chatMessages]);
 
-  // ✅ Enhanced file validation
   const validateFiles = useCallback((files) => {
     const maxSize = 5 * 1024 * 1024; // 5MB
     const maxCount = 5;
@@ -130,7 +120,6 @@ const ChatLiveAdmin = () => {
       return { valid: false, error: `Tối đa ${maxCount} ảnh mỗi lần!` };
     }
 
-    // Check total size
     const totalSize = files.reduce((sum, file) => sum + file.size, 0);
     if (totalSize > maxSize * maxCount) {
       return { valid: false, error: "Tổng kích thước ảnh quá lớn!" };
@@ -148,7 +137,6 @@ const ChatLiveAdmin = () => {
     return { valid: true };
   }, []);
 
-  // ✅ Handle file selection
   const handleFileSelect = useCallback((e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
@@ -171,7 +159,6 @@ const ChatLiveAdmin = () => {
     setSelectedFiles(fileObjects);
   }, [validateFiles]);
 
-  // ✅ Remove selected file
   const removeFile = useCallback((fileId) => {
     setSelectedFiles(prev => {
       const fileToRemove = prev.find(f => f.id === fileId);
@@ -182,7 +169,6 @@ const ChatLiveAdmin = () => {
     });
   }, []);
 
-  // ✅ Cleanup preview URLs
   useEffect(() => {
     return () => {
       selectedFiles.forEach(fileObj => {
@@ -193,7 +179,6 @@ const ChatLiveAdmin = () => {
     };
   }, [selectedFiles]);
 
-  // ✅ Handle message input change với typing indicator
   const handleMessageChange = useCallback((e) => {
     setMessage(e.target.value);
     
@@ -203,7 +188,6 @@ const ChatLiveAdmin = () => {
     }
   }, [isTyping]);
 
-  // ✅ FIXED: Send message handler - Đã sửa hoàn toàn lỗi customer_id
   const handleSend = useCallback(async () => {
     if (replyLoading) return;
     
@@ -216,42 +200,27 @@ const ChatLiveAdmin = () => {
       return;
     }
     
-    // ✅ FIXED: Simplified customer_id validation
     if (!activeUser?.customer_id) {
       toast.error("Vui lòng chọn người dùng để gửi tin nhắn!");
       return;
     }
 
     try {
-      // ✅ FIXED: Tạo FormData với customer_id được xử lý đúng
       const formData = new FormData();
       
-      // Đảm bảo customer_id được gửi dưới dạng string
       formData.append('customer_id', String(activeUser.customer_id));
       formData.append('message', trimmedMessage || "");
       
-      // ✅ Append files với naming convention đúng
       selectedFiles.forEach((fileObj, index) => {
         formData.append(`files[${index}]`, fileObj.file);
       });
 
-      // ✅ Debug log
-      console.log("📤 Sending message:", {
-        customer_id: activeUser.customer_id,
-        customer_id_in_formdata: formData.get('customer_id'),
-        messageLength: trimmedMessage.length,
-        filesCount: selectedFiles.length
-      });
-
-      // ✅ Dispatch message
+      
       await dispatch(replyToChat(formData)).unwrap();
       
-      console.log("✅ Message sent successfully");
       
-      // ✅ Reset form state
       setMessage("");
       
-      // ✅ Cleanup files
       selectedFiles.forEach(fileObj => {
         if (fileObj.preview?.startsWith('blob:')) {
           URL.revokeObjectURL(fileObj.preview);
@@ -259,7 +228,6 @@ const ChatLiveAdmin = () => {
       });
       setSelectedFiles([]);
       
-      // ✅ Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -275,7 +243,6 @@ const ChatLiveAdmin = () => {
     }
   }, [activeUser, message, selectedFiles, replyLoading, dispatch]);
 
-  // ✅ Handle logout
   const handleLogout = useCallback(async () => {
     const result = await Swal.fire({
       title: "Bạn có chắc chắn muốn đăng xuất không?",
@@ -317,7 +284,6 @@ const ChatLiveAdmin = () => {
     };
   }, []);
 
-  // ✅ Pusher real-time setup với improved error handling
   useEffect(() => {
     if (!adminProfile?.user?.id) return;
 
@@ -406,7 +372,6 @@ const ChatLiveAdmin = () => {
       <main className="chat-live-admin-manage-main-content">
         <div className={`chat-live-admin-manage-chat-layout${showDetailPanel ? " chat-live-admin-manage-has-detail-panel" : ""}`}>
           
-          {/* ✅ Chat User List */}
           <div className="chat-live-admin-manage-chat-list">
             <header className="chat-live-admin-manage-header">
               <div className="chat-live-admin-manage-header-title chat-live-admin-manage-pointer">
@@ -522,7 +487,6 @@ const ChatLiveAdmin = () => {
             </div>
           </div>
 
-          {/* ✅ Chat Box */}
           <div className="chat-live-admin-manage-chat-box">
             {activeUser ? (
               <>
@@ -630,7 +594,6 @@ const ChatLiveAdmin = () => {
                   <div ref={messageEndRef}></div>
                 </div>
 
-                {/* ✅ File preview */}
                 {selectedFiles.length > 0 && (
                   <div style={{
                     padding: "8px 12px",
@@ -682,7 +645,6 @@ const ChatLiveAdmin = () => {
                   </div>
                 )}
 
-                {/* ✅ Message Input */}
                 <div className="chat-live-admin-manage-chat-input">
                   <input
                     type="text"
