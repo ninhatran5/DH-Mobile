@@ -1,6 +1,5 @@
 /* ========== MAIN CONTAINER ========== */
 .admin-add-product-container {
-  max-width: 1400px;
   margin: 0 auto;
   padding: 24px;
   background: #f8fafc;
@@ -776,7 +775,7 @@
 /* Cải thiện UX cho numeric inputs */
 .admin-form-input[inputmode="numeric"] {
   text-align: center;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
 }
 
 .admin-form-input[inputmode="numeric"]:focus {
@@ -797,4 +796,3 @@
   margin-top: 0.25rem;
   display: block;
 }
-

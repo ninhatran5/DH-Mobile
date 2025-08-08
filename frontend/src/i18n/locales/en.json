@@ -130,7 +130,8 @@
     "replied_to": "replied to",
     "showMore": "Show more",
     "showLess": "Show less",
-    "reviews": "reviews"
+    "reviews": "reviews",
+    "noComments": "No comments available"
   },
   "breadcrumbVoucher": {
     "breadcrumbHeader": "Vouchers",
