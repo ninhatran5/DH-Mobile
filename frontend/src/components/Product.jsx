@@ -160,7 +160,7 @@ const Product = ({
             </a>
             <div className="card-coins-products d-flex align-items-center">
               <img style={{ width: 20 }} src={coins} alt="" />
-              <p className="coins-products fw-bold">
+              <p className="coins-products fw-bold" style={{marginTop: 17, marginLeft: 5}}>
                 {numberFormatCoins(coinsAccumulatePoints)}
               </p>
             </div>
