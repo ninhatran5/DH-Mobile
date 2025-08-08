@@ -9,7 +9,7 @@ import {
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import "../assets/admin/HomeAdmin.css";
-import "../assets/admin/product.css";
+import "../assets/admin/trashproduct.css"; 
 
 const TrashList = () => {
   const dispatch = useDispatch();
@@ -25,8 +25,6 @@ const TrashList = () => {
   useEffect(() => {
     dispatch(fetchTrashedAdminProducts());
   }, [dispatch]);
-
-
 
   const handleSelectAll = (e) => {
     if (e.target.checked) {
@@ -182,233 +180,238 @@ const TrashList = () => {
   );
 
   return (
-    <div className="admin_dh-product-container">
-      <div className="admin_dh-product-header">
-        <div className="admin_dh-product-title">
-          <h1>🗑️ Thùng rác</h1>
-          <p className="text-muted">Quản lý sản phẩm đã xóa ({filteredProducts.length} sản phẩm)</p>
-        </div>
-        <div className="admin_dh-product-actions">
-          <Link
-            to="/admin/product"
-            className="admin_dh-btn admin_dh-btn-outline"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "10px 16px",
-              borderRadius: "8px",
-              border: "1px solid #0071e3",
-              color: "#0071e3",
-            }}
-          >
-            <i className="bi bi-arrow-left"></i>
-            <span>Quay lại danh sách</span>
-          </Link>
-        </div>
-      </div>
-
-      <div
-        className="admin_dh-top-row"
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "16px",
-          marginBottom: "24px",
-          padding: "16px",
-          backgroundColor: "#fff",
-          borderRadius: "12px",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
-        }}
-      >
-      
-      </div>
-
-      {selectedProducts.length > 0 && (
-        <div className="admin_dh-bulk-actions">
-          <div className="admin_dh-bulk-actions-info">
-            {selectedProducts.length} sản phẩm đã chọn
+    <div className="TrashList1-container">
+      {/* Header Section */}
+      <div className="TrashList1-header">
+        <div className="TrashList1-header-content">
+          <div className="TrashList1-title-section">
+            <h1 className="TrashList1-main-title">
+              <i className="bi bi-trash3"></i>
+              Thùng rác
+            </h1>
+            <p className="TrashList1-subtitle">
+              Quản lý sản phẩm đã xóa ({filteredProducts.length} sản phẩm)
+            </p>
           </div>
-          <div className="admin_dh-bulk-actions-buttons">
+          <div className="TrashList1-action-buttons">
+            <Link to="/admin/product" className="TrashList1-btn TrashList1-btn-outline">
+              <i className="bi bi-arrow-left"></i>
+              <span>Quay lại danh sách</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Search Section */}
+      <div className="TrashList1-search-section">
+        <div className="TrashList1-search-box">
+          <i className="bi bi-search TrashList1-search-icon"></i>
+          <input
+            type="text"
+            placeholder="Tìm kiếm sản phẩm trong thùng rác..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="TrashList1-search-input"
+          />
+        </div>
+      </div>
+
+      {/* Bulk Actions */}
+      {selectedProducts.length > 0 && (
+        <div className="TrashList1-bulk-actions">
+          <div className="TrashList1-bulk-info">
+            <span className="TrashList1-selected-count">{selectedProducts.length}</span> 
+            sản phẩm đã chọn
+          </div>
+          <div className="TrashList1-bulk-buttons">
             <button
-              className="admin_dh-btn"
+              className="TrashList1-btn TrashList1-btn-success"
               onClick={handleRestoreSelected}
-              style={{
-                backgroundColor: "#10b981",
-                color: "white",
-                marginRight: "8px",
-              }}
             >
-              <i className="bi bi-arrow-counterclockwise"></i> Khôi phục
+              <i className="bi bi-arrow-counterclockwise"></i>
+              Khôi phục
             </button>
             <button
-              className="admin_dh-btn admin_dh-btn-danger"
+              className="TrashList1-btn TrashList1-btn-danger"
               onClick={handleDeleteSelectedPermanently}
             >
-              <i className="bi bi-trash"></i> Xóa vĩnh viễn
+              <i className="bi bi-trash"></i>
+              Xóa vĩnh viễn
             </button>
           </div>
         </div>
       )}
 
-      <div className="admin_dh-product-list">
+      {/* Products Content */}
+      <div className="TrashList1-content">
         {loading ? (
-          <div style={{ textAlign: "center", padding: "40px" }}>
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Đang tải...</span>
-            </div>
-            <p style={{ marginTop: "16px" }}>Đang tải dữ liệu...</p>
+          <div className="TrashList1-loading">
+            <div className="TrashList1-spinner"></div>
+            <p>Đang tải dữ liệu...</p>
           </div>
         ) : error ? (
-          <div style={{ color: "red", textAlign: "center", padding: "40px" }}>
-            <i className="bi bi-exclamation-triangle" style={{ fontSize: "48px", marginBottom: "16px" }}></i>
+          <div className="TrashList1-error">
+            <i className="bi bi-exclamation-triangle"></i>
             <p>{error}</p>
           </div>
         ) : filteredProducts.length === 0 ? (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "40px",
-              color: "#6b7280",
-            }}
-          >
-            <i className="bi bi-trash" style={{ fontSize: "48px", marginBottom: "16px", opacity: 0.5 }}></i>
+          <div className="TrashList1-empty-state">
+            <i className="bi bi-trash3 TrashList1-empty-icon"></i>
             <h3>Thùng rác trống</h3>
             <p>Chưa có sản phẩm nào bị xóa</p>
           </div>
         ) : (
-          <table className="admin_dh-product-table">
-            <thead>
-              <tr>
-                <th style={{ width: "40px" }}>
-                  <input
-                    type="checkbox"
-                    className="admin_dh-product-checkbox"
-                    onChange={handleSelectAll}
-                    checked={
-                      selectedProducts.length === filteredProducts.length &&
-                      filteredProducts.length > 0
-                    }
-                  />
-                </th>
-                <th style={{ width: "80px" }}>Ảnh</th>
-                <th>Tên sản phẩm</th>
-                <th>Danh mục</th>
-                <th>Giá KM</th>
-                <th>Giá gốc</th>
-                <th>Ngày xóa</th>
-                <th style={{ width: "160px" }}>Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedProducts.map((product) => (
-                <tr
-                  key={product.product_id}
-                  className={
-                    selectedProducts.includes(product.product_id) ? "selected" : ""
-                  }
-                >
-                  <td>
+          <div className="TrashList1-table-container">
+            <table className="TrashList1-table">
+              <thead>
+                <tr>
+                  <th className="TrashList1-checkbox-col">
                     <input
                       type="checkbox"
-                      className="admin_dh-product-checkbox"
-                      checked={selectedProducts.includes(product.product_id)}
-                      onChange={() => handleSelectProduct(product.product_id)}
+                      onChange={handleSelectAll}
+                      checked={
+                        selectedProducts.length === filteredProducts.length &&
+                        filteredProducts.length > 0
+                      }
                     />
-                  </td>
-                  <td>
-                    <div className="admin_dh-product-image" style={{ margin: "0 auto" }}>
-                      <img
-                        src={product.image_url || "/default-image.png"}
-                        alt={product.name || "No Name"}
-                        onError={(e) => {
-                          e.target.src = "/default-image.png";
-                        }}
-                      />
-                    </div>
-                  </td>
-                  <td>
-                    <div className="admin_dh-product-details">
-                      <div
-                        className="admin_dh-product-name"
-                        style={{ fontWeight: "500", marginBottom: "4px" }}
-                      >
-                        {product.name || "Không tên"}
-                      </div>
-                      <div
-                        className="admin_dh-product-sku"
-                        style={{
-                          fontSize: "0.8rem",
-                          color: "var(--admin_dh-text-secondary)",
-                        }}
-                      >
-                        ID sản phẩm: {product.product_id || "N/A"}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="admin_dh-product-category">
-                    {product.category?.name || "Không có danh mục"}
-                  </td>
-                  <td className="admin_dh-product-price admin_dh-product-price-large">
-                    {product.price ? `${formatPrice(product.price)} VNĐ` : "Chưa cập nhật"}
-                  </td>
-                  <td className="admin_dh-product-price admin_dh-product-price-large">
-                    {product.price_original
-                      ? `${formatPrice(product.price_original)} VNĐ`
-                      : "Chưa cập nhật"}
-                  </td>
-                  <td>
-                    {product.deleted_at
-                      ? new Date(product.deleted_at).toLocaleDateString("vi-VN")
-                      : "N/A"}
-                  </td>
-                  <td>
-                    <div className="admin_dh-product-actions-col">
-                      <button
-                        className="admin_dh-action-btn"
-                        title="Khôi phục"
-                        onClick={() => handleRestoreSingle(product.product_id)}
-                        style={{ color: "#10b981" }}
-                      >
-                        <i className="bi bi-arrow-counterclockwise"></i>
-                      </button>
-                      <button
-                        className="admin_dh-action-btn admin_dh-delete-btn"
-                        title="Xóa vĩnh viễn"
-                        onClick={() => handleDeletePermanently(product.product_id)}
-                      >
-                        <i className="bi bi-trash" style={{ color: "#ff3b30" }}></i>
-                      </button>
-                    </div>
-                  </td>
+                  </th>
+                  <th className="TrashList1-image-col">Ảnh</th>
+                  <th className="TrashList1-name-col">Tên sản phẩm</th>
+                  <th className="TrashList1-category-col">Danh mục</th>
+                  <th className="TrashList1-price-col">Giá KM</th>
+                  <th className="TrashList1-price-col">Giá gốc</th>
+                  <th className="TrashList1-date-col">Ngày xóa</th>
+                  <th className="TrashList1-actions-col">Thao tác</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {paginatedProducts.map((product) => (
+                  <tr
+                    key={product.product_id}
+                    className={selectedProducts.includes(product.product_id) ? "TrashList1-selected" : ""}
+                  >
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={selectedProducts.includes(product.product_id)}
+                        onChange={() => handleSelectProduct(product.product_id)}
+                      />
+                    </td>
+                    <td>
+                      <div className="TrashList1-image">
+                        <img
+                          src={product.image_url || "/default-image.png"}
+                          alt={product.name || "No Name"}
+                          onError={(e) => { e.target.src = "/default-image.png"; }}
+                        />
+                      </div>
+                    </td>
+                    <td>
+                      <div className="TrashList1-info">
+                        <div className="TrashList1-name">{product.name || "Không tên"}</div>
+                        <div className="TrashList1-id">ID: {product.product_id}</div>
+                      </div>
+                    </td>
+                    <td>{product.category?.name || "Không có danh mục"}</td>
+                    <td className="TrashList1-price">
+                      {product.price ? `${formatPrice(product.price)} VNĐ` : "Chưa cập nhật"}
+                    </td>
+                    <td className="TrashList1-price">
+                      {product.price_original
+                        ? `${formatPrice(product.price_original)} VNĐ`
+                        : "Chưa cập nhật"}
+                    </td>
+                    <td>
+                      {product.deleted_at
+                        ? new Date(product.deleted_at).toLocaleDateString("vi-VN")
+                        : "N/A"}
+                    </td>
+                    <td>
+                      <div className="TrashList1-table-actions">
+                        <button
+                          className="TrashList1-action-btn TrashList1-restore-btn"
+                          title="Khôi phục"
+                          onClick={() => handleRestoreSingle(product.product_id)}
+                        >
+                          <i className="bi bi-arrow-counterclockwise"></i>
+                        </button>
+                        <button
+                          className="TrashList1-action-btn TrashList1-delete-btn"
+                          title="Xóa vĩnh viễn"
+                          onClick={() => handleDeletePermanently(product.product_id)}
+                        >
+                          <i className="bi bi-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="admin_dh-pagination">
-          <div className="admin_dh-pagination-info">
-            Trang {currentPage} / {totalPages}
+        <div className="TrashList1-pagination-container">
+          <div className="TrashList1-pagination-info">
+            Hiển thị {(currentPage - 1) * productsPerPage + 1} - {Math.min(currentPage * productsPerPage, filteredProducts.length)} của {filteredProducts.length} sản phẩm
           </div>
-          <div className="admin_dh-pagination-controls">
+          <div className="TrashList1-pagination-controls">
             <button
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              onClick={() => setCurrentPage(1)}
               disabled={currentPage === 1}
+              className="TrashList1-pagination-btn"
             >
-              Trước
+              <i className="bi bi-chevron-double-left"></i>
             </button>
-            <span style={{ margin: "0 12px" }}>
-              Trang {currentPage} / {totalPages}
-            </span>
             <button
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="TrashList1-pagination-btn"
             >
-              Sau
+              <i className="bi bi-chevron-left"></i>
+            </button>
+            
+            <div className="TrashList1-page-numbers">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pageNum;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
+                
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`TrashList1-page-number ${currentPage === pageNum ? 'TrashList1-active' : ''}`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+            </div>
+            
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="TrashList1-pagination-btn"
+            >
+              <i className="bi bi-chevron-right"></i>
+            </button>
+            <button
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={currentPage === totalPages}
+              className="TrashList1-pagination-btn"
+            >
+              <i className="bi bi-chevron-double-right"></i>
             </button>
           </div>
         </div>

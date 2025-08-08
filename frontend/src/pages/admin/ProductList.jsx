@@ -85,7 +85,125 @@ const ProductList = () => {
     if (pageParam !== currentPage) setCurrentPage(pageParam);
   }, [pageParam]);
 
-  // [Các hàm xử lý giữ nguyên như code gốc - handleDeleteSelected, handleDeleteSingle, v.v.]
+  // Hàm xóa nhiều sản phẩm đã chọn
+  const handleDeleteSelected = async () => {
+    if (selectedProducts.length === 0) {
+      toast.warning("Vui lòng chọn ít nhất một sản phẩm để xóa");
+      return;
+    }
+
+    const result = await Swal.fire({
+      title: "Xác nhận xóa",
+      text: `Bạn có chắc chắn muốn chuyển ${selectedProducts.length} sản phẩm vào thùng rác?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Có, chuyển vào thùng rác",
+      cancelButtonText: "Hủy",
+      reverseButtons: true
+    });
+
+    if (result.isConfirmed) {
+      setIsDeleting(true);
+      try {
+        // Xóa từng sản phẩm được chọn
+        const deletePromises = selectedProducts.map(productId =>
+          dispatch(softdeleteAdminProduct(productId)).unwrap()
+        );
+        
+        await Promise.all(deletePromises);
+        
+        // Refresh danh sách sản phẩm
+        await dispatch(fetchAdminProducts());
+        
+        // Reset selection
+        setSelectedProducts([]);
+        
+        // Hiển thị thông báo thành công
+        toast.success(`Đã chuyển ${selectedProducts.length} sản phẩm vào thùng rác thành công`);
+        
+        Swal.fire({
+          title: "Đã xóa!",
+          text: `${selectedProducts.length} sản phẩm đã được chuyển vào thùng rác.`,
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false
+        });
+
+      } catch (error) {
+        console.error("Lỗi khi xóa sản phẩm:", error);
+        toast.error("Có lỗi xảy ra khi xóa sản phẩm. Vui lòng thử lại.");
+        
+        Swal.fire({
+          title: "Lỗi!",
+          text: "Không thể xóa sản phẩm. Vui lòng thử lại.",
+          icon: "error"
+        });
+      } finally {
+        setIsDeleting(false);
+      }
+    }
+  };
+
+  // Hàm xóa một sản phẩm
+  const handleDeleteSingle = async (productId) => {
+    // Tìm sản phẩm để lấy tên
+    const product = adminproducts.find(p => p.product_id === productId);
+    const productName = product?.name || "sản phẩm này";
+
+    const result = await Swal.fire({
+      title: "Xác nhận xóa",
+      text: `Bạn có chắc chắn muốn chuyển "${productName}" vào thùng rác?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Có, chuyển vào thùng rác",
+      cancelButtonText: "Hủy",
+      reverseButtons: true
+    });
+
+    if (result.isConfirmed) {
+      setIsDeleting(true);
+      try {
+        // Thực hiện xóa mềm
+        await dispatch(softdeleteAdminProduct(productId)).unwrap();
+        
+        // Refresh danh sách sản phẩm
+        await dispatch(fetchAdminProducts());
+        
+        // Nếu sản phẩm này đang được chọn, bỏ chọn nó
+        if (selectedProducts.includes(productId)) {
+          setSelectedProducts(selectedProducts.filter(id => id !== productId));
+        }
+        
+        // Hiển thị thông báo thành công
+        toast.success(`Đã chuyển "${productName}" vào thùng rác thành công`);
+        
+        Swal.fire({
+          title: "Đã xóa!",
+          text: `"${productName}" đã được chuyển vào thùng rác.`,
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false
+        });
+
+      } catch (error) {
+        console.error("Lỗi khi xóa sản phẩm:", error);
+        toast.error("Có lỗi xảy ra khi xóa sản phẩm. Vui lòng thử lại.");
+        
+        Swal.fire({
+          title: "Lỗi!",
+          text: "Không thể xóa sản phẩm. Vui lòng thử lại.",
+          icon: "error"
+        });
+      } finally {
+        setIsDeleting(false);
+      }
+    }
+  };
+
   const handleSelectAll = (e) => {
     if (e.target.checked) {
       setSelectedProducts(adminproducts.map((product) => product.product_id));
@@ -101,6 +219,7 @@ const ProductList = () => {
       setSelectedProducts([...selectedProducts, productId]);
     }
   };
+
   const handleFilterChange = (filterType, value) => {
     setFilters((prev) => ({
       ...prev,
@@ -165,7 +284,6 @@ const ProductList = () => {
   }
 
   return (
-
     <div className="ProductsList1-container">
       {/* Header Section */}
       <div className="ProductsList1-header">
@@ -178,7 +296,6 @@ const ProductList = () => {
             <Link to="/admin/trashproduct" className="ProductsList1-btn ProductsList1-btn-outline-danger">
               <i className="bi bi-trash"></i>
               <span>Thùng rác</span>
-
             </Link>
             {checkRole !== "sale" && (
               <Link to="/admin/addproduct" className="ProductsList1-btn ProductsList1-btn-primary">
@@ -428,7 +545,6 @@ const ProductList = () => {
                           </Link>
                         )}
                         <Link
-
                           to={`/admin/product/${product.product_id}`}
                           className="ProductsList1-action-btn ProductsList1-view-btn"
                           title="Xem chi tiết"
@@ -452,7 +568,6 @@ const ProductList = () => {
               </tbody>
             </table>
           </div>
-
         )}
       </div>
 
