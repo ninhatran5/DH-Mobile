@@ -18,7 +18,6 @@ const ShoppingCart = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { carts, loading } = useSelector((state) => state.cart);
-
   const [selectAll, setSelectAll] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const navigate = useNavigate();

@@ -73,7 +73,7 @@ function AddValuePage() {
             className="adminaddattributevalues-submit"
             disabled={loading}
           >
-            {loading ? "Đang thêm..." : "Thêm Value"}
+            {loading ? "Đang thêm..." : "Thêm giá trị"}
           </button>
           <button
             type="button"

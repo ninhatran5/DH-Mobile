@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addCategory } from "../../slices/adminCategories";
@@ -52,7 +53,6 @@ const AddCategory = () => {
       await dispatch(addCategory(formData)).unwrap();
       toast.success("Thêm danh mục thành công!");
       navigate("/admin/categories");
-      // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast.error("Có lỗi xảy ra khi thêm danh mục!");
     }
@@ -65,17 +65,18 @@ const AddCategory = () => {
         onClick={handleBack}
         style={{
           marginBottom: "16px",
-          padding: "8px 16px",
-          borderRadius: "4px",
+          padding: "7px 20px",
+          borderRadius: "10px",
           border: "none",
           background: "#eee",
-          color: "#333",
-          cursor: "pointer"
+          color: "white",
+          cursor: "pointer",
+          backgroundColor: "#007aff",
         }}
       >
         ← Quay lại
       </button>
-      <h2 className="addcategories-title">Thêm danh mục mới</h2>
+      <h2 className="addcategories-title" style={{fontWeight: "900"}}>Thêm danh mục mới</h2>
       <form onSubmit={handleSubmit} className="addcategories-form">
         <div className="addcategories-group">
           <label>
@@ -87,7 +88,7 @@ const AddCategory = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Nhập tên danh mục"
-            className={showValidation && !name.trim() ? 'error' : ''}
+            className={showValidation && !name.trim() ? "error" : ""}
           />
           {showValidation && !name.trim() && (
             <span className="validation-message">Tên danh mục là bắt buộc</span>
@@ -103,7 +104,7 @@ const AddCategory = () => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Nhập mô tả danh mục"
-            className={showValidation && !description.trim() ? 'error' : ''}
+            className={showValidation && !description.trim() ? "error" : ""}
           ></textarea>
           {showValidation && !description.trim() && (
             <span className="validation-message">Mô tả là bắt buộc</span>
@@ -115,29 +116,57 @@ const AddCategory = () => {
             Hình ảnh
             <span className="required1">*</span>
           </label>
-          
-          <div className={`image-upload-container ${showValidation && !imageFile ? 'error' : ''}`}>
+
+          <div
+            className={`image-upload-container ${
+              showValidation && !imageFile ? "error" : ""
+            }`}
+          >
             <label className="custom-file-upload">
-              <input 
-                type="file" 
-                accept="image/*" 
+              <input
+                type="file"
+                accept="image/*"
                 onChange={handleFileChange}
-                style={{ display: 'none' }}
+                style={{ display: "none" }}
               />
               <div className="upload-button">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M17 8L12 3L7 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M12 3V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M17 8L12 3L7 8"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M12 3V15"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
                 <span>Chọn hình ảnh</span>
               </div>
             </label>
-            
+
             {imagePreview && (
               <div className="image-preview-single">
                 <img src={imagePreview} alt="Preview" />
-                <button 
+                <button
                   type="button"
                   className="remove-image-btn"
                   onClick={removeImage}
@@ -146,12 +175,12 @@ const AddCategory = () => {
                 </button>
               </div>
             )}
-            
+
             <p className="upload-hint">
               Chọn hình ảnh cho danh mục (JPG, PNG, GIF)
             </p>
           </div>
-          
+
           {showValidation && !imageFile && (
             <span className="validation-message">Hình ảnh là bắt buộc</span>
           )}

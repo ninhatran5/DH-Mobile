@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import ImageViewModal from "./ImageViewModal";
+import { MdOutlineCommentsDisabled } from "react-icons/md";
 
 const Comment = ({ reviews }) => {
   const { t } = useTranslation();
@@ -27,223 +28,243 @@ const Comment = ({ reviews }) => {
         <div className="row d-flex justify-content-center">
           <div className="col-md-12 col-lg-10">
             <div className="text-body">
-              {visibleReviews.map((item, index) => {
-                const filledStars = Array.from(
-                  { length: item.rating },
-                  (_, i) => (
-                    <FaStar
-                      key={`filled-${index}-${i}`}
-                      className="star-filled me-1"
-                    />
-                  )
-                );
-                const emptyStars = Array.from(
-                  { length: item.maxStars - item.rating },
-                  (_, i) => (
-                    <FaRegStar
-                      key={`empty-${index}-${i}`}
-                      className="star-empty me-1"
-                    />
-                  )
-                );
-
-                return (
-                  <div className="hr_comment p-4" key={index}>
-                    <div className="d-flex flex-start">
-                      <img
-                        className="rounded-circle shadow-1-strong me-3"
-                        src={
-                          item?.user?.image_url ||
-                          "https://bootdey.com/img/Content/avatar/avatar1.png"
-                        }
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src =
-                            "https://bootdey.com/img/Content/avatar/avatar1.png";
-                        }}
-                        alt="avatar"
-                        width={60}
-                        height={60}
+              {reviews.length == [] ? (
+                <div>
+                  <MdOutlineCommentsDisabled
+                    style={{
+                      display: "flex",
+                      margin: "0 auto",
+                      padding: "10px 0",
+                      color: "#707070",
+                    }}
+                    fontSize={68}
+                  />
+                  <p className="text-center">{t("comment.noComments")}</p>
+                </div>
+              ) : (
+                visibleReviews.map((item, index) => {
+                  const filledStars = Array.from(
+                    { length: item.rating },
+                    (_, i) => (
+                      <FaStar
+                        key={`filled-${index}-${i}`}
+                        className="star-filled me-1"
                       />
-                      <div>
-                        <div className="d-flex align-items-center gap-2">
-                          <h6 className="fw-bold mb-0">
-                            {item?.user?.full_name}
-                          </h6>
-                          {item?.user?.tier?.name && (
-                            <span
-                              className="user-rank-badge"
-                              style={{
-                                background: "#f5f6fa",
-                                color: "#2766ad",
-                                fontWeight: 600,
-                                fontSize: 12,
-                                borderRadius: 8,
-                                padding: "2px 8px",
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: 4,
-                                marginLeft: 6,
-                              }}
-                            >
-                              {item.user.tier.image_url && (
-                                <img
-                                  src={item.user.tier.image_url}
-                                  alt={item.user.tier.name}
-                                  style={{
-                                    width: 18,
-                                    height: 18,
-                                    marginRight: 4,
-                                    borderRadius: 6,
-                                    objectFit: "cover",
-                                  }}
-                                />
-                              )}
-                              {item.user.tier.name}
-                            </span>
-                          )}
-                        </div>
-                        <p
-                          style={{
-                            fontSize: 11,
-                            color: "#8a8d91",
-                            marginTop: "3px",
+                    )
+                  );
+                  const emptyStars = Array.from(
+                    { length: item.maxStars - item.rating },
+                    (_, i) => (
+                      <FaRegStar
+                        key={`empty-${index}-${i}`}
+                        className="star-empty me-1"
+                      />
+                    )
+                  );
+
+                  return (
+                    <div className="hr_comment p-4" key={index}>
+                      <div className="d-flex flex-start">
+                        <img
+                          className="rounded-circle shadow-1-strong me-3"
+                          src={
+                            item?.user?.image_url ||
+                            "https://bootdey.com/img/Content/avatar/avatar1.png"
+                          }
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src =
+                              "https://bootdey.com/img/Content/avatar/avatar1.png";
                           }}
-                        >
-                          {dayjs(item?.created_at).format("HH:mm / DD-MM-YYYY")}
-                        </p>
-                        <div className="d-flex">
-                          {filledStars}
-                          {emptyStars}
-                        </div>
-                        {item.variant_attributes &&
-                          item.variant_attributes.length > 0 && (
-                            <div
-                              className="text-muted mt-2"
-                              style={{ fontSize: 13 }}
-                            >
-                              {item.variant_attributes.map((attr, i) => (
-                                <span key={i}>
-                                  {attr.attribute_name}:{" "}
-                                  <b>{attr.attribute_value}</b>
-                                  {i < item.variant_attributes.length - 1
-                                    ? " | "
-                                    : ""}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                        <p className="mt-2">{item?.content}</p>
-                        {item.upload_urls && item.upload_urls.length > 0 && (
-                          <div className="mb-3" style={{ marginTop: "10px" }}>
-                            <div className="comment-images-grid">
-                              {item.upload_urls.map((imageUrl, imgIndex) => (
-                                <img
-                                  key={imgIndex}
-                                  src={imageUrl}
-                                  className="comment-image"
-                                  alt={`Review image ${imgIndex + 1}`}
-                                  onClick={() =>
-                                    handleImageClick(item.upload_urls, imgIndex)
-                                  }
-                                  onError={(e) => {
-                                    e.target.style.display = "none";
-                                  }}
-                                />
-                              ))}
-                            </div>
+                          alt="avatar"
+                          width={60}
+                          height={60}
+                        />
+                        <div>
+                          <div className="d-flex align-items-center gap-2">
+                            <h6 className="fw-bold mb-0">
+                              {item?.user?.full_name}
+                            </h6>
+                            {item?.user?.tier?.name && (
+                              <span
+                                className="user-rank-badge"
+                                style={{
+                                  background: "#f5f6fa",
+                                  color: "#2766ad",
+                                  fontWeight: 600,
+                                  fontSize: 12,
+                                  borderRadius: 8,
+                                  padding: "2px 8px",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: 4,
+                                  marginLeft: 6,
+                                }}
+                              >
+                                {item.user.tier.image_url && (
+                                  <img
+                                    src={item.user.tier.image_url}
+                                    alt={item.user.tier.name}
+                                    style={{
+                                      width: 18,
+                                      height: 18,
+                                      marginRight: 4,
+                                      borderRadius: 6,
+                                      objectFit: "cover",
+                                    }}
+                                  />
+                                )}
+                                {item.user.tier.name}
+                              </span>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    </div>
-                    {item.reply && (
-                      <div className="admin-comment mt-3">
-                        <div className="reply-indicator-fb ms-3">
-                          <span className="reply-to">
-                            {item?.replied_by?.full_name || "Admin"}
-                          </span>{" "}
-                          {t("comment.replied_to")}{" "}
-                          <span className="reply-to">
-                            {item?.user?.full_name}
-                          </span>
-                        </div>
-                        <div className="d-flex flex-start">
-                          <img
-                            className="rounded-circle shadow-1-strong ms-3 me-3"
-                            src={
-                              item?.replied_by?.image_url ||
-                              "https://bootdey.com/img/Content/avatar/avatar1.png"
-                            }
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src =
-                                "https://bootdey.com/img/Content/avatar/avatar1.png";
+                          <p
+                            style={{
+                              fontSize: 11,
+                              color: "#8a8d91",
+                              marginTop: "3px",
                             }}
-                            alt="avatar"
-                            width={60}
-                            height={60}
-                          />
-                          <div>
-                            <div className="d-flex flex-column">
-                              <div className="d-flex flex-start align-items-center flex-wrap">
-                                <h6
-                                  className="fw-bold mb-0 me-2"
-                                  style={{
-                                    lineHeight: "1.3",
-                                    fontSize: "14px",
-                                  }}
-                                >
-                                  {item?.replied_by?.full_name || "Admin"}
-                                </h6>
-                                <span
-                                  className="role-badge"
-                                  style={{
-                                    fontSize: 11,
-                                    color: "#8a8d91",
-                                    backgroundColor: "#ededed",
-                                    padding: "2px 6px",
-                                    borderRadius: "8px",
-                                    display: "inline-block",
-                                    lineHeight: "1.2",
-                                  }}
-                                >
-                                  {item?.replied_by?.role === "admin"
-                                    ? t("role.admin")
-                                    : item?.replied_by?.role === "staff"
-                                    ? t("role.staff")
-                                    : t("role.Customer")}
-                                </span>
+                          >
+                            {dayjs(item?.created_at).format(
+                              "HH:mm / DD-MM-YYYY"
+                            )}
+                          </p>
+                          <div className="d-flex">
+                            {filledStars}
+                            {emptyStars}
+                          </div>
+                          {item.variant_attributes &&
+                            item.variant_attributes.length > 0 && (
+                              <div
+                                className="text-muted mt-2"
+                                style={{ fontSize: 13 }}
+                              >
+                                {item.variant_attributes.map((attr, i) => (
+                                  <span key={i}>
+                                    {attr.attribute_name}:{" "}
+                                    <b>{attr.attribute_value}</b>
+                                    {i < item.variant_attributes.length - 1
+                                      ? " | "
+                                      : ""}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          <p className="mt-2">{item?.content}</p>
+                          {item.upload_urls && item.upload_urls.length > 0 && (
+                            <div className="mb-3" style={{ marginTop: "10px" }}>
+                              <div className="comment-images-grid">
+                                {item.upload_urls.map((imageUrl, imgIndex) => (
+                                  <img
+                                    key={imgIndex}
+                                    src={imageUrl}
+                                    className="comment-image"
+                                    alt={`Review image ${imgIndex + 1}`}
+                                    onClick={() =>
+                                      handleImageClick(
+                                        item.upload_urls,
+                                        imgIndex
+                                      )
+                                    }
+                                    onError={(e) => {
+                                      e.target.style.display = "none";
+                                    }}
+                                  />
+                                ))}
                               </div>
                             </div>
-                            <p
-                              style={{
-                                fontSize: 11,
-                                color: "#8a8d91",
-                                marginBottom: "8px",
-                                marginTop: "3px",
-                              }}
-                            >
-                              {dayjs(item?.replied_by?.created_at).format(
-                                "HH:mm / DD-MM-YYYY"
-                              )}
-                            </p>
-                            <p
-                              className="mb-0"
-                              style={{
-                                fontSize: "14px",
-                                color: "#1c1e21",
-                                lineHeight: "1.4",
-                              }}
-                            >
-                              {item?.reply}
-                            </p>
-                          </div>
+                          )}
                         </div>
                       </div>
-                    )}
-                  </div>
-                );
-              })}
+                      {item.reply && (
+                        <div className="admin-comment mt-3">
+                          <div className="reply-indicator-fb ms-3">
+                            <span className="reply-to">
+                              {item?.replied_by?.full_name || "Admin"}
+                            </span>{" "}
+                            {t("comment.replied_to")}{" "}
+                            <span className="reply-to">
+                              {item?.user?.full_name}
+                            </span>
+                          </div>
+                          <div className="d-flex flex-start">
+                            <img
+                              className="rounded-circle shadow-1-strong ms-3 me-3"
+                              src={
+                                item?.replied_by?.image_url ||
+                                "https://bootdey.com/img/Content/avatar/avatar1.png"
+                              }
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src =
+                                  "https://bootdey.com/img/Content/avatar/avatar1.png";
+                              }}
+                              alt="avatar"
+                              width={60}
+                              height={60}
+                            />
+                            <div>
+                              <div className="d-flex flex-column">
+                                <div className="d-flex flex-start align-items-center flex-wrap">
+                                  <h6
+                                    className="fw-bold mb-0 me-2"
+                                    style={{
+                                      lineHeight: "1.3",
+                                      fontSize: "14px",
+                                    }}
+                                  >
+                                    {item?.replied_by?.full_name || "Admin"}
+                                  </h6>
+                                  <span
+                                    className="role-badge"
+                                    style={{
+                                      fontSize: 11,
+                                      color: "#8a8d91",
+                                      backgroundColor: "#ededed",
+                                      padding: "2px 6px",
+                                      borderRadius: "8px",
+                                      display: "inline-block",
+                                      lineHeight: "1.2",
+                                    }}
+                                  >
+                                    {item?.replied_by?.role === "admin"
+                                      ? t("role.admin")
+                                      : item?.replied_by?.role === "staff"
+                                      ? t("role.staff")
+                                      : t("role.Customer")}
+                                  </span>
+                                </div>
+                              </div>
+                              <p
+                                style={{
+                                  fontSize: 11,
+                                  color: "#8a8d91",
+                                  marginBottom: "8px",
+                                  marginTop: "3px",
+                                }}
+                              >
+                                {dayjs(item?.replied_by?.created_at).format(
+                                  "HH:mm / DD-MM-YYYY"
+                                )}
+                              </p>
+                              <p
+                                className="mb-0"
+                                style={{
+                                  fontSize: "14px",
+                                  color: "#1c1e21",
+                                  lineHeight: "1.4",
+                                }}
+                              >
+                                {item?.reply}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
             </div>
             {reviews.length > maxComment && (
               <div className="text-center mt-3">

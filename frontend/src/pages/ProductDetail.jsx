@@ -99,7 +99,6 @@ function isValidCombination(variants, selectedOptions, currentAttrId, valueId) {
       if (attr.attribute_id === currentAttrId) {
         return attr.values.some((val) => val.value_id === valueId);
       }
-      // Kiểm tra xem thuộc tính đã chọn có khớp với biến thể không
       return (
         selectedOptions[attr.attribute_id] === undefined ||
         attr.values.some(
@@ -569,7 +568,8 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
                 style={{ marginTop: "-20px", marginBottom: "-5px" }}
               >
                 <img style={{ width: 20 }} src={coins} />
-                <p style={{marginTop: 17, marginLeft: 8}}
+                <p
+                  style={{ marginTop: 17, marginLeft: 8 }}
                   className="coins-products"
                   dangerouslySetInnerHTML={{
                     __html: t("productDetail.coinReward", {
@@ -582,15 +582,20 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
                   }}
                 />
               </div>
-              <p style={{marginBottom: "10px"}}>
-                <span className="fw-bold"> {t("productDetail.describe")}: </span>{" "}
+              <p style={{ marginBottom: "10px" }}>
+                <span className="fw-bold">
+                  {" "}
+                  {t("productDetail.describe")}:{" "}
+                </span>{" "}
                 {productDetails.data?.description
                   ? stripHtmlTags(productDetails.data.description)
                   : ""}
               </p>
-              <p style={{marginBottom: "-6px"}}>
-                <p style={{marginBottom: "6px"}} className="fw-bold">{t("productDetail.parameter")}:</p>
-                <ul className="">
+              <div style={{ marginBottom: "-6px" }}>
+                <p style={{ marginBottom: "6px" }} className="fw-bold">
+                  {t("productDetail.parameter")}:
+                </p>
+                <ul>
                   {specifications?.map((spec) => (
                     <li key={spec.spec_id}>
                       <span className="fw-bold me-2">{spec.spec_name}:</span>
@@ -598,7 +603,7 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
                     </li>
                   ))}
                 </ul>
-              </p>
+              </div>
             </div>
 
             <div className="mb-3">

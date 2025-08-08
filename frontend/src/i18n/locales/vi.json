@@ -129,7 +129,8 @@
     "replied_to": "đã trả lời",
     "showMore": "Xem thêm",
     "showLess": "Ẩn bớt",
-    "reviews": "Đánh giá"
+    "reviews": "Đánh giá",
+    "noComments": "Chưa có bình luận nào"
   },
   "breadcrumbVoucher": {
     "breadcrumbHeader": "Mã Giảm Giá",
