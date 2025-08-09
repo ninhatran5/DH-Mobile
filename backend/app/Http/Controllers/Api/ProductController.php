@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use ParentIterator;
 use App\Models\Product;
 use Cloudinary\Cloudinary;
 use App\Models\ProductLike;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use ParentIterator;
 
 class ProductController extends Controller
 {
@@ -103,29 +104,46 @@ class ProductController extends Controller
      *     @OA\Response(response=404, description="Không tìm thấy")
      * )
      */
-    public function show(string $id)
-    {
-        //
-        $product = Product::with('category')->find($id);
-        if ($product) {
-            // Tăng view_count lên 1
-            $product->increment('view_count');
+public function show(Request $request, $id)
+{
+    $product = Product::with('category')->find($id);
 
-            $product->price = number_format($product->price, 0, '', '');
-            $product->price_original = number_format($product->price_original, 0, '', '');
-
-            return response()->json([
-                'message' => 'Lấy sản phẩm thành công',
-                'data' => $product,
-                'status' => 200
-            ], 200);
-        } else {
-            return response()->json([
-                'message' => 'Sản phẩm không tồn tại',
-                'status' => 404,
-            ])->setStatusCode(404, 'Not Found');
-        }
+    if (!$product) {
+        return response()->json([
+            'message' => 'Sản phẩm không tồn tại',
+            'status' => 404
+        ], 404);
     }
+
+    // Tăng view_count
+    $product->increment('view_count');
+
+    // Format giá
+    $product->price = number_format($product->price, 0, '', '');
+    $product->price_original = number_format($product->price_original, 0, '', '');
+
+    // Mặc định chưa thích
+    $isLiked = false;
+
+    // Nếu có token thì lấy user
+    $user = Auth::guard('sanctum')->user(); // hoặc 'api' nếu bạn dùng passport
+
+    if ($user) {
+        $isLiked = DB::table('product_likes')
+            ->where('product_id', $product->product_id)
+            ->where('user_id', $user->user_id)
+            ->exists();
+    }
+
+    $product->is_liked = $isLiked;
+
+    return response()->json([
+        'message' => 'Lấy sản phẩm thành công',
+        'data' => $product,
+        'status' => 200
+    ]);
+}
+
 
     /**
      * @OA\Put(

@@ -38,4 +38,13 @@ class Product extends Model
     {
         return $this->hasMany(ProductsViews::class, 'product_id', 'product_id');
     }
+    public function productlikes()
+    {
+        return $this->hasMany(ProductLike::class, 'product_id', 'product_id');
+    }
+
+    public function isLikedBy($userId)
+{
+    return $this->likes()->where('user_id', $userId)->exists();
+}
 }
