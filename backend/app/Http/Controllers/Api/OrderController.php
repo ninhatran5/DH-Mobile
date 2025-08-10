@@ -227,6 +227,7 @@ class OrderController extends Controller
 
         $formattedOrder = [
             'order_id' => $order->order_id,
+            'user_id' => $order->user_id,
             'order_code' => $order->order_code,
             'order_date' => $order->created_at->format('d/m/Y H:i:s'),
             'customer' => $order->customer,
