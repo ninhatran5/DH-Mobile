@@ -205,6 +205,10 @@ const CheckOut = () => {
     }
 
     if (paymentMethod === "vnpay") {
+      if (finalPrice >= 200000000) {
+        toast.error(t("toast.maxOnlineAmount"));
+        return;
+      }
       try {
         const actionResult = await dispatch(fetchVnpayCheckout(payloadBase));
         const result = actionResult.payload;
@@ -251,6 +255,11 @@ const CheckOut = () => {
       ward: addressData.ward,
       phone: addressData.phone,
     };
+
+    if (finalPrice >= 200000000) {
+      toast.error(t("toast.maxOnlineAmount"));
+      return;
+    }
 
     try {
       const actionResult = await dispatch(fetchWalletCheckout(payloadBase));
