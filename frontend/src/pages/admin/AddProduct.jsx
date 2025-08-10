@@ -689,7 +689,7 @@ const AdminAddProduct = () => {
                           <span><strong>SKU:</strong> {variant.sku}</span>
                           <span><strong>Giá:</strong> {formatNumber(variant.price)}đ</span>
                           <span><strong>Giá gốc:</strong> {formatNumber(variant.price_original)}đ</span>
-                          <span><strong>Tồn kho:</strong> {formatNumber(variant.stock)}</span>
+                          <span><strong>Số lượng:</strong> {formatNumber(variant.stock)}</span>
                         </div>
                         
                         {/* Hiển thị ảnh nếu có */}
