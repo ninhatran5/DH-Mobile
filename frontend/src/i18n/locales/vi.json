@@ -559,7 +559,7 @@
     "deleteError": "Xóa khỏi giỏ hàng thất bại",
     "paymentSuccess": "Thanh toán thành công!",
     "paymentError": "Thanh toán thất bại, vui lòng thử lại",
-    "maxOnlineAmount": "Số tiền tối đa được phép thanh toán online là 100 triệu đồng",
+    "maxOnlineAmount": "Số tiền tối đa được phép thanh toán online là 200 triệu đồng",
     "updateQuantityError": "Sản phẩm đã vượt quá số lượng của kho hàng, vui lòng cập nhật lại số lượng",
     "missingAddress": "Vui lòng cập nhật đầy đủ địa chỉ trước khi thanh toán!",
     "pending_update": "Chưa cập nhật"
