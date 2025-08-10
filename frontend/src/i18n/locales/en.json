@@ -107,7 +107,8 @@
     "loadingHistory": "Loading chat history...",
     "sent": "Sent",
     "seen": "Seen",
-    "closeModal": "Close"
+    "closeModal": "Close",
+    "tokenMessage": "Please log in to use the Chat Bot and Chat with Admin features"
   },
   "breadcrumbProductDetail": {
     "breadcrumbHeader": "Product Details",

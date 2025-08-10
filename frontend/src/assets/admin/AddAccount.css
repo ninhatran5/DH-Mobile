@@ -177,15 +177,6 @@
   margin-bottom: 20px;
 }
 
-.form-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 500;
-  color: #374151;
-  margin-bottom: 8px;
-  font-size: 14px;
-}
 
 .required {
   color: #ef4444;

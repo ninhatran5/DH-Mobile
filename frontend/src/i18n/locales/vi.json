@@ -107,7 +107,8 @@
     "loadingHistory": "Đang tải lịch sử chat...",
     "sent": "Đã gửi",
     "seen": "Đã xem",
-    "closeModal": "Đóng"
+    "closeModal": "Đóng",
+    "tokenMessage": "Vui lòng đăng nhập để sử dụng tính năng Chat Bot và Chat với Admin"
   },
   "breadcrumbProductDetail": {
     "breadcrumbHeader": "Chi Tiết Sản Phẩm",
