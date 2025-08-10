@@ -122,7 +122,7 @@ const EditProfile = () => {
     try {
       // eslint-disable-next-line no-unused-vars
       const result = await dispatch(fetchEditProfile(dataToSend)).unwrap();
-      toast.success("Cập nhật hồ sơ thành công!");
+      toast.success(t("editProfile.updateSuccess"));
     } catch (error) {
       toast.error(error);
     }
@@ -130,7 +130,15 @@ const EditProfile = () => {
 
   const onChangeAvatar = (event) => {
     const file = event.target.files[0];
+    const maxSizeInMB = 2;
+    const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+
     if (file) {
+      if (file.size > maxSizeInBytes) {
+        toast.error(t("editProfile.validate.imageSize", { size: maxSizeInMB }));
+        event.target.value = null;
+        return;
+      }
       setPreviewImage(URL.createObjectURL(file));
       setProfileData({
         ...profileData,

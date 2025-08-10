@@ -516,6 +516,7 @@
     "selectWard": "Select Ward",
     "selectDistrict": "Select District",
     "selectCity": "Select City/Province",
+    "updateSuccess": "Profile updated successfully!",
     "validate": {
       "nameRequired": "Full name is required",
       "phoneRequired": "Phone number is required",
@@ -527,7 +528,8 @@
       "wardRequired": "Ward is required",
       "districtRequired": "District is required",
       "cityRequired": "City/Province is required",
-      "addressRequired": "Full address is required"
+      "addressRequired": "Full address is required",
+      "imageSize": "Image size must be less than {{size}}MB"
     }
   },
   "voucher": {

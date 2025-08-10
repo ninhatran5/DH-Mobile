@@ -515,6 +515,7 @@
     "selectWard": "Chọn Phường/Xã",
     "selectDistrict": "Chọn Quận/Huyện",
     "selectCity": "Chọn Tỉnh/Thành Phố",
+    "updateSuccess": "Cập nhật hồ sơ thành công!",
     "validate": {
       "nameRequired": "Họ tên là bắt buộc",
       "phoneRequired": "Số điện thoại là bắt buộc",
@@ -526,7 +527,8 @@
       "wardRequired": "Phường/Xã là bắt buộc",
       "districtRequired": "Quận/Huyện là bắt buộc",
       "cityRequired": "Tỉnh/Thành Phố là bắt buộc",
-      "addressRequired": "Địa chỉ là bắt buộc"
+      "addressRequired": "Địa chỉ là bắt buộc",
+      "imageSize": "Kích thước hình ảnh phải nhỏ hơn {{size}}MB"
     }
   },
   "voucher": {
