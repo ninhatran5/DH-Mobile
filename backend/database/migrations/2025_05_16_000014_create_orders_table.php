@@ -38,7 +38,7 @@ return new class extends Migration
                 'Đang xử lý',
                 'Đã trả hàng',
             ])->default('Chờ xác nhận');
-            
+
             $table->enum('payment_status', [
                 'Chưa thanh toán',
                 'Đã thanh toán',
@@ -48,7 +48,7 @@ return new class extends Migration
             $table->decimal('rank_discount', 11, 2)->default(0);
             $table->unsignedBigInteger('voucher_id')->nullable();
             $table->decimal('voucher_discount', 11, 2)->nullable();
-
+            $table->timestamp('delivered_at')->nullable();
             $table->dateTime('created_at')->useCurrent();
             $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
 

@@ -16,6 +16,7 @@ import { fetchProductDetail } from "../slices/productDetailSlice";
 import { fetchProductVariationDetail } from "../slices/productVariationDetails";
 import numberFomat from "../../utils/numberFormat";
 import {
+  deleteFavoriteProduct,
   fetchFavoriteProduct,
   fetchListFavorite,
 } from "../slices/favoriteProductsSlice";
@@ -227,6 +228,7 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
       await dispatch(fetchFavoriteProduct(productDetails?.data?.product_id));
       toast.success(t("toast.addedToFavorites"));
       dispatch(fetchListFavorite());
+      dispatch(fetchProductDetail(id));
     } catch (error) {
       toast.error(error || t("toast.errorAddingFavorite"));
     }
@@ -293,6 +295,20 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
     touchEventOptions: { passive: true },
     rotationAngle: 0,
   });
+
+  const handleUnFavorites = async () => {
+    if (!checkLogin()) return;
+    try {
+      await dispatch(
+        deleteFavoriteProduct(productDetails?.data?.product_id)
+      ).unwrap();
+      toast.success(t("products.removeFavorites"));
+      dispatch(fetchListFavorite());
+      dispatch(fetchProductDetail(id));
+    } catch (error) {
+      toast.error(error?.message || t("products.errorRemovingFavorite"));
+    }
+  };
 
   useEffect(() => {
     if (id) {
@@ -404,7 +420,6 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
         style={isQuickView ? { padding: 0, margin: 0 } : { marginBottom: 80 }}
       >
         <div className="row">
-          {/* Ẩn ảnh trái nếu là quick view hoặc hideExtraInfo */}
           {!isQuickView && (
             <div className="col-md-6 mb-5 position-relative">
               <div className="border rounded mb-3 p-3 text-center position-relative">
@@ -688,12 +703,22 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
               </div>
             </div>
             <div style={{ display: "flex", gap: 5 }}>
-              <button
-                onClick={addToFavorites}
-                className="btn-custom btn-favorite px-4"
-              >
-                {t("productDetail.addToFavorites")}
-              </button>
+              {productDetails?.data?.is_liked === true ? (
+                <button
+                  onClick={handleUnFavorites}
+                  className="btn-custom btn-favorite px-4"
+                >
+                  {t("productDetail.removeFavorites")}
+                </button>
+              ) : (
+                <button
+                  onClick={addToFavorites}
+                  className="btn-custom btn-favorite px-4"
+                >
+                  {t("productDetail.addToFavorites")}
+                </button>
+              )}
+
               <button
                 onClick={addToShoppingCart}
                 className="btn-custom px-4"
@@ -774,12 +799,12 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
                 {activeTab === "reviews" && <Comment reviews={reviews} />}
               </div>
             </div>
-            {!hideExtraInfo && (
+            {!hideExtraInfo && relatedProducts.length > 0 && (
               <div style={{ marginTop: 30 }}>
                 <ListProductCard
                   title={t("home.relatedProducts")}
                   desc={t("home.goToShop")}
-                  gotoShop={"/products"}
+                  gotoShop="/products"
                   products={relatedProducts}
                 />
               </div>
