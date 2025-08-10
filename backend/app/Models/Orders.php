@@ -62,8 +62,9 @@ class Orders extends Model
     public static function autoCompleteIfNeeded()
     {
         $orders = self::where('status', 'Đã giao hàng')
-            ->where('delivered_at', '<=', now()->subDays(3))
+            ->where('delivered_at', '<=', now()->subMinutes(5))
             ->get();
+
 
         foreach ($orders as $order) {
             $order->status = 'Hoàn thành';
