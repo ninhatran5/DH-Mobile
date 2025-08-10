@@ -265,7 +265,6 @@ const ChatLiveAdmin = () => {
     }
   }, [navigate]);
 
-  // ✅ Handle keyboard shortcuts
   const handleKeyDown = useCallback((e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -273,7 +272,6 @@ const ChatLiveAdmin = () => {
     }
   }, [handleSend]);
 
-  // ✅ Format message display helper
   const formatMessageDisplay = useCallback((msg) => {
     const hasText = msg.message && msg.message.trim();
     const hasAttachments = msg.attachments && msg.attachments.length > 0;
