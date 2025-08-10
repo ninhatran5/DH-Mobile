@@ -26,6 +26,8 @@ class OrderController extends Controller
 {
     public function getOrder(Request $request)
     {
+        // Tự động hoàn thành các đơn đã giao quá 3 ngày
+        Orders::autoCompleteIfNeeded();
         $user = $request->user();
         $orders = Orders::with(['paymentMethods'])
             ->orderByDesc('created_at')
@@ -59,6 +61,8 @@ class OrderController extends Controller
 
     public function getDetailOrder(Request $request, $id)
     {
+        // Tự động hoàn thành các đơn đã giao quá 3 ngày
+        Orders::autoCompleteIfNeeded();
         $user = $request->user();
         $order = Orders::with(['user', 'paymentMethods', 'orderItems.product', 'orderItems.variant.variantAttributeValues.value.attribute'])
             ->where('user_id', $user->user_id)
@@ -128,6 +132,8 @@ class OrderController extends Controller
     // quản lý đơn hàng admin
     public function adminIndex(Request $request)
     {
+        // Tự động hoàn thành các đơn đã giao quá 3 ngày
+        Orders::autoCompleteIfNeeded();
         $query = Orders::with(['user', 'paymentMethods', 'orderItems']);
 
         // Lọc theo trạng thái đơn hàng
@@ -192,6 +198,8 @@ class OrderController extends Controller
     // Xem chi tiết đơn hàng cho admin
     public function adminShow($id)
     {
+        // Tự động hoàn thành các đơn đã giao quá 3 ngày
+        Orders::autoCompleteIfNeeded();
         $order = Orders::with(['user', 'paymentMethods', 'orderItems.product', 'orderItems.variant.variantAttributeValues.value.attribute'])
             ->where('order_id', $id)
             ->first();
@@ -292,13 +300,18 @@ class OrderController extends Controller
                 'message' => 'Chuyển trạng thái không hợp lệ!'
             ], 400);
         }
-
         $order->status = $nextStatus;
-        if ($nextStatus === 'Đã giao hàng' && $order->payment_status === 'Chưa thanh toán') {
-            $order->payment_status = 'Đã thanh toán';
+
+        if ($nextStatus === 'Đã giao hàng') {
+            if ($order->payment_status === 'Chưa thanh toán') {
+                $order->payment_status = 'Đã thanh toán';
+            }
+            // Ghi lại ngày giờ giao hàng để sau này tính 3 ngày auto hoàn thành
+            $order->delivered_at = now();
         } elseif ($request->has('payment_status')) {
             $order->payment_status = $request->payment_status;
         }
+
         $order->save();
         // Broadcast event for realtime update
         event(new OrderUpdated($order, $order->user_id));
@@ -425,15 +438,15 @@ class OrderController extends Controller
                 'message' => 'Lý do hoàn hàng không hợp lệ.'
             ], 400);
         }
-      
-            if (empty($request->return_reason_other)) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Vui lòng nhập lý do hoàn hàng cụ thể.'
-                ], 400);
-            }
-              $reason2 = $request->return_reason_other;
-      
+
+        if (empty($request->return_reason_other)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Vui lòng nhập lý do hoàn hàng cụ thể.'
+            ], 400);
+        }
+        $reason2 = $request->return_reason_other;
+
 
         // Kiểm tra đã có yêu cầu hoàn hàng cho đơn này chưa
         $existingRequest = DB::table('return_requests')

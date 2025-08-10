@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\OrderUpdated;
 use Illuminate\Database\Eloquent\Model;
 
 class Orders extends Model
@@ -54,5 +55,24 @@ class Orders extends Model
     public function paymentMethods()
     {
         return $this->belongsTo(Payment_methods::class, 'method_id', 'method_id');
+    }
+
+
+
+    public static function autoCompleteIfNeeded()
+    {
+        $orders = self::where('status', 'Đã giao hàng')
+            ->where('delivered_at', '<=', now()->subDays(3))
+            ->get();
+
+        foreach ($orders as $order) {
+            $order->status = 'Hoàn thành';
+            $order->save();
+
+            // Bắn sự kiện realtime
+            event(new OrderUpdated($order, $order->user_id));
+        }
+
+        return count($orders);
     }
 }
