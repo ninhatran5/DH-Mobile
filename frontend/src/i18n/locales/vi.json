@@ -107,7 +107,8 @@
     "loadingHistory": "Đang tải lịch sử chat...",
     "sent": "Đã gửi",
     "seen": "Đã xem",
-    "closeModal": "Đóng"
+    "closeModal": "Đóng",
+    "tokenMessage": "Vui lòng đăng nhập để sử dụng tính năng Chat Bot và Chat với Admin"
   },
   "breadcrumbProductDetail": {
     "breadcrumbHeader": "Chi Tiết Sản Phẩm",
@@ -514,6 +515,7 @@
     "selectWard": "Chọn Phường/Xã",
     "selectDistrict": "Chọn Quận/Huyện",
     "selectCity": "Chọn Tỉnh/Thành Phố",
+    "updateSuccess": "Cập nhật hồ sơ thành công!",
     "validate": {
       "nameRequired": "Họ tên là bắt buộc",
       "phoneRequired": "Số điện thoại là bắt buộc",
@@ -525,7 +527,8 @@
       "wardRequired": "Phường/Xã là bắt buộc",
       "districtRequired": "Quận/Huyện là bắt buộc",
       "cityRequired": "Tỉnh/Thành Phố là bắt buộc",
-      "addressRequired": "Địa chỉ là bắt buộc"
+      "addressRequired": "Địa chỉ là bắt buộc",
+      "imageSize": "Kích thước hình ảnh phải nhỏ hơn {{size}}MB"
     }
   },
   "voucher": {
@@ -558,7 +561,7 @@
     "deleteError": "Xóa khỏi giỏ hàng thất bại",
     "paymentSuccess": "Thanh toán thành công!",
     "paymentError": "Thanh toán thất bại, vui lòng thử lại",
-    "maxOnlineAmount": "Số tiền tối đa được phép thanh toán online là 100 triệu đồng",
+    "maxOnlineAmount": "Số tiền tối đa được phép thanh toán online là 200 triệu đồng",
     "updateQuantityError": "Sản phẩm đã vượt quá số lượng của kho hàng, vui lòng cập nhật lại số lượng",
     "missingAddress": "Vui lòng cập nhật đầy đủ địa chỉ trước khi thanh toán!",
     "pending_update": "Chưa cập nhật"

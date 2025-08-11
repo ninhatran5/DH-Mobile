@@ -107,7 +107,8 @@
     "loadingHistory": "Loading chat history...",
     "sent": "Sent",
     "seen": "Seen",
-    "closeModal": "Close"
+    "closeModal": "Close",
+    "tokenMessage": "Please log in to use the Chat Bot and Chat with Admin features"
   },
   "breadcrumbProductDetail": {
     "breadcrumbHeader": "Product Details",
@@ -515,6 +516,7 @@
     "selectWard": "Select Ward",
     "selectDistrict": "Select District",
     "selectCity": "Select City/Province",
+    "updateSuccess": "Profile updated successfully!",
     "validate": {
       "nameRequired": "Full name is required",
       "phoneRequired": "Phone number is required",
@@ -526,7 +528,8 @@
       "wardRequired": "Ward is required",
       "districtRequired": "District is required",
       "cityRequired": "City/Province is required",
-      "addressRequired": "Full address is required"
+      "addressRequired": "Full address is required",
+      "imageSize": "Image size must be less than {{size}}MB"
     }
   },
   "voucher": {
@@ -559,7 +562,7 @@
     "deleteError": "Failed to remove from cart",
     "paymentSuccess": "Payment successful!",
     "paymentError": "Payment failed, please try again",
-    "maxOnlineAmount": "The maximum amount allowed for online payment is 100 million VND",
+    "maxOnlineAmount": "The maximum amount allowed for online payment is 200 million VND",
     "updateQuantityError": "Please update your full address before making the payment!",
     "pending_update": "Pending update"
   },

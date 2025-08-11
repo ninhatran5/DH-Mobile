@@ -16,6 +16,7 @@ export default function ChatWindow() {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [chatMode, setChatMode] = useState(null);
   const { profile } = useSelector((state) => state.profile);
+  const token = localStorage.getItem("token");
 
   const handleChatModeChange = (mode) => {
     setChatMode(mode);
@@ -102,13 +103,15 @@ export default function ChatWindow() {
 
               <button
                 onClick={() => handleChatModeChange("bot")}
+                disabled={!token}
                 style={{
                   padding: "15px 25px",
-                  border: "2px solid #007bff",
+                  border: token ? "2px solid #007bff" : "#007bff",
                   borderRadius: "10px",
-                  background: "#007bff",
+                  background: !token ? "#6c757d" : "#007bff",
                   color: "white",
-                  cursor: "pointer",
+                  cursor: !token ? "not-allowed" : "pointer",
+                  opacity: !token ? 0.5 : 1,
                   fontSize: "16px",
                   fontWeight: "500",
                   transition: "all 0.3s ease",
@@ -119,12 +122,17 @@ export default function ChatWindow() {
                   gap: "10px",
                 }}
                 onMouseOver={(e) => {
-                  e.target.style.background = "#0056b3";
-                  e.target.style.transform = "translateY(-2px)";
+                  if (token) {
+                    e.target.style.background = "#0056b3";
+                    e.target.style.transform = "translateY(-2px)";
+                  }
                 }}
                 onMouseOut={(e) => {
-                  e.target.style.background = "#007bff";
-                  e.target.style.transform = "translateY(0)";
+                  if (token) {
+                    // Chỉ áp dụng khi không disabled
+                    e.target.style.background = "#007bff";
+                    e.target.style.transform = "translateY(0)";
+                  }
                 }}
               >
                 🤖 {t("chatBot.chatWithBot")}
@@ -134,13 +142,15 @@ export default function ChatWindow() {
                 profile?.user?.role !== "sale" && (
                   <button
                     onClick={() => handleChatModeChange("admin")}
+                    disabled={!token}
                     style={{
                       padding: "15px 25px",
-                      border: "2px solid #28a745",
+                      border: token ? "2px solid #28a745" : "#28a745",
                       borderRadius: "10px",
-                      background: "#28a745",
+                      background: !token ? "#6c757d" : "#28a745",
                       color: "white",
-                      cursor: "pointer",
+                      cursor: !token ? "not-allowed" : "pointer",
+                      opacity: !token ? 0.5 : 1,
                       fontSize: "16px",
                       fontWeight: "500",
                       transition: "all 0.3s ease",
@@ -151,12 +161,16 @@ export default function ChatWindow() {
                       gap: "10px",
                     }}
                     onMouseOver={(e) => {
-                      e.target.style.background = "#1e7e34";
-                      e.target.style.transform = "translateY(-2px)";
+                      if (token) {
+                        e.target.style.background = "#1e7e34";
+                        e.target.style.transform = "translateY(-2px)";
+                      }
                     }}
                     onMouseOut={(e) => {
-                      e.target.style.background = "#28a745";
-                      e.target.style.transform = "translateY(0)";
+                      if (token) {
+                        e.target.style.background = "#28a745";
+                        e.target.style.transform = "translateY(0)";
+                      }
                     }}
                   >
                     👨‍💼 {t("chatBot.chatWithAdmin")}
@@ -172,9 +186,15 @@ export default function ChatWindow() {
                   lineHeight: "1.4",
                 }}
               >
-                {t("chatBot.botDescription")}
-                <br />
-                {t("chatBot.adminDescription")}
+                {token ? (
+                  <>
+                    {t("chatBot.botDescription")}
+                    <br />
+                    {t("chatBot.adminDescription")}
+                  </>
+                ) : (
+                  t("chatBot.tokenMessage")
+                )}
               </p>
             </div>
           ) : chatMode === "bot" ? (

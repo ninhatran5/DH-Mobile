@@ -165,12 +165,10 @@ export default function ListProducts({
     dispatch(fetchCategory());
   }, [dispatch]);
 
-  // Scroll to top when page/filter changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currentPage]);
 
-  // Reset page when filter changes
   useEffect(() => {
     setCurrentPage(1);
   }, [
@@ -340,23 +338,27 @@ export default function ListProducts({
                         style={{ minWidth: 180 }}
                       />
                     </div>
-                    <div className="filter-group">
-                      <label>{t("products.trademark")}:</label>
-                      <select
-                        value={selectedCategoryId}
-                        onChange={(e) => setSelectedCategoryId(e.target.value)}
-                      >
-                        <option value="">{t("products.all")}</option>
-                        {categorys?.map((category) => (
-                          <option
-                            key={category.category_id}
-                            value={category.category_id}
-                          >
-                            {category.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    {categorys.length > 0 && (
+                      <div className="filter-group">
+                        <label>{t("products.trademark")}:</label>
+                        <select
+                          value={selectedCategoryId}
+                          onChange={(e) =>
+                            setSelectedCategoryId(e.target.value)
+                          }
+                        >
+                          <option value="">{t("products.all")}</option>
+                          {categorys?.map((category) => (
+                            <option
+                              key={category.category_id}
+                              value={category.category_id}
+                            >
+                              {category.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
                     <div className="filter-group">
                       <label>{t("products.price")}:</label>
                       <select
@@ -375,48 +377,54 @@ export default function ListProducts({
                         </option>
                       </select>
                     </div>
-                    <div className="filter-group">
-                      <label>{t("products.storage")}:</label>
-                      <select
-                        value={memoryFilter}
-                        onChange={(e) => setMemoryFilter(e.target.value)}
-                      >
-                        <option value="">{t("products.all")}</option>
-                        {memoryOptions.map((mem) => (
-                          <option key={mem} value={mem}>
-                            {mem}GB
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="filter-group">
-                      <label>RAM:</label>
-                      <select
-                        value={ramFilter}
-                        onChange={(e) => setRamFilter(e.target.value)}
-                      >
-                        <option value="">{t("products.all")}</option>
-                        {ramOptions.map((ram) => (
-                          <option key={ram} value={ram}>
-                            {ram}GB
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="filter-group">
-                      <label>{t("products.color")}:</label>
-                      <select
-                        value={colorFilter}
-                        onChange={(e) => setColorFilter(e.target.value)}
-                      >
-                        <option value="">{t("products.all")}</option>
-                        {colorOptions.map((color) => (
-                          <option key={color} value={color}>
-                            {color}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    {memoryOptions.length > 0 && (
+                      <div className="filter-group">
+                        <label>{t("products.storage")}:</label>
+                        <select
+                          value={memoryFilter}
+                          onChange={(e) => setMemoryFilter(e.target.value)}
+                        >
+                          <option value="">{t("products.all")}</option>
+                          {memoryOptions.map((mem) => (
+                            <option key={mem} value={mem}>
+                              {mem}GB
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                    {ramOptions.length > 0 && (
+                      <div className="filter-group">
+                        <label>RAM:</label>
+                        <select
+                          value={ramFilter}
+                          onChange={(e) => setRamFilter(e.target.value)}
+                        >
+                          <option value="">{t("products.all")}</option>
+                          {ramOptions.map((ram) => (
+                            <option key={ram} value={ram}>
+                              {ram}GB
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                    {colorOptions.length > 0 && (
+                      <div className="filter-group">
+                        <label>{t("products.color")}:</label>
+                        <select
+                          value={colorFilter}
+                          onChange={(e) => setColorFilter(e.target.value)}
+                        >
+                          <option value="">{t("products.all")}</option>
+                          {colorOptions.map((color) => (
+                            <option key={color} value={color}>
+                              {color}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
                   </div>
                   <div className="filter-buttons">
                     <button
