@@ -664,3 +664,97 @@
   color: white;
   text-decoration: none;
 }
+/* Badge cho desktop */
+.admin_dh-trash-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin_dh-trash-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: linear-gradient(135deg, #ff4757, #c44569);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 50%;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(255, 71, 87, 0.3);
+  border: 2px solid white;
+  animation: pulse-badge 2s infinite;
+  line-height: 1;
+  z-index: 10;
+}
+
+/* Badge cho mobile */
+.admin_dh-trash-btn-mobile {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin_dh-trash-badge-mobile {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: linear-gradient(135deg, #ff4757, #c44569);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 50%;
+  min-width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(255, 71, 87, 0.3);
+  border: 1px solid white;
+  animation: pulse-badge 2s infinite;
+  line-height: 1;
+  z-index: 10;
+}
+
+/* Animation cho badge */
+@keyframes pulse-badge {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 2px 4px rgba(255, 71, 87, 0.3);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(255, 71, 87, 0.5);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 2px 4px rgba(255, 71, 87, 0.3);
+  }
+}
+
+/* Hover effects */
+.admin_dh-trash-btn:hover .admin_dh-trash-badge,
+.admin_dh-trash-btn-mobile:hover .admin_dh-trash-badge-mobile {
+  transform: scale(1.2);
+  animation-play-state: paused;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .admin_dh-trash-badge {
+    top: -6px;
+    right: -6px;
+    min-width: 16px;
+    height: 16px;
+    font-size: 10px;
+    padding: 1px 4px;
+  }
+}
