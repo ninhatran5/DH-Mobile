@@ -431,43 +431,7 @@ const RealtimeStatusIndicator = React.memo(({
     }
   }, [connectionStatus, isInitializing]);
 
-  const showDiagnostics = useCallback(async () => {
-    const diagnostics = await runDiagnostics();
-    
-    Swal.fire({
-      title: '🔍 Connection Diagnostics',
-      html: `
-        <div style="text-align: left; font-family: monospace; font-size: 12px;">
-          <h4>Environment:</h4>
-          ${Object.entries(diagnostics.environment).map(([key, value]) => 
-            `<div><strong>${key}:</strong> ${value}</div>`
-          ).join('')}
-          
-          <h4>User Info:</h4>
-          <div><strong>User ID:</strong> ${diagnostics.userInfo.userId || 'Not found'}</div>
-          <div><strong>Source:</strong> ${diagnostics.userInfo.source}</div>
-          <div><strong>Order User ID:</strong> ${diagnostics.userInfo.orderUserId}</div>
-          <div><strong>Available Keys:</strong> ${diagnostics.userInfo.availableStorageKeys.join(', ') || 'None'}</div>
-          
-          <h4>Order Info:</h4>
-          <div><strong>Has Order Data:</strong> ${diagnostics.orderInfo.hasOrderData ? 'Yes' : 'No'}</div>
-          <div><strong>Order ID:</strong> ${diagnostics.orderInfo.orderId}</div>
-          <div><strong>Channel Name:</strong> ${diagnostics.orderInfo.channelName}</div>
-          
-          <h4>Connection:</h4>
-          <div><strong>Pusher State:</strong> ${diagnostics.connection.pusherState}</div>
-          <div><strong>Channel State:</strong> ${diagnostics.connection.channelState}</div>
-          <div><strong>Socket ID:</strong> ${diagnostics.connection.socketId}</div>
-          <div><strong>Retry Count:</strong> ${diagnostics.connection.retryCount}/${diagnostics.connection.maxRetries}</div>
-          <div><strong>Is Initializing:</strong> ${diagnostics.connection.isInitializing ? 'Yes' : 'No'}</div>
-          <div><strong>Last Error:</strong> ${diagnostics.connection.lastError}</div>
-        </div>
-      `,
-      icon: 'info',
-      confirmButtonText: 'OK',
-      width: '800px'
-    });
-  }, [runDiagnostics]);
+
 
   const canRetry = ['error', 'failed', 'timeout'].includes(connectionStatus) && 
                    retryCount < maxRetries && 
@@ -498,21 +462,7 @@ const RealtimeStatusIndicator = React.memo(({
           )}
         </div>
         
-        <button 
-          onClick={showDiagnostics}
-          style={{
-            padding: '2px 6px',
-            fontSize: '10px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-          title="Xem chi tiết kết nối"
-        >
-          🔍
-        </button>
+       
         
         {canRetry && (
           <button 
@@ -682,15 +632,14 @@ const OrderDetails = () => {
         key: 'pending',
         title: 'Chờ xác nhận',
         icon: '📋',
-        description: 'Đơn hàng đã được đặt',
+        description: 'Chờ xác nhận',
         priority: 1,
-        timestamp: order.order_date
       },
       {
         key: 'confirmed',
         title: 'Đã xác nhận',
         icon: '✅',
-        description: 'Xác nhận và chuẩn bị',
+        description: 'Đã xác nhận ',
         priority: 2,
         timestamp: order.status === 'Đã xác nhận' ? (lastUpdateTime || new Date().toISOString()) : null
       },
@@ -708,7 +657,6 @@ const OrderDetails = () => {
         icon: '📦',
         description: 'Giao thành công',
         priority: 4,
-        timestamp: order.status === 'Đã giao hàng' ? (lastUpdateTime || new Date().toISOString()) : null
       },
       {
         key: 'completed',
@@ -716,7 +664,6 @@ const OrderDetails = () => {
         icon: '🎉',
         description: 'Đơn hàng hoàn tất',
         priority: 5,
-        timestamp: order.status === 'Hoàn thành' ? (lastUpdateTime || new Date().toISOString()) : null
       }
     ];
 

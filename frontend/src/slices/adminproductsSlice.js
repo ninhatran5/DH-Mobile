@@ -8,6 +8,8 @@ const initialState = {
   error: null,
   totalPages: 1,
   variantsByProductId: {},
+  trashedProductsCount: 0, // Thêm state đếm số sản phẩm trong thùng rác
+  loadingTrashedCount: false, // Thêm loading state cho count
 };
 
 export const fetchAdminProducts = createAsyncThunk(
@@ -68,7 +70,6 @@ export const softdeleteAdminProduct = createAsyncThunk(
   }
 );
 
-// Thùng rác sản phẩm
 export const fetchTrashedAdminProducts = createAsyncThunk(
   "adminproduct/fetchTrashedAdminProducts",
   async (_, { rejectWithValue }) => {
@@ -77,14 +78,27 @@ export const fetchTrashedAdminProducts = createAsyncThunk(
       const response = await axiosAdmin.get("/products/trashed", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      return response.data.data || [];
+      
+      const trashedProducts = response.data.data || [];
+      return {
+        trashedProducts,
+        count: trashedProducts.length
+      };
     } catch (err) {
+      if (err.response?.status === 404) {
+        // Thùng rác trống
+        return {
+          trashedProducts: [],
+          count: 0
+        };
+      }
       return rejectWithValue(
         err.response?.data?.message || "Lỗi khi lấy sản phẩm đã xóa"
       );
     }
   }
 );
+
 
 // Khôi phục sản phẩm đã xóa
 export const restoreAdminProduct = createAsyncThunk(
@@ -103,7 +117,6 @@ export const restoreAdminProduct = createAsyncThunk(
     }
   }
 );
-
 
 // Thêm sản phẩm
 export const addAdminProduct = createAsyncThunk(
@@ -209,6 +222,10 @@ const adminProductSlice = createSlice({
         state.trashedProducts = state.trashedProducts.filter(
           (prod) => prod.product_id !== action.payload
         );
+        // Giảm count khi xóa vĩnh viễn
+        if (state.trashedProductsCount > 0) {
+          state.trashedProductsCount -= 1;
+        }
         state.error = null;
       })
       .addCase(deleteAdminProduct.rejected, (state, action) => {
@@ -227,6 +244,8 @@ const adminProductSlice = createSlice({
         state.adminproducts = state.adminproducts.filter(
           (prod) => prod.product_id !== action.payload
         );
+        // Tăng count khi chuyển vào thùng rác
+        state.trashedProductsCount += 1;
         state.error = null;
       })
       .addCase(softdeleteAdminProduct.rejected, (state, action) => {
@@ -234,18 +253,23 @@ const adminProductSlice = createSlice({
         state.error = action.payload;
       })
 
-      // fetchTrashedAdminProducts
+      // fetchTrashedAdminProducts với count
       .addCase(fetchTrashedAdminProducts.pending, (state) => {
         state.loading = true;
+        state.loadingTrashedCount = true;
         state.error = null;
       })
       .addCase(fetchTrashedAdminProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.trashedProducts = action.payload;
+        state.loadingTrashedCount = false;
+        // Cập nhật cả danh sách và count
+        state.trashedProducts = action.payload.trashedProducts;
+        state.trashedProductsCount = action.payload.count;
         state.error = null;
       })
       .addCase(fetchTrashedAdminProducts.rejected, (state, action) => {
         state.loading = false;
+        state.loadingTrashedCount = false;
         state.error = action.payload;
       })
 
@@ -261,6 +285,10 @@ const adminProductSlice = createSlice({
         state.trashedProducts = state.trashedProducts.filter(
           (prod) => prod.product_id !== restoredId
         );
+        // Giảm count khi khôi phục
+        if (state.trashedProductsCount > 0) {
+          state.trashedProductsCount -= 1;
+        }
         state.error = null;
       })
       .addCase(restoreAdminProduct.rejected, (state, action) => {

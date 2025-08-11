@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategories, deleteCategory } from "../../slices/adminCategories";
+import { 
+  fetchCategories, 
+  deleteCategory,
+  fetchTrashedCategories,
+  selectTrashedCategoriesCount 
+} from "../../slices/adminCategories";
 import { fetchAdminProducts } from "../../slices/adminproductsSlice";
 import "../../assets/admin/Categories.css";
 import { Link } from "react-router-dom";
@@ -20,6 +25,8 @@ const CategoryList = () => {
   const dispatch = useDispatch();
   const { categories, loading, error } = useSelector((state) => state.category);
   const { adminproducts } = useSelector((state) => state.adminproduct);
+  const trashCount = useSelector(selectTrashedCategoriesCount); // Sử dụng selector
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [productCounts, setProductCounts] = useState({});
   const [isProcessing, setIsProcessing] = useState(false);
@@ -28,6 +35,7 @@ const CategoryList = () => {
   useEffect(() => {
     dispatch(fetchCategories());
     dispatch(fetchAdminProducts());
+    dispatch(fetchTrashedCategories()); // Thêm để fetch trash count
   }, [dispatch]);
 
   useEffect(() => {
@@ -68,6 +76,7 @@ const CategoryList = () => {
       );
       return;
     }
+    
     const result = await Swal.fire({
       title: "Bạn có chắc muốn xóa danh mục này không?",
       text: "Danh mục sẽ được chuyển vào thùng rác.",
@@ -77,11 +86,13 @@ const CategoryList = () => {
       cancelButtonText: "Hủy",
       reverseButtons: true,
     });
+    
     if (result.isConfirmed) {
       setIsProcessing(true);
       dispatch(deleteCategory(id))
         .then(() => {
           dispatch(fetchCategories());
+          dispatch(fetchTrashedCategories()); // Refresh trash count
           Swal.fire({
             icon: "success",
             title: "Đã xóa danh mục thành công!",
@@ -116,13 +127,11 @@ const CategoryList = () => {
     </>
   );
 
-  // ========== RENDER HEADER ==========
   const renderHeader = () => (
     <div className="admin_dh-categories-header">
       <div className="admin_dh-header-content">
         <h2 className="admin_dh-categories-title">Danh sách danh mục</h2>
 
-        {/* Desktop Toolbar */}
         <div className="admin_dh-toolbar-desktop">
           <div className="admin_dh-search-wrapper">
             <FaSearch className="admin_dh-search-icon" />
@@ -134,10 +143,16 @@ const CategoryList = () => {
               className="admin_dh-search-input"
             />
           </div>
+          
+          {/* Button thùng rác với badge */}
           <Link to="/admin/trashcategories" className="admin_dh-trash-btn">
             <FaTrash />
             <span>Thùng rác</span>
+            {trashCount > 0 && (
+              <span className="admin_dh-trash-badge">{trashCount}</span>
+            )}
           </Link>
+          
           <Link to="/admin/Addcategories" className="admin_dh-add-btn">
             <FaPlus />
             <span>Thêm danh mục</span>
@@ -156,7 +171,7 @@ const CategoryList = () => {
         </div>
       </div>
 
-      {/* Mobile Toolbar */}
+      {/* Mobile Toolbar với badge */}
       <div
         className={`admin_dh-toolbar-mobile ${showMobileFilters ? "show" : ""}`}
       >
@@ -177,6 +192,9 @@ const CategoryList = () => {
           >
             <FaTrash />
             <span>Thùng rác</span>
+            {trashCount > 0 && (
+              <span className="admin_dh-trash-badge-mobile">{trashCount}</span>
+            )}
           </Link>
           <Link to="/admin/Addcategories" className="admin_dh-add-btn-mobile">
             <FaPlus />

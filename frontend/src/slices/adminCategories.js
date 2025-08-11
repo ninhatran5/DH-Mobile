@@ -4,9 +4,12 @@ import { axiosAdmin } from "../../utils/axiosConfig";
 const initialState = {
   categories: [],
   trashedCategories: [],
+  trashedProducts: [],
   loading: false,
   error: null,
 };
+
+// ========== ASYNC THUNKS ==========
 
 export const fetchCategories = createAsyncThunk(
   "category/fetchCategories",
@@ -33,6 +36,23 @@ export const fetchTrashedCategories = createAsyncThunk(
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Lỗi khi lấy danh mục đã xóa");
+    }
+  }
+);
+
+export const fetchTrashedProducts = createAsyncThunk(
+  "category/fetchTrashedProducts",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      const res = await axiosAdmin.get("/products/trashed", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return res.data.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Lỗi khi lấy sản phẩm đã xóa");
     }
   }
 );
@@ -143,12 +163,24 @@ export const forceDeleteCategory = createAsyncThunk(
   }
 );
 
+// ========== SLICE ==========
+
 const categorySlice = createSlice({
   name: "category",
   initialState,
-  reducers: {},
+  reducers: {
+    // Reset error state
+    clearError: (state) => {
+      state.error = null;
+    },
+    // Reset loading state
+    clearLoading: (state) => {
+      state.loading = false;
+    },
+  },
   extraReducers: (builder) => {
     builder
+      // Fetch Categories
       .addCase(fetchCategories.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -161,6 +193,8 @@ const categorySlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
+      // Fetch Trashed Categories
       .addCase(fetchTrashedCategories.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -173,6 +207,22 @@ const categorySlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      
+      // Fetch Trashed Products
+      .addCase(fetchTrashedProducts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchTrashedProducts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.trashedProducts = action.payload;
+      })
+      .addCase(fetchTrashedProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      
+      // Delete Category
       .addCase(deleteCategory.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -193,22 +243,52 @@ const categorySlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
+      // Add Category
+      .addCase(addCategory.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(addCategory.fulfilled, (state, action) => {
+        state.loading = false;
         state.categories.push(action.payload);
       })
+      .addCase(addCategory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Update Category
+      .addCase(updateCategory.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(updateCategory.fulfilled, (state, action) => {
+        state.loading = false;
         const updatedCategory = action.payload;
         const index = state.categories.findIndex(cat => cat.category_id === updatedCategory.category_id);
         if (index !== -1) {
           state.categories[index] = updatedCategory;
         }
       })
+      .addCase(updateCategory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Restore Category
       .addCase(restoreCategory.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(restoreCategory.fulfilled, (state, action) => {
         state.loading = false;
+        const restoredCategory = state.trashedCategories.find(
+          (cat) => cat.category_id === action.payload
+        );
+        if (restoredCategory) {
+          state.categories.push(restoredCategory);
+        }
         state.trashedCategories = state.trashedCategories.filter(
           (cat) => cat.category_id !== action.payload
         );
@@ -217,6 +297,8 @@ const categorySlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
+      // Force Delete Category
       .addCase(forceDeleteCategory.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -233,5 +315,33 @@ const categorySlice = createSlice({
       });
   },
 });
+
+// ========== SELECTORS ==========
+
+export const selectTrashedCategoriesCount = (state) => {
+  return state.category.trashedCategories.length;
+};
+
+export const selectTrashedProductCountByCategory = (state) => {
+  const counts = {};
+  state.category.trashedProducts.forEach((product) => {
+    counts[product.category_id] = (counts[product.category_id] || 0) + 1;
+  });
+  return counts;
+};
+
+export const selectTotalTrashedProducts = (state) => {
+  return state.category.trashedProducts.length;
+};
+
+export const selectCategoryById = (state, categoryId) => {
+  return state.category.categories.find(cat => cat.category_id === categoryId);
+};
+
+export const selectTrashedCategoryById = (state, categoryId) => {
+  return state.category.trashedCategories.find(cat => cat.category_id === categoryId);
+};
+
+export const { clearError, clearLoading } = categorySlice.actions;
 
 export default categorySlice.reducer;

@@ -9,6 +9,7 @@ import {
   fetchAdminProducts,
   softdeleteAdminProduct,
   fetchProductVariants,
+  fetchTrashedAdminProducts, // Đã đúng
 } from "../../slices/adminproductsSlice";
 import { fetchCategories } from "../../slices/adminCategories";
 import { toast } from "react-toastify";
@@ -18,9 +19,13 @@ import Loading from "../../components/Loading";
 
 const ProductList = () => {
   const dispatch = useDispatch();
-  const { adminproducts, loading, error } = useSelector(
-    (state) => state.adminproduct
-  );
+  const { 
+    adminproducts, 
+    loading, 
+    error,
+    trashedProductsCount, // Đảm bảo state này có trong Redux slice
+    loadingTrashedCount // Có thể thêm state này để hiển thị loading
+  } = useSelector((state) => state.adminproduct);
   const { categories } = useSelector((state) => state.category);
   const { adminProfile } = useSelector((state) => state.adminProfile);
 
@@ -54,6 +59,7 @@ const ProductList = () => {
     dispatch(fetchAdminProducts());
     dispatch(fetchCategories());
     dispatch(fetchProfileAdmin());
+    dispatch(fetchTrashedAdminProducts()); // Đúng - sẽ lấy cả danh sách và count
   }, [dispatch, error]);
 
   useEffect(() => {
@@ -114,8 +120,9 @@ const ProductList = () => {
         
         await Promise.all(deletePromises);
         
-        // Refresh danh sách sản phẩm
+        // Refresh danh sách sản phẩm và count
         await dispatch(fetchAdminProducts());
+        await dispatch(fetchTrashedAdminProducts()); // Đúng - cập nhật cả danh sách và count
         
         // Reset selection
         setSelectedProducts([]);
@@ -148,7 +155,6 @@ const ProductList = () => {
 
   // Hàm xóa một sản phẩm
   const handleDeleteSingle = async (productId) => {
-    // Tìm sản phẩm để lấy tên
     const product = adminproducts.find(p => p.product_id === productId);
     const productName = product?.name || "sản phẩm này";
 
@@ -170,8 +176,9 @@ const ProductList = () => {
         // Thực hiện xóa mềm
         await dispatch(softdeleteAdminProduct(productId)).unwrap();
         
-        // Refresh danh sách sản phẩm
+        // Refresh danh sách sản phẩm và count
         await dispatch(fetchAdminProducts());
+        await dispatch(fetchTrashedAdminProducts()); // Đúng - cập nhật cả danh sách và count
         
         // Nếu sản phẩm này đang được chọn, bỏ chọn nó
         if (selectedProducts.includes(productId)) {
@@ -293,10 +300,14 @@ const ProductList = () => {
             <p className="ProductsList1-subtitle">Quản lý danh sách sản phẩm của bạn</p>
           </div>
           <div className="ProductsList1-action-buttons">
-            <Link to="/admin/trashproduct" className="ProductsList1-btn ProductsList1-btn-outline-danger">
-              <i className="bi bi-trash"></i>
-              <span>Thùng rác</span>
-            </Link>
+          <Link to="/admin/trashproduct" className="ProductsList1-btn ProductsList1-btn-outline-danger">
+  <i className="bi bi-trash"></i>
+  <span className="ProductsList1-trash-text">
+    Thùng rác
+    <span className="ProductsList1-trash-count-badge">{trashedProductsCount || 0}</span>
+  </span>
+</Link>
+
             {checkRole !== "sale" && (
               <Link to="/admin/addproduct" className="ProductsList1-btn ProductsList1-btn-primary">
                 <i className="bi bi-plus-lg"></i>

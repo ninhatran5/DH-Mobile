@@ -104,7 +104,6 @@ const ListUser = () => {
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
-  // Pagination logic for mobile
   const getPaginationRange = () => {
     const range = [];
     const showPages = 3; // Show 3 pages on mobile
@@ -123,7 +122,6 @@ const ListUser = () => {
 
   return (
     <div className="adminuser-container">
-      {/* Header */}
       <div className="adminuser-header">
         <div className="adminuser-header-content">
           <h1 className="adminuser-title">Danh sách User</h1>
