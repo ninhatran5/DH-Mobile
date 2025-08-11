@@ -121,20 +121,8 @@ const ProfileAdmin = () => {
             </div>
           </div>
 
-          <h1 className="profile-name">{full_name || "Không rõ tên"}</h1>
-          <div className="profile-info">
-            <p>@{username}</p>
-            <span className="role">
-              <FaUserTie className="icon-detailacccount" style={{ color: '#17a2b8' }} />
-              {role}
-            </span>
-           
-            <span className="points">
-              <FaCoins className="icon-detailacccount" style={{ color: '#28a745' }} />
-              {loyalty_points} điểm
-            </span>
-          </div>
-
+          <h1 className="profile-name">{username || "Không rõ tên"}</h1>
+          
          
 
           <div className="tongthe11">
@@ -154,31 +142,20 @@ const ProfileAdmin = () => {
                   <div>
                     <p style={{ fontWeight: 'bold', color: '#000' }}>Số điện thoại: {phone}</p>
                   </div>
+                   <div className="item">
+               <span>
+  <FaUser className="icon-detailacccount" style={{ color: '#6c757d' }} />
+  Họ và tên
+</span>
+<p style={{ fontWeight: 'bold', color: '#000' }}>
+  {full_name || "Không rõ tên"}
+</p>
+              </div>
                 </div>
               </div>
             </div>
 
             <div className="section">
-              <h3 className="section-title">
-               <span> <FaUserCog className="icon-detailacccount" style={{ color: '#17a2b8', fontWeight: 'bold' }} />
-                Chi tiết tài khoản</span>
-              </h3>
-              <div className="section-content">
-                <div className="item">
-                  <span className="role" style={{ fontWeight: 'bold' }}>Vai trò: {role}</span>
-                </div>
-                <div className="item">
-                  <span className="tier" style={{ fontWeight: 'bold' }}>Hạng thành viên: Hạng {tier_id}</span>
-                </div>
-                <div className="item">
-                  <span style={{ fontWeight: 'bold' }}>Điểm tích lũy: {loyalty_points} điểm</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <br />
-          <div className="section">
             <h3 className="section-title">
             <span>  <FaMapMarkerAlt className="icon-detailacccount" style={{ color: '#dc3545' }} />
               Thông tin địa chỉ</span>
@@ -191,7 +168,6 @@ const ProfileAdmin = () => {
                 </span>
                 <p style={{ fontWeight: 'bold', color: '#000' }}>{address}</p>
               </div>
-
               <div className="item">
                 <FaLocationArrow className="icon-detailacccount" style={{ color: '#28a745' }} /> Vị trí
                 <div>
@@ -202,6 +178,11 @@ const ProfileAdmin = () => {
               </div>
             </div>
           </div>
+
+          </div>
+          
+          <br />
+        
 
           <div className="section timeline">
             <h3 className="section-title">
