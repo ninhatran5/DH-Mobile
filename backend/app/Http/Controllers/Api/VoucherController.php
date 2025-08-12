@@ -21,43 +21,61 @@ class VoucherController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
-    {
-        $query = Voucher::query();
+public function index(Request $request)
+{
+    // Lấy user nếu có token, không có thì null
+    $userId = auth('sanctum')->user()?->user_id;
 
-        // Lọc theo trạng thái is_active nếu có
-        if ($request->has('is_active')) {
-            $query->where('is_active', $request->input('is_active'));
-        }
+    $query = Voucher::query();
 
-        // Hiển thị voucher đã xóa mềm (trashed = 1 => chỉ trashed, all => cả hai)
-        if ($request->input('trashed') === 'only') {
-            $query->onlyTrashed();
-        } elseif ($request->input('trashed') === 'with') {
-            $query->withTrashed();
-        }
-
-        $voucher = $query->orderBy('created_at', 'desc')->paginate(10);
-
-        // Định dạng discount_amount
-        $formattedVouchers = $voucher->map(function ($item) {
-            $item->discount_amount = number_format($item->discount_amount, 0, '.', '');
-            return $item;
-        });
-
-        return response()->json([
-            'message' => 'Lấy danh sách voucher thành công',
-            'data' => $formattedVouchers,
-            'meta' => [
-                'current_page' => $voucher->currentPage(),
-                'last_page' => $voucher->lastPage(),
-                'per_page' => $voucher->perPage(),
-                'total' => $voucher->total(),
-            ],
-            'status' => 200
-        ], 200);
+    if ($userId) {
+        $query->leftJoin('user_vouchers', function ($join) use ($userId) {
+            $join->on('vouchers.voucher_id', '=', 'user_vouchers.voucher_id')
+                 ->where('user_vouchers.user_id', '=', $userId);
+        })
+        ->addSelect(
+            'vouchers.*',
+            DB::raw('CASE WHEN user_vouchers.user_voucher_id IS NOT NULL THEN 1 ELSE 0 END AS is_saved')
+        );
+    } else {
+        $query->addSelect(
+            'vouchers.*',
+            DB::raw('0 AS is_saved')
+        );
     }
 
+    // Lọc trạng thái
+    if ($request->has('is_active')) {
+        $query->where('vouchers.is_active', $request->input('is_active'));
+    }
+
+    // Soft delete filter
+    if ($request->input('trashed') === 'only') {
+        $query->onlyTrashed();
+    } elseif ($request->input('trashed') === 'with') {
+        $query->withTrashed();
+    }
+
+    $voucher = $query->orderBy('vouchers.created_at', 'desc')->paginate(10);
+
+    // Format discount_amount
+    $voucher->getCollection()->transform(function ($item) {
+        $item->discount_amount = number_format($item->discount_amount, 0, '.', '');
+        return $item;
+    });
+
+    return response()->json([
+        'message' => 'Lấy danh sách voucher thành công',
+        'data' => $voucher->items(),
+        'meta' => [
+            'current_page' => $voucher->currentPage(),
+            'last_page' => $voucher->lastPage(),
+            'per_page' => $voucher->perPage(),
+            'total' => $voucher->total(),
+        ],
+        'status' => 200
+    ], 200);
+}
     /**
      * @OA\Post(
      *     path="/api/voucher",
