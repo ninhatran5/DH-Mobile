@@ -634,18 +634,19 @@ class OrderController extends Controller
         $order->save();
         // Nếu đã trả bằng ví thì hoàn tiền lại vào ví
         if ($order->paid_by_wallet > 0) {
-            $wallet = Wallet::where('user_id', $order->user_id)->first();
-            if ($wallet) {
-                $wallet->balance += $order->paid_by_wallet;
-                $wallet->save();
+            $wallet = Wallet::firstOrCreate(
+                ['user_id' => $order->user_id],
+                ['balance' => 0.00]
+            );
+            $wallet->balance += $order->paid_by_wallet;
+            $wallet->save();
 
-                WalletTransaction::create([
-                    'wallet_id' => $wallet->wallet_id,
-                    'type' => 'hoàn tiền',
-                    'amount' => $order->paid_by_wallet,
-                    'note' => 'Hoàn tiền do hủy đơn hàng #' . $order->order_code
-                ]);
-            }
+            WalletTransaction::create([
+                'wallet_id' => $wallet->wallet_id,
+                'type' => 'hoàn tiền',
+                'amount' => $order->paid_by_wallet,
+                'note' => 'Hoàn tiền do hủy đơn hàng #' . $order->order_code
+            ]);
         }
         // Broadcast event for realtime update
         event(new OrderUpdated($order, $order->user_id));
@@ -1033,18 +1034,19 @@ class OrderController extends Controller
 
         // Nếu đã trả bằng ví thì hoàn tiền lại vào ví
         if ($order->paid_by_wallet > 0) {
-            $wallet = Wallet::where('user_id', $order->user_id)->first();
-            if ($wallet) {
-                $wallet->balance += $order->paid_by_wallet;
-                $wallet->save();
+            $wallet = Wallet::firstOrCreate(
+                ['user_id' => $order->user_id],
+                ['balance' => 0.00]
+            );
+            $wallet->balance += $order->paid_by_wallet;
+            $wallet->save();
 
-                WalletTransaction::create([
-                    'wallet_id' => $wallet->wallet_id,
-                    'type' => 'hoàn tiền',
-                    'amount' => $order->paid_by_wallet,
-                    'note' => 'Hoàn tiền do hủy đơn hàng #' . $order->order_code
-                ]);
-            }
+            WalletTransaction::create([
+                'wallet_id' => $wallet->wallet_id,
+                'type' => 'hoàn tiền',
+                'amount' => $order->paid_by_wallet,
+                'note' => 'Hoàn tiền do hủy đơn hàng #' . $order->order_code
+            ]);
         }
         // Broadcast event for realtime update
         event(new OrderUpdated($order, $order->user_id));

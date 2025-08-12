@@ -10,7 +10,8 @@ import { useDispatch } from "react-redux";
 import { fetchVoucher, saveVoucher } from "../slices/voucherSlice";
 import Swal from "sweetalert2";
 import numberFormat from "../../utils/numberFormat";
-import { MdBlockFlipped } from "react-icons/md";
+import { isSaved } from "../../utils/consts";
+import { IoMdCheckmark } from "react-icons/io";
 
 const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
   const inputRef = useRef(null);
@@ -78,10 +79,9 @@ const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
         <div className="userVoucher-content">
           <div className="userVoucher-copyBtn">
             {isMyVoucher ? (
-              voucher.is_active === 1 ? (
+              voucher.is_saved === isSaved ? (
                 <div className="userVoucher-icon-wrapper">
-                  <MdBlockFlipped className="userVoucher-icon" />
-
+                  <IoMdCheckmark className="userVoucher-icon" />
                   <span className="userVoucher-tooltip">
                     {t("voucher.iconSaveClose")}
                   </span>
@@ -98,7 +98,7 @@ const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
                 </div>
               ) : (
                 <div className="userVoucher-out-of-stock">
-                  <span>Đã hết mã</span>
+                  <span> {t("voucher.voucherSoldOut")}</span>
                 </div>
               )
             ) : (

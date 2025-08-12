@@ -21,43 +21,61 @@ class VoucherController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
-    {
-        $query = Voucher::query();
+public function index(Request $request)
+{
+    // Lấy user nếu có token, không có thì null
+    $userId = auth('sanctum')->user()?->user_id;
 
-        // Lọc theo trạng thái is_active nếu có
-        if ($request->has('is_active')) {
-            $query->where('is_active', $request->input('is_active'));
-        }
+    $query = Voucher::query();
 
-        // Hiển thị voucher đã xóa mềm (trashed = 1 => chỉ trashed, all => cả hai)
-        if ($request->input('trashed') === 'only') {
-            $query->onlyTrashed();
-        } elseif ($request->input('trashed') === 'with') {
-            $query->withTrashed();
-        }
-
-        $voucher = $query->orderBy('created_at', 'desc')->paginate(10);
-
-        // Định dạng discount_amount
-        $formattedVouchers = $voucher->map(function ($item) {
-            $item->discount_amount = number_format($item->discount_amount, 0, '.', '');
-            return $item;
-        });
-
-        return response()->json([
-            'message' => 'Lấy danh sách voucher thành công',
-            'data' => $formattedVouchers,
-            'meta' => [
-                'current_page' => $voucher->currentPage(),
-                'last_page' => $voucher->lastPage(),
-                'per_page' => $voucher->perPage(),
-                'total' => $voucher->total(),
-            ],
-            'status' => 200
-        ], 200);
+    if ($userId) {
+        $query->leftJoin('user_vouchers', function ($join) use ($userId) {
+            $join->on('vouchers.voucher_id', '=', 'user_vouchers.voucher_id')
+                 ->where('user_vouchers.user_id', '=', $userId);
+        })
+        ->addSelect(
+            'vouchers.*',
+            DB::raw('CASE WHEN user_vouchers.user_voucher_id IS NOT NULL THEN 1 ELSE 0 END AS is_saved')
+        );
+    } else {
+        $query->addSelect(
+            'vouchers.*',
+            DB::raw('0 AS is_saved')
+        );
     }
 
+    // Lọc trạng thái
+    if ($request->has('is_active')) {
+        $query->where('vouchers.is_active', $request->input('is_active'));
+    }
+
+    // Soft delete filter
+    if ($request->input('trashed') === 'only') {
+        $query->onlyTrashed();
+    } elseif ($request->input('trashed') === 'with') {
+        $query->withTrashed();
+    }
+
+    $voucher = $query->orderBy('vouchers.created_at', 'desc')->paginate(10);
+
+    // Format discount_amount
+    $voucher->getCollection()->transform(function ($item) {
+        $item->discount_amount = number_format($item->discount_amount, 0, '.', '');
+        return $item;
+    });
+
+    return response()->json([
+        'message' => 'Lấy danh sách voucher thành công',
+        'data' => $voucher->items(),
+        'meta' => [
+            'current_page' => $voucher->currentPage(),
+            'last_page' => $voucher->lastPage(),
+            'per_page' => $voucher->perPage(),
+            'total' => $voucher->total(),
+        ],
+        'status' => 200
+    ], 200);
+}
     /**
      * @OA\Post(
      *     path="/api/voucher",
@@ -305,12 +323,11 @@ class VoucherController extends Controller
     }
 
     // lưu voucher 
-    public function saveVoucherForUser(Request $request, $id)
+    public function saveVoucherForUser(Request $request, $voucher_id)
     {
         $user = $request->user();
-        $voucher_id = $id;
 
-        // Kiểm tra voucher tồn tại, còn hiệu lực và còn số lượng
+        // 1. Kiểm tra voucher có tồn tại, còn hiệu lực và còn số lượng
         $voucher = Voucher::where('voucher_id', $voucher_id)
             ->where('is_active', 1)
             ->where('start_date', '<=', now())
@@ -319,24 +336,35 @@ class VoucherController extends Controller
             ->first();
 
         if (!$voucher) {
-            return response()->json(['message' => 'Voucher không hợp lệ, đã hết hạn hoặc hết số lượng'], 404);
+            return response()->json([
+                'message' => 'Voucher không hợp lệ, đã hết hạn hoặc hết số lượng'
+            ], 404);
         }
 
-        // Kiểm tra user đã lưu voucher này chưa
-        if (User_vouchers::where('user_id', $user->user_id)->where('voucher_id', $voucher_id)->exists()) {
-            return response()->json(['message' => 'Bạn đã lưu voucher này rồi'], 409);
+        // 2. Kiểm tra user đã lưu voucher này chưa
+        $exists = User_vouchers::where('user_id', $user->user_id)
+            ->where('voucher_id', $voucher_id)
+            ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'message' => 'Bạn đã lưu voucher này rồi'
+            ], 409);
         }
 
-        // Sử dụng transaction để đảm bảo an toàn dữ liệu
+        // 3. Lưu voucher và giảm số lượng
         $userVoucher = DB::transaction(function () use ($user, $voucher_id, $voucher) {
-            $userVoucher = User_vouchers::create([
+            $saved = User_vouchers::create([
                 'user_id' => $user->user_id,
                 'voucher_id' => $voucher_id,
                 'is_used' => 0,
             ]);
+
             $voucher->decrement('quantity');
-            $userVoucher->load('voucher');
-            return $userVoucher;
+
+            $saved->load('voucher');
+
+            return $saved;
         });
 
         return response()->json([
@@ -344,6 +372,7 @@ class VoucherController extends Controller
             'data' => $userVoucher
         ], 201);
     }
+
 
     // lấy danh sách voucher đã lưu
     public function getSavedVouchersForUser(Request $request)
