@@ -779,7 +779,7 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
                         padding: "12px 0",
                         borderBottom: "1px dashed #eee",
                         display: "flex",
-                        fontSize: 16,
+                        fontSize: 15.5,
                       }}
                     >
                       <span

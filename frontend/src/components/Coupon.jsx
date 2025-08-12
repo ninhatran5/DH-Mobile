@@ -77,11 +77,10 @@ const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
 
         <div className="userVoucher-content">
           <div className="userVoucher-copyBtn">
-            {isMyVoucher ? (
+            {/* {isMyVoucher ? (
               voucher.is_active === 1 ? (
                 <div className="userVoucher-icon-wrapper">
                   <MdBlockFlipped className="userVoucher-icon" />
-
                   <span className="userVoucher-tooltip">
                     {t("voucher.iconSaveClose")}
                   </span>
@@ -109,6 +108,18 @@ const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
                 />
                 <span className="userVoucher-tooltip">
                   {t("voucher.iconCopy")}
+                </span>
+              </div>
+            )} */}
+
+            {isMyVoucher && (
+              <div className="userVoucher-icon-wrapper">
+                <HiSave
+                  onClick={handleSaveVoucher}
+                  className="userVoucher-icon"
+                />
+                <span className="userVoucher-tooltip">
+                  {t("voucher.iconSave")}
                 </span>
               </div>
             )}
