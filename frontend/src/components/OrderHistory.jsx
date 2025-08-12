@@ -12,6 +12,7 @@ import ReturnRequestModal from "./ReturnRequestModal";
 import ReviewModal from "./ReviewModal";
 import { useDispatch } from "react-redux";
 import "../assets/css/order-history.css";
+import { Tooltip } from "react-tooltip";
 import {
   fetchOrder,
   fetchOrderDetail,
@@ -52,7 +53,7 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
         setOrderData((prev) => ({
           ...prev,
           status: returnData.data.status,
-          payment_status: returnData.data.payment_status, 
+          payment_status: returnData.data.payment_status,
           return_status: returnData.data.return_status,
         }));
       }
@@ -188,8 +189,28 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
           <td style={{ fontWeight: 600 }}>
             {NumberFormat(orderData?.total_amount)}
           </td>
-          <td className={getStatusClass(orderData?.status)}>
-            {orderData?.status}
+          <td>
+            <span
+              data-tooltip-id={`status-tooltip-${orderData.order_id}`}
+              data-tooltip-content={orderData?.status}
+              className={getStatusClass(orderData?.status)}
+            >
+              {orderData?.status}
+            </span>
+            <Tooltip
+              id={`status-tooltip-${orderData.order_id}`}
+              place="top"
+              effect="solid"
+              style={{
+                fontSize: "14px",
+                padding: "5px 10px",
+                zIndex: 9999,
+                backgroundColor: "#333",
+                color: "#fff",
+                borderRadius: "4px",
+                boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+              }}
+            />
           </td>
           <td>
             <TooltipIcon
