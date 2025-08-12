@@ -11,6 +11,7 @@ import { fetchVoucher, saveVoucher } from "../slices/voucherSlice";
 import Swal from "sweetalert2";
 import numberFormat from "../../utils/numberFormat";
 import { MdBlockFlipped } from "react-icons/md";
+import { isSaved } from "../../utils/consts";
 
 const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
   const inputRef = useRef(null);
@@ -77,8 +78,8 @@ const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
 
         <div className="userVoucher-content">
           <div className="userVoucher-copyBtn">
-            {/* {isMyVoucher ? (
-              voucher.is_active === 1 ? (
+            {isMyVoucher ? (
+              voucher.is_saved === isSaved ? (
                 <div className="userVoucher-icon-wrapper">
                   <MdBlockFlipped className="userVoucher-icon" />
                   <span className="userVoucher-tooltip">
@@ -108,18 +109,6 @@ const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
                 />
                 <span className="userVoucher-tooltip">
                   {t("voucher.iconCopy")}
-                </span>
-              </div>
-            )} */}
-
-            {isMyVoucher && (
-              <div className="userVoucher-icon-wrapper">
-                <HiSave
-                  onClick={handleSaveVoucher}
-                  className="userVoucher-icon"
-                />
-                <span className="userVoucher-tooltip">
-                  {t("voucher.iconSave")}
                 </span>
               </div>
             )}
