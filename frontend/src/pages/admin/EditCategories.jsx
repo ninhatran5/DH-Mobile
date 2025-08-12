@@ -77,19 +77,59 @@ const EditCategory = () => {
         onChange={(e) => setDescription(e.target.value)}
       />
 
-      <label className="admin-edit-categories-label">Hình ảnh</label>
-      <input
-        type="file"
-        accept="image/*"
-        className="admin-edit-categories-input"
-        onChange={handleFileChange}
-      />
-
-      {imagePreview && (
-        <div className="admin-edit-categories-image-preview">
-          <img src={imagePreview} alt="Xem trước" />
+   <label className="admin-edit-categories-label">Ảnh sản phẩm *</label>
+<div className="admin-edit-categories-file-upload-container">
+  <input
+    type="file"
+    accept="image/*"
+    className="admin-edit-categories-file-input"
+    onChange={handleFileChange}
+    id="file-upload"
+  />
+  <label htmlFor="file-upload" className={`admin-edit-categories-file-upload-label ${imagePreview ? 'has-preview' : ''}`}>
+    {!imagePreview ? (
+      // Hiển thị icon upload khi chưa có ảnh
+      <>
+        <div className="admin-edit-categories-upload-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.89 22 5.99 22H18C19.1 22 20 21.1 20 20V8L14 2Z" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <polyline points="14,2 14,8 20,8" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </div>
-      )}
+        <div className="admin-edit-categories-upload-text">
+          <p className="admin-edit-categories-upload-main">Chọn ảnh sản phẩm</p>
+          <p className="admin-edit-categories-upload-sub">JPG, PNG, GIF (tối đa 5MB)</p>
+        </div>
+      </>
+    ) : (
+      // Hiển thị ảnh preview khi đã có ảnh
+      <div className="admin-edit-categories-image-preview-container">
+        <img src={imagePreview} alt="Xem trước" className="admin-edit-categories-preview-image" />
+        <div className="admin-edit-categories-preview-overlay">
+          <div className="admin-edit-categories-preview-text">
+            <p>Nhấp để thay đổi ảnh</p>
+          </div>
+          <button 
+            type="button"
+            className="admin-edit-categories-remove-image"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setImageFile(null);
+              setImagePreview(null);
+              const fileInput = document.getElementById('file-upload');
+              if (fileInput) fileInput.value = '';
+            }}
+            title="Xóa ảnh"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+    )}
+  </label>
+</div>
+
 
       <button type="submit" className="admin-edit-categories-button">
         Lưu thay đổi
