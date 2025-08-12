@@ -678,25 +678,71 @@ const AdminProductEdit = () => {
     );
   }, []);
 
-  const handleUpdateSpecifications = useCallback(async () => {
-    try {
-      await Promise.all(
-        specificationsData.map(spec =>
-          dispatch(updateAdminProductSpecification({
-            id: spec.spec_id,
-            updatedData: {
-              product_id: spec.product_id,
-              spec_name: spec.spec_name,
-              spec_value: spec.spec_value,
-            }
-          }))
-        )
-      );
-      toast.success("Cập nhật thông số kỹ thuật thành công!");
-    } catch (err) {
-      toast.error("Cập nhật thông số kỹ thuật thất bại: " + err);
+const handleUpdateSpecifications = useCallback(async () => {
+  try {
+    // Hiển thị loading toast
+    const loadingToast = toast.loading("Đang cập nhật thông số kỹ thuật...");
+    
+    // Lọc ra các specs có dữ liệu hợp lệ
+    const validSpecs = specificationsData.filter(spec => 
+      spec.spec_id && 
+      spec.spec_name?.trim() && 
+      spec.spec_value?.trim()
+    );
+
+    if (validSpecs.length === 0) {
+      toast.dismiss(loadingToast);
+      toast.warning("Không có thông số kỹ thuật hợp lệ để cập nhật!");
+      return;
     }
-  }, [dispatch, specificationsData]);
+
+    // Cập nhật từng thông số
+    const updatePromises = validSpecs.map(spec =>
+      dispatch(updateAdminProductSpecification({
+        id: spec.spec_id,
+        updatedData: {
+          product_id: spec.product_id,
+          spec_name: spec.spec_name.trim(),
+          spec_value: spec.spec_value.trim(),
+        }
+      })).unwrap() // Sử dụng unwrap() để catch error từ từng promise
+    );
+
+    await Promise.all(updatePromises);
+    
+    // Đóng loading toast và hiển thị success
+    toast.dismiss(loadingToast);
+    toast.success(`Cập nhật ${validSpecs.length} thông số kỹ thuật thành công!`, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+
+    // Reload data để đảm bảo đồng bộ
+    await dispatch(fetchAdminProductSpecifications());
+    
+  } catch (err) {
+    // Đóng loading toast nếu có lỗi
+    toast.dismiss();
+    
+    // Hiển thị error toast với thông tin chi tiết
+    const errorMessage = err?.message || err?.toString() || "Lỗi không xác định";
+    toast.error(`Cập nhật thông số thất bại: ${errorMessage}`, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+    
+    console.error("Update specifications error:", err);
+  }
+}, [dispatch, specificationsData]);
+
 
   const handleAddSpecification = useCallback(async (e) => {
     e.preventDefault();
@@ -1063,18 +1109,7 @@ const AdminProductEdit = () => {
                       </select>
                     </div>
 
-                    <div className="admineditproduct-form-group mb-3">
-                      <label className="form-label fw-medium">Trạng thái</label>
-                      <select
-                        name="status"
-                        value={formData.status}
-                        onChange={handleInputChange}
-                        className="form-select"
-                      >
-                        <option value="Còn hàng">Còn hàng</option>
-                        <option value="Hết hàng">Hết hàng</option>
-                      </select>
-                    </div>
+                    
                   </div>
 
                   {/* Cột phải - Upload ảnh (giữ nguyên từ code gốc) */}
