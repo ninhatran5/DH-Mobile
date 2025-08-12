@@ -68,7 +68,7 @@ class ChatbotController extends Controller
             $cached = Cache::get($cacheKey);
 
             // **BROADCAST CACHED RESPONSE**
-            broadcast(new ChatMessageSent($message, $cached, $userId));
+            // broadcast(new ChatMessageSent($message, $cached, $userId));
 
             return response()->json([
                 'success' => true,
@@ -106,7 +106,7 @@ class ChatbotController extends Controller
             }
 
             // **BROADCAST RESPONSE VIA PUSHER**
-            broadcast(new ChatMessageSent($message, $response, $userId));
+            // broadcast(new ChatMessageSent($message, $response, $userId));
 
             Cache::put($cacheKey, $response, $cacheTtl);
 

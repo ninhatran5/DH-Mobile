@@ -12,9 +12,18 @@ class WalletController extends Controller
     public function getWallet(Request $request)
     {
         $user = $request->user();
-        $data = Wallet::where('user_id', $user->user_id)
-            ->select('wallet_id', 'balance')
-            ->first();
+        
+        // Get or create wallet for the user (safety measure)
+        $wallet = Wallet::firstOrCreate(
+            ['user_id' => $user->user_id],
+            ['balance' => 0.00]
+        );
+        
+        $data = [
+            'wallet_id' => $wallet->wallet_id,
+            'balance' => $wallet->balance
+        ];
+        
         return response()->json([
             'data' => $data
         ]);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\User;
+use App\Models\Wallet;
 use Cloudinary\Cloudinary;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -162,6 +163,11 @@ class AuthController extends Controller
             'tier_id' => 1,
         ]);
 
+        // Tự động tạo ví cho user mới
+        Wallet::create([
+            'user_id' => $user->user_id,
+            'balance' => 0.00
+        ]);
 
         return response()->json([
             'message' => 'Đăng ký thành công.',
