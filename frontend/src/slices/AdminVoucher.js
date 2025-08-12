@@ -6,6 +6,7 @@ const initialState = {
   trashedVouchers: [],
   loading: false,
   error: null,
+  trashedCount: 0, // Thêm field để đếm số voucher đã xóa
   pagination: {
     current_page: 1,
     last_page: 1,
@@ -14,6 +15,7 @@ const initialState = {
   }
 };
 
+// Các async thunks giữ nguyên...
 export const fetchAdminVouchers = createAsyncThunk(
   "AdminVoucher/fetchAdminVouchers",
   async (page = 1, { rejectWithValue }) => {
@@ -32,26 +34,83 @@ export const fetchAdminVouchers = createAsyncThunk(
   }
 );
 
-// Các action khác giữ nguyên...
 export const fetchTrashedVouchers = createAsyncThunk(
   "AdminVoucher/fetchTrashedVouchers",
   async (page = 1, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
+      
+      // Debug logs
+      console.log("🔍 Fetching trashed vouchers...");
+      console.log("📄 Page:", page);
+      console.log("🔑 Token exists:", !!token);
+      console.log("🌐 API URL:", `/voucher/trashed?page=${page}`);
+      
+      if (!token) {
+        throw new Error("Token không tồn tại");
+      }
+
       const res = await axiosAdmin.get(`/voucher/trashed?page=${page}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
       });
+
+      console.log("✅ API Response:", res.data);
+      console.log("📊 Meta data:", res.data.meta);
+      console.log("📝 Data:", res.data.data);
+
+      // Validate response structure
+      if (!res.data) {
+        throw new Error("Response data is empty");
+      }
+
       return {
-        vouchers: res.data.data,
-        pagination: res.data.meta
+        vouchers: res.data.data || [],
+        pagination: res.data.meta || {
+          current_page: 1,
+          last_page: 1,
+          per_page: 10,
+          total: 0
+        },
+        trashedCount: res.data.meta?.total || 0
       };
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Lỗi khi lấy danh sách voucher đã xoá");
+      console.error("❌ Fetch trashed vouchers error:", err);
+      console.error("📋 Error details:", {
+        message: err.message,
+        status: err.response?.status,
+        statusText: err.response?.statusText,
+        data: err.response?.data
+      });
+
+      // Handle specific error cases
+      if (err.response?.status === 401) {
+        localStorage.removeItem('adminToken'); // Clear invalid token
+        return rejectWithValue("Token hết hạn. Vui lòng đăng nhập lại.");
+      }
+      
+      if (err.response?.status === 404) {
+        return rejectWithValue("API endpoint không tồn tại. Kiểm tra server.");
+      }
+      
+      if (err.response?.status === 500) {
+        return rejectWithValue("Lỗi server. Vui lòng thử lại sau.");
+      }
+
+      return rejectWithValue(
+        err.response?.data?.message || 
+        err.message ||
+        "Lỗi khi lấy danh sách voucher đã xoá"
+      );
     }
   }
 );
 
-// Các thunk khác giữ nguyên...
+
+// Các async thunks khác giữ nguyên...
 export const deleteAdminVoucher = createAsyncThunk(
   "AdminVoucher/deleteAdminVoucher",
   async (voucherId, { rejectWithValue }) => {
@@ -155,7 +214,7 @@ const adminVoucherSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Fetch vouchers - Cập nhật để handle pagination
+      // Fetch vouchers
       .addCase(fetchAdminVouchers.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -170,7 +229,7 @@ const adminVoucherSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Fetch trashed vouchers - Cập nhật để handle pagination
+      // Fetch trashed vouchers - Cập nhật để đếm số voucher đã xóa
       .addCase(fetchTrashedVouchers.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -179,13 +238,14 @@ const adminVoucherSlice = createSlice({
         state.loading = false;
         state.trashedVouchers = action.payload.vouchers;
         state.pagination = action.payload.pagination;
+        state.trashedCount = action.payload.trashedCount; // Cập nhật số lượng voucher đã xóa
       })
       .addCase(fetchTrashedVouchers.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // Delete voucher
+      // Delete voucher - Tăng trashedCount khi xóa voucher
       .addCase(deleteAdminVoucher.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -195,17 +255,19 @@ const adminVoucherSlice = createSlice({
         state.vouchers = state.vouchers.filter(
           (voucher) => voucher.voucher_id !== action.payload
         );
+        state.trashedCount += 1; // Tăng số lượng voucher đã xóa
       })
       .addCase(deleteAdminVoucher.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // Các case khác giữ nguyên...
+      // Force delete voucher - Giảm trashedCount khi xóa vĩnh viễn
       .addCase(forceDeleteAdminVoucher.fulfilled, (state, action) => {
         state.trashedVouchers = state.trashedVouchers.filter(
           (voucher) => voucher.voucher_id !== action.payload
         );
+        state.trashedCount -= 1; // Giảm số lượng voucher đã xóa vì đã xóa vĩnh viễn
       })
       .addCase(forceDeleteAdminVoucher.rejected, (state, action) => {
         state.error = action.payload;
@@ -238,6 +300,7 @@ const adminVoucherSlice = createSlice({
           (v) => v.voucher_id !== restored.voucher_id
         );
         state.vouchers.push(restored);
+        state.trashedCount -= 1; 
       })
       .addCase(restoreAdminVoucher.rejected, (state, action) => {
         state.error = action.payload;

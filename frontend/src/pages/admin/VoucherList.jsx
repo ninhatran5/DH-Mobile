@@ -3,16 +3,18 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAdminVouchers,
   deleteAdminVoucher,
+  fetchTrashedVouchers,
 } from "../../slices/AdminVoucher";
 import { toast } from "react-toastify";
 import { FaEdit, FaTrash, FaSearch, FaFilter, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import "../../assets/admin/VoucherList.css";
 import moment from "moment";
+import Swal from "sweetalert2";
 
 const VoucherList = () => {
   const dispatch = useDispatch();
-  const { vouchers, loading, error, pagination } = useSelector((state) => state.adminVoucher);
+  const { vouchers, loading, error, pagination, trashedCount } = useSelector((state) => state.adminVoucher);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [discountFilter, setDiscountFilter] = useState("");
@@ -22,7 +24,6 @@ const VoucherList = () => {
   const [firstLoading, setFirstLoading] = useState(true);
   const pollingRef = useRef(false);
 
-  // Load vouchers khi component mount hoặc currentPage thay đổi
   useEffect(() => {
     setFirstLoading(true);
     dispatch(fetchAdminVouchers(currentPage)).finally(() => {
@@ -31,23 +32,105 @@ const VoucherList = () => {
     });
   }, [dispatch, currentPage]);
 
-  // Polling để cập nhật dữ liệu định kỳ
+  useEffect(() => {
+    dispatch(fetchTrashedVouchers(1));
+  }, [dispatch]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       if (pollingRef.current) {
         dispatch(fetchAdminVouchers(currentPage));
+        dispatch(fetchTrashedVouchers(1));
       }
-    }, 30000); // Giảm tần suất polling xuống 30 giây
+    }, 30000); 
     return () => clearInterval(interval);
   }, [dispatch, currentPage]);
 
-  const handleDelete = (voucherId) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa voucher này không?")) {
-      dispatch(deleteAdminVoucher(voucherId)).then(() => {
-        // Reload trang hiện tại sau khi xóa
+  // Cập nhật handleDelete với SweetAlert2
+  const handleDelete = async (voucherId, voucherCode) => {
+    const result = await Swal.fire({
+      title: 'Xác nhận xóa voucher',
+      html: `
+        <div style="text-align: left;">
+          <strong>Mã voucher:</strong> ${voucherCode}<br>
+          <strong>ID:</strong> ${voucherId}<br><br>
+          <span style="color: #e74c3c;">
+            ⚠️ Voucher sẽ được chuyển vào thùng rác và có thể khôi phục sau.
+          </span>
+        </div>
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#e74c3c',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: '🗑️ Xóa voucher',
+      cancelButtonText: '❌ Hủy bỏ',
+      reverseButtons: true,
+      customClass: {
+        popup: 'swal-delete-popup',
+        title: 'swal-delete-title',
+        htmlContainer: 'swal-delete-content',
+        confirmButton: 'swal-delete-confirm',
+        cancelButton: 'swal-delete-cancel'
+      },
+      backdrop: `
+        rgba(0,0,0,0.7)
+        left top
+        no-repeat
+      `,
+      allowOutsideClick: false,
+      allowEscapeKey: true,
+      focusConfirm: false,
+      focusCancel: true
+    });
+
+    if (result.isConfirmed) {
+      try {
+        // Hiển thị loading toast
+        const loadingToast = toast.loading("⏳ Đang xóa voucher...");
+        
+        await dispatch(deleteAdminVoucher(voucherId)).unwrap();
+        
+        // Dismiss loading toast
+        toast.dismiss(loadingToast);
+        
+        // Reload danh sách
         dispatch(fetchAdminVouchers(currentPage));
-        toast.success("Đã xóa voucher thành công!");
-      });
+        
+        // Hiển thị success toast
+        toast.success("🗑️ Đã xóa voucher thành công!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+
+        // Optional: Hiển thị SweetAlert success
+        Swal.fire({
+          title: 'Thành công!',
+          text: `Voucher ${voucherCode} đã được chuyển vào thùng rác.`,
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false,
+          customClass: {
+            popup: 'swal-success-popup'
+          }
+        });
+
+      } catch (error) {
+        toast.error(`❌ Lỗi khi xóa voucher: ${error}`, {
+          position: "top-right",
+          autoClose: 5000,
+        });
+
+        Swal.fire({
+          title: 'Lỗi!',
+          text: `Không thể xóa voucher: ${error}`,
+          icon: 'error',
+          confirmButtonText: 'Đóng',
+          customClass: {
+            popup: 'swal-error-popup'
+          }
+        });
+      }
     }
   };
 
@@ -62,7 +145,6 @@ const VoucherList = () => {
     }).format(amount);
   };
 
-  // Filter logic - áp dụng cho dữ liệu hiện tại từ server
   const filteredVouchers = useMemo(() => {
     const today = new Date();
     const plusDays = (days) => {
@@ -105,31 +187,26 @@ const VoucherList = () => {
     });
   }, [vouchers, searchTerm, discountFilter, expiryDaysFilter]);
 
-  // Xử lý chuyển trang
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pagination.last_page) {
       setCurrentPage(newPage);
     }
   };
 
-  // Reset về trang 1 khi filter thay đổi
   useEffect(() => {
     if (currentPage !== 1) {
       setCurrentPage(1);
     }
   }, [searchTerm, discountFilter, expiryDaysFilter]);
 
-  // Tạo danh sách số trang để hiển thị
   const getPageNumbers = () => {
     const pages = [];
     const totalPages = pagination.last_page;
     const current = pagination.current_page;
     
-    // Hiển thị tối đa 5 trang
     let start = Math.max(1, current - 2);
     let end = Math.min(totalPages, start + 4);
     
-    // Điều chỉnh start nếu end đã chạm giới hạn
     if (end - start < 4) {
       start = Math.max(1, end - 4);
     }
@@ -161,10 +238,13 @@ const VoucherList = () => {
 
         <div className="adminvoucher-actions">
           <Link to="/admin/addvoucher" className="adminvoucher-add-btn">
-            + Thêm mã giảm giá
+            + Thêm voucher
           </Link>
           <Link to="/admin/trashvouchers" className="trash1-btn1">
             Thùng rác
+            {trashedCount > 0 && (
+              <span className="trash-count-badge">{trashedCount}</span>
+            )}
           </Link>
           <button 
             className="adminvoucher1-filter-btn1"
@@ -207,7 +287,6 @@ const VoucherList = () => {
         </div>
       )}
 
-      {/* Thông tin tổng quan */}
       <div className="adminvoucher-summary">
         <p>
           Hiển thị {filteredVouchers.length} trong tổng số {pagination.total} voucher
@@ -288,7 +367,7 @@ const VoucherList = () => {
                     </Link>
                     <FaTrash
                       className="adminvoucher-icon-delete"
-                      onClick={() => handleDelete(voucher.voucher_id)}
+                      onClick={() => handleDelete(voucher.voucher_id, voucher.code)}
                     />
                   </div>
                 </div>
@@ -298,9 +377,7 @@ const VoucherList = () => {
         </div>
       )}
 
-      {/* Phân trang nâng cao */}
       <div className="adminvoucher-pagination">
-        {/* Nút First và Previous */}
         <button
           disabled={pagination.current_page === 1}
           onClick={() => handlePageChange(1)}
@@ -316,7 +393,6 @@ const VoucherList = () => {
           <FaChevronLeft /> Trước
         </button>
 
-        {/* Số trang */}
         <div className="pagination-numbers">
           {getPageNumbers().map(pageNum => (
             <button
@@ -329,7 +405,6 @@ const VoucherList = () => {
           ))}
         </div>
 
-        {/* Nút Next và Last */}
         <button
           disabled={pagination.current_page === pagination.last_page}
           onClick={() => handlePageChange(pagination.current_page + 1)}
@@ -346,7 +421,6 @@ const VoucherList = () => {
         </button>
       </div>
 
-      {/* Thông tin trang */}
       <div className="pagination-info">
         <span>
           Trang {pagination.current_page} / {pagination.last_page} 
