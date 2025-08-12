@@ -17,9 +17,7 @@ return new class extends Migration {
                 ->constrained('wallets', 'wallet_id')
                 ->cascadeOnDelete()
                 ->comment('Ví liên kết');
-                $table->foreignId('transaction_id')
-                ->constrained('wallet_transactions', 'transaction_id')
-                ->cascadeOnDelete()->nullable();
+            $table->unsignedBigInteger('transaction_id')->nullable();
             $table->decimal('amount', 11, 2)->comment('Số tiền yêu cầu rút');
             $table->string('bank_name', 100)->comment('Tên ngân hàng');
             $table->string('bank_account_number', 50)->comment('Số tài khoản');
@@ -30,6 +28,10 @@ return new class extends Migration {
                 ->comment('Trạng thái xử lý');
             $table->string('img_qr', 255)->nullable()->comment('URL hình ảnh liên quan đến yêu cầu rút tiền');
             $table->string('img_bill', 255)->nullable()->comment('URL hình ảnh hóa đơn');
+            $table->foreign('transaction_id')
+                ->references('transaction_id')
+                ->on('wallet_transactions')
+                ->cascadeOnDelete();
             $table->timestamps();
         });
     }
