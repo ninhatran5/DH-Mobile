@@ -47,7 +47,6 @@ const OrderDetail = () => {
   const [refreshFlag, setRefreshFlag] = useState(0);
   const [hasReviewableProduct, setHasReviewableProduct] = useState(false);
   const [orderDetail, setOrderDetail] = useState(reduxOrderDetail);
-  console.log("🚀 ~ OrderDetail ~ orderDetail:", orderDetail)
 
   useEffect(() => {
     if (!id) return;

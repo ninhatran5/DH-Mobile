@@ -20,15 +20,15 @@ const Comment = ({ reviews }) => {
     setShowImageModal(true);
   };
 
-  const visibleReviews = showAll ? reviews : reviews.slice(0, maxComment);
+  const visibleReviews = showAll ? reviews : reviews?.slice(0, maxComment);
 
   return (
     <section>
       <div className="container-fluid">
-        <div className="row d-flex justify-content-center">
-          <div className="col-md-12 col-lg-10">
+        <div className="row d-flex justify-content-center mt-3">
+          <div className="col-md-12 col-lg-12">
             <div className="text-body">
-              {reviews.length == [] ? (
+              {reviews?.length == [] ? (
                 <div>
                   <MdOutlineCommentsDisabled
                     style={{
@@ -37,12 +37,12 @@ const Comment = ({ reviews }) => {
                       padding: "10px 0",
                       color: "#707070",
                     }}
-                    fontSize={68}
+                    fontSize={60}
                   />
-                  <p className="text-center">{t("comment.noComments")}</p>
+                  <p style={{fontSize: 14}} className="text-center">{t("comment.noComments")}</p>
                 </div>
               ) : (
-                visibleReviews.map((item, index) => {
+                visibleReviews?.map((item, index) => {
                   const filledStars = Array.from(
                     { length: item.rating },
                     (_, i) => (
@@ -63,7 +63,7 @@ const Comment = ({ reviews }) => {
                   );
 
                   return (
-                    <div className="hr_comment p-4" key={index}>
+                    <div className="hr_comment" key={index}>
                       <div className="d-flex flex-start">
                         <img
                           className="rounded-circle shadow-1-strong me-3"
@@ -177,7 +177,7 @@ const Comment = ({ reviews }) => {
                         </div>
                       </div>
                       {item.reply && (
-                        <div className="admin-comment mt-3">
+                        <div className="mt-3 ms-5">
                           <div className="reply-indicator-fb ms-3">
                             <span className="reply-to">
                               {item?.replied_by?.full_name || "Admin"}
@@ -266,7 +266,7 @@ const Comment = ({ reviews }) => {
                 })
               )}
             </div>
-            {reviews.length > maxComment && (
+            {reviews?.length > maxComment && (
               <div className="text-center mt-3">
                 <button
                   className="btn btn-outline-primary px-4 py-2"
