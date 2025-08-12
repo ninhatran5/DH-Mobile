@@ -534,7 +534,8 @@
   "voucher": {
     "saveSuccess": "Đã lưu mã giảm giá",
     "iconSave": "Lưu",
-    "iconSaveClose": "Bạn đã lưu rồi",
+    "iconSaveClose": "Đã lưu",
+    "voucherSoldOut": "Mã giảm giá đã hết",
     "iconCopy": "Sao chép",
     "expiry": "HSD",
     "minOrder": "Đơn hàng tối thiểu",
