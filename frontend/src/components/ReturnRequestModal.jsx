@@ -13,6 +13,7 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
   const [images, setImages] = useState([]);
+  const [selectedVariantId, setSelectedVariantId] = useState();
   const maxChars = 2000;
   const dispatch = useDispatch();
   const { orderDetail } = useSelector((state) => state.order);
@@ -82,14 +83,24 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
 
   useEffect(() => {
     if (!orderId) return;
-    dispatch(fetchOrderDetail(orderId));
+    dispatch(fetchOrderDetail(orderId)).then((action) => {
+      const products = action.payload?.products || [];
+      if (products.length === 1) {
+        setSelectedVariantId(products[0].variant_id);
+      }
+    });
   }, [orderId, dispatch]);
 
   const handleSubmit = async () => {
+    if (!selectedVariantId) {
+      Swal.fire({ icon: "error", title: t("returnRequest.noProductSelected") });
+      return;
+    }
     try {
       await dispatch(
         refundOrder({
           id: orderId,
+          variant_id: selectedVariantId,
           reason,
           reasonOther: description,
           images,
@@ -107,6 +118,7 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
       setReason("");
       setDescription("");
       setImages([]);
+      setSelectedVariantId(undefined);
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -142,47 +154,66 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="container-fluid">
-            {orderDetail?.products?.map((product, index) => (
-              <div className="d-flex mt-3" key={index}>
-                <div className="border_image_return">
-                  <img
-                    style={{ cursor: "pointer" }}
-                    onClick={() =>
-                      handleNextPageOrderDetail(product.product_id)
-                    }
-                    className="image_return"
-                    src={product.product_image || ""}
-                    alt={product.product_name}
-                  />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <p
-                    style={{ cursor: "pointer" }}
-                    onClick={() =>
-                      handleNextPageOrderDetail(product.product_id)
-                    }
-                    className="title_return_product"
-                  >
-                    {product.product_name}
-                  </p>
-                  <div className="color_return_product">
-                    <p className="desc_return_product">
-                      {product.variant_attributes?.find(
-                        (attr) =>
-                          attr.attribute_name.toLowerCase() === "màu sắc"
-                      )?.attribute_value || t("returnRequest.unknownColor")}
-                    </p>
-                    <p className="quantity_return_product">
-                      x{product.quantity}
-                    </p>
-                  </div>
-                  <p className="price_return_product">
-                    {numberFormat(product.price || 0)}
-                  </p>
-                </div>
+          <div className="container">
+            {orderDetail?.products?.length > 1 && (
+              <div className="mb-3">
+                <p style={{marginTop: 10}}>{t("returnRequest.selectProduct")}</p>
+                <select
+                  className="form-select"
+                  value={selectedVariantId || ""}
+                  onChange={e => setSelectedVariantId(Number(e.target.value))}
+                  required
+                >
+                  <option value="">{t("returnRequest.selectProductPlaceholder")}</option>
+                  {orderDetail.products.map((p) => (
+                    <option key={p.variant_id} value={p.variant_id}>
+                      {p.product_name} - {p.variant_attributes?.map(attr => attr.attribute_value).join(", ")}
+                    </option>
+                  ))}
+                </select>
               </div>
-            ))}
+            )}
+            {orderDetail?.products?.length === 1 || selectedVariantId ? (
+              (() => {
+                const product = orderDetail.products.find(
+                  p => p.variant_id === (selectedVariantId || orderDetail.products[0].variant_id)
+                );
+                if (!product) return null;
+                return (
+                  <div className="d-flex mt-3">
+                    <div className="border_image_return">
+                      <img
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handleNextPageOrderDetail(product.product_id)}
+                        className="image_return"
+                        src={product.product_image || ""}
+                        alt={product.product_name}
+                      />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <p
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handleNextPageOrderDetail(product.product_id)}
+                        className="title_return_product"
+                      >
+                        {product.product_name}
+                      </p>
+                      <div className="color_return_product">
+                        <p className="desc_return_product">
+                          {product.variant_attributes?.find(
+                            (attr) => attr.attribute_name.toLowerCase() === "màu sắc"
+                          )?.attribute_value || t("returnRequest.unknownColor")}
+                        </p>
+                        <p className="quantity_return_product">x{product.quantity}</p>
+                      </div>
+                      <p className="price_return_product">
+                        {numberFormat(product.price || 0)}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })()
+            ) : null}
 
             <hr className="hr_return" />
             <div className="return-reason-group d-flex align-items-center mb-3">
@@ -306,7 +337,7 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
           <Button
             className="btn_save_address"
             onClick={handleSubmit}
-            disabled={!reason || !description}
+            disabled={!reason || !description || !selectedVariantId}
           >
             {t("returnRequest.submitBtn")}
           </Button>

@@ -668,7 +668,9 @@
     "max3ImagesText": "You can upload up to 3 images only.",
     "uploadImages": "Upload Images",
     "chooseImages": "Choose Images",
-    "uploadHint": "You can upload up to 3 images for illustration"
+    "uploadHint": "You can upload up to 3 images for illustration",
+    "selectProduct": "Select the product to return",
+    "selectProductPlaceholder": "Please select a product or variant"
   },
   "updateProfile": {
     "confirmCloseTitle": "Are you sure you want to close?",

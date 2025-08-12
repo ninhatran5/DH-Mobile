@@ -111,7 +111,6 @@ function isValidCombination(variants, selectedOptions, currentAttrId, valueId) {
 }
 
 const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
-  const [activeTab, setActiveTab] = useState("description");
   const [selectedOptions, setSelectedOptions] = useState({});
   const { id: paramId } = useParams();
   const id = productId || paramId;
@@ -464,7 +463,6 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
             </div>
           )}
 
-          {/* Ẩn modal carousel nếu là quick view hoặc hideExtraInfo */}
           {!isQuickView && (
             <Modal
               show={showModal}
@@ -606,23 +604,9 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
                   ? stripHtmlTags(productDetails.data.description)
                   : ""}
               </p>
-              <div style={{ marginBottom: "-6px" }}>
-                <p style={{ marginBottom: "6px" }} className="fw-bold">
-                  {t("productDetail.parameter")}:
-                </p>
-                <ul>
-                  {specifications?.map((spec) => (
-                    <li key={spec.spec_id}>
-                      <span className="fw-bold me-2">{spec.spec_name}:</span>
-                      <span>{spec.spec_value}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
             </div>
-
             <div className="mb-3">
-              <label className="font-weight-bold mt-3">
+              <label className="font-weight-bold mt-2">
                 {t("productDetail.selectVersion")}:
               </label>
               <div className="d-flex flex-column gap-2 version-button-group">
@@ -732,73 +716,112 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
 
         {!isQuickView && (
           <>
-            <div
-              className="card_introducde_product_detail"
-              style={{ marginTop: 80 }}
-            >
-              <ul className="introduce_productdetail nav">
-                <li className="nav-item">
-                  <button
-                    style={{ fontWeight: 800 }}
-                    className={`nav-link ${
-                      activeTab === "description" ? "active" : ""
-                    }`}
-                    onClick={() => setActiveTab("description")}
-                  >
-                    {t("productDetail.describe")}
-                  </button>
-                </li>
-                <li className="nav-item">
-                  <button
-                    style={{ fontWeight: 800 }}
-                    className={`nav-link ${
-                      activeTab === "info" ? "active" : ""
-                    }`}
-                    onClick={() => setActiveTab("info")}
-                  >
-                    {t("productDetail.parameter")}
-                  </button>
-                </li>
-                <li className="nav-item">
-                  <button
-                    style={{ fontWeight: 800 }}
-                    className={`nav-link ${
-                      activeTab === "reviews" ? "active" : ""
-                    }`}
-                    onClick={() => setActiveTab("reviews")}
-                  >
-                    {t("productDetail.comment")}
-                  </button>
-                </li>
-              </ul>
-
-              <div className="p-4">
-                {activeTab === "description" && (
-                  <div className="tab-pane fade show active">
-                    <p className="desc_productdetai">
-                      {productDetails.data?.description
-                        ? stripHtmlTags(productDetails.data.description)
-                        : ""}
-                    </p>
-                  </div>
-                )}
-                {activeTab === "info" && (
-                  <div className="tab-pane fade show active">
-                    <ul className="desc_productdetai mb-0">
-                      {specifications?.map((spec) => (
-                        <li key={spec.spec_id}>
-                          <span className="fw-bold me-2">
-                            {spec.spec_name}:
-                          </span>
-                          <span>{spec.spec_value}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                {activeTab === "reviews" && <Comment reviews={reviews} />}
+            <div style={{ marginTop: 80 }}>
+              <div
+                style={{
+                  marginBottom: 40,
+                  padding: 24,
+                  border: "1px solid #f0f0f0",
+                  borderRadius: 8,
+                  backgroundColor: "#fff",
+                }}
+              >
+                <h3
+                  style={{
+                    fontSize: 20,
+                    fontWeight: 600,
+                    marginBottom: 16,
+                    color: "#333",
+                    borderBottom: "2px solid #1890ff",
+                    paddingBottom: 8,
+                    display: "inline-block",
+                  }}
+                >
+                  {t("productDetail.describe")}
+                </h3>
+                <p
+                  style={{
+                    fontSize: 15,
+                    lineHeight: 1.6,
+                    color: "#555",
+                    marginBottom: 0,
+                  }}
+                >
+                  {productDetails.data?.description
+                    ? stripHtmlTags(productDetails.data.description)
+                    : ""}
+                </p>
+                <h3
+                  style={{
+                    fontSize: 19,
+                    paddingTop: 40,
+                    fontWeight: 600,
+                    marginBottom: 16,
+                    color: "#333",
+                    borderBottom: "2px solid #1890ff",
+                    paddingBottom: 8,
+                    display: "inline-block",
+                  }}
+                >
+                  {t("productDetail.parameter")}
+                </h3>
+                <ul
+                  style={{
+                    listStyle: "none",
+                    padding: 0,
+                    margin: 0,
+                  }}
+                >
+                  {specifications?.map((spec) => (
+                    <li
+                      key={spec.spec_id}
+                      style={{
+                        padding: "12px 0",
+                        borderBottom: "1px dashed #eee",
+                        display: "flex",
+                        fontSize: 16,
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontWeight: 600,
+                          minWidth: "30%",
+                          color: "#666",
+                        }}
+                      >
+                        {spec.spec_name}:
+                      </span>
+                      <span style={{ color: "#333" }}>{spec.spec_value}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div
+                style={{
+                  marginBottom: 40,
+                  padding: 24,
+                  border: "1px solid #f0f0f0",
+                  borderRadius: 8,
+                  backgroundColor: "#fff",
+                }}
+              >
+                <h3
+                  style={{
+                    fontSize: 20,
+                    fontWeight: 600,
+                    marginBottom: 16,
+                    color: "#333",
+                    borderBottom: "2px solid #1890ff",
+                    paddingBottom: 8,
+                    display: "inline-block",
+                  }}
+                >
+                  {t("productDetail.comment")}
+                </h3>
+                <Comment reviews={reviews} />
               </div>
             </div>
+
             {!hideExtraInfo && relatedProducts.length > 0 && (
               <div style={{ marginTop: 30 }}>
                 <ListProductCard

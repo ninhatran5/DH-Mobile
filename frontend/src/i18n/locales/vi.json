@@ -668,7 +668,9 @@
     "max3ImagesText": "Chỉ được tải lên tối đa 3 ảnh.",
     "uploadImages": "Hình ảnh",
     "chooseImages": "Chọn ảnh",
-    "uploadHint": "Bạn có thể tải lên tối đa 3 ảnh"
+    "uploadHint": "Bạn có thể tải lên tối đa 3 ảnh",
+    "selectProduct": "Chọn sản phẩm muốn trả hàng",
+    "selectProductPlaceholder": "Vui lòng chọn sản phẩm hoặc biến thể"
   },
   "updateProfile": {
     "confirmCloseTitle": "Bạn có chắc chắn muốn đóng?",
