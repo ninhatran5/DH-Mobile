@@ -57,14 +57,17 @@ const Voucher = () => {
       <section className="container-fluid">
         <div className="userVoucher-margin">
           <div className="row">
-            {paginatedVouchers?.map((voucher) => (
-              <Coupon
-                key={voucher?.voucher_id}
-                voucher={voucher}
-                isMyVoucher={true}
-              />
-            ))}
+            {paginatedVouchers?.map((voucher) =>
+              voucher?.is_active === 1 ? (
+                <Coupon
+                  key={voucher?.voucher_id}
+                  voucher={voucher}
+                  isMyVoucher={true}
+                />
+              ) : null
+            )}
           </div>
+
           {totalPages > 1 && (
             <Pagination
               currentPage={currentPage}
