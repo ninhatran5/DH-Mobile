@@ -305,12 +305,11 @@ class VoucherController extends Controller
     }
 
     // lưu voucher 
-    public function saveVoucherForUser(Request $request, $id)
+    public function saveVoucherForUser(Request $request, $voucher_id)
     {
         $user = $request->user();
-        $voucher_id = $id;
 
-        // Kiểm tra voucher tồn tại, còn hiệu lực và còn số lượng
+        // 1. Kiểm tra voucher có tồn tại, còn hiệu lực và còn số lượng
         $voucher = Voucher::where('voucher_id', $voucher_id)
             ->where('is_active', 1)
             ->where('start_date', '<=', now())
@@ -319,24 +318,35 @@ class VoucherController extends Controller
             ->first();
 
         if (!$voucher) {
-            return response()->json(['message' => 'Voucher không hợp lệ, đã hết hạn hoặc hết số lượng'], 404);
+            return response()->json([
+                'message' => 'Voucher không hợp lệ, đã hết hạn hoặc hết số lượng'
+            ], 404);
         }
 
-        // Kiểm tra user đã lưu voucher này chưa
-        if (User_vouchers::where('user_id', $user->user_id)->where('voucher_id', $voucher_id)->exists()) {
-            return response()->json(['message' => 'Bạn đã lưu voucher này rồi'], 409);
+        // 2. Kiểm tra user đã lưu voucher này chưa
+        $exists = User_vouchers::where('user_id', $user->user_id)
+            ->where('voucher_id', $voucher_id)
+            ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'message' => 'Bạn đã lưu voucher này rồi'
+            ], 409);
         }
 
-        // Sử dụng transaction để đảm bảo an toàn dữ liệu
+        // 3. Lưu voucher và giảm số lượng
         $userVoucher = DB::transaction(function () use ($user, $voucher_id, $voucher) {
-            $userVoucher = User_vouchers::create([
+            $saved = User_vouchers::create([
                 'user_id' => $user->user_id,
                 'voucher_id' => $voucher_id,
                 'is_used' => 0,
             ]);
+
             $voucher->decrement('quantity');
-            $userVoucher->load('voucher');
-            return $userVoucher;
+
+            $saved->load('voucher');
+
+            return $saved;
         });
 
         return response()->json([
@@ -344,6 +354,7 @@ class VoucherController extends Controller
             'data' => $userVoucher
         ], 201);
     }
+
 
     // lấy danh sách voucher đã lưu
     public function getSavedVouchersForUser(Request $request)
