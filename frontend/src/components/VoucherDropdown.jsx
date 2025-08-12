@@ -8,11 +8,11 @@ export default function VoucherDropdown({ voucher, handleSelectVoucher }) {
       onClick={() => handleSelectVoucher(voucher)}
       className="checkout-voucher-apply-item"
     >
-      <div className="checkout-voucher-apply-code">{voucherData.code}</div>
-      <div className="checkout-voucher-apply-title">{voucherData.title}</div>
+      <div className="checkout-voucher-apply-code">{voucherData?.code}</div>
+      <div className="checkout-voucher-apply-title">{voucherData?.title}</div>
       <div className="checkout-voucher-apply-details">
-        Giảm: {numberFormat(voucherData.discount_amount)} - Tối thiểu:{" "}
-        {numberFormat(voucherData.min_order_value)}
+        Giảm: {numberFormat(voucherData?.discount_amount)} - Tối thiểu:{" "}
+        {numberFormat(voucherData?.min_order_value)}
       </div>
     </div>
   );
