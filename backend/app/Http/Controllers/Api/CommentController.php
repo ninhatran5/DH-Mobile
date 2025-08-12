@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\ProductVariant;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 
 class CommentController extends Controller
 {
@@ -136,7 +137,7 @@ class CommentController extends Controller
         if (!empty($imageUrls)) {
             $commentData['upload_urls'] = $imageUrls;
         }
-// logger('Dữ liệu comment:', $commentData);
+        // logger('Dữ liệu comment:', $commentData);
 
         $comment = Comment::updateOrCreate(
             [
@@ -227,8 +228,10 @@ class CommentController extends Controller
         // Lấy thông tin admin trả lời (giả sử đã đăng nhập)
         $admin = $request->user();
         $comment->reply = $request->reply;
+
         $comment->replied_by = $admin ? $admin->user_id : null;
-        $comment->replied_at = now(); // Thêm thời gian trả lời
+        $comment->replied_at = Carbon::now('Asia/Ho_Chi_Minh');
+
         $comment->save();
 
         return response()->json([

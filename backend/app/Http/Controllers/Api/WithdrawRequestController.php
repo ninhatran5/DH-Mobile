@@ -31,7 +31,11 @@ class WithdrawRequestController extends Controller
             'beneficiary_bank' => 'nullable|string|max:255',
         ]);
 
-        $wallet = Wallet::where('user_id', Auth::id())->firstOrFail();
+        // Get or create wallet for the user (safety measure)
+        $wallet = Wallet::firstOrCreate(
+            ['user_id' => Auth::id()],
+            ['balance' => 0.00]
+        );
 
         WithdrawRequest::create([
             'user_id' => Auth::id(),
@@ -119,7 +123,11 @@ class WithdrawRequestController extends Controller
         ]);
 
         $userId = Auth::id();
-        $wallet = Wallet::where('user_id', $userId)->firstOrFail();
+        // Get or create wallet for the user (safety measure)
+        $wallet = Wallet::firstOrCreate(
+            ['user_id' => $userId],
+            ['balance' => 0.00]
+        );
 
         if ($wallet->balance < $validatedData['amount']) {
             return response()->json([
