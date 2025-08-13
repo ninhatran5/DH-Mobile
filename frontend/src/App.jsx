@@ -269,9 +269,7 @@ const routerConfig = [
       {
         path: "chatbot",
         element: (
-          <RequireNotSaleRole>
             <ChatBotAdmin />
-          </RequireNotSaleRole>
         ),
       },
       {
@@ -494,17 +492,13 @@ const routerConfig = [
       {
         path: "detailacccount/:id",
         element: (
-          <RequireNotSaleRole>
             <AdminDetailAcccount />
-          </RequireNotSaleRole>
         ),
       },
       {
         path: "membership",
         element: (
-          <RequireNotSaleRole>
             <Membership />
-          </RequireNotSaleRole>
         ),
       },
       {
