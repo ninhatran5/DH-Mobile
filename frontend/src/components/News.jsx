@@ -16,7 +16,7 @@ export default function News({ item }) {
           className="image-holder zoom-effect"
           style={{
             width: "100%",
-            height: 340,
+            height: 260,
             overflow: "hidden",
             background: "#f6f6f6",
           }}
@@ -40,7 +40,7 @@ export default function News({ item }) {
         </div>
         <div className="card-body flex-grow-1">
           <div className="post-meta d-flex text-uppercase gap-3 my-2 align-items-center mb-2">
-            <div className="meta-date">
+            <div style={{fontSize: 13.5}} className="meta-date">
               <small className="me-1"> {t("blog.date")}</small>
               {item.created_at && (
                 <>
@@ -56,7 +56,7 @@ export default function News({ item }) {
           </div>
 
           <div className="post-header">
-            <h3 className="post-title">
+            <h4 className="post-title">
               <Link
                 to={`/blog-detail/${item.id}`}
                 className="text-decoration-none fw-bold"
@@ -64,9 +64,9 @@ export default function News({ item }) {
               >
                 {item.title}
               </Link>
-            </h3>
+            </h4>
             <div
-            style={{ fontSize: 15}}
+            style={{ fontSize: 14.5}}
               dangerouslySetInnerHTML={{
                 __html: truncateText(item.content, 170),
               }}

@@ -16,7 +16,7 @@ const ReturnReasonModal = ({ show, handleClose, handleOpenSubModal }) => {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className="container-fluid">
+        <div className="container">
           <div
             className="d-flex justify-content-between align-items-center"
             onClick={() => handleOpenSubModal(1)}

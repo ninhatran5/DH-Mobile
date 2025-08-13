@@ -181,13 +181,15 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="container-fluid">
+          <div className="container">
             {reviewableProducts.map((product, index) => (
               <div className="d-flex mt-3" key={index}>
                 <div className="border_image_return">
                   <img
                     style={{ cursor: "pointer" }}
-                    onClick={() => handleNextPageOrderDetail(product.product_id)}
+                    onClick={() =>
+                      handleNextPageOrderDetail(product.product_id)
+                    }
                     className="image_return"
                     src={product.product_image || ""}
                     alt={product.product_name}
@@ -196,7 +198,9 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
                 <div style={{ flex: 1 }}>
                   <p
                     style={{ cursor: "pointer" }}
-                    onClick={() => handleNextPageOrderDetail(product.product_id)}
+                    onClick={() =>
+                      handleNextPageOrderDetail(product.product_id)
+                    }
                     className="title_return_product"
                   >
                     {product.product_name}
@@ -207,7 +211,9 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
                         ?.map((attr) => attr.attribute_value)
                         .join(", ") || "Không rõ"}
                     </p>
-                    <p className="quantity_return_product">x{product.quantity}</p>
+                    <p className="quantity_return_product">
+                      x{product.quantity}
+                    </p>
                   </div>
                   <p className="price_return_product">
                     {numberFormat(product.price || 0)}
@@ -224,7 +230,9 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
                   onChange={(e) => setSelectedVariantId(Number(e.target.value))}
                   required
                 >
-                  <option value="">{t("review.selectProductPlaceholder")}</option>
+                  <option value="">
+                    {t("review.selectProductPlaceholder")}
+                  </option>
                   {reviewableProducts.map((p) => (
                     <option key={p.variant_id} value={p.variant_id}>
                       {p.product_name} -{" "}
@@ -249,7 +257,9 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
                     key={index}
                     size={28}
                     style={{ cursor: "pointer", marginRight: 5 }}
-                    color={starValue <= (hover || rating) ? "#ffc107" : "#e4e5e9"}
+                    color={
+                      starValue <= (hover || rating) ? "#ffc107" : "#e4e5e9"
+                    }
                     onClick={() => setRating(starValue)}
                     onMouseEnter={() => setHover(starValue)}
                     onMouseLeave={() => setHover(null)}

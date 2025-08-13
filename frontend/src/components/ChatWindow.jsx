@@ -32,7 +32,7 @@ export default function ChatWindow() {
   };
 
   return (
-    <div className="chatbot-container-fluid">
+    <div className="chatbot-container">
       {!visible && (
         <div className="chat-icon" onClick={() => setVisible(true)}>
           <img src={chatbotLogo2} width={55} alt="Chat Icon" />

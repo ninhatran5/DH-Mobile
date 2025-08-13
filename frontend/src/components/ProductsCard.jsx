@@ -176,7 +176,7 @@ const ProductCard = ({ discountPercent, product }) => {
           </a>
           <div className="card-coins-products d-flex align-items-center">
             <img style={{ width: 20 }} src={coins} alt="" />
-            <p className="coins-products fw-bold" style={{marginTop: 17, marginLeft: 5}}>
+            <p className="coins-products fw-bold">
               {numberFormatCoins(coinsAccumulatePoints)}
             </p>
           </div>

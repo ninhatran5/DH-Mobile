@@ -415,7 +415,7 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
       )}
 
       <div
-        className={isQuickView ? "" : "container-fluid"}
+        className={isQuickView ? "" : "container"}
         style={isQuickView ? { padding: 0, margin: 0 } : { marginBottom: 80 }}
       >
         <div className="row">
@@ -472,10 +472,7 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
             >
               <Modal.Header closeButton className="border-0"></Modal.Header>
               <Modal.Body className="text-center p-0">
-                <div
-                  {...handlers}
-                  className="carousel-swipeable-container-fluid"
-                >
+                <div {...handlers} className="carousel-swipeable-container">
                   <Carousel
                     data-bs-theme="dark"
                     interval={null}
@@ -578,11 +575,10 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
               )}
               <div
                 className="card-coins-products d-flex align-items-center"
-                style={{ marginTop: "-20px", marginBottom: "-5px" }}
+                style={{marginBottom: "10px" }}
               >
                 <img style={{ width: 20 }} src={coins} />
                 <p
-                  style={{ marginTop: 17, marginLeft: 8 }}
                   className="coins-products"
                   dangerouslySetInnerHTML={{
                     __html: t("productDetail.coinReward", {
@@ -595,15 +591,6 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
                   }}
                 />
               </div>
-              <p style={{ marginBottom: "10px" }}>
-                <span className="fw-bold">
-                  {" "}
-                  {t("productDetail.describe")}:{" "}
-                </span>{" "}
-                {productDetails.data?.description
-                  ? stripHtmlTags(productDetails.data.description)
-                  : ""}
-              </p>
             </div>
             <div className="mb-3">
               <label className="font-weight-bold mt-2">

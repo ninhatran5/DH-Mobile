@@ -68,12 +68,12 @@ const OrderDetail = () => {
         cancel_reason: orderUpdate.cancel_reason,
       }));
     },
-     onReturnUpdate: (returnData) => {
+    onReturnUpdate: (returnData) => {
       if (returnData.data) {
         setOrderDetail((prev) => ({
           ...prev,
           status: returnData.data.status,
-          payment_status: returnData.data.payment_status, 
+          payment_status: returnData.data.payment_status,
           return_status: returnData.data.return_status,
         }));
       }
@@ -130,7 +130,7 @@ const OrderDetail = () => {
       case "đã trả hàng":
         return "order-status-return-refund";
       case "đã từ chối":
-        return "order-status-return-rejected";  
+        return "order-status-return-rejected";
       default:
         return "order-status-default";
     }
@@ -155,27 +155,23 @@ const OrderDetail = () => {
     "order-status-return-approved",
     "order-status-return-processing",
     "order-status-return-refund",
-    "order-status-return-rejected"
+    "order-status-return-rejected",
   ].includes(getStatusClass(orderDetail?.status));
 
-  const isRejected = getStatusClass(orderDetail?.status) === "order-status-return-rejected";
+  const isRejected =
+    getStatusClass(orderDetail?.status) === "order-status-return-rejected";
   const statusOrder = isCanceled
     ? ["pending", "canceled"]
     : isReturn
-      ? (
-          isRejected
-            ? [
-                "return-requested",
-                "return-rejected"
-              ]
-            : [
-                "return-requested",
-                "return-approved",
-                "return-processing",
-                "return-refund"
-              ]
-        )
-      : ["pending", "confirmed", "shipping", "shipped", "delivered"];
+    ? isRejected
+      ? ["return-requested", "return-rejected"]
+      : [
+          "return-requested",
+          "return-approved",
+          "return-processing",
+          "return-refund",
+        ]
+    : ["pending", "confirmed", "shipping", "shipped", "delivered"];
 
   let currentStatusIndex;
   if (isReturn) {
@@ -190,15 +186,14 @@ const OrderDetail = () => {
           "order-status-return-processing": 2,
           "order-status-return-refund": 3,
         };
-    currentStatusIndex = returnStatusMap[getStatusClass(orderDetail?.status)] ?? 0;
+    currentStatusIndex =
+      returnStatusMap[getStatusClass(orderDetail?.status)] ?? 0;
   } else {
     currentStatusIndex = statusOrder.indexOf(currentStatusKey);
   }
 
   const statusSteps = statusOrder.map((key, idx) => ({
-    label: isReturn
-      ? t(`order_status.${key}`)
-      : t(`order_status.${key}`),
+    label: isReturn ? t(`order_status.${key}`) : t(`order_status.${key}`),
     active: idx <= currentStatusIndex,
   }));
 
@@ -351,7 +346,7 @@ const OrderDetail = () => {
         linkMainItem2={"/order-history"}
       />
       <div
-        className="card_order_detail container-fluid px-1 px-md-4 py-5 mx-auto"
+        className="card_order_detail container px-1 px-md-4 py-5 mx-auto"
         style={{ marginTop: "30px" }}
       >
         <div className="row d-flex justify-content-between px-3">

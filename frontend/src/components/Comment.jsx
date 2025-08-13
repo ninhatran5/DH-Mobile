@@ -24,7 +24,7 @@ const Comment = ({ reviews }) => {
 
   return (
     <section>
-      <div className="container-fluid">
+      <div className="container">
         <div className="row d-flex justify-content-center mt-3">
           <div className="col-md-12 col-lg-12">
             <div className="text-body">
@@ -39,7 +39,9 @@ const Comment = ({ reviews }) => {
                     }}
                     fontSize={60}
                   />
-                  <p style={{fontSize: 14}} className="text-center">{t("comment.noComments")}</p>
+                  <p style={{ fontSize: 14 }} className="text-center">
+                    {t("comment.noComments")}
+                  </p>
                 </div>
               ) : (
                 visibleReviews?.map((item, index) => {

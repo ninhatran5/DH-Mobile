@@ -10,8 +10,8 @@ const Breadcrumb = ({
   showMainItem2 = true,
 }) => {
   return (
-    <section className="breadcrumb-option mb-3" style={{marginTop: "-10px"}}>
-      <div className="container-fluid">
+    <section className="breadcrumb-option mb-3" style={{ marginTop: "-10px" }}>
+      <div className="container">
         <div className="row">
           <div className="col-lg-12">
             <div className="breadcrumb__text">

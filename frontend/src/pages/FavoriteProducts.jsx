@@ -36,7 +36,7 @@ const FavoriteProducts = () => {
         linkMainItem={"/"}
         showMainItem2={false}
       />
-      <div className="container-fluid">
+      <div className="container">
         <div className="row row-cols-1 row-cols-sm-2 row-cols-md-5 row-cols-lg-5 row-cols-xl-5">
           {listFavorite.map((item) => {
             const parsePrice = (priceStr) =>

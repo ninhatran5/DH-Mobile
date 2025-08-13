@@ -46,16 +46,17 @@ const ProductsCarousel = ({ item, discountPercent }) => {
               <h5
                 className="card-title"
                 style={{
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: 600,
                   color: "black",
-                  marginBottom: 8,
                   display: "-webkit-box",
-                  WebkitLineClamp: 2, // Hiển thị tối đa 2 dòng
+                  WebkitLineClamp: 2, 
                   WebkitBoxOrient: "vertical",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
-                  minHeight: "52px", // Đảm bảo chiều cao cố định cho 2 dòng
+                  minHeight: "52px",
+                  marginBottom: 20,
+                  marginTop: 10
                 }}
               >
                 {item?.product?.name}

@@ -102,7 +102,7 @@ export default function ChangeAddressModal({
           </h4>
         </Modal.Header>
         <Modal.Body>
-          <div className="container-fluid">
+          <div className="container">
             <div className="form-check">
               <input
                 className="form-check-input"
