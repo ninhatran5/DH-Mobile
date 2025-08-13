@@ -192,11 +192,18 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
           <td>
             <span
               data-tooltip-id={`status-tooltip-${orderData.order_id}`}
-              data-tooltip-content={orderData?.status}
+              data-tooltip-content={
+                orderData?.updated_at
+                  ? `${t("orderDetail.updateDate")}: ${dayjs(
+                      orderData.updated_at
+                    ).format("HH:mm - DD/MM/YYYY")}`
+                  : ""
+              }
               className={getStatusClass(orderData?.status)}
             >
               {orderData?.status}
             </span>
+
             <Tooltip
               id={`status-tooltip-${orderData.order_id}`}
               place="top"

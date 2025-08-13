@@ -15,7 +15,6 @@ const Voucher = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { vouchers, loading, meta } = useSelector((state) => state.voucher);
-  console.log("🚀 ~ Voucher ~ vouchers:", vouchers);
   const perPage = meta?.per_page || 10;
   const totalPages =
     meta?.last_page || Math.ceil((vouchers?.length || 0) / perPage);

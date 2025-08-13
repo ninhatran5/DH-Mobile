@@ -443,6 +443,7 @@
     "payment_status_note": "Trạng thái thanh toán",
     "order_date": "Ngày đặt hàng",
     "order_status_note": "Trạng thái đơn hàng",
+    "updateDate": "Thời gian cập nhật trạng thái",
     "productDetail": "Chi tiết sản phẩm",
     "product": "Tên sản phẩm",
     "quantity": "Số lượng",
