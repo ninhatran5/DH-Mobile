@@ -412,7 +412,9 @@ const AddVariant = () => {
             </div>
 
             <div className="adminAddVariant3__form-group">
-             
+              <label htmlFor="price_original" className="adminAddVariant3__label">
+                Giá gốc
+              </label>
               <div className="adminAddVariant3__input-wrapper">
                 <input
                   type="text"
