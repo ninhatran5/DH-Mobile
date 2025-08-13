@@ -1,7 +1,7 @@
+import { useNavigate } from "react-router-dom";
 import { MdOutlineNavigateNext } from "react-icons/md";
 import { GrFormPrevious } from "react-icons/gr";
 import numberFomat from "../../utils/numberFormat";
-import { useNavigate } from "react-router-dom";
 
 const TableShoppingCart = ({
   item,
@@ -16,7 +16,9 @@ const TableShoppingCart = ({
   };
   return (
     <tr>
-      <td>
+      <td style={{ paddingRight: "20px" }}>
+        {" "}
+        {/* Thêm padding-right để cách checkbox ra */}
         <input
           type="checkbox"
           checked={item.selected}
@@ -24,7 +26,12 @@ const TableShoppingCart = ({
         />
       </td>
       <td onClick={handleNextPageDetail} className="product__cart__item">
-        <div className="product__cart__item__pic" style={{ cursor: "pointer" }}>
+        <div
+          className="product__cart__item__pic"
+          style={{ cursor: "pointer", marginRight: "20px" }}
+        >
+          {" "}
+          {/* Thêm margin-right để cách image ra */}
           <img src={item?.variant?.image_url} alt="product" />
         </div>
         <div className="product__cart__item__text">

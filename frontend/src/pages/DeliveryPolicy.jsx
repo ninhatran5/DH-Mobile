@@ -5,7 +5,7 @@ const DeliveryPolicy = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="container-fluid">
+    <div className="container">
       <div className="guarantee">
         <div className="max-w-3xl mx-auto p-6 bg-white rounded-2xl shadow-md">
           <h1 className="text-2xl font-bold text-center mb-4 text-gray-800">
@@ -35,16 +35,12 @@ const DeliveryPolicy = () => {
           <h2 className="text-xl font-semibold mb-2 text-gray-800">
             {t("deliveryPolicy.titleSmall3")}
           </h2>
-          <p className="text-gray-700 mb-4">
-            {t("deliveryPolicy.content3_1")}
-          </p>
+          <p className="text-gray-700 mb-4">{t("deliveryPolicy.content3_1")}</p>
 
           <h2 className="text-xl font-semibold mb-2 text-gray-800">
             {t("deliveryPolicy.titleSmall4")}
           </h2>
-          <p className="text-gray-700 mb-4">
-            {t("deliveryPolicy.content4_1")}
-          </p>
+          <p className="text-gray-700 mb-4">{t("deliveryPolicy.content4_1")}</p>
 
           <h2 className="text-xl font-semibold mb-2 text-gray-800">
             {t("deliveryPolicy.titleSmall5")}

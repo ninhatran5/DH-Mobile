@@ -34,8 +34,8 @@ const OrderTable = () => {
         "đã chấp thuận",
         "đang xử lý",
         "đã trả hàng",
-        "đã từ chối"
-      ]
+        "đã từ chối",
+      ],
     },
   ];
 
@@ -102,7 +102,7 @@ const OrderTable = () => {
         showMainItem2={false}
       />
       <div
-        className="container-fluid"
+        className="container"
         style={{
           marginTop: "30px",
           marginBottom: "4rem",
@@ -161,9 +161,15 @@ const OrderTable = () => {
                       : tab === t.value;
                     return (
                       <button
-                        key={Array.isArray(t.value) ? t.value.join(',') : t.value}
-                        className={`order-table-filter-btn${isActive ? " active" : ""}`}
-                        onClick={() => setTab(Array.isArray(t.value) ? t.value[0] : t.value)}
+                        key={
+                          Array.isArray(t.value) ? t.value.join(",") : t.value
+                        }
+                        className={`order-table-filter-btn${
+                          isActive ? " active" : ""
+                        }`}
+                        onClick={() =>
+                          setTab(Array.isArray(t.value) ? t.value[0] : t.value)
+                        }
                       >
                         {t.label}
                       </button>

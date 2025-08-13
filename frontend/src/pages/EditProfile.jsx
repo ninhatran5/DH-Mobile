@@ -192,7 +192,7 @@ const EditProfile = () => {
         linkMainItem2={`/profile/${id}`}
         showMainItem2={true}
       />
-      <div className="container-fluid">
+      <div className="container">
         <div className="row" style={{ marginTop: "40px" }}>
           <div className="col-12">
             <div className="d-flex">

@@ -16,7 +16,7 @@ const CheckImei = () => {
 
   return (
     <section id="checkimei-hero" className="checkimei-hero section">
-      <div className="container-fluid">
+      <div className="container">
         <div className="row align-items-center">
           <div className="col-lg-6">
             <div className="checkimei-hero-content">
@@ -97,8 +97,8 @@ const CheckImei = () => {
                   <strong>{t("checkimei.result.provider")}:</strong> DH Mobile
                 </p>
                 <p>
-                  <strong>{t("checkimei.result.timestamp")}:</strong>{" "}
-                  10 May 2025 5:51 PM CEST
+                  <strong>{t("checkimei.result.timestamp")}:</strong> 10 May
+                  2025 5:51 PM CEST
                 </p>
               </div>
             </div>

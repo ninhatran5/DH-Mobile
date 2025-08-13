@@ -554,11 +554,13 @@ h6 {
 /* .product-grid {
   gap: 25px;
 } */
+/* product-grid */
 .product-grid {
   display: flex;
   flex-wrap: wrap;
   align-items: stretch;
 }
+
 .product-item {
   height: 400px;
   position: relative;
@@ -572,10 +574,13 @@ h6 {
   justify-content: space-between;
   display: flex;
   flex-direction: column;
+  overflow: hidden; /* Ngăn nội dung tràn ra ngoài */
 }
+
 .product-item:hover {
   box-shadow: 0px 21px 44px rgba(0, 0, 0, 0.08);
 }
+
 .product-item h3 {
   display: block;
   width: 100%;
@@ -587,17 +592,25 @@ h6 {
   margin: 0;
   margin-top: 20px;
   margin-bottom: 5px;
+  /* Thêm các thuộc tính để xử lý text overflow */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
 .product-item figure {
-  background: transparent; /* Đặt nền thành trong suốt */
-  border-radius: 12px; /* Giữ thuộc tính border-radius nếu cần */
-  text-align: center; /* Giữ thuộc tính text-align */
+  background: transparent;
+  border-radius: 12px;
+  text-align: center;
+  flex-shrink: 0; /* Không cho phép figure co lại */
+  margin-bottom: 10px;
 }
 
 .product-item figure img {
-  max-height: 210px; /* Giới hạn chiều cao của hình ảnh */
-  height: auto; /* Đảm bảo hình ảnh co giãn theo tỷ lệ */
-  object-fit: cover; /* Cắt ảnh để giữ tỷ lệ mà không bị biến dạng */
+  max-height: 210px;
+  width: 100%; /* Đảm bảo ảnh không vượt quá container */
+  height: auto;
+  object-fit: cover;
 }
 
 .product-item .btn-wishlist {
@@ -613,11 +626,14 @@ h6 {
   background: #fff;
   border: 1px solid #d8d8d8;
   transition: all 0.3s ease-out;
+  z-index: 2; /* Đảm bảo button luôn ở trên */
 }
+
 .product-item .btn-wishlist:hover {
   background: rgb(240, 56, 56);
   color: #fff;
 }
+
 .product-item .qty {
   font-weight: 400;
   font-size: 13px;
@@ -626,6 +642,7 @@ h6 {
   text-transform: uppercase;
   color: #9d9d9d;
 }
+
 .product-item .rating {
   font-weight: 600;
   font-size: 13px;
@@ -633,37 +650,92 @@ h6 {
   text-transform: capitalize;
   color: #222222;
 }
+
 .product-item .rating iconify-icon {
   color: #ffc43f;
 }
+
 .product-item .price_products_sale {
   display: flex;
   gap: 7px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 10px;
 }
+
 .product-item .price {
   margin-top: 5px;
   font-weight: 600;
-  font-size: 18px;
+  font-size: 17px;
   color: rgb(228, 3, 3);
   line-height: 30px;
   text-transform: capitalize;
+  /* Xử lý text overflow cho giá */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0; /* Cho phép flex item co lại */
 }
+
 .product-item .price_original {
-  margin-bottom: 15px;
   font-weight: 600;
   font-size: 13px;
   color: rgb(228, 3, 3);
   line-height: 30px;
   text-decoration: line-through;
   text-transform: capitalize;
-  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
 }
+
+/* Container cho phần cuối của product card */
+.product-item > .d-flex:last-child {
+  margin-top: auto; /* Đẩy phần này xuống cuối */
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.product-item .nav-link {
+  text-decoration: none;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Card coins products */
+.card-coins-products {
+  flex-shrink: 0;
+  align-items: center;
+  gap: 5px;
+}
+
+.card-coins-products img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.coins-products {
+  font-weight: bold;
+  margin: 0;
+  white-space: nowrap;
+}
+
 .product-item .product-qty {
   width: 85px;
 }
+
 .product-item .btn-link {
   text-decoration: none;
 }
+
 .product-item #quantity {
   height: auto;
   width: 28px;
@@ -672,6 +744,7 @@ h6 {
   margin: 0;
   padding: 0;
 }
+
 .product-item .btn-number {
   width: 26px;
   height: 26px;
@@ -682,6 +755,13 @@ h6 {
   border-radius: 6px;
   color: #222;
   padding: 0;
+}
+
+/* Badge discount */
+.product-item .badge {
+  z-index: 3;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 /* cart */

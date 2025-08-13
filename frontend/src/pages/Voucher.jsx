@@ -15,7 +15,7 @@ const Voucher = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { vouchers, loading, meta } = useSelector((state) => state.voucher);
-  console.log("🚀 ~ Voucher ~ vouchers:", vouchers)
+  console.log("🚀 ~ Voucher ~ vouchers:", vouchers);
   const perPage = meta?.per_page || 10;
   const totalPages =
     meta?.last_page || Math.ceil((vouchers?.length || 0) / perPage);
@@ -56,12 +56,13 @@ const Voucher = () => {
         linkMainItem={"/"}
         showMainItem2={false}
       />
-      <section className="container-fluid">
+      <section className="container">
         <div className="userVoucher-margin">
           <div className="row">
             {paginatedVouchers?.map((voucher) => {
               const isActive = voucher?.is_active === 1;
-              const isExpired = voucher?.end_date && dayjs(voucher.end_date).isBefore(dayjs());
+              const isExpired =
+                voucher?.end_date && dayjs(voucher.end_date).isBefore(dayjs());
               if (isActive && !isExpired) {
                 return (
                   <Coupon

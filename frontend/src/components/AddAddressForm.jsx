@@ -56,7 +56,7 @@ const AddAddressForm = forwardRef(({ onSubmitExternal }, ref) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmitExternal)}>
-      <div className="container-fluid">
+      <div className="container">
         <section className="checkout mt-3">
           <div className="row">
             <div className="col-lg-6">

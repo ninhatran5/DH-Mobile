@@ -3,7 +3,7 @@ import "../assets/css/error.css";
 const ErrorPage = () => {
   return (
     <>
-      <div className="container-fluid-error">
+      <div className="container-error">
         <div className="row-error">
           <div className="col-sm-12 col-md-12 mt-5 mb-5">
             <svg

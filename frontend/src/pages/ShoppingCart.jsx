@@ -180,7 +180,7 @@ const ShoppingCart = () => {
       />
 
       <section className="shopping-cart spad-cart">
-        <div className="container-fluid">
+        <div className="container">
           <div className="row">
             <div className="col-lg-9">
               <div className="shopping__cart__table">

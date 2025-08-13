@@ -20,9 +20,10 @@ const BlogDetail = () => {
   const { news } = useSelector((state) => state.blog);
 
   // Tìm blog trước và sau
-  const currentIndex = news.findIndex(blog => blog.news_id === parseInt(id));
+  const currentIndex = news.findIndex((blog) => blog.news_id === parseInt(id));
   const previousBlog = currentIndex > 0 ? news[currentIndex - 1] : null;
-  const nextBlog = currentIndex < news.length - 1 ? news[currentIndex + 1] : null;
+  const nextBlog =
+    currentIndex < news.length - 1 ? news[currentIndex + 1] : null;
 
   useEffect(() => {
     dispatch(fetchBlogDetail(id));
@@ -32,7 +33,7 @@ const BlogDetail = () => {
     <>
       {loading && <Loading />}
       <section className="blog-hero spad">
-        <div className="container-fluid">
+        <div className="container">
           <div className="row d-flex justify-content-center">
             <div className="col-lg-9 text-center">
               <div className="blog__hero__text">
@@ -54,7 +55,7 @@ const BlogDetail = () => {
       </section>
 
       <section className="blog-details spad">
-        <div className="container-fluid">
+        <div className="container">
           <div className="row d-flex justify-content-center">
             <div className="col-lg-12">
               <div className="blog__details__pic">
@@ -92,11 +93,19 @@ const BlogDetail = () => {
                 <div className="blog__details__btns">
                   <div className="row">
                     {previousBlog && (
-                      <div className={nextBlog ? "col-lg-6 col-md-6 col-sm-6" : "col-lg-12 col-md-12 col-sm-12"}>
+                      <div
+                        className={
+                          nextBlog
+                            ? "col-lg-6 col-md-6 col-sm-6"
+                            : "col-lg-12 col-md-12 col-sm-12"
+                        }
+                      >
                         <a
                           style={{ textDecoration: "none" }}
                           className="blog__details__btns__item"
-                          onClick={() => navigate(`/blog-detail/${previousBlog.news_id}`)}
+                          onClick={() =>
+                            navigate(`/blog-detail/${previousBlog.news_id}`)
+                          }
                         >
                           <p style={{ cursor: "pointer" }}>
                             <span className="arrow_left">
@@ -104,24 +113,34 @@ const BlogDetail = () => {
                             </span>
                             {t("blog.previous")}
                           </p>
-                          <h5 style={{ 
-                            cursor: "pointer",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                            maxWidth: "100%"
-                          }}>
+                          <h5
+                            style={{
+                              cursor: "pointer",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                              maxWidth: "100%",
+                            }}
+                          >
                             {previousBlog.title}
                           </h5>
                         </a>
                       </div>
                     )}
                     {nextBlog && (
-                      <div className={previousBlog ? "col-lg-6 col-md-6 col-sm-6" : "col-lg-12 col-md-12 col-sm-12"}>
+                      <div
+                        className={
+                          previousBlog
+                            ? "col-lg-6 col-md-6 col-sm-6"
+                            : "col-lg-12 col-md-12 col-sm-12"
+                        }
+                      >
                         <a
                           style={{ textDecoration: "none" }}
                           className="blog__details__btns__item blog__details__btns__item--next"
-                          onClick={() => navigate(`/blog-detail/${nextBlog.news_id}`)}
+                          onClick={() =>
+                            navigate(`/blog-detail/${nextBlog.news_id}`)
+                          }
                         >
                           <p style={{ cursor: "pointer" }}>
                             {t("blog.next")}
@@ -129,13 +148,15 @@ const BlogDetail = () => {
                               <GrFormNextLink style={{ marginBottom: 11 }} />
                             </span>
                           </p>
-                          <h5 style={{ 
-                            cursor: "pointer",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                            maxWidth: "100%"
-                          }}>
+                          <h5
+                            style={{
+                              cursor: "pointer",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                              maxWidth: "100%",
+                            }}
+                          >
                             {nextBlog.title}
                           </h5>
                         </a>

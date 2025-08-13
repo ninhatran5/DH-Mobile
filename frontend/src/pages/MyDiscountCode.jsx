@@ -31,7 +31,7 @@ export default function MyDiscountCode() {
         linkMainItem={"/"}
         showMainItem2={false}
       />
-      <section className="container-fluid">
+      <section className="container">
         <div className="voucher_margin">
           <div className="row">
             {vouchers.map((item) => (
