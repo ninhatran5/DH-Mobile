@@ -544,7 +544,10 @@
     "selectError": "Vui lòng chọn voucher",
     "applySuccess": "Áp dụng voucher thành công!",
     "applyFail": "Không thể áp dụng voucher này",
-    "invalid": "Voucher không hợp lệ"
+    "invalid": "Voucher không hợp lệ",
+    "sale": "SALE",
+    "discount": "Giảm",
+    "forOrdersFrom": "cho đơn từ"
   },
   "toast": {
     "errorMin": "Số lượng tối thiểu là 1",
