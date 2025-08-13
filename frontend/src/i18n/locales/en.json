@@ -545,7 +545,10 @@
     "selectError": "Please select a voucher",
     "applySuccess": "Voucher applied successfully!",
     "applyFail": "Failed to apply this voucher",
-    "invalid": "Invalid voucher"
+    "invalid": "Invalid voucher",
+    "sale": "SALE",
+    "discount": "Discount",
+    "forOrdersFrom": "for orders from"
   },
   "toast": {
     "errorMin": "Minimum quantity is 1",
