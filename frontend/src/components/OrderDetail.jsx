@@ -270,6 +270,16 @@ const OrderDetail = () => {
         </span>
       ),
     },
+    {
+      label: t("orderDetail.updateDate"),
+      value: (
+        <span>
+          {orderDetail?.updated_at
+            ? dayjs(orderDetail.updated_at).format("HH:mm - DD/MM/YYYY")
+            : ""}
+        </span>
+      ),
+    },
   ];
 
   const totalAmount = Number(orderDetail?.total_amount) || 0;
