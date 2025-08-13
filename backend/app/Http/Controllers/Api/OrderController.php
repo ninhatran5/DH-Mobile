@@ -50,6 +50,7 @@ class OrderController extends Controller
                 'status' => $order->status,
                 'cancel_reason' => $order->cancel_reason,
                 'created_at' => $order->created_at,
+                'updated_at' => $order->updated_at,
             ];
         });
         return response()->json([
@@ -121,6 +122,7 @@ class OrderController extends Controller
             'rank_discount' => number_format($order->rank_discount, 0, ".", ""),
             'total_amount' => number_format($order->total_amount, 0, ".", ""),
             'products' => $orderItems,
+            'updated_at' => $order->updated_at, // Add updated_at to the formatted order details
         ];
 
         return response()->json([
@@ -178,6 +180,7 @@ class OrderController extends Controller
                 'status' => $order->status,
                 'cancel_reason' => $order->cancel_reason,
                 'created_at' => $order->created_at->format('d/m/Y H:i:s'),
+                'updated_at' => $order->updated_at->format('d/m/Y H:i:s'), // Add updated_at to the formatted orders for adminIndex
                 'totalProduct' => $order->orderItems->sum('quantity'), // Tính tổng số lượng sản phẩm
                 'products' => $products,
             ];
@@ -899,7 +902,8 @@ class OrderController extends Controller
                 'order_status_histories.new_status',
                 'order_status_histories.changed_by',
                 'users.full_name as changed_by_name',
-                'order_status_histories.created_at'
+                'order_status_histories.created_at',
+                'order_status_histories.updated_at', // Include updated_at in the select query
             )
             ->get();
 
@@ -911,6 +915,8 @@ class OrderController extends Controller
                 'changed_by' => $item->changed_by,
                 'changed_by_name' => $item->changed_by_name, // Tên người thay đổi
                 'changed_at' => $item->created_at ? date('d/m/Y H:i:s', strtotime($item->created_at)) : null,
+                // Include updated_at in the formatted response
+                'updated_at' => $item->updated_at ? date('d/m/Y H:i:s', strtotime($item->updated_at)) : null,
             ];
         });
 
