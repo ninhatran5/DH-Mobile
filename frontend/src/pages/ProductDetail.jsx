@@ -818,7 +818,12 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
                 >
                   {t("productDetail.comment")}
                 </h3>
-                <Comment reviews={reviews} />
+                {Array.isArray(reviews) &&
+                  reviews.some((r) => r.is_visible === 1) && (
+                    <Comment
+                      reviews={reviews.filter((r) => r.is_visible === 1)}
+                    />
+                  )}
               </div>
             </div>
 
