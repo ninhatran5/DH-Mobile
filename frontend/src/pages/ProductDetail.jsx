@@ -123,6 +123,7 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
   );
   const userID = localStorage.getItem("userID");
   const { reviews } = useSelector((state) => state.review);
+  console.log("🚀 ~ ProductDetail ~ reviews:", reviews)
   const { specifications } = useSelector((state) => state.specification);
   const { favoriteProducts: _ } = useSelector((state) => state.favoriteProduct);
   const { products = [] } = useSelector((state) => state.product);
@@ -818,7 +819,10 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
                 >
                   {t("productDetail.comment")}
                 </h3>
-                <Comment reviews={reviews} />
+{Array.isArray(reviews) && reviews.some(r => r.is_visible === 1) && (
+  <Comment reviews={reviews.filter(r => r.is_visible === 1)} />
+)}
+
               </div>
             </div>
 
