@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import "../assets/css/voucher.css";
 import Coupon from "../components/Coupon";
+import dayjs from "dayjs";
 import Breadcrumb from "../components/Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,6 +15,7 @@ const Voucher = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { vouchers, loading, meta } = useSelector((state) => state.voucher);
+  console.log("🚀 ~ Voucher ~ vouchers:", vouchers)
   const perPage = meta?.per_page || 10;
   const totalPages =
     meta?.last_page || Math.ceil((vouchers?.length || 0) / perPage);
@@ -57,15 +59,20 @@ const Voucher = () => {
       <section className="container-fluid">
         <div className="userVoucher-margin">
           <div className="row">
-            {paginatedVouchers?.map((voucher) =>
-              voucher?.is_active === 1 ? (
-                <Coupon
-                  key={voucher?.voucher_id}
-                  voucher={voucher}
-                  isMyVoucher={true}
-                />
-              ) : null
-            )}
+            {paginatedVouchers?.map((voucher) => {
+              const isActive = voucher?.is_active === 1;
+              const isExpired = voucher?.end_date && dayjs(voucher.end_date).isBefore(dayjs());
+              if (isActive && !isExpired) {
+                return (
+                  <Coupon
+                    key={voucher?.voucher_id}
+                    voucher={voucher}
+                    isMyVoucher={true}
+                  />
+                );
+              }
+              return null;
+            })}
           </div>
 
           {totalPages > 1 && (
