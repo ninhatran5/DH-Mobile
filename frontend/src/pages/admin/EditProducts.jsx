@@ -626,11 +626,10 @@ const AdminProductEdit = () => {
 
   const handleFileChange = useCallback((selectedFile) => {
     if (selectedFile && selectedFile.type.startsWith('image/')) {
-      if (selectedFile.size > 5 * 1024 * 1024) {
-        toast.error("File ảnh quá lớn! Vui lòng chọn ảnh nhỏ hơn 5MB.");
+      if (selectedFile.size > 2 * 1024 * 1024) { // Change limit to 2MB
+        toast.error("File ảnh quá lớn! Vui lòng chọn ảnh nhỏ hơn 2MB.");
         return;
       }
-      
       setFormData((prev) => ({ ...prev, imageFile: selectedFile }));
       setImagePreview(URL.createObjectURL(selectedFile));
     } else {
