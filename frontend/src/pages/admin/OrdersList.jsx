@@ -45,21 +45,16 @@ const OrdersList = () => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isFiltering, setIsFiltering] = useState(false);
 
   const navigate = useNavigate();
 
   const currentPage = parseInt(searchParams.get("page")) || 1;
 
+  // Chỉ sử dụng fetchPaginatedAdminOrders cho tất cả trường hợp
   useEffect(() => {
-    if (selectedStatusTab === "Tất cả") {
-      setIsFiltering(false);
-      dispatch(fetchPaginatedAdminOrders(currentPage));
-    } else {
-      setIsFiltering(true);
-      dispatch(fetchAdminOrders());
-    }
-  }, [selectedStatusTab, currentPage, dispatch]);
+    dispatch(fetchPaginatedAdminOrders(currentPage));
+  }, [currentPage, dispatch]);
+
   useEffect(() => {
     if (!searchParams.has("page")) {
       setSearchParams({ page: "1" }, { replace: true });
@@ -68,21 +63,14 @@ const OrdersList = () => {
 
   const handlePageChange = (newPage) => {
     const pageNumber = parseInt(newPage);
-
-    if (isFiltering) {
-      if (pageNumber && pageNumber > 0) {
-        setSearchParams({ page: pageNumber.toString() });
-      }
+    if (
+      pageNumber &&
+      pageNumber > 0 &&
+      pageNumber <= (pagination?.lastPage || 1)
+    ) {
+      setSearchParams({ page: pageNumber.toString() });
     } else {
-      if (
-        pageNumber &&
-        pageNumber > 0 &&
-        pageNumber <= (pagination?.lastPage || 1)
-      ) {
-        setSearchParams({ page: pageNumber.toString() });
-      } else {
-        console.log("❌ Invalid page:", pageNumber);
-      }
+      console.log("❌ Invalid page:", pageNumber);
     }
   };
 
@@ -102,7 +90,7 @@ const OrdersList = () => {
 
   const statusTabs = [
     "Tất cả",
-    "Chờ xác nhận",
+    "Chờ xác nhận", 
     "Đã xác nhận",
     "Đang vận chuyển",
     "Đã giao hàng",
@@ -114,14 +102,14 @@ const OrdersList = () => {
   const hiddenStatuses = [
     "Yêu cầu hoàn hàng",
     "Đã chấp thuận",
-    "Đã từ chối",
+    "Đã từ chối", 
     "Đang xử lý",
     "Đã trả hàng",
   ];
 
-  // Cập nhật filteredOrders để xử lý cả hai trường hợp
+  // Lọc đơn hàng chỉ theo search term và status tab (không phân trang client-side)
   const filteredOrders = useMemo(() => {
-    let filtered = orders.filter((order) => {
+    return orders.filter((order) => {
       const normalizedStatus = normalizeString(order.status);
 
       // Kiểm tra xem trạng thái có trong danh sách ẩn không
@@ -143,79 +131,11 @@ const OrdersList = () => {
 
       return !isHiddenStatus && matchesSearch && matchesStatus;
     });
-
-    // Nếu đang lọc theo trạng thái (không phải "Tất cả"), thực hiện phân trang client-side
-    if (isFiltering && selectedStatusTab !== "Tất cả") {
-      const itemsPerPage = 15;
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      return filtered.slice(startIndex, endIndex);
-    }
-
-    return filtered;
-  }, [
-    orders,
-    searchTerm,
-    selectedStatusTab,
-    hiddenStatuses,
-    isFiltering,
-    currentPage,
-  ]);
-
-  // Tính toán thông tin pagination cho client-side filtering
-  const clientPagination = useMemo(() => {
-    if (!isFiltering || selectedStatusTab === "Tất cả") {
-      return pagination;
-    }
-
-    // Lọc tất cả orders theo điều kiện (không phân trang)
-    const allFilteredOrders = orders.filter((order) => {
-      const normalizedStatus = normalizeString(order.status);
-
-      const isHiddenStatus = hiddenStatuses.some(
-        (hiddenStatus) => normalizedStatus === normalizeString(hiddenStatus)
-      );
-
-      const matchesSearch =
-        normalizeString(order.order_code).includes(
-          normalizeString(searchTerm)
-        ) ||
-        normalizeString(order.customer).includes(normalizeString(searchTerm));
-
-      const matchesStatus =
-        selectedStatusTab === "Tất cả" ||
-        normalizedStatus === normalizeString(selectedStatusTab);
-
-      return !isHiddenStatus && matchesSearch && matchesStatus;
-    });
-
-    const itemsPerPage = 15;
-    const totalItems = allFilteredOrders.length;
-    const lastPage = Math.ceil(totalItems / itemsPerPage) || 1;
-
-    return {
-      currentPage: currentPage,
-      lastPage: lastPage,
-      perPage: itemsPerPage,
-      total: totalItems,
-    };
-  }, [
-    orders,
-    searchTerm,
-    selectedStatusTab,
-    hiddenStatuses,
-    isFiltering,
-    currentPage,
-    pagination,
-  ]);
+  }, [orders, searchTerm, selectedStatusTab, hiddenStatuses]);
 
   // Hàm refresh data sau khi cập nhật
   const refreshCurrentPage = () => {
-    if (selectedStatusTab === "Tất cả") {
-      dispatch(fetchPaginatedAdminOrders(currentPage));
-    } else {
-      dispatch(fetchAdminOrders());
-    }
+    dispatch(fetchPaginatedAdminOrders(currentPage));
   };
 
   const handleViewOrder = (order) => {
@@ -248,7 +168,7 @@ const OrdersList = () => {
                 "Trạng thái đơn hàng đã được cập nhật.",
                 "success"
               );
-              refreshCurrentPage(); // Refresh data
+              refreshCurrentPage();
             } else {
               Swal.fire(
                 "Lỗi",
@@ -291,7 +211,7 @@ const OrdersList = () => {
           "Đơn hàng đã được huỷ thành công.",
           "success"
         );
-        refreshCurrentPage(); // Refresh data
+        refreshCurrentPage();
       })
       .finally(() => {
         setIsUpdatingStatus(false);
@@ -377,7 +297,7 @@ const OrdersList = () => {
         </div>
       </div>
 
-      {/* Status tabs - cập nhật để sử dụng handleStatusTabChange */}
+      {/* Status tabs */}
       <div
         className="admin_order-status-tabs"
         style={{ margin: "0 auto", display: "flex", width: "100%" }}
@@ -469,43 +389,38 @@ const OrdersList = () => {
             <tbody>
               {filteredOrders.length > 0 ? (
                 filteredOrders.map((order, idx) => {
-                  const stt =
-                    (currentPage - 1) * (clientPagination?.perPage || 15) +
-                    idx +
-                    1;
+                  const stt = (currentPage - 1) * (pagination?.perPage || 15) + idx + 1;
                   return (
                     <tr key={order.order_id}>
                       <td>
                         <div className="admin_order-stt">{stt}</div>
                       </td>
                       <td>
-                        <td>
-                          <div
-                            className="admin_order-avatar"
+                        <div
+                          className="admin_order-avatar"
+                          style={{
+                            width: "40px",
+                            height: "40px",
+                            borderRadius: "50%",
+                            overflow: "hidden",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            backgroundColor: "#f0f0f0",
+                            border: "2px solid #e0e0e0",
+                          }}
+                        >
+                          <img
+                            src={order.image_url || DefaultImage}
+                            alt={order.customer}
                             style={{
-                              width: "40px",
-                              height: "40px",
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
                               borderRadius: "50%",
-                              overflow: "hidden",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              backgroundColor: "#f0f0f0",
-                              border: "2px solid #e0e0e0",
                             }}
-                          >
-                            <img
-                              src={order.image_url || DefaultImage}
-                              alt={order.customer}
-                              style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "cover",
-                                borderRadius: "50%",
-                              }}
-                            />
-                          </div>
-                        </td>
+                          />
+                        </div>
                       </td>
                       <td>
                         <div className="admin_order-code">
@@ -674,7 +589,7 @@ const OrdersList = () => {
         </div>
       )}
 
-      {/* Pagination - cập nhật để sử dụng clientPagination */}
+      {/* Pagination - chỉ sử dụng pagination từ store */}
       <div
         style={{
           marginTop: "20px",
@@ -754,21 +669,19 @@ const OrdersList = () => {
           {/* Next button */}
           <button
             onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage >= (clientPagination?.lastPage || 1)}
+            disabled={currentPage >= (pagination?.lastPage || 1)}
             style={{
               padding: "8px 12px",
               border: "1px solid #007aff",
               borderRadius: "6px",
               background:
-                currentPage >= (clientPagination?.lastPage || 1)
+                currentPage >= (pagination?.lastPage || 1)
                   ? "#f5f5f5"
                   : "#007aff",
               color:
-                currentPage >= (clientPagination?.lastPage || 1)
-                  ? "#999"
-                  : "#fff",
+                currentPage >= (pagination?.lastPage || 1) ? "#999" : "#fff",
               cursor:
-                currentPage >= (clientPagination?.lastPage || 1)
+                currentPage >= (pagination?.lastPage || 1)
                   ? "not-allowed"
                   : "pointer",
               fontSize: "14px",
@@ -782,22 +695,20 @@ const OrdersList = () => {
           </button>
 
           <button
-            onClick={() => handlePageChange(clientPagination?.lastPage || 1)}
-            disabled={currentPage >= (clientPagination?.lastPage || 1)}
+            onClick={() => handlePageChange(pagination?.lastPage || 1)}
+            disabled={currentPage >= (pagination?.lastPage || 1)}
             style={{
               padding: "8px 12px",
               border: "1px solid #007aff",
               borderRadius: "6px",
               background:
-                currentPage >= (clientPagination?.lastPage || 1)
+                currentPage >= (pagination?.lastPage || 1)
                   ? "#f5f5f5"
                   : "#007aff",
               color:
-                currentPage >= (clientPagination?.lastPage || 1)
-                  ? "#999"
-                  : "#fff",
+                currentPage >= (pagination?.lastPage || 1) ? "#999" : "#fff",
               cursor:
-                currentPage >= (clientPagination?.lastPage || 1)
+                currentPage >= (pagination?.lastPage || 1)
                   ? "not-allowed"
                   : "pointer",
               fontSize: "14px",
@@ -819,12 +730,12 @@ const OrdersList = () => {
             textAlign: "center",
           }}
         >
-          Trang {currentPage} / {clientPagination?.lastPage || 1} - Hiển thị{" "}
+          Trang {currentPage} / {pagination?.lastPage || 1} - Hiển thị{" "}
           {filteredOrders.length} đơn hàng
-          {clientPagination && (
+          {pagination && (
             <div style={{ fontSize: "12px", color: "#999", marginTop: "4px" }}>
-              Tổng: {clientPagination.total || 0} đơn hàng
-              {isFiltering && selectedStatusTab !== "Tất cả" && (
+              Tổng: {pagination.total || 0} đơn hàng
+              {selectedStatusTab !== "Tất cả" && (
                 <span style={{ color: "#007aff", fontWeight: 500 }}>
                   {" "}
                   (Đang lọc theo: {selectedStatusTab})
