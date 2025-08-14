@@ -82,3 +82,7 @@
 .add-blog-btn:hover {
   background: #125ea7;
 }
+.required4 {
+  color: #ff0000; /* Màu đỏ */
+  font-weight: bold;
+}
