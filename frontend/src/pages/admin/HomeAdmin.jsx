@@ -781,25 +781,7 @@ const Homeadmin = () => {
                     <span>Bình Luận</span>
                   </Link>
                 </div>
-                {checkRole !== "sale" && (
-                  <div
-                    className={
-                      location.pathname === "/admin/comments" ? "active" : ""
-                    }
-                  >
-                    <Link
-                      to="/admin/trash-can"
-                      className="admin_dh-nav-link"
-                      data-title="Dashboard"
-                    >
-                      <i
-                        class="bi bi-trash3-fill"
-                        style={{ color: "#ff3737" }}
-                      ></i>
-                      <span>Thùng Rác</span>
-                    </Link>
-                  </div>
-                )}
+               
                 {checkRole !== "sale" && (
                   <div
                     className={
