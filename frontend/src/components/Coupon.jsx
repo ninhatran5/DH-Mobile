@@ -124,16 +124,15 @@ const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
 
           <h5 className="userVoucher-title">{voucher.title}</h5>
           <div className="userVoucher-date-right">
-            {t("voucher.expiry")}:{" "}
-            {dayjs(voucher.end_date).format("DD/MM/YYYY")}
+            {t("voucher.expiry")}: {dayjs(voucher.end_date).format("DD/MM/YYYY")}
           </div>
           <div>
             <p className="userVoucher-info-item">
-              {t("voucher.minOrder")}:{" "}
+              {t("voucher.minOrder")}: {" "}
               <span>{numberFormat(voucher.min_order_value)}</span>
             </p>
             <p className="userVoucher-info-item2">
-              {t("voucher.discountAmount")}:{" "}
+              {t("voucher.discountAmount")}: {" "}
               <span>{numberFormat(voucher.discount_amount)}</span>
             </p>
           </div>

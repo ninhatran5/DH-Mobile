@@ -590,10 +590,9 @@ h6 {
   text-transform: capitalize;
   color: #333333;
   margin: 0;
-  margin-top: 20px;
+  margin-top: 12px;
   margin-bottom: 5px;
-  /* Thêm các thuộc tính để xử lý text overflow */
-  white-space: nowrap;
+  white-space: nowrap; /* Chỉ 1 dòng */
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -607,10 +606,10 @@ h6 {
 }
 
 .product-item figure img {
-  max-height: 210px;
-  width: 100%; /* Đảm bảo ảnh không vượt quá container */
-  height: auto;
-  object-fit: cover;
+  width: 100%;
+  height: 210px;
+  object-fit: contain; /* Đảm bảo ảnh không bị méo, đồng nhất kích thước */
+  display: block;
 }
 
 .product-item .btn-wishlist {
@@ -664,30 +663,29 @@ h6 {
 }
 
 .product-item .price {
-  margin-top: 5px;
+  margin-top: 2px;
   font-weight: 600;
-  font-size: 17px;
+  font-size: 15.5px;
   color: rgb(228, 3, 3);
   line-height: 30px;
   text-transform: capitalize;
-  /* Xử lý text overflow cho giá */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex: 1;
-  min-width: 0; /* Cho phép flex item co lại */
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  flex: unset;
+  min-width: unset;
 }
 
 .product-item .price_original {
   font-weight: 600;
-  font-size: 13px;
+  font-size: 11.5px;
   color: rgb(228, 3, 3);
   line-height: 30px;
   text-decoration: line-through;
   text-transform: capitalize;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal; /* Hiển thị đầy đủ giá gốc */
+  overflow: visible;
+  text-overflow: unset;
   flex-shrink: 0;
 }
 
@@ -704,9 +702,10 @@ h6 {
   text-decoration: none;
   flex: 1;
   min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 15px;
+  white-space: normal; /* Cho phép hiển thị hết chữ */
+  overflow: visible;
+  text-overflow: unset;
 }
 
 /* Card coins products */
@@ -717,14 +716,15 @@ h6 {
 }
 
 .card-coins-products img {
-  width: 20px;
-  height: 20px;
+  width: 19px;
+  height: 19px;
   object-fit: contain;
 }
 
 .coins-products {
   font-weight: bold;
   margin: 0;
+  font-size: 14px;
   white-space: nowrap;
 }
 
