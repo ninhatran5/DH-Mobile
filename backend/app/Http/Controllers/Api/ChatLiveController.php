@@ -210,13 +210,22 @@ class ChatLiveController extends Controller
     //  Đánh dấu một tin nhắn là đã đọc
     public function markAsRead($userId)
     {
-        // Xác định người này là staff hay customer
-        $isCustomer = Auth::user()->role === 'customer'; // Hoặc cách xác định khác tùy hệ thống của bạn
+        $currentUser = Auth::user();
 
-        SupportChat::where($isCustomer ? 'customer_id' : 'staff_id', $userId)
-            ->where('sender', '!=', $userId) // Chỉ đánh dấu những tin nhắn không phải do chính người đó gửi
-            ->where('is_read', false)
-            ->update(['is_read' => true]);
+        if ($currentUser->role === 'customer') {
+            // Customer đang xem => đánh dấu tin từ staff là đã đọc
+            SupportChat::where('customer_id', $currentUser->id)
+                ->where('sender', 'staff') // tin nhắn từ staff
+                ->where('is_read', false)
+                ->update(['is_read' => true]);
+        } else {
+            // Admin/staff đang xem => đánh dấu tin từ customer là đã đọc
+            SupportChat::where('staff_id', $currentUser->id)
+                ->where('customer_id', $userId) // user mà admin đang xem
+                ->where('sender', 'customer')   // tin nhắn từ customer
+                ->where('is_read', false)
+                ->update(['is_read' => true]);
+        }
 
         return response()->json(['success' => true]);
     }
