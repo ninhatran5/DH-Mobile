@@ -1,5 +1,7 @@
+import { useTranslation } from "react-i18next";
 import { FaTrash } from "react-icons/fa";
 import { TbEditCircle } from "react-icons/tb";
+import { MdShareLocation } from "react-icons/md";
 
 export default function AddressItem({
   name,
@@ -15,7 +17,10 @@ export default function AddressItem({
   handleDeleteAddress,
   radioName = "radioDefault",
   radioId,
+  onChangDefault,
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="form-check">
       <input
@@ -31,11 +36,6 @@ export default function AddressItem({
           <div className="name_address">
             <p className="name_address_profile">{name}</p>
             <p className="phone_address_profile">{phone}</p>
-            {isDefault && (
-              <div className="default_address_profile">
-                <p>Mặc định</p>
-              </div>
-            )}
           </div>
           <button className="edit-address-btn" type="button" onClick={onEdit}>
             <TbEditCircle />
@@ -47,6 +47,16 @@ export default function AddressItem({
           >
             <FaTrash />
           </button>
+          {!isDefault && (
+            <button
+              className="set-location-address-btn"
+              type="button"
+              onClick={onChangDefault}
+              title={t("address.setAsDefault")}
+            >
+              <MdShareLocation />
+            </button>
+          )}
         </div>
         <div className="full_address_profile">
           <p className="address_profile">
@@ -56,6 +66,11 @@ export default function AddressItem({
               (city || "")}
           </p>
         </div>
+        {isDefault && (
+          <div className="default_address_profile">
+            <p>{t("address.default")}</p>
+          </div>
+        )}
       </label>
     </div>
   );

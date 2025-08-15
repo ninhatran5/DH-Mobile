@@ -4,11 +4,10 @@ import AddressItem from "./AddressItem";
 import {
   deleteAddressNew,
   fetchAddressNew,
+  setDefaultAddress,
 } from "../slices/changeAddressSlice";
 import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
 import { useTranslation } from "react-i18next";
-const MySwal = withReactContent(Swal);
 
 export default function AddressList({
   addresses,
@@ -19,7 +18,7 @@ export default function AddressList({
 }) {
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const { changeAddressNew: _ } = useSelector((state) => state.address);
+  const { changeAddressNew: _ } = useSelector((state) => state.changeAddress);
 
   if (!Array.isArray(addresses) || addresses.length === 0) return null;
 
@@ -57,6 +56,40 @@ export default function AddressList({
     });
   };
 
+  const handleDefaultAddress = (addressId) => {
+    Swal.fire({
+      title: t("defaultAddress.confirmTitle"),
+      text: t("defaultAddress.confirmText"),
+      icon: "warning",
+      showCancelButton: true,
+      reverseButtons: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: t("defaultAddress.confirmBtn"),
+      cancelButtonText: t("defaultAddress.cancelBtn"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(setDefaultAddress(addressId))
+          .unwrap()
+          .then(() => {
+            Swal.fire({
+              title: t("defaultAddress.successTitle"),
+              text: t("defaultAddress.successText"),
+              icon: "success",
+            });
+            dispatch(fetchAddressNew());
+          })
+          .catch((error) => {
+            Swal.fire({
+              title: t("defaultAddress.errorTitle"),
+              text: t("defaultAddress.errorText"),
+              icon: "error",
+            });
+          });
+      }
+    });
+  };
+
   return (
     <>
       {addresses.map((address, idx) => (
@@ -68,7 +101,7 @@ export default function AddressList({
             ward={address?.ward || ""}
             district={address?.district || ""}
             city={address?.city || ""}
-            isDefault={false}
+            isDefault={address?.is_default === 1}
             radioId={`radioDefault${idx + 2}`}
             handleDeleteAddress={() => handleDeleteAddress(address?.address_id)}
             checked={selectedRadio === address.address_id}
@@ -77,6 +110,7 @@ export default function AddressList({
               setEditAddress(address);
               setShowUpdateModal(true);
             }}
+            onChangDefault={() => handleDefaultAddress(address?.address_id)}
           />
           <hr className="address-divider" />
         </div>
