@@ -29,6 +29,32 @@ export const fetchUsers = createAsyncThunk(
   }
 );
 
+// Mở/khoá tài khoản
+export const toggleBlockUser = createAsyncThunk(
+  "adminuser/toggleBlockUser",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
+
+      const res = await axiosAdmin.post(
+        `/toggle-block/${userId}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      return res.data.user; // Trả về user đã cập nhật trạng thái block
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Lỗi khi mở/khoá tài khoản"
+      );
+    }
+  }
+);
+
+
 // Xóa user
 export const deleteUser = createAsyncThunk(
   "adminuser/deleteUser",
@@ -230,7 +256,31 @@ const adminuserSlice = createSlice({
   state.loading = false;
   state.error = action.payload;
   state.selectedUser = null;
+})
+.addCase(toggleBlockUser.pending, (state) => {
+  state.loading = true;
+  state.error = null;
+})
+.addCase(toggleBlockUser.fulfilled, (state, action) => {
+  state.loading = false;
+  const updatedUser = action.payload;
+  const index = state.users.findIndex(
+    (user) => user.user_id === updatedUser.user_id
+  );
+  if (index !== -1) {
+    state.users[index] = updatedUser;
+  }
+  // Nếu đang xem chi tiết user đó thì cũng cập nhật luôn
+  if (state.selectedUser?.user_id === updatedUser.user_id) {
+    state.selectedUser = updatedUser;
+  }
+})
+.addCase(toggleBlockUser.rejected, (state, action) => {
+  state.loading = false;
+  state.error = action.payload;
 });
+
+
 
 
   },

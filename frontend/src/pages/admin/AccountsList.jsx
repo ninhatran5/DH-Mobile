@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUsers, updateUser } from "../../slices/adminuserSlice";
+import {
+  fetchUsers,
+  updateUser,
+  toggleBlockUser,
+} from "../../slices/adminuserSlice";
 import "../../assets/admin/account.css";
-import { FaEye, FaBars, FaTimes } from "react-icons/fa";
+import { FaEye, FaLock, FaUnlock, FaBars, FaTimes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import defaultAvatar from "../../assets/images/adminacccount.jpg";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -11,11 +15,9 @@ import Swal from "sweetalert2";
 const ListUser = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const {
-    users = [],
-    loading,
-    error,
-  } = useSelector((state) => state.adminuser);
+  const { users = [], loading, error } = useSelector(
+    (state) => state.adminuser
+  );
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -91,6 +93,28 @@ const ListUser = () => {
     }
   };
 
+  // Hàm mở/khoá tài khoản
+  const handleToggleBlock = async (user) => {
+    const action = user.is_blocked ? "mở khoá" : "khoá";
+    const result = await Swal.fire({
+      title: `Xác nhận ${action} tài khoản`,
+      text: `Bạn có chắc muốn ${action} tài khoản của "${user.username}"?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Đồng ý",
+      cancelButtonText: "Hủy",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await dispatch(toggleBlockUser(user.user_id)).unwrap();
+        Swal.fire("Thành công", `Đã ${action} tài khoản thành công!`, "success");
+      } catch (err) {
+        Swal.fire("Lỗi", err || `Không thể ${action} tài khoản`, "error");
+      }
+    }
+  };
+
   const filteredUsers = users.filter((user) => {
     const matchesSearch = (user.username || "")
       .toLowerCase()
@@ -106,7 +130,7 @@ const ListUser = () => {
 
   const getPaginationRange = () => {
     const range = [];
-    const showPages = 3; // Show 3 pages on mobile
+    const showPages = 3;
     let start = Math.max(1, currentPage - Math.floor(showPages / 2));
     let end = Math.min(totalPages, start + showPages - 1);
 
@@ -209,6 +233,7 @@ const ListUser = () => {
 
       {!loading && !error && (
         <>
+          {/* Desktop Table */}
           <div className="adminuser-table-wrapper desktop-table">
             <table className="adminuser-table">
               <thead>
@@ -274,15 +299,35 @@ const ListUser = () => {
                             )
                           : "Chưa cập nhật"}
                       </td>
-                      <td className="adminuser-text-center adminuser-actions">
+                      <td className="adminuser-actions">
                         <div className="background-btn">
                           <FaEye
                             style={{ color: "#fff", cursor: "pointer" }}
                             className="adminuser-icon adminuser-icon-view"
                             onClick={() =>
-                              navigate(`/admin/detailaccount/${user.user_id}`)
+                              navigate(
+                                `/admin/detailaccount/${user.user_id}`
+                              )
                             }
+                            title="Xem chi tiết"
                           />
+                        </div>
+                        <div
+                          className="background-btn1"
+                        >
+                          {user.is_blocked ? (
+                            <FaUnlock
+                              style={{ color: "green", cursor: "pointer" }}
+                              title="Mở khoá tài khoản"
+                              onClick={() => handleToggleBlock(user)}
+                            />
+                          ) : (
+                            <FaLock
+                              style={{ color: "red", cursor: "pointer" }}
+                              title="Khoá tài khoản"
+                              onClick={() => handleToggleBlock(user)}
+                            />
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -298,6 +343,7 @@ const ListUser = () => {
             </table>
           </div>
 
+          {/* Mobile Cards */}
           <div className="adminuser-mobile-cards">
             {currentUsers.length > 0 ? (
               currentUsers.map((user) => (
@@ -328,6 +374,21 @@ const ListUser = () => {
                         }
                         title="Xem chi tiết user"
                       />
+                      {user.is_blocked ? (
+                        <FaUnlock
+                          className="mobile-action-icon"
+                          style={{ color: "green" }}
+                          title="Mở khoá"
+                          onClick={() => handleToggleBlock(user)}
+                        />
+                      ) : (
+                        <FaLock
+                          className="mobile-action-icon"
+                          style={{ color: "red" }}
+                          title="Khoá"
+                          onClick={() => handleToggleBlock(user)}
+                        />
+                      )}
                     </div>
                   </div>
                   <div className="mobile-card-content">
@@ -381,6 +442,7 @@ const ListUser = () => {
             )}
           </div>
 
+          {/* Pagination */}
           <div className="adminuser-pagination">
             <div className="pagination-desktop">
               <button
