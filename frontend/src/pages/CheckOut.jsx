@@ -22,6 +22,7 @@ import VoucherDropdown from "../components/VoucherDropdown";
 import { fetchWallet } from "../slices/walletSlice";
 import { HiWallet } from "react-icons/hi2";
 import InsufficientFundsModal from "../components/InsufficientFundsModal";
+import { fetchAddressNew } from "../slices/changeAddressSlice";
 import "../assets/css/checkout.css";
 
 const CheckOut = () => {
@@ -45,12 +46,15 @@ const CheckOut = () => {
     (state) => state.voucher || {}
   );
   const { wallets } = useSelector((state) => state.wallet);
+  const { changeAddressNew } = useSelector((state) => state.changeAddress);
   const location = useLocation();
   const selectedItems = location.state?.selectedItems || [];
   const navigate = useNavigate();
+
   const handleNextPageDetail = (id) => {
     navigate(`/product-detail/${id}`);
   };
+
   const totalPrice = selectedItems.reduce(
     (sum, item) => sum + item.quantity * item?.variant?.price,
     0
@@ -64,12 +68,41 @@ const CheckOut = () => {
   const walletBalance = Number(wallets?.balance) || 0;
   const [useWallet, setUseWallet] = useState(false);
 
+  useEffect(() => {
+    const loadDefaultAddress = async () => {
+      try {
+        await Promise.all([
+          dispatch(fetchProfile()),
+          dispatch(fetchAddressNew()),
+        ]);
+      } catch (error) {
+        console.error("Error loading data:", error);
+      }
+    };
+
+    loadDefaultAddress();
+    dispatch(fetchVoucherForUser());
+    dispatch(fetchRank());
+    dispatch(fetchWallet());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (changeAddressNew && changeAddressNew.length > 0 && !selectedAddress) {
+      // Tìm địa chỉ mặc định
+      const defaultAddress = changeAddressNew.find(
+        (address) => address.is_default === 1
+      );
+      if (defaultAddress) {
+        setSelectedAddress(defaultAddress);
+      }
+    }
+  }, [changeAddressNew, selectedAddress]);
+
   const handleToggleWallet = () => {
     const priceAfterDiscounts =
       totalPrice - rankDiscountAmount - voucherDiscountAmount;
 
     if (!useWallet) {
-      // Khi bật ví, kiểm tra số dư
       if (walletBalance < priceAfterDiscounts && priceAfterDiscounts > 0) {
         setShowInsufficientFundsModal(true);
         return;
@@ -93,6 +126,7 @@ const CheckOut = () => {
     : 0;
 
   const finalPrice = priceAfterDiscounts - walletDeductAmount;
+
   const handleApplyVoucher = async () => {
     if (!selectedVoucher) {
       toast.error(t("voucher.selectError"));
@@ -283,13 +317,6 @@ const CheckOut = () => {
     setShowInsufficientFundsModal(false);
     setUseWallet(false);
   };
-
-  useEffect(() => {
-    dispatch(fetchProfile());
-    dispatch(fetchVoucherForUser());
-    dispatch(fetchRank());
-    dispatch(fetchWallet());
-  }, [dispatch]);
 
   useEffect(() => {
     dispatch(fetchCart()).then((res) => {
@@ -803,6 +830,7 @@ const CheckOut = () => {
         show={show}
         handleClose={handleClose}
         onSaveAddress={setSelectedAddress}
+        currentSelectedAddress={selectedAddress}
       />
     </>
   );

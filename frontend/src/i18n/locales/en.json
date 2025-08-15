@@ -810,5 +810,15 @@
     "accountDeleted1": "Bank account has been deleted",
     "saveFailed": "Failed to save bank account",
     "accountDeleteFail": "Failed to delete bank account"
+  },
+  "defaultAddress": {
+    "confirmTitle": "Set as default address?",
+    "confirmText": "Are you sure you want to set this address as default?",
+    "confirmBtn": "Set Default",
+    "cancelBtn": "Cancel",
+    "successTitle": "Success",
+    "successText": "The address has been set as default.",
+    "errorTitle": "Error",
+    "errorText": "Unable to set default address. Please try again."
   }
 }
