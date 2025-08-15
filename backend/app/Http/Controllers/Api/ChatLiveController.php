@@ -222,6 +222,24 @@ class ChatLiveController extends Controller
     }
 
 
+    // Customer đánh dấu tin nhắn staff gửi là đã đọc
+    public function customerMarkAsRead()
+    {
+        $user = Auth::user();
+
+        if ($user->role !== 'customer') {
+            return response()->json(['message' => 'Bạn không có quyền thực hiện thao tác này.'], 403);
+        }
+
+        // Đánh dấu tất cả thông báo dành cho user này là đã đọc
+        SupportChatNotification::where('user_id', $user->user_id)
+            ->update(['is_read' => true]);
+
+        return response()->json(['success' => true]);
+    }
+
+
+
     // danh sách user nhắn tin cho admin và sale
     public function getCustomersChatList()
     {
