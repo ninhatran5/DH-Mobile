@@ -210,27 +210,36 @@ class ChatLiveController extends Controller
     //  Đánh dấu một tin nhắn là đã đọc
     public function markAsRead($userId)
     {
-        $currentUser = Auth::user();
+        // Xác định người này là staff hay customer
+        $isCustomer = Auth::user()->role === 'customer'; // Hoặc cách xác định khác tùy hệ thống của bạn
 
-        if ($currentUser->role === 'customer') {
-            // Customer đang xem => đánh dấu tin từ staff là đã đọc
-            SupportChat::where('customer_id', $currentUser->id)
-                ->where('sender', 'staff') // tin nhắn từ staff
-                ->where('is_read', false)
-                ->update(['is_read' => true]);
-        } else {
-            // Admin/staff đang xem => đánh dấu tin từ customer là đã đọc
-            SupportChat::where('staff_id', $currentUser->id)
-                ->where('customer_id', $userId) // user mà admin đang xem
-                ->where('sender', 'customer')   // tin nhắn từ customer
-                ->where('is_read', false)
-                ->update(['is_read' => true]);
-        }
+        SupportChat::where($isCustomer ? 'customer_id' : 'staff_id', $userId)
+            ->where('sender', '!=', $userId) // Chỉ đánh dấu những tin nhắn không phải do chính người đó gửi
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
 
         return response()->json(['success' => true]);
     }
 
+    
+    public function adminMarkAsRead($chatId)
+    {
+        $authUser = Auth::user();
+        $chat = SupportChat::findOrFail($chatId);
 
+        // Đảm bảo đây là cuộc chat của admin
+        if ($authUser->id != $chat->staff_id) {
+            return response()->json(['error' => 'Not authorized'], 403);
+        }
+
+        // Chỉ đánh dấu tin của user là đã đọc
+        SupportChat::where('customer_id', $chat->customer_id)
+            ->where('sender', 'customer')
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        return response()->json(['success' => true]);
+    }
 
 
     // danh sách user nhắn tin cho admin và sale
