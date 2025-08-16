@@ -994,20 +994,12 @@ const Chart = () => {
               max={getTodayDateString()}
             />
           </div>
-          <div className="chart-admin-date-group">
-            <label>Ngày cụ thể</label>
-            <input 
-              type="date" 
-              value={dateFilter.specificDate}
-              onChange={(e) => handleDateFilterChange('specificDate', e.target.value)}
-              max={getTodayDateString()}
-            />
-          </div>
+        
           <button className="chart-admin-apply-button" onClick={handleApplyFilter}>
-            🔍 Áp dụng
+            Áp dụng
           </button>
           <button className="chart-admin-clear-button" onClick={handleClearFilter}>
-            🗑️ Xóa lọc
+             Xóa lọc
           </button>
         </div>
       </div>
@@ -1062,29 +1054,7 @@ const Chart = () => {
           </div>
         </div>
 
-        <div className="chart-admin-kpi-card chart-admin-kpi-red">
-          <div className="chart-admin-kpi-icon">
-            <i className="bi bi-x-circle-fill"></i>
-          </div>
-          <div className="chart-admin-kpi-info">
-            <div className="chart-admin-kpi-title">
-              {dateFilter.isEnabled ? 'Đơn hủy (Đã lọc)' : 'Tổng đơn hủy'}
-            </div>
-            <div className="chart-admin-kpi-number">{totalCancelledOrders.toLocaleString()} đơn hủy</div>
-          </div>
-        </div>
 
-        <div className="chart-admin-kpi-card chart-admin-kpi-yellow">
-          <div className="chart-admin-kpi-icon">
-            <i className="bi bi-arrow-return-left"></i>
-          </div>
-          <div className="chart-admin-kpi-info">
-            <div className="chart-admin-kpi-title">
-              {dateFilter.isEnabled ? 'Đơn hoàn hàng (Đã lọc)' : 'Tổng đơn hoàn hàng'}
-            </div>
-            <div className="chart-admin-kpi-number">{totalRefundedOrders.toLocaleString()} đơn hàng</div>
-          </div>
-        </div>
 
         <div className="chart-admin-kpi-card chart-admin-kpi-orange">
           <div className="chart-admin-kpi-icon">
@@ -1097,31 +1067,6 @@ const Chart = () => {
             <div className="chart-admin-kpi-number">{totalSoldProducts.toLocaleString()} sản phẩm</div>
           </div>
         </div>
-
-        <div className="chart-admin-kpi-card chart-admin-kpi-indigo">
-          <div className="chart-admin-kpi-icon">
-            <i className="bi bi-grid-3x3-gap-fill"></i>
-          </div>
-          <div className="chart-admin-kpi-info">
-            <div className="chart-admin-kpi-title">
-              {dateFilter.isEnabled ? 'Sản phẩm (Đã lọc)' : 'Tổng sản phẩm'}
-            </div>
-            <div className="chart-admin-kpi-number">{totalProducts.toLocaleString()} sản phẩm</div>
-          </div>
-        </div>
-
-        <div className="chart-admin-kpi-card chart-admin-kpi-pink">
-          <div className="chart-admin-kpi-icon">
-            <i className="bi bi-bookmark-fill"></i>
-          </div>
-          <div className="chart-admin-kpi-info">
-            <div className="chart-admin-kpi-title">
-              {dateFilter.isEnabled ? 'Danh mục (Đã lọc)' : 'Tổng danh mục'}
-            </div>
-            <div className="chart-admin-kpi-number">{totalCategories.toLocaleString()} danh mục</div>
-          </div>
-        </div>
-
         <div className="chart-admin-kpi-card chart-admin-kpi-purple">
           <div className="chart-admin-kpi-icon">
             <i className="bi bi-currency-dollar"></i>
