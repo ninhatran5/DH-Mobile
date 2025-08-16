@@ -25,17 +25,14 @@ const EditBanner = () => {
   const [dragActive, setDragActive] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  // Fetch banner data khi component mount
   useEffect(() => {
     if (id) {
       dispatch(fetchBannerById(id));
     }
   }, [id, dispatch]);
 
-  // Cập nhật form data khi selectedBanner thay đổi
   useEffect(() => {
     if (selectedBanner) {
-      // Kiểm tra và xử lý image_url an toàn
       const imageUrl = selectedBanner.image_url && 
                       selectedBanner.image_url.trim() !== "" 
                       ? selectedBanner.image_url 
@@ -148,7 +145,7 @@ const EditBanner = () => {
       navigate("/admin/banners");
     } catch (err) {
       toast.error("Lỗi cập nhật banner:", err);
-      alert("Lỗi cập nhật: " + (err.message || err));
+      toast.error("Lỗi cập nhật: " + (err.message || err));
     } finally {
       setUploading(false);
     }

@@ -219,6 +219,10 @@ const routerConfig = [
         element: <AdminRouteRedirector />,
       },
       {
+        path: "product",
+        element: <ProductList />,
+      },
+      {
         path: "chart",
         element: (
           <RequireNotSaleRole>
@@ -226,10 +230,7 @@ const routerConfig = [
           </RequireNotSaleRole>
         ),
       },
-      {
-        path: "product",
-        element: <ProductList />,
-      },
+      
       {
         path: "product/:id",
         element: <ShowProduct />,
