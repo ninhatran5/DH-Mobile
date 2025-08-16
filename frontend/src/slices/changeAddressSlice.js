@@ -7,7 +7,6 @@ const initialState = {
   error: null,
 };
 
-// CALL API GET PROFILE
 export const fetchAddressNew = createAsyncThunk(
   "changeAddress/fetchAddressNew",
   async (_, { rejectWithValue }) => {
@@ -22,7 +21,6 @@ export const fetchAddressNew = createAsyncThunk(
   }
 );
 
-/// call api edit profile
 export const addAddresNew = createAsyncThunk(
   "changeAddress/addAddresNew",
   async (data, thunkAPI) => {
@@ -63,6 +61,27 @@ export const deleteAddressNew = createAsyncThunk(
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Đã có lỗi xảy ra"
+      );
+    }
+  }
+);
+
+export const setDefaultAddress = createAsyncThunk(
+  "changeAddress/setDefaultAddress",
+  async (addressId, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      formData.append("_method", "PUT");
+
+      const response = await axiosUser.post(
+        `/user-addresses/set-default/${addressId}`,
+        formData
+      );
+
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Không thể đặt địa chỉ mặc định"
       );
     }
   }
@@ -114,6 +133,19 @@ export const changeAddressSlice = createSlice({
         state.loading = false;
         state.error =
           action.payload || action.error?.message || "Đã có lỗi xảy ra";
+      })
+
+      .addCase(setDefaultAddress.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(setDefaultAddress.fulfilled, (state, action) => {
+        state.loading = false;
+        state.changeAddressNew = action.payload.data || state.changeAddressNew;
+      })
+      .addCase(setDefaultAddress.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error?.message;
       })
 
       .addCase(updateAddresNew.pending, (state) => {

@@ -2,7 +2,6 @@
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import "../assets/css/changeAddress.css";
-import { TbEditCircle } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { fetchProfile } from "../slices/profileSlice";
@@ -14,7 +13,6 @@ import {
   fetchAddressNew,
   updateAddresNew,
 } from "../slices/changeAddressSlice";
-import { FaTrash } from "react-icons/fa";
 import AddressList from "./AddressList";
 import UpdateAddressModal from "./UpdateAddressModal";
 
@@ -27,6 +25,7 @@ export default function ChangeAddressModal({
   show,
   handleClose,
   onSaveAddress,
+  currentSelectedAddress, // Thêm prop để nhận địa chỉ hiện tại đang được chọn
 }) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -41,6 +40,34 @@ export default function ChangeAddressModal({
     dispatch(fetchProfile());
     dispatch(fetchAddressNew());
   }, [dispatch]);
+
+  // Effect để tự động chọn địa chỉ mặc định khi modal mở
+  useEffect(() => {
+    if (show && changeAddressNew && changeAddressNew.length > 0) {
+      // Nếu có địa chỉ hiện tại đang được chọn trong checkout
+      if (currentSelectedAddress) {
+        if (currentSelectedAddress.address_id) {
+          setSelectedRadio(currentSelectedAddress.address_id);
+        } else {
+          setSelectedRadio("profile");
+        }
+      } else {
+        // Tìm địa chỉ mặc định
+        const defaultAddress = changeAddressNew.find(
+          (address) => address.is_default === 1
+        );
+        if (defaultAddress) {
+          setSelectedRadio(defaultAddress.address_id);
+        } else {
+          // Nếu không có địa chỉ mặc định, chọn profile
+          setSelectedRadio("profile");
+        }
+      }
+    } else if (show) {
+      // Nếu không có địa chỉ nào được lưu, chọn profile
+      setSelectedRadio("profile");
+    }
+  }, [show, changeAddressNew, currentSelectedAddress]);
 
   const handleCloseWithConfirm = async () => {
     const result = await MySwal.fire({
@@ -62,6 +89,7 @@ export default function ChangeAddressModal({
     setShowAddModal(true);
     handleClose();
   };
+
   const handleUpdateAddress = async (data) => {
     if (!editAddress || !editAddress.address_id) {
       Swal.fire("Lỗi!", "Không tìm thấy địa chỉ để cập nhật.", "error");
@@ -133,9 +161,6 @@ export default function ChangeAddressModal({
                         : ""
                     }${profile?.user?.city ? ", " + profile.user.city : ""}`}
                   </p>
-                </div>
-                <div className="default_address_profile">
-                  <p>{t("address.default")}</p>
                 </div>
               </label>
             </div>

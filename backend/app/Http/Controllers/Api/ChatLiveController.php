@@ -221,6 +221,26 @@ class ChatLiveController extends Controller
         return response()->json(['success' => true]);
     }
 
+    
+    public function adminMarkAsRead($chatId)
+    {
+        $authUser = Auth::user();
+        $chat = SupportChat::findOrFail($chatId);
+
+        // Đảm bảo đây là cuộc chat của admin
+        if ($authUser->id != $chat->staff_id) {
+            return response()->json(['error' => 'Not authorized'], 403);
+        }
+
+        // Chỉ đánh dấu tin của user là đã đọc
+        SupportChat::where('customer_id', $chat->customer_id)
+            ->where('sender', 'customer')
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        return response()->json(['success' => true]);
+    }
+
 
     // danh sách user nhắn tin cho admin và sale
     public function getCustomersChatList()

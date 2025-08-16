@@ -164,7 +164,7 @@ input[type="radio"]:focus {
 .edit-address-btn {
   position: absolute;
   top: -13px;
-  right: 0;
+  right: 30px;
   background: none;
   border: none;
   color: #888888;
@@ -174,9 +174,27 @@ input[type="radio"]:focus {
   transition: color 0.2s;
   font-weight: 500;
 }
+.set-location-address-btn {
+  position: absolute;
+  top: -13px;
+  right: 0;
+  background: none;
+  border: none;
+  color: #007bff; /* xanh dương */
+  font-size: 24px;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.2s;
+  font-weight: 500;
+}
+.set-location-address-btn:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
 .delete-address-btn {
   position: absolute;
-  right: 35px;
+  right: 65px;
   top: -7px;
   background: none;
   border: none;
@@ -219,63 +237,63 @@ input[type="radio"]:focus {
   color: #ff8800;
   font-weight: 500;
 }
-.title_return{
+.title_return {
   font-size: 14px;
   font-weight: 600;
   margin-top: 20px;
 }
-.title_return_2{
+.title_return_2 {
   font-size: 14px;
   font-weight: 600;
   margin-top: 10px;
 }
-.icon_return_2{
+.icon_return_2 {
   color: #ff8800;
   font-size: 45px;
   margin-right: 17px;
   margin-top: -45px;
 }
-.title_description{
+.title_description {
   font-size: 13px;
   margin-top: -15px;
   font-weight: 100;
 }
-.title_description2{
+.title_description2 {
   font-size: 13px;
   margin-top: -15px;
   font-weight: 100;
   padding-bottom: 20px;
 }
-.icon_return{
+.icon_return {
   color: #ff8800;
   font-size: 45px;
   margin-right: 17px;
   margin-top: -15px;
 }
-.hr_return{
+.hr_return {
   border: none;
   border-top: 1px solid #d9d9d9;
   width: 100%;
 }
-.border_image_return{
+.border_image_return {
   width: 80px;
   height: 80px;
   overflow: hidden;
   position: relative;
   margin-right: 10px;
 }
-.image_return{
+.image_return {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-.title_return_product{
+.title_return_product {
   font-size: 15px;
   font-weight: 600;
   color: #222;
   margin-bottom: 5px;
 }
-.desc_return_product{
+.desc_return_product {
   font-size: 12px;
   flex: 1;
   text-align: left;
@@ -283,13 +301,13 @@ input[type="radio"]:focus {
   margin-top: -10px;
   padding-right: 8px;
 }
-.color_return_product{
+.color_return_product {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
 }
-.quantity_return_product{
+.quantity_return_product {
   font-size: 12px;
   text-align: right;
   margin: 0;
@@ -298,7 +316,7 @@ input[type="radio"]:focus {
   margin-top: 5px;
   font-weight: 400;
 }
-.price_return_product{
+.price_return_product {
   font-size: 12px;
   margin-top: -10px;
 }
@@ -327,7 +345,7 @@ input[type="radio"]:focus {
   font-weight: 600;
   margin-top: -10px;
 }
-.email_address_return{
+.email_address_return {
   margin-left: 20px;
 }
 

@@ -810,5 +810,15 @@
     "accountDeleted1": "Tài khoản ngân hàng đã được xóa",
     "accountDeleteFail": "Xóa tài khoản ngân hàng thất bại",
     "saveFailed": "Lưu tài khoản ngân hàng thất bại"
+  },
+  "defaultAddress": {
+    "confirmTitle": "Đặt làm địa chỉ mặc định?",
+    "confirmText": "Bạn có chắc chắn muốn đặt địa chỉ này làm mặc định không?",
+    "confirmBtn": "Đặt mặc định",
+    "cancelBtn": "Hủy",
+    "successTitle": "Thành công",
+    "successText": "Địa chỉ đã được đặt làm mặc định.",
+    "errorTitle": "Lỗi",
+    "errorText": "Không thể đặt địa chỉ mặc định. Vui lòng thử lại."
   }
 }
