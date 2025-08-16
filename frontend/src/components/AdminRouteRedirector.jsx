@@ -11,10 +11,10 @@ const AdminRouteRedirector = () => {
   }
 
   if (role === "sale") {
-    return <Navigate to="/admin/chart" replace />;
+    return <Navigate to="/admin/product" replace />;
   }
 
-  return <Navigate to="/admin/product" replace />;
+  return <Navigate to="/admin/chart" replace />;
 };
 
 export default AdminRouteRedirector;
