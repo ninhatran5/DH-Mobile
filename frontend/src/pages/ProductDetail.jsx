@@ -501,14 +501,16 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
 
           <div className={isQuickView ? "col-12" : "col-md-6"}>
             <div key={productDetails.data?.product_id}>
-              <h2 className="mb-3">{productDetails.data?.name}</h2>
+              <h2 className="mb-3" >
+                {productDetails.data?.name}
+              </h2>
               <div className="price">
-                <h4 className="text-price_sale">
+                <h4 className="text-price_sale" style={{ fontSize: 22 }}>
                   {numberFomat(
                     selectedVariant?.price || productDetails?.data?.price
                   )}
                 </h4>
-                <p className="text-price_original">
+                <p className="text-price_original" style={{ fontSize: 14 }}>
                   {numberFomat(
                     selectedVariant?.price_original ||
                       productDetails?.data?.price_original
@@ -575,7 +577,7 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
               )}
               <div
                 className="card-coins-products d-flex align-items-center"
-                style={{marginBottom: "10px" }}
+                style={{ marginBottom: "10px" }}
               >
                 <img style={{ width: 20 }} src={coins} />
                 <p
