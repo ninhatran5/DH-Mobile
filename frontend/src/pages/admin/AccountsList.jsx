@@ -312,23 +312,25 @@ const ListUser = () => {
                             title="Xem chi tiết"
                           />
                         </div>
-                        <div
-                          className="background-btn1"
-                        >
-                          {user.is_blocked ? (
-                            <FaUnlock
-                              style={{ color: "green", cursor: "pointer" }}
-                              title="Mở khoá tài khoản"
-                              onClick={() => handleToggleBlock(user)}
-                            />
-                          ) : (
-                            <FaLock
-                              style={{ color: "red", cursor: "pointer" }}
-                              title="Khoá tài khoản"
-                              onClick={() => handleToggleBlock(user)}
-                            />
-                          )}
-                        </div>
+
+                        {/* Ẩn nút khoá/mở nếu là admin */}
+                        {user.role !== "admin" && (
+                          <div className="background-btn1">
+                            {user.is_blocked ? (
+                              <FaLock
+                                style={{ color: "red", cursor: "pointer" }}
+                                title="Tài khoản đã bị khóa - Click để mở khóa"
+                                onClick={() => handleToggleBlock(user)}
+                              />
+                            ) : (
+                              <FaUnlock
+                                style={{ color: "green", cursor: "pointer" }}
+                                title="Tài khoản đang mở - Click để khóa"
+                                onClick={() => handleToggleBlock(user)}
+                              />
+                            )}
+                          </div>
+                        )}
                       </td>
                     </tr>
                   ))
@@ -374,21 +376,23 @@ const ListUser = () => {
                         }
                         title="Xem chi tiết user"
                       />
-                      {user.is_blocked ? (
-                        <FaUnlock
-                          className="mobile-action-icon"
-                          style={{ color: "green" }}
-                          title="Mở khoá"
-                          onClick={() => handleToggleBlock(user)}
-                        />
-                      ) : (
-                        <FaLock
-                          className="mobile-action-icon"
-                          style={{ color: "red" }}
-                          title="Khoá"
-                          onClick={() => handleToggleBlock(user)}
-                        />
-                      )}
+
+                      {user.role !== "admin" &&
+                        (user.is_blocked ? (
+                          <FaLock
+                            className="mobile-action-icon"
+                            style={{ color: "red" }}
+                            title="Tài khoản đã bị khóa - Click để mở khóa"
+                            onClick={() => handleToggleBlock(user)}
+                          />
+                        ) : (
+                          <FaUnlock
+                            className="mobile-action-icon"
+                            style={{ color: "green" }}
+                            title="Tài khoản đang mở - Click để khóa"
+                            onClick={() => handleToggleBlock(user)}
+                          />
+                        ))}
                     </div>
                   </div>
                   <div className="mobile-card-content">

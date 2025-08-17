@@ -37,7 +37,7 @@ export const toggleBlockUser = createAsyncThunk(
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
-      const res = await axiosAdmin.post(
+      const res = await axiosAdmin.patch(
         `/toggle-block/${userId}`,
         {},
         {
