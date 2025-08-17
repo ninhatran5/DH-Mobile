@@ -13,15 +13,11 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
   const [images, setImages] = useState([]);
-  const [selectedVariantId, setSelectedVariantId] = useState();
+  const [selectedItems, setSelectedItems] = useState([]); // Array of { variant_id, return_quantity }
   const maxChars = 2000;
   const dispatch = useDispatch();
   const { orderDetail } = useSelector((state) => state.order);
   const navigate = useNavigate();
-  const handleNextPageOrderDetail = (id) => {
-    handleClose();
-    navigate(`/product-detail/${id}`);
-  };
 
   const returnReasonsCase1 = [
     { value: "", label: t("returnRequest.selectReason") },
@@ -83,29 +79,78 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
 
   useEffect(() => {
     if (!orderId) return;
-    dispatch(fetchOrderDetail(orderId)).then((action) => {
-      const products = action.payload?.products || [];
-      if (products.length === 1) {
-        setSelectedVariantId(products[0].variant_id);
-      }
-    });
+    dispatch(fetchOrderDetail(orderId));
   }, [orderId, dispatch]);
 
+  const handleNextPageOrderDetail = (id) => {
+    handleClose();
+    navigate(`/product-detail/${id}`);
+  };
+
+  const handleItemSelection = (variantId, isChecked) => {
+    if (isChecked) {
+      // const product = orderDetail.products.find((p) => p.variant_id === variantId);
+      setSelectedItems((prev) => [
+        ...prev,
+        { variant_id: variantId, return_quantity: 1 },
+      ]);
+    } else {
+      setSelectedItems((prev) =>
+        prev.filter((item) => item.variant_id !== variantId)
+      );
+    }
+  };
+
+  const handleQuantityChange = (variantId, quantity) => {
+    const product = orderDetail.products.find(
+      (p) => p.variant_id === variantId
+    );
+    const maxQuantity = product ? product.quantity : 1;
+    const newQuantity = Math.max(1, Math.min(quantity, maxQuantity));
+
+    setSelectedItems((prev) =>
+      prev.map((item) =>
+        item.variant_id === variantId
+          ? { ...item, return_quantity: newQuantity }
+          : item
+      )
+    );
+  };
+
+  const calculateTotalRefund = () => {
+    return selectedItems.reduce((total, item) => {
+      const product = orderDetail.products.find(
+        (p) => p.variant_id === item.variant_id
+      );
+      return total + (product ? product.price * item.return_quantity : 0);
+    }, 0);
+  };
+
   const handleSubmit = async () => {
-    if (!selectedVariantId) {
+    if (selectedItems.length === 0) {
       Swal.fire({ icon: "error", title: t("returnRequest.noProductSelected") });
       return;
     }
+    if (!reason || !description) {
+      Swal.fire({ icon: "error", title: t("returnRequest.missingFields") });
+      return;
+    }
+
     try {
-      await dispatch(
-        refundOrder({
-          id: orderId,
-          variant_id: selectedVariantId,
-          reason,
-          reasonOther: description,
-          images,
-        })
-      ).unwrap();
+      await Promise.all(
+        selectedItems.map((item) =>
+          dispatch(
+            refundOrder({
+              id: orderId,
+              variant_id: item.variant_id,
+              reason,
+              reasonOther: description,
+              images,
+              quantity: item.return_quantity,
+            })
+          ).unwrap()
+        )
+      );
 
       Swal.fire({
         icon: "success",
@@ -118,7 +163,7 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
       setReason("");
       setDescription("");
       setImages([]);
-      setSelectedVariantId(undefined);
+      setSelectedItems([]);
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -144,206 +189,229 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
   };
 
   return (
-    <>
-      <Modal size="lg" show={show} onHide={handleCloseWithConfirm}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            <h4 className="modal_change_address_title">
-              {t("returnRequest.title")}
-            </h4>
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="container">
-            {orderDetail?.products?.length > 1 && (
-              <div className="mb-3">
-                <p style={{marginTop: 10}}>{t("returnRequest.selectProduct")}</p>
-                <select
-                  className="form-select"
-                  value={selectedVariantId || ""}
-                  onChange={e => setSelectedVariantId(Number(e.target.value))}
-                  required
-                >
-                  <option value="">{t("returnRequest.selectProductPlaceholder")}</option>
-                  {orderDetail.products.map((p) => (
-                    <option key={p.variant_id} value={p.variant_id}>
-                      {p.product_name} - {p.variant_attributes?.map(attr => attr.attribute_value).join(", ")}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-            {orderDetail?.products?.length === 1 || selectedVariantId ? (
-              (() => {
-                const product = orderDetail.products.find(
-                  p => p.variant_id === (selectedVariantId || orderDetail.products[0].variant_id)
-                );
-                if (!product) return null;
-                return (
-                  <div className="d-flex mt-3">
-                    <div className="border_image_return">
-                      <img
-                        style={{ cursor: "pointer" }}
-                        onClick={() => handleNextPageOrderDetail(product.product_id)}
-                        className="image_return"
-                        src={product.product_image || ""}
-                        alt={product.product_name}
-                      />
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <p
-                        style={{ cursor: "pointer" }}
-                        onClick={() => handleNextPageOrderDetail(product.product_id)}
-                        className="title_return_product"
-                      >
-                        {product.product_name}
+    <Modal size="lg" show={show} onHide={handleCloseWithConfirm}>
+      <Modal.Header closeButton>
+        <Modal.Title>
+          <h4 className="modal_change_address_title">
+            {t("returnRequest.title")}
+          </h4>
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <div className="container">
+          <div className="mb-3">
+            <p style={{ marginTop: 10 }}>{t("returnRequest.selectProduct")}</p>
+            {orderDetail?.products?.map((product) => (
+              <div
+                key={product.variant_id}
+                className="d-flex align-items-center mb-2"
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedItems.some(
+                    (item) => item.variant_id === product.variant_id
+                  )}
+                  onChange={(e) =>
+                    handleItemSelection(product.variant_id, e.target.checked)
+                  }
+                  className="me-2"
+                />
+                <div className="d-flex flex-grow-1">
+                  <div className="border_image_return">
+                    <img
+                      style={{ cursor: "pointer" }}
+                      onClick={() =>
+                        handleNextPageOrderDetail(product.product_id)
+                      }
+                      className="image_return"
+                      src={product.product_image || ""}
+                      alt={product.product_name}
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <p
+                      style={{ cursor: "pointer" }}
+                      onClick={() =>
+                        handleNextPageOrderDetail(product.product_id)
+                      }
+                      className="title_return_product"
+                    >
+                      {product.product_name}
+                    </p>
+                    <div className="color_return_product">
+                      <p className="desc_return_product">
+                        {product.variant_attributes?.find(
+                          (attr) =>
+                            attr.attribute_name.toLowerCase() === "màu sắc"
+                        )?.attribute_value || t("returnRequest.unknownColor")}
                       </p>
-                      <div className="color_return_product">
-                        <p className="desc_return_product">
-                          {product.variant_attributes?.find(
-                            (attr) => attr.attribute_name.toLowerCase() === "màu sắc"
-                          )?.attribute_value || t("returnRequest.unknownColor")}
-                        </p>
-                        <p className="quantity_return_product">x{product.quantity}</p>
-                      </div>
-                      <p className="price_return_product">
-                        {numberFormat(product.price || 0)}
+                      <p className="quantity_return_product">
+                        x{product.quantity}
                       </p>
                     </div>
-                  </div>
-                );
-              })()
-            ) : null}
-
-            <hr className="hr_return" />
-            <div className="return-reason-group d-flex align-items-center mb-3">
-              <label
-                htmlFor="reasonSelect"
-                className="return-label me-2 mb-0"
-                style={{ minWidth: "80px" }}
-              >
-                {t("returnRequest.reasonLabel")}
-              </label>
-              <div className="flex-grow-1">
-                <select
-                  id="reasonSelect"
-                  className="return-select form-select w-100"
-                  value={reason}
-                  style={{ fontSize: "15px" }}
-                  onChange={(e) => setReason(e.target.value)}
-                >
-                  {returnReasons.map((item) => (
-                    <option key={item.value} value={item.value}>
-                      {item.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <hr className="hr_return" />
-            <div>
-              <p className="refund_amount">{t("returnRequest.refundAmount")}</p>
-              <p className="refund_price">
-                {numberFormat(orderDetail?.total_amount || 0)}
-              </p>
-            </div>
-
-            <hr className="hr_return" />
-            <div className="mb-3">
-              <label className="return-label form-label">
-                {t("returnRequest.uploadImages")}
-              </label>
-              <div className="image-upload-container">
-                <label className="custom-file-upload">
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    style={{ display: "none" }}
-                  />
-                  <div className="upload-button">
-                    <i
-                      className="bi bi-cloud-arrow-up"
-                      style={{ fontSize: 20 }}
-                    ></i>
-                    <span style={{ marginLeft: 8 }}>
-                      {t("returnRequest.chooseImages")}
-                    </span>
-                  </div>
-                </label>
-
-                {images.length > 0 && (
-                  <div className="image-preview-grid">
-                    {images.map((image) => (
-                      <div key={image.id} className="image-preview-item">
-                        <img src={image.preview} alt="Preview" />
-                        <button
-                          type="button"
-                          className="remove-image-btn"
-                          onClick={() => removeImage(image.id)}
-                        >
-                          ×
-                        </button>
+                    <p
+                      className="price_return_product"
+                      style={{ marginTop: 1 }}
+                    >
+                      {numberFormat(product.price || 0)}
+                    </p>
+                    {selectedItems.some(
+                      (item) => item.variant_id === product.variant_id
+                    ) && (
+                      <div>
+                        <label style={{ fontSize: 14 }} className="me-2">
+                          {t("returnRequest.returnQuantity")}
+                        </label>
+                        <input
+                          type="number"
+                          style={{ fontSize: 14 }}
+                          max={product.quantity}
+                          // value={
+                          //   selectedItems.find(
+                          //     (item) => item.variant_id === product.variant_id
+                          //   )?.return_quantity || 1
+                          // }
+                          onChange={(e) =>
+                            handleQuantityChange(
+                              product.variant_id,
+                              Number(e.target.value)
+                            )
+                          }
+                          className="form-control w-25 d-inline-block"
+                        />
                       </div>
-                    ))}
+                    )}
                   </div>
-                )}
-                <p
-                  className="upload-hint text-muted"
-                  style={{ fontSize: "13px" }}
-                >
-                  {t("returnRequest.uploadHint")} ({images.length}/3)
-                </p>
+                </div>
               </div>
-            </div>
+            ))}
+          </div>
 
-            <hr className="hr_return" />
-            <div className="return-description mb-3">
-              <label
-                htmlFor="additionalInfo"
-                className="return-label form-label"
+          <hr className="hr_return" />
+          <div className="return-reason-group d-flex align-items-center mb-3">
+            <label
+              htmlFor="reasonSelect"
+              className="return-label me-2 mb-0"
+              style={{ minWidth: "80px" }}
+            >
+              {t("returnRequest.reasonLabel")}
+            </label>
+            <div className="flex-grow-1">
+              <select
+                id="reasonSelect"
+                className="return-select form-select w-100"
+                value={reason}
+                style={{ fontSize: "15px" }}
+                onChange={(e) => setReason(e.target.value)}
               >
-                {t("returnRequest.descriptionLabel")}
-              </label>
-              <textarea
-                id="additionalInfo"
-                className="return-textarea form-control"
-                rows="4"
-                placeholder={t("returnRequest.descriptionPlaceholder")}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                maxLength={maxChars}
-              ></textarea>
-              <p
-                className="text-end text-muted mt-1"
-                style={{ fontSize: "13px" }}
-              >
-                {description.length}/{maxChars} {t("returnRequest.characters")}
-              </p>
-            </div>
-
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <p className="email_return">{t("returnRequest.emailLabel")}</p>
-              <p className="email_address_return">{orderDetail?.email || ""}</p>
+                {returnReasons.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseWithConfirm}>
-            {t("returnRequest.closeBtn")}
-          </Button>
-          <Button
-            className="btn_save_address"
-            onClick={handleSubmit}
-            disabled={!reason || !description || !selectedVariantId}
-          >
-            {t("returnRequest.submitBtn")}
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </>
+
+          <hr className="hr_return" />
+          <div>
+            <p className="refund_amount">{t("returnRequest.refundAmount")}</p>
+            <p className="refund_price">
+              {numberFormat(calculateTotalRefund())}
+            </p>
+          </div>
+
+          <hr className="hr_return" />
+          <div className="mb-3">
+            <label className="return-label form-label">
+              {t("returnRequest.uploadImages")}
+            </label>
+            <div className="image-upload-container">
+              <label className="custom-file-upload">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  style={{ display: "none" }}
+                />
+                <div className="upload-button">
+                  <i
+                    className="bi bi-cloud-arrow-up"
+                    style={{ fontSize: 20 }}
+                  ></i>
+                  <span style={{ marginLeft: 8 }}>
+                    {t("returnRequest.chooseImages")}
+                  </span>
+                </div>
+              </label>
+
+              {images.length > 0 && (
+                <div className="image-preview-grid">
+                  {images.map((image) => (
+                    <div key={image.id} className="image-preview-item">
+                      <img src={image.preview} alt="Preview" />
+                      <button
+                        type="button"
+                        className="remove-image-btn"
+                        onClick={() => removeImage(image.id)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <p
+                className="upload-hint text-muted"
+                style={{ fontSize: "13px" }}
+              >
+                {t("returnRequest.uploadHint")} ({images.length}/3)
+              </p>
+            </div>
+          </div>
+
+          <hr className="hr_return" />
+          <div className="return-description mb-3">
+            <label htmlFor="additionalInfo" className="return-label form-label">
+              {t("returnRequest.descriptionLabel")}
+            </label>
+            <textarea
+              id="additionalInfo"
+              className="return-textarea form-control"
+              rows="4"
+              placeholder={t("returnRequest.descriptionPlaceholder")}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              maxLength={maxChars}
+            ></textarea>
+            <p
+              className="text-end text-muted mt-1"
+              style={{ fontSize: "13px" }}
+            >
+              {description.length}/{maxChars} {t("returnRequest.characters")}
+            </p>
+          </div>
+
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <p className="email_return">{t("returnRequest.emailLabel")}</p>
+            <p className="email_address_return">{orderDetail?.email || ""}</p>
+          </div>
+        </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleCloseWithConfirm}>
+          {t("returnRequest.closeBtn")}
+        </Button>
+        <Button
+          className="btn_save_address"
+          onClick={handleSubmit}
+          disabled={!reason || !description || selectedItems.length === 0}
+        >
+          {t("returnRequest.submitBtn")}
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 };
 
