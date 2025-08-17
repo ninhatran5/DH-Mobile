@@ -229,7 +229,7 @@ class ChatLiveController extends Controller
 
         // Đảm bảo đây là cuộc chat của admin
         if ($authUser->id != $chat->staff_id) {
-            return response()->json(['error' => 'Bạn không có quyền'], 403);
+            return response()->json(['error' => 'Bạn không có quyền !!!'], 403);
         }
 
         // Chỉ đánh dấu tin của user là đã đọc
