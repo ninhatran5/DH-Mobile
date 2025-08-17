@@ -675,7 +675,11 @@
     "chooseImages": "Choose Images",
     "uploadHint": "You can upload up to 3 images for illustration",
     "selectProduct": "Select the product to return",
-    "selectProductPlaceholder": "Please select a product or variant"
+    "selectProductPlaceholder": "Please select a product or variant",
+    "returnQuantity": "Return Quantity",
+    "quantity": "x{count}",
+    "missingFields": "Please fill in all required fields",
+    "characterCount": "{count}/{max} characters"
   },
   "updateProfile": {
     "confirmCloseTitle": "Are you sure you want to close?",
