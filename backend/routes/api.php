@@ -331,7 +331,7 @@ Route::middleware('auth:sanctum')->prefix('support-chats')->group(function () {
     Route::get('/history/{customerId}', [ChatLiveController::class, 'getChatHistory']);     // Lấy lịch sử giữa customer và staff (2 chiều)
     Route::get('/unread-count', [ChatLiveController::class, 'getUnreadCount']);     //  Đếm số tin nhắn chưa đọc
     Route::post('/mark-as-read/{chatId}', [ChatLiveController::class, 'markAsRead']);     //  Đánh dấu một tin nhắn là đã đọc
-    Route::post('/mark-as-read-admin/{chatId}', [ChatLiveController::class, 'markAsReadByAdmin']);  // Admin đọc tin của user
+    Route::post('/mark-as-read-admin/{chatId}', [ChatLiveController::class, 'adminMarkAsRead']);  // Admin đọc tin của user
     Route::get('/chat-user-list', [ChatLiveController::class, 'getCustomersChatList']); // danh sách user nhắn tin cho admin và sale 
     Route::get('/unread-count/{customerId}', [ChatLiveController::class, 'getUnreadCountByCustomerId']); // lấy danh sách tin nhắn chưa đọc theo id 
 });
