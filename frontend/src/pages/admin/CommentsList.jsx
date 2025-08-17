@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -8,7 +7,7 @@ import {
   fetchCommentReplyById,
   toggleCommentVisibility,
 } from "../../slices/adminComments";
-import { FiTrash2, FiEye, FiSearch } from "react-icons/fi";
+import { FiTrash2, FiEye, FiEyeOff, FiSearch } from "react-icons/fi";
 import { AiFillStar } from "react-icons/ai";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
@@ -33,6 +32,7 @@ const CommentsList = () => {
   useEffect(() => {
     dispatch(fetchAdminComments());
   }, [dispatch]);
+  
   useEffect(() => {
     if (error) {
       MySwal.fire({
@@ -408,15 +408,15 @@ const CommentsList = () => {
 
                           <button
                             className={`comment-toggle-btn ${
-                              !comment.is_visible ? "hidden" : "visible"
+                              comment.is_visible ? "visible" : "hidden"
                             }`}
                             onClick={() =>
                               handleToggleVisibility(comment.comment_id)
                             }
                             title={
                               comment.is_visible
-                                ? "Ẩn bình luận"
-                                : "Hiện bình luận"
+                                ? "Bình luận đang hiển thị - Click để ẩn"
+                                : "Bình luận đang ẩn - Click để hiện"
                             }
                             style={{
                               display: "flex",
@@ -424,20 +424,24 @@ const CommentsList = () => {
                               gap: "4px",
                               padding: "3px 6px",
                               fontSize: "0.75em",
-                              border: "1px solid #cce5cc",
+                              border: comment.is_visible 
+                                ? "1px solid #cce5cc" 
+                                : "1px solid #f5c6cb",
                               borderRadius: "4px",
-                              backgroundColor: "#e6f5e6",
-                              color: "#28a745",
+                              backgroundColor: comment.is_visible 
+                                ? "#e6f5e6" 
+                                : "#f8d7da",
+                              color: comment.is_visible 
+                                ? "#28a745" 
+                                : "#dc3545",
                               cursor: "pointer",
                             }}
                           >
-                            <FiEye
-                              size={13}
-                              style={{
-                                opacity: comment.is_visible ? 1 : 0.4,
-                                color: "#28a745",
-                              }}
-                            />
+                            {comment.is_visible ? (
+                              <FiEye size={13} style={{ color: "#28a745" }} />
+                            ) : (
+                              <FiEyeOff size={13} style={{ color: "#dc3545" }} />
+                            )}
                             <span style={{ fontWeight: 500 }}>
                               {comment.is_visible ? "Hiện" : "Ẩn"}
                             </span>
