@@ -241,27 +241,34 @@ class ChatLiveController extends Controller
         return response()->json(['success' => true]);
     }
 
+    // Đánh dấu tất cả chat của customer là đã đọc
     public function markAsReadUser($customerId)
     {
         $staff = Auth::user();
 
         // Chỉ admin hoặc sale mới được thao tác
         if (!in_array($staff->role, ['admin', 'sale'])) {
-            return response()->json(['message' => 'Bạn không có quyền thực hiện hành động này.'], 403);
+            return response()->json([
+                'message' => 'Bạn không có quyền thực hiện hành động này.'
+            ], 403);
         }
 
         // Cập nhật tất cả thông báo chưa đọc của staff với customer này
         SupportChatNotification::where('user_id', $staff->user_id)
-            ->whereHas('chat', function ($q) use ($customerId) {
-                $q->where('customer_id', $customerId);
+            ->whereIn('chat_id', function ($q) use ($customerId) {
+                $q->select('chat_id')
+                    ->from('support_chats')
+                    ->where('customer_id', $customerId);
             })
             ->where('is_read', false)
             ->update(['is_read' => true]);
 
-        // Lấy lại số lượng chưa đọc sau khi update (nên chắc chắn = 0)
+        // Lấy lại số lượng chưa đọc sau khi update (chắc chắn = 0)
         $unreadCount = SupportChatNotification::where('user_id', $staff->user_id)
-            ->whereHas('chat', function ($q) use ($customerId) {
-                $q->where('customer_id', $customerId);
+            ->whereIn('chat_id', function ($q) use ($customerId) {
+                $q->select('chat_id')
+                    ->from('support_chats')
+                    ->where('customer_id', $customerId);
             })
             ->where('is_read', false)
             ->count();
@@ -270,9 +277,11 @@ class ChatLiveController extends Controller
             'success' => true,
             'message' => 'Đã đánh dấu là đã đọc',
             'customer_id' => $customerId,
-            'unread_count' => $unreadCount, // trả về 0
+            'unread_count' => $unreadCount,
         ]);
     }
+
+
 
 
     // danh sách user nhắn tin cho admin và sale
@@ -291,36 +300,32 @@ class ChatLiveController extends Controller
             ->distinct()
             ->pluck('customer_id');
 
-        // Lấy thông tin chi tiết
+        // Lấy thông tin chi tiết và last chat
         $customers = User::whereIn('user_id', $customerIds)
             ->get()
             ->map(function ($customer) use ($staff) {
-                $customerUser = User::where('user_id', $customer->user_id)->first();
-
                 // Load last chat kèm attachments
                 $lastChat = SupportChat::with('attachments')
                     ->where('customer_id', $customer->user_id)
                     ->orderBy('sent_at', 'desc')
                     ->first();
 
+                // Lấy số lượng chưa đọc bằng whereIn subquery
                 $unreadCount = SupportChatNotification::where('user_id', $staff->user_id)
-                    ->whereHas('chat', function ($q) use ($customer) {
-                        $q->where('customer_id', $customer->user_id);
+                    ->whereIn('chat_id', function ($q) use ($customer) {
+                        $q->select('chat_id')
+                            ->from('support_chats')
+                            ->where('customer_id', $customer->user_id);
                     })
                     ->where('is_read', false)
                     ->count();
 
-                $avatarUrl = $customer->image_url;
-
-                // ✅ Xử lý last message
+                // Xử lý last message
                 $lastMessage = '';
                 $lastImageUrl = null;
-
                 if ($lastChat) {
                     if (!empty($lastChat->message)) {
-                        $lastMessage = ($lastChat->sender !== 'customer')
-                            ? 'Bạn: ' . $lastChat->message
-                            : $lastChat->message;
+                        $lastMessage = ($lastChat->sender !== 'customer') ? 'Bạn: ' . $lastChat->message : $lastChat->message;
                     } elseif ($lastChat->attachments->isNotEmpty()) {
                         $lastMessage = 'Đã gửi một hình ảnh';
                         $lastImageUrl = $lastChat->attachments->first()->file_url;
@@ -329,10 +334,10 @@ class ChatLiveController extends Controller
 
                 return [
                     'customer_id' => $customer->user_id,
-                    'role' => $customerUser ? $customerUser->role : null,
+                    'role' => $customer->role,
                     'customer_name' => $customer->username,
                     'customer_full_name' => $customer->full_name,
-                    'avatar_url' => $avatarUrl,
+                    'avatar_url' => $customer->image_url,
                     'last_message' => $lastMessage,
                     'last_message_image' => $lastImageUrl,
                     'last_message_time' => $lastChat->sent_at ?? null,
