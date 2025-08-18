@@ -258,9 +258,19 @@ class ChatLiveController extends Controller
             ->where('is_read', false)
             ->update(['is_read' => true]);
 
+        // Lấy lại số lượng chưa đọc sau khi update (nên chắc chắn = 0)
+        $unreadCount = SupportChatNotification::where('user_id', $staff->user_id)
+            ->whereHas('chat', function ($q) use ($customerId) {
+                $q->where('customer_id', $customerId);
+            })
+            ->where('is_read', false)
+            ->count();
+
         return response()->json([
             'success' => true,
             'message' => 'Đã đánh dấu là đã đọc',
+            'customer_id' => $customerId,
+            'unread_count' => $unreadCount, // trả về 0
         ]);
     }
 
