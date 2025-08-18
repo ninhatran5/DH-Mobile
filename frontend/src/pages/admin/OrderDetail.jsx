@@ -147,7 +147,6 @@ const usePusherConnection = (orderId, order, dispatch) => {
       setIsInitializing(true);
       setConnectionStatus('connecting');
       
-      // Clear timeouts trước khi tạo mới
       if (connectionTimeoutRef.current) {
         clearTimeout(connectionTimeoutRef.current);
       }
@@ -549,22 +548,32 @@ const OrderDetails = () => {
   // **Updated handler functions với thông báo thành công**
   const handleUpdateStatus = useCallback(async () => {
     if (!order?.order_id || !nextStatus || nextStatus === order.status) return;
-    
+
+    const confirmResult = await Swal.fire({
+      title: "Xác nhận cập nhật trạng thái",
+      text: `Bạn có chắc chắn muốn cập nhật trạng thái đơn hàng sang "${nextStatus}"?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Xác nhận",
+      cancelButtonText: "Hủy",
+    });
+
+    if (!confirmResult.isConfirmed) return;
+
     setUpdating(true);
     try {
       await dispatch(updateOrderStatus({ orderId: order.order_id, status: nextStatus })).unwrap();
       
       // 🎉 Thêm thông báo thành công
       Swal.fire({
-        title: 'Thành công!',
+        title: "Thành công!",
         text: `Đã cập nhật trạng thái đơn hàng sang "${nextStatus}"`,
-        icon: 'success',
+        icon: "success",
         timer: 2000,
         showConfirmButton: false,
         toast: true,
-        position: 'top-end'
+        position: "top-end",
       });
-
     } catch (e) {
       Swal.fire("Lỗi", "Không thể cập nhật trạng thái", "error");
     }

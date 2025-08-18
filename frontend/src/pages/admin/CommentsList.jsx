@@ -66,14 +66,33 @@ const CommentsList = () => {
       comment.product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleToggleVisibility = async (commentId) => {
-    try {
-      await dispatch(toggleCommentVisibility(commentId)).unwrap();
-      MySwal.fire("Thành công", "Đã cập nhật trạng thái hiển thị", "success");
-    } catch (err) {
-      console.error("Toggle visibility error:", err);
-      MySwal.fire("Lỗi", err?.message || "Đã xảy ra lỗi", "error");
-    }
+  const handleToggleVisibility = (commentId, currentStatus) => {
+    const actionText = currentStatus ? "ẩn" : "hiển thị";
+    const confirmText = currentStatus 
+      ? "Bạn có chắc muốn ẩn bình luận này?" 
+      : "Bạn có chắc muốn hiển thị bình luận này?";
+
+    Swal.fire({
+      title: "Xác nhận",
+      text: confirmText,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: currentStatus ? "Ẩn" : "Hiển thị",
+      cancelButtonText: "Hủy",
+      confirmButtonColor: currentStatus ? "#dc3545" : "#28a745",
+      cancelButtonColor: "#6c757d",
+      reverseButtons: true,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await dispatch(toggleCommentVisibility(commentId)).unwrap();
+          MySwal.fire("Thành công", `Đã ${actionText} bình luận`, "success");
+        } catch (err) {
+          console.error("Toggle visibility error:", err);
+          MySwal.fire("Lỗi", err?.message || "Đã xảy ra lỗi", "error");
+        }
+      }
+    });
   };
 
   const handleDeleteComment = (commentId) => {
@@ -411,12 +430,12 @@ const CommentsList = () => {
                               comment.is_visible ? "visible" : "hidden"
                             }`}
                             onClick={() =>
-                              handleToggleVisibility(comment.comment_id)
+                              handleToggleVisibility(comment.comment_id, comment.is_visible)
                             }
                             title={
                               comment.is_visible
-                                ? "Bình luận đang hiển thị - Click để ẩn"
-                                : "Bình luận đang ẩn - Click để hiện"
+                                ? "Click để ẩn bình luận"
+                                : "Click để hiển thị bình luận"
                             }
                             style={{
                               display: "flex",
@@ -425,25 +444,25 @@ const CommentsList = () => {
                               padding: "3px 6px",
                               fontSize: "0.75em",
                               border: comment.is_visible 
-                                ? "1px solid #cce5cc" 
-                                : "1px solid #f5c6cb",
+                                ? "1px solid #f5c6cb" 
+                                : "1px solid #cce5cc",
                               borderRadius: "4px",
                               backgroundColor: comment.is_visible 
-                                ? "#e6f5e6" 
-                                : "#f8d7da",
+                                ? "#f8d7da" 
+                                : "#e6f5e6",
                               color: comment.is_visible 
-                                ? "#28a745" 
-                                : "#dc3545",
+                                ? "#dc3545" 
+                                : "#28a745",
                               cursor: "pointer",
                             }}
                           >
                             {comment.is_visible ? (
-                              <FiEye size={13} style={{ color: "#28a745" }} />
-                            ) : (
                               <FiEyeOff size={13} style={{ color: "#dc3545" }} />
+                            ) : (
+                              <FiEye size={13} style={{ color: "#28a745" }} />
                             )}
                             <span style={{ fontWeight: 500 }}>
-                              {comment.is_visible ? "Hiện" : "Ẩn"}
+                              {comment.is_visible ? "Ẩn" : "Hiện"}
                             </span>
                           </button>
                         </div>

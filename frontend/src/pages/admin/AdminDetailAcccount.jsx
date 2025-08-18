@@ -171,9 +171,16 @@ const ProfileAdmin = () => {
               <div className="item">
                 <FaLocationArrow className="icon-detailacccount" style={{ color: '#28a745' }} /> Vị trí
                 <div>
-                  <p style={{ fontWeight: 'bold', color: '#000' }}>Xã/Phường: {ward}</p>
-                  <p style={{ fontWeight: 'bold', color: '#000' }}>Huyện/Quận: {district}</p>
-                  <p style={{ fontWeight: 'bold', color: '#000' }}>Tỉnh/Thành phố: {city}</p>
+                <p style={{ fontWeight: 'bold', color: '#000' }}>
+  Xã/Phường: {ward || "Chưa cập nhật"}
+</p>
+<p style={{ fontWeight: 'bold', color: '#000' }}>
+  Huyện/Quận: {district || "Chưa cập nhật"}
+</p>
+<p style={{ fontWeight: 'bold', color: '#000' }}>
+  Tỉnh/Thành phố: {city || "Chưa cập nhật"}
+</p>
+
                 </div>
               </div>
             </div>
