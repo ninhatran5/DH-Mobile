@@ -292,9 +292,7 @@ const routerConfig = [
  {
         path: "Editaccounts/:id",
         element: (
-          <RequireNotSaleRole>
             <EditAccount/>
-          </RequireNotSaleRole>
         ),
       },
       {
