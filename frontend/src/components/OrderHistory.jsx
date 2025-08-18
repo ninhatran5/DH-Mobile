@@ -12,7 +12,7 @@ import ReturnRequestModal from "./ReturnRequestModal";
 import ReviewModal from "./ReviewModal";
 import { useDispatch } from "react-redux";
 import "../assets/css/order-history.css";
-import { Tooltip } from "react-tooltip";
+import TooltipText from "./TooltipText";
 import {
   fetchOrder,
   fetchOrderDetail,
@@ -190,9 +190,9 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
             {NumberFormat(orderData?.total_amount)}
           </td>
           <td>
-            <span
-              data-tooltip-id={`status-tooltip-${orderData.order_id}`}
-              data-tooltip-content={
+            <TooltipText
+              id={`status-tooltip-${orderData.order_id}`}
+              tooltip={
                 orderData?.updated_at
                   ? `${t("orderDetail.updateDate")}: ${dayjs(
                       orderData.updated_at
@@ -202,22 +202,7 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
               className={getStatusClass(orderData?.status)}
             >
               {orderData?.status}
-            </span>
-
-            <Tooltip
-              id={`status-tooltip-${orderData.order_id}`}
-              place="top"
-              effect="solid"
-              style={{
-                fontSize: "14px",
-                padding: "5px 10px",
-                zIndex: 9999,
-                backgroundColor: "#333",
-                color: "#fff",
-                borderRadius: "4px",
-                boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-              }}
-            />
+            </TooltipText>
           </td>
           <td>
             <TooltipIcon

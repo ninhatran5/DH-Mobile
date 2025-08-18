@@ -303,7 +303,6 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
                           }
                           onChange={(e) => {
                             const val = e.target.value;
-                            // Cho phép rỗng để user xóa số
                             if (val === "") {
                               handleQuantityChange(product.variant_id, "");
                             } else {
