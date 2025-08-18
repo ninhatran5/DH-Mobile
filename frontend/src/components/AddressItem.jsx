@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { FaTrash } from "react-icons/fa";
 import { TbEditCircle } from "react-icons/tb";
 import { MdShareLocation } from "react-icons/md";
+import TooltipButton from "./TooltipButton";
 
 export default function AddressItem({
   name,
@@ -37,25 +38,31 @@ export default function AddressItem({
             <p className="name_address_profile">{name}</p>
             <p className="phone_address_profile">{phone}</p>
           </div>
-          <button className="edit-address-btn" type="button" onClick={onEdit}>
+          <TooltipButton
+            id={`edit-tooltip-${radioId}`}
+            tooltip={t("defaultAddress.edit")}
+            onClick={onEdit}
+            className="edit-address-btn"
+          >
             <TbEditCircle />
-          </button>
-          <button
-            className="delete-address-btn"
-            type="button"
+          </TooltipButton>
+          <TooltipButton
+            id={`delete-tooltip-${radioId}`}
+            tooltip={t("defaultAddress.delete")}
             onClick={handleDeleteAddress}
+            className="delete-address-btn"
           >
             <FaTrash />
-          </button>
+          </TooltipButton>
           {!isDefault && (
-            <button
-              className="set-location-address-btn"
-              type="button"
+            <TooltipButton
+              id={`setdefault-tooltip-${radioId}`}
+              tooltip={t("defaultAddress.setDefault")}
               onClick={onChangDefault}
-              title={t("address.setAsDefault")}
+              className="set-location-address-btn"
             >
               <MdShareLocation />
-            </button>
+            </TooltipButton>
           )}
         </div>
         <div className="full_address_profile">

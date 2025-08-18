@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Cloudinary\Cloudinary;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\WithdrawalCompletedMail;
+use Illuminate\Support\Facades\Log;
 
 class WithdrawRequestController extends Controller
 {
@@ -260,6 +263,16 @@ class WithdrawRequestController extends Controller
             DB::table('wallet_transactions')
                 ->where('transaction_id', $withdraw->transaction_id)
                 ->update(['note' => 'Rút tiền thành công']);
+
+            // Gửi email thông báo
+            if ($withdraw->user && $withdraw->user->email) {
+                try {
+                    Mail::to($withdraw->user->email)->send(new WithdrawalCompletedMail($withdraw));
+                } catch (\Exception $e) {
+                    // Log lỗi gửi mail nếu cần
+                    Log::error('Lỗi gửi email: ' . $e->getMessage());
+                }
+            }
         }
 
         return response()->json([

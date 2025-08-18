@@ -823,6 +823,9 @@
     "successTitle": "Thành công",
     "successText": "Địa chỉ đã được đặt làm mặc định.",
     "errorTitle": "Lỗi",
-    "errorText": "Không thể đặt địa chỉ mặc định. Vui lòng thử lại."
+    "errorText": "Không thể đặt địa chỉ mặc định. Vui lòng thử lại.",
+    "delete": "Xóa địa chỉ",
+    "edit": "Chỉnh sửa địa chỉ",
+    "setDefault": "Đặt làm mặc định"
   }
 }

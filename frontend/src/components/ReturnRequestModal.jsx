@@ -13,7 +13,7 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
   const [images, setImages] = useState([]);
-  const [selectedItems, setSelectedItems] = useState([]); // Array of { variant_id, return_quantity }
+  const [selectedItems, setSelectedItems] = useState([]);
   const maxChars = 2000;
   const dispatch = useDispatch();
   const { orderDetail } = useSelector((state) => state.order);
@@ -89,7 +89,6 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
 
   const handleItemSelection = (variantId, isChecked) => {
     if (isChecked) {
-      // const product = orderDetail.products.find((p) => p.variant_id === variantId);
       setSelectedItems((prev) => [
         ...prev,
         { variant_id: variantId, return_quantity: 1 },
@@ -106,12 +105,17 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
       (p) => p.variant_id === variantId
     );
     const maxQuantity = product ? product.quantity : 1;
-    const newQuantity = Math.max(1, Math.min(quantity, maxQuantity));
 
     setSelectedItems((prev) =>
       prev.map((item) =>
         item.variant_id === variantId
-          ? { ...item, return_quantity: newQuantity }
+          ? {
+              ...item,
+              return_quantity:
+                quantity === ""
+                  ? ""
+                  : Math.max(1, Math.min(quantity, maxQuantity)),
+            }
           : item
       )
     );
@@ -136,21 +140,26 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
       return;
     }
 
-    try {
-      await Promise.all(
-        selectedItems.map((item) =>
-          dispatch(
-            refundOrder({
-              id: orderId,
-              variant_id: item.variant_id,
-              reason,
-              reasonOther: description,
-              images,
-              quantity: item.return_quantity,
-            })
-          ).unwrap()
-        )
+    const items = selectedItems.map((item) => {
+      const product = orderDetail.products.find(
+        (p) => p.variant_id === item.variant_id
       );
+      return {
+        product_id: product ? product.product_id : undefined,
+        quantity: item.return_quantity,
+      };
+    });
+
+    try {
+      await dispatch(
+        refundOrder({
+          id: orderId,
+          reason,
+          reasonOther: description,
+          images,
+          items,
+        })
+      ).unwrap();
 
       Swal.fire({
         icon: "success",
@@ -266,17 +275,28 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
                           type="number"
                           style={{ fontSize: 14 }}
                           max={product.quantity}
-                          // value={
-                          //   selectedItems.find(
-                          //     (item) => item.variant_id === product.variant_id
-                          //   )?.return_quantity || 1
-                          // }
-                          onChange={(e) =>
-                            handleQuantityChange(
-                              product.variant_id,
-                              Number(e.target.value)
-                            )
+                          min={1}
+                          value={
+                            selectedItems.find(
+                              (item) => item.variant_id === product.variant_id
+                            )?.return_quantity === undefined
+                              ? ""
+                              : selectedItems.find(
+                                  (item) =>
+                                    item.variant_id === product.variant_id
+                                )?.return_quantity
                           }
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            if (val === "") {
+                              handleQuantityChange(product.variant_id, "");
+                            } else {
+                              handleQuantityChange(
+                                product.variant_id,
+                                Number(val)
+                              );
+                            }
+                          }}
                           className="form-control w-25 d-inline-block"
                         />
                       </div>
@@ -406,7 +426,17 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
         <Button
           className="btn_save_address"
           onClick={handleSubmit}
-          disabled={!reason || !description || selectedItems.length === 0}
+          disabled={
+            !reason ||
+            !description ||
+            selectedItems.length === 0 ||
+            selectedItems.some(
+              (item) =>
+                item.return_quantity === "" ||
+                item.return_quantity === undefined ||
+                Number(item.return_quantity) < 1
+            )
+          }
         >
           {t("returnRequest.submitBtn")}
         </Button>
