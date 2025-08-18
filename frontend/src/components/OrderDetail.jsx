@@ -55,7 +55,10 @@ const OrderDetail = () => {
 
   useEffect(() => {
     if (reduxOrderDetail === null || reduxOrderDetail === undefined) {
-      navigate("/order-history", { replace: true, state: { error: t("orderDetail.notFound") } });
+      navigate("/order-history", {
+        replace: true,
+        state: { error: t("orderDetail.notFound") },
+      });
     }
   }, [reduxOrderDetail, navigate, t]);
 
@@ -514,12 +517,14 @@ const OrderDetail = () => {
                     )}
                     {orderDetail?.status === "Hoàn thành" && (
                       <>
-                        <button
-                          className="btn-return-order"
-                          onClick={handleOpenReasonModal}
-                        >
-                          {t("orderHistory.returnRequest")}
-                        </button>
+                        {hasReviewableProduct && (
+                          <button
+                            className="btn-return-order"
+                            onClick={handleOpenReasonModal}
+                          >
+                            {t("orderHistory.returnRequest")}
+                          </button>
+                        )}
                         {hasReviewableProduct && (
                           <button
                             className="btn-review-order"
