@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import NumberFormat from "../../utils/numberFormat";
 import { FaTimes, FaEye } from "react-icons/fa";
 import { PiKeyReturnFill } from "react-icons/pi";
+import AutoHideTooltipIcon from "./AutoHideTooltipIcon";
 import { FaDiagramSuccessor } from "react-icons/fa6";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
@@ -231,18 +232,16 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
                 onClick={handleOpenReviewAlert}
               />
             )}
-            {["hoàn thành"].includes(
-              orderData?.status?.trim().toLowerCase()
-            ) && (
+            {"hoàn thành".includes(orderData?.status?.trim().toLowerCase()) && (
               <>
-                {hasReviewableProduct && (
-                  <TooltipIcon
-                    icon={PiKeyReturnFill}
-                    tooltip={t("orderHistory.returnRequest")}
-                    className="icon-circle"
-                    onClick={handleOpenReasonModal}
-                  />
-                )}
+                <AutoHideTooltipIcon
+                  icon={PiKeyReturnFill}
+                  tooltip={t("orderHistory.returnRequest")}
+                  className="icon-circle"
+                  onClick={handleOpenReasonModal}
+                  startTime={orderData?.updated_at || orderData?.delivered_at || orderData?.order_date}
+                  seconds={180} 
+                />
                 {hasReviewableProduct && (
                   <TooltipIcon
                     icon={MdReviews}
