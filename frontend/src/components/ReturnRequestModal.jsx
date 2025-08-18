@@ -13,7 +13,7 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
   const [images, setImages] = useState([]);
-  const [selectedItems, setSelectedItems] = useState([]); // Array of { variant_id, return_quantity }
+  const [selectedItems, setSelectedItems] = useState([]);
   const maxChars = 2000;
   const dispatch = useDispatch();
   const { orderDetail } = useSelector((state) => state.order);
@@ -106,12 +106,17 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
       (p) => p.variant_id === variantId
     );
     const maxQuantity = product ? product.quantity : 1;
-    const newQuantity = Math.max(1, Math.min(quantity, maxQuantity));
 
     setSelectedItems((prev) =>
       prev.map((item) =>
         item.variant_id === variantId
-          ? { ...item, return_quantity: newQuantity }
+          ? {
+              ...item,
+              return_quantity:
+                quantity === ""
+                  ? ""
+                  : Math.max(1, Math.min(quantity, maxQuantity)),
+            }
           : item
       )
     );
@@ -133,6 +138,25 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
     }
     if (!reason || !description) {
       Swal.fire({ icon: "error", title: t("returnRequest.missingFields") });
+      return;
+    }
+    // Kiểm tra số lượng trả hàng phải hợp lệ
+    const invalidQuantity = selectedItems.some(
+      (item) =>
+        item.return_quantity === "" ||
+        item.return_quantity === undefined ||
+        Number(item.return_quantity) < 1
+    );
+    if (invalidQuantity) {
+      Swal.fire({
+        icon: "error",
+        title:
+          t("returnRequest.invalidQuantityTitle") ||
+          "Vui lòng nhập số lượng trả hợp lệ!",
+        text:
+          t("returnRequest.invalidQuantityText") ||
+          "Số lượng trả hàng không được để trống hoặc nhỏ hơn 1.",
+      });
       return;
     }
 
@@ -266,17 +290,29 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
                           type="number"
                           style={{ fontSize: 14 }}
                           max={product.quantity}
-                          // value={
-                          //   selectedItems.find(
-                          //     (item) => item.variant_id === product.variant_id
-                          //   )?.return_quantity || 1
-                          // }
-                          onChange={(e) =>
-                            handleQuantityChange(
-                              product.variant_id,
-                              Number(e.target.value)
-                            )
+                          min={1}
+                          value={
+                            selectedItems.find(
+                              (item) => item.variant_id === product.variant_id
+                            )?.return_quantity === undefined
+                              ? ""
+                              : selectedItems.find(
+                                  (item) =>
+                                    item.variant_id === product.variant_id
+                                )?.return_quantity
                           }
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            // Cho phép rỗng để user xóa số
+                            if (val === "") {
+                              handleQuantityChange(product.variant_id, "");
+                            } else {
+                              handleQuantityChange(
+                                product.variant_id,
+                                Number(val)
+                              );
+                            }
+                          }}
                           className="form-control w-25 d-inline-block"
                         />
                       </div>
@@ -406,7 +442,17 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
         <Button
           className="btn_save_address"
           onClick={handleSubmit}
-          disabled={!reason || !description || selectedItems.length === 0}
+          disabled={
+            !reason ||
+            !description ||
+            selectedItems.length === 0 ||
+            selectedItems.some(
+              (item) =>
+                item.return_quantity === "" ||
+                item.return_quantity === undefined ||
+                Number(item.return_quantity) < 1
+            )
+          }
         >
           {t("returnRequest.submitBtn")}
         </Button>
