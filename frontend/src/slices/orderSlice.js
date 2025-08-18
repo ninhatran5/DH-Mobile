@@ -54,16 +54,28 @@ export const cancelOrder = createAsyncThunk(
 
 export const refundOrder = createAsyncThunk(
   "order/refundOrder",
-  async ({ id, reason, reasonOther, images }, thunkAPI) => {
+  async ({ id, reason, reasonOther, images, items }, thunkAPI) => {
     try {
       const formData = new FormData();
       formData.append("return_reason", reason);
       formData.append("return_reason_other", reasonOther);
+
+      if (items && items.length > 0) {
+        items.forEach((item, index) => {
+          formData.append(
+            `return_items[${index}][product_id]`,
+            item.product_id
+          );
+          formData.append(`return_items[${index}][quantity]`, item.quantity);
+        });
+      }
+
       if (images && images.length > 0) {
         images.forEach((img) => {
           formData.append("upload_url[]", img.file);
         });
       }
+
       const response = await axiosUser.post(
         `/orders/${id}/request-return`,
         formData,
