@@ -4,6 +4,7 @@ import Breadcrumb from "./Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import AutoHideTooltipIcon from "./AutoHideTooltipIcon";
 import useOrderRealtime from "../hooks/useOrderRealtime";
 import { IoChevronBackOutline } from "react-icons/io5";
 import {
@@ -52,6 +53,12 @@ const OrderDetail = () => {
     if (!id) return;
     dispatch(fetchOrderDetail(id));
   }, [id, dispatch]);
+
+  useEffect(() => {
+    if (reduxOrderDetail === null || reduxOrderDetail === undefined) {
+      navigate("/order-history", { replace: true, state: { error: t("orderDetail.notFound") } });
+    }
+  }, [reduxOrderDetail, navigate, t]);
 
   useEffect(() => {
     setOrderDetail(reduxOrderDetail);
@@ -508,12 +515,19 @@ const OrderDetail = () => {
                     )}
                     {orderDetail?.status === "Hoàn thành" && (
                       <>
-                        <button
-                          className="btn-return-order"
-                          onClick={handleOpenReasonModal}
+                        <AutoHideTooltipIcon
+                          icon={null}
+                          tooltip={t("orderHistory.returnRequest")}
+                          startTime={orderDetail?.updated_at || orderDetail?.delivered_at || orderDetail?.order_date}
+                          seconds={180}
                         >
-                          {t("orderHistory.returnRequest")}
-                        </button>
+                          <button
+                            className="btn-return-order"
+                            onClick={handleOpenReasonModal}
+                          >
+                            {t("orderHistory.returnRequest")}
+                          </button>
+                        </AutoHideTooltipIcon>
                         {hasReviewableProduct && (
                           <button
                             className="btn-review-order"

@@ -1,9 +1,10 @@
-export function calculateAverageRating(reviews = []) {
-  const validRatings = reviews
-    ?.map((review) => review.rating)
-    ?.filter((rating) => typeof rating === "number" && rating > 0);
+export function calculateAverageRating(reviews) {
+  const arr = Array.isArray(reviews) ? reviews : [];
+  const validRatings = arr
+    .map((review) => review.rating)
+    .filter((rating) => typeof rating === "number" && rating > 0);
 
-  const totalReviews = validRatings?.length;
+  const totalReviews = validRatings.length;
 
   const averageRating =
     totalReviews > 0
