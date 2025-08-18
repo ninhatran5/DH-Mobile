@@ -89,7 +89,6 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
 
   const handleItemSelection = (variantId, isChecked) => {
     if (isChecked) {
-      // const product = orderDetail.products.find((p) => p.variant_id === variantId);
       setSelectedItems((prev) => [
         ...prev,
         { variant_id: variantId, return_quantity: 1 },
@@ -140,41 +139,27 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
       Swal.fire({ icon: "error", title: t("returnRequest.missingFields") });
       return;
     }
-    // Kiểm tra số lượng trả hàng phải hợp lệ
-    const invalidQuantity = selectedItems.some(
-      (item) =>
-        item.return_quantity === "" ||
-        item.return_quantity === undefined ||
-        Number(item.return_quantity) < 1
-    );
-    if (invalidQuantity) {
-      Swal.fire({
-        icon: "error",
-        title:
-          t("returnRequest.invalidQuantityTitle") ||
-          "Vui lòng nhập số lượng trả hợp lệ!",
-        text:
-          t("returnRequest.invalidQuantityText") ||
-          "Số lượng trả hàng không được để trống hoặc nhỏ hơn 1.",
-      });
-      return;
-    }
+
+    const items = selectedItems.map((item) => {
+      const product = orderDetail.products.find(
+        (p) => p.variant_id === item.variant_id
+      );
+      return {
+        product_id: product ? product.product_id : undefined,
+        quantity: item.return_quantity,
+      };
+    });
 
     try {
-      await Promise.all(
-        selectedItems.map((item) =>
-          dispatch(
-            refundOrder({
-              id: orderId,
-              variant_id: item.variant_id,
-              reason,
-              reasonOther: description,
-              images,
-              quantity: item.return_quantity,
-            })
-          ).unwrap()
-        )
-      );
+      await dispatch(
+        refundOrder({
+          id: orderId,
+          reason,
+          reasonOther: description,
+          images,
+          items,
+        })
+      ).unwrap();
 
       Swal.fire({
         icon: "success",
