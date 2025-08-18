@@ -235,12 +235,14 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
               orderData?.status?.trim().toLowerCase()
             ) && (
               <>
-                <TooltipIcon
-                  icon={PiKeyReturnFill}
-                  tooltip={t("orderHistory.returnRequest")}
-                  className="icon-circle"
-                  onClick={handleOpenReasonModal}
-                />
+                {hasReviewableProduct && (
+                  <TooltipIcon
+                    icon={PiKeyReturnFill}
+                    tooltip={t("orderHistory.returnRequest")}
+                    className="icon-circle"
+                    onClick={handleOpenReasonModal}
+                  />
+                )}
                 {hasReviewableProduct && (
                   <TooltipIcon
                     icon={MdReviews}
