@@ -54,6 +54,12 @@ const OrderDetail = () => {
   }, [id, dispatch]);
 
   useEffect(() => {
+    if (reduxOrderDetail === null || reduxOrderDetail === undefined) {
+      navigate("/order-history", { replace: true, state: { error: t("orderDetail.notFound") } });
+    }
+  }, [reduxOrderDetail, navigate, t]);
+
+  useEffect(() => {
     setOrderDetail(reduxOrderDetail);
   }, [reduxOrderDetail]);
 
