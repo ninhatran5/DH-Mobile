@@ -388,7 +388,9 @@ class OrderController extends Controller
                 'status' => false,
                 'message' => 'Không tìm thấy đơn hàng'
             ], 404);
-        }
+        }       
+
+        // Chỉ cho phép khi đơn đã giao hoặc hoàn thành
         if (!in_array($order->status, ['Đã giao hàng', 'Hoàn thành'])) {
             return response()->json([
                 'status' => false,
@@ -396,6 +398,7 @@ class OrderController extends Controller
             ], 400);
         }
 
+        // Danh sách lý do hợp lệ
         $reasons = [
             'Thiếu hàng',
             'Người bán gửi sai hàng',
@@ -407,12 +410,18 @@ class OrderController extends Controller
             'Lý do khác'
         ];
 
+        // Validate request
         $request->validate([
             'return_reason' => 'required|string',
             'return_reason_other' => 'nullable|string|max:255',
             'upload_url' => 'nullable|array|max:3',
             'upload_url.*' => 'file|mimes:jpg,png,jpeg|max:4096',
+            'return_items' => 'required|array',
+            'return_items.*.product_id' => 'required|integer',
+            'return_items.*.quantity' => 'required|integer|min:1',
         ]);
+
+        // Upload ảnh lên Cloudinary
         $imageUrls = [];
         if ($request->hasFile('upload_url')) {
             try {
@@ -435,6 +444,8 @@ class OrderController extends Controller
         }
 
         $reason = $request->return_reason;
+
+        // Kiểm tra lý do có hợp lệ không
         if (!in_array($reason, $reasons)) {
             return response()->json([
                 'status' => false,
@@ -442,14 +453,38 @@ class OrderController extends Controller
             ], 400);
         }
 
-        if (empty($request->return_reason_other)) {
+        // Nếu chọn "Lý do khác" thì bắt buộc nhập chi tiết
+        if ($reason === 'Lý do khác' && empty($request->return_reason_other)) {
             return response()->json([
                 'status' => false,
                 'message' => 'Vui lòng nhập lý do hoàn hàng cụ thể.'
             ], 400);
         }
-        $reason2 = $request->return_reason_other;
 
+        // Kiểm tra sản phẩm trong đơn và tính số tiền refund
+        $returnItems = $request->return_items;
+        $orderItems = $order->orderItems->keyBy('product_id');
+
+        $refundAmount = 0;
+        foreach ($returnItems as $item) {
+            if (!isset($orderItems[$item['product_id']])) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Sản phẩm không tồn tại trong đơn hàng.'
+                ], 400);
+            }
+
+            $orderItem = $orderItems[$item['product_id']];
+            if ($item['quantity'] > $orderItem->quantity) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Số lượng hoàn vượt quá số lượng đã mua.'
+                ], 400);
+            }
+
+            // ✅ Tính tiền hoàn cho từng sản phẩm
+            $refundAmount += $orderItem->price * $item['quantity'];
+        }
 
         // Kiểm tra đã có yêu cầu hoàn hàng cho đơn này chưa
         $existingRequest = DB::table('return_requests')
@@ -468,20 +503,24 @@ class OrderController extends Controller
             'order_id' => $order->order_id,
             'user_id' => $request->user()->user_id,
             'reason' => $reason,
-            'return_reason_other' => $reason2,
+            'return_reason_other' => $request->return_reason_other,
             'status' => 'đã yêu cầu',
-            'refund_amount' => $order->total_amount, // Lưu tổng tiền đã thanh toán vào refund_amount
+            'refund_amount' => $refundAmount, // ✅ chỉ hoàn tiền theo sản phẩm được chọn
             'upload_url' => json_encode($imageUrls),
+            'return_items' => json_encode($returnItems),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
         // Cập nhật trạng thái đơn hàng
         DB::table('orders')->where('order_id', $order->order_id)->update([
             'status' => 'Yêu cầu hoàn hàng',
         ]);
-        // Broadcast event for realtime update
+
+        // Broadcast event realtime
         $order = Orders::find($order->order_id);
         event(new OrderUpdated($order, $order->user_id));
+
         return response()->json([
             'status' => true,
             'message' => 'Đã gửi yêu cầu hoàn hàng',
