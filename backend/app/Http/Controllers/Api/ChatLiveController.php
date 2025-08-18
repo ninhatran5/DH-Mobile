@@ -221,7 +221,7 @@ class ChatLiveController extends Controller
         return response()->json(['success' => true]);
     }
 
-    
+
     public function adminMarkAsRead($chatId)
     {
         $authUser = Auth::user();
@@ -239,6 +239,29 @@ class ChatLiveController extends Controller
             ->update(['is_read' => true]);
 
         return response()->json(['success' => true]);
+    }
+
+    public function markAsReadUser($customerId)
+    {
+        $staff = Auth::user();
+
+        // Chỉ admin hoặc sale mới được thao tác
+        if (!in_array($staff->role, ['admin', 'sale'])) {
+            return response()->json(['message' => 'Bạn không có quyền thực hiện hành động này.'], 403);
+        }
+
+        // Cập nhật tất cả thông báo chưa đọc của staff với customer này
+        SupportChatNotification::where('user_id', $staff->user_id)
+            ->whereHas('chat', function ($q) use ($customerId) {
+                $q->where('customer_id', $customerId);
+            })
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã đánh dấu là đã đọc',
+        ]);
     }
 
 
