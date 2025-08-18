@@ -823,6 +823,9 @@
     "successTitle": "Success",
     "successText": "The address has been set as default.",
     "errorTitle": "Error",
-    "errorText": "Unable to set default address. Please try again."
+    "errorText": "Unable to set default address. Please try again.",
+    "delete": "Delete address",
+    "edit": "Edit address",
+    "setDefault": "Set as default"
   }
 }
