@@ -1176,6 +1176,7 @@ class OrderController extends Controller
                         'points' => $points,
                         'type' => 'order',
                         'description' => 'Tích điểm từ đơn hàng #' . $order->order_code,
+                        'expired_at' => now()->addMonth(), // Điểm hết hạn sau 1 tháng
                     ]);
                 }
 
@@ -1183,7 +1184,7 @@ class OrderController extends Controller
             });
 
             return response()->json([
-                'message' => 'Đã hoàn thành đơn hàng và cộng điểm',
+                'message' => 'Đã hoàn thành đơn hàng và cộng điểm (có hạn sử dụng)',
                 'earned_points' => $points,
             ]);
         } catch (\Exception $e) {
@@ -1198,7 +1199,11 @@ class OrderController extends Controller
 
     protected function updateUserLoyalty($userId)
     {
-        $totalPoints = LoyaltyPoint::where('user_id', $userId)->sum('points');
+        $totalPoints = LoyaltyPoint::where('user_id', $userId)
+            ->where(function ($q) {
+                $q->whereNull('expired_at')->orWhere('expired_at', '>', now());
+            })
+            ->sum('points');
         $user = User::where('user_id', $userId)->first();
 
         if ($user) {
