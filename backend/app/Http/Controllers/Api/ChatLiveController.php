@@ -311,14 +311,13 @@ class ChatLiveController extends Controller
                     ->first();
 
                 // Lấy số lượng chưa đọc bằng whereIn subquery
-                $unreadCount = SupportChatNotification::where('user_id', $staff->user_id)
-                    ->whereIn('chat_id', function ($q) use ($customer) {
-                        $q->select('chat_id')
-                            ->from('support_chats')
-                            ->where('customer_id', $customer->user_id);
+                $unreadCount = SupportChat::where('customer_id', $customer->user_id)
+                    ->where('sender', 'customer')
+                    ->whereDoesntHave('notifications', function ($q) {
+                        $q->where('is_read', true);
                     })
-                    ->where('is_read', false)
                     ->count();
+
 
                 // Xử lý last message
                 $lastMessage = '';
