@@ -290,8 +290,8 @@ const WithdrawMoney = () => {
                 <div key={withdraw?.withdraw_id} className="withdraw-row">
                   <div className="desktop-row">
                     <div className="user-info">
-                      <div className="user-avatar">
-                        <img src={withdraw?.user?.image_url} alt="" />
+                      <div className="user-avatar-widthdraw">
+                        <img style={{borderRadius: "50%"}} src={withdraw?.user?.image_url} alt="" />
                       </div>
                       <div className="user-details">
                         <h6>{withdraw.user.full_name}</h6>
@@ -447,7 +447,6 @@ const WithdrawMoney = () => {
                 </div>
               </>
             )}
-            {/* Đặt modal ngoài map để modal không bị lồng trong từng row */}
             <InvoiceUploadModal
               show={showInvoiceModal}
               onClose={() => setShowInvoiceModal(false)}

@@ -1,6 +1,7 @@
 import { FaBan, FaCheck, FaTimes } from "react-icons/fa";
 import { IoCloudUploadSharp } from "react-icons/io5";
 import "../assets/admin/invoiceModal1.css";
+import { useState, useEffect } from "react";
 
 const InvoiceUploadModal = ({
   show,
@@ -10,6 +11,18 @@ const InvoiceUploadModal = ({
   invoiceFile,
   setInvoiceFile,
 }) => {
+  const [previewUrl, setPreviewUrl] = useState(null);
+
+  useEffect(() => {
+    if (invoiceFile) {
+      const url = URL.createObjectURL(invoiceFile);
+      setPreviewUrl(url);
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setPreviewUrl(null);
+    }
+  }, [invoiceFile]);
+
   if (!show) return null;
   return (
     <div className="invoice-modal-overlay" onClick={onClose}>
@@ -39,6 +52,17 @@ const InvoiceUploadModal = ({
             className="invoice-file-input"
             style={{ display: 'none' }}
           />
+          {previewUrl && (
+            <div className="invoice-preview-outer">
+              <div className="invoice-preview-imgbox">
+                <img
+                  src={previewUrl}
+                  alt="Invoice Preview"
+                  className="invoice-preview-img"
+                />
+              </div>
+            </div>
+          )}
         </div>
         <div className="invoice-modal-footer">
           <button
