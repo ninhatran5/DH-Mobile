@@ -146,6 +146,7 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
       );
       return {
         product_id: product ? product.product_id : undefined,
+        variant_id: item.variant_id,
         quantity: item.return_quantity,
       };
     });

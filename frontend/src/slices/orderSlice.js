@@ -61,13 +61,7 @@ export const refundOrder = createAsyncThunk(
       formData.append("return_reason_other", reasonOther);
 
       if (items && items.length > 0) {
-        items.forEach((item, index) => {
-          formData.append(
-            `return_items[${index}][product_id]`,
-            item.product_id
-          );
-          formData.append(`return_items[${index}][quantity]`, item.quantity);
-        });
+        formData.append('return_items', JSON.stringify(items));
       }
 
       if (images && images.length > 0) {
