@@ -388,7 +388,7 @@ class OrderController extends Controller
                 'status' => false,
                 'message' => 'Không tìm thấy đơn hàng'
             ], 404);
-        }       
+        }
 
         // Chỉ cho phép khi đơn đã giao hoặc hoàn thành
         if (!in_array($order->status, ['Đã giao hàng', 'Hoàn thành'])) {
@@ -410,16 +410,36 @@ class OrderController extends Controller
             'Lý do khác'
         ];
 
-        // Validate request
+        // Vì form-data không parse được array object nên ta phải decode thủ công
+        $returnItems = json_decode($request->input('return_items'), true);
+
+        if (!is_array($returnItems) || empty($returnItems)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Dữ liệu return_items không hợp lệ.'
+            ], 422);
+        }
+
+        // Validate cơ bản cho return_reason và file
         $request->validate([
             'return_reason' => 'required|string',
             'return_reason_other' => 'nullable|string|max:255',
-            'upload_url' => 'nullable|array|max:3',
             'upload_url.*' => 'file|mimes:jpg,png,jpeg|max:4096',
-            'return_items' => 'required|array',
-            'return_items.*.product_id' => 'required|integer',
-            'return_items.*.quantity' => 'required|integer|min:1',
         ]);
+
+        // Validate từng item trong return_items
+        foreach ($returnItems as $item) {
+            if (
+                !isset($item['product_id']) || !is_numeric($item['product_id']) ||
+                !isset($item['variant_id']) || !is_numeric($item['variant_id']) ||
+                !isset($item['quantity']) || !is_numeric($item['quantity']) || $item['quantity'] < 1
+            ) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Dữ liệu return_items không hợp lệ.'
+                ], 422);
+            }
+        }
 
         // Upload ảnh lên Cloudinary
         $imageUrls = [];
@@ -445,7 +465,7 @@ class OrderController extends Controller
 
         $reason = $request->return_reason;
 
-        // Kiểm tra lý do có hợp lệ không
+        // Kiểm tra lý do hợp lệ
         if (!in_array($reason, $reasons)) {
             return response()->json([
                 'status' => false,
@@ -453,7 +473,6 @@ class OrderController extends Controller
             ], 400);
         }
 
-        // Nếu chọn "Lý do khác" thì bắt buộc nhập chi tiết
         if ($reason === 'Lý do khác' && empty($request->return_reason_other)) {
             return response()->json([
                 'status' => false,
@@ -461,20 +480,23 @@ class OrderController extends Controller
             ], 400);
         }
 
-        // Kiểm tra sản phẩm trong đơn và tính số tiền refund
-        $returnItems = $request->return_items;
-        $orderItems = $order->orderItems->keyBy('product_id');
+        // Kiểm tra sản phẩm trong đơn và tính tiền hoàn
+        $orderItems = $order->orderItems->keyBy(function ($item) {
+            return $item->product_id . '-' . $item->variant_id;
+        });
 
         $refundAmount = 0;
+        $validReturnItems = [];
         foreach ($returnItems as $item) {
-            if (!isset($orderItems[$item['product_id']])) {
+            $key = $item['product_id'] . '-' . $item['variant_id'];
+            if (!isset($orderItems[$key])) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Sản phẩm không tồn tại trong đơn hàng.'
+                    'message' => 'Sản phẩm hoặc biến thể không tồn tại trong đơn hàng.'
                 ], 400);
             }
 
-            $orderItem = $orderItems[$item['product_id']];
+            $orderItem = $orderItems[$key];
             if ($item['quantity'] > $orderItem->quantity) {
                 return response()->json([
                     'status' => false,
@@ -482,11 +504,16 @@ class OrderController extends Controller
                 ], 400);
             }
 
-            // ✅ Tính tiền hoàn cho từng sản phẩm
             $refundAmount += $orderItem->price * $item['quantity'];
+
+            $validReturnItems[] = [
+                'product_id' => $item['product_id'],
+                'variant_id' => $item['variant_id'],
+                'quantity' => $item['quantity']
+            ];
         }
 
-        // Kiểm tra đã có yêu cầu hoàn hàng cho đơn này chưa
+        // Kiểm tra đã có yêu cầu hoàn hàng chưa
         $existingRequest = DB::table('return_requests')
             ->where('order_id', $order->order_id)
             ->where('user_id', $request->user()->user_id)
@@ -505,19 +532,17 @@ class OrderController extends Controller
             'reason' => $reason,
             'return_reason_other' => $request->return_reason_other,
             'status' => 'đã yêu cầu',
-            'refund_amount' => $refundAmount, // ✅ chỉ hoàn tiền theo sản phẩm được chọn
+            'refund_amount' => $refundAmount,
             'upload_url' => json_encode($imageUrls),
-            'return_items' => json_encode($returnItems),
+            'return_items' => json_encode($validReturnItems),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        // Cập nhật trạng thái đơn hàng
         DB::table('orders')->where('order_id', $order->order_id)->update([
             'status' => 'Yêu cầu hoàn hàng',
         ]);
 
-        // Broadcast event realtime
         $order = Orders::find($order->order_id);
         event(new OrderUpdated($order, $order->user_id));
 
@@ -527,6 +552,7 @@ class OrderController extends Controller
             'return_request_id' => $returnId
         ]);
     }
+
 
     // Admin duyệt hoặc từ chối hoàn hàng (sử dụng bảng return_requests)
     public function adminHandleReturnRequest(Request $request, $id)
@@ -1018,6 +1044,7 @@ class OrderController extends Controller
                 'return_requests.reason',
                 'return_requests.status',
                 'return_requests.refund_amount',
+                'return_requests.return_items',
                 'return_requests.created_at',
                 'return_requests.updated_at'
             );
@@ -1038,6 +1065,7 @@ class OrderController extends Controller
                 'reason' => $row->reason,
                 'status' => $row->status,
                 'refund_amount' => number_format($row->refund_amount, 0, '.', ''),
+                'return_items' => json_decode($row->return_items, true), // Giả sử return_items là JSON
                 'created_at' => $row->created_at ? date('d/m/Y H:i:s', strtotime($row->created_at)) : null,
                 'updated_at' => $row->updated_at ? date('d/m/Y H:i:s', strtotime($row->updated_at)) : null,
             ];
