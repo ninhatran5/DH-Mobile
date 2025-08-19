@@ -165,7 +165,7 @@
     margin-left: 0;
     margin-bottom: 2px;
   }
-  .user-avatar {
+  .user-avatar-widthdraw {
     width: 38px;
     height: 38px;
     font-size: 14px;
@@ -267,9 +267,9 @@
   gap: 12px;
 }
 
-.user-avatar {
-  width: 44px;
-  height: 44px;
+.user-avatar-widthdraw {
+  width: 47px;
+  height: 47px;
   border-radius: 50%;
   background: linear-gradient(135deg, #667eea, #764ba2);
   display: flex;
@@ -1015,7 +1015,7 @@
     margin-left: 0;
     margin-bottom: 2px;
   }
-  .user-avatar {
+  .user-avatar-widthdraw {
     width: 38px;
     height: 38px;
     font-size: 14px;
@@ -1195,7 +1195,7 @@
     font-size: 20px;
   }
 
-  .user-avatar {
+  .user-avatar-widthdraw {
     width: 36px;
     height: 36px;
     font-size: 14px;

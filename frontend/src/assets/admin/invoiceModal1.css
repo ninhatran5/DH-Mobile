@@ -1,3 +1,29 @@
+.invoice-preview-outer {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+}
+.invoice-preview-imgbox {
+  background: #fafbfc;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  margin-top: -16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 4px;
+  max-width: 520px;
+  max-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.invoice-preview-img {
+  max-width: 480px;
+  max-height: 360px;
+  border-radius: 10px;
+  object-fit: contain;
+  background: #fff;
+}
 .invoice-modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;

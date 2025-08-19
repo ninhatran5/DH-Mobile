@@ -63,7 +63,7 @@ const Profile = () => {
       label: t("profile.statisticals.wallet"),
       value: numberFormat(wallets?.balance || 0),
       withdrawMoney: t("profile.withdrawMoney"),
-      onWithdrawClick: () => setShowWithdrawModal(true), // Thêm dòng này
+      onWithdrawClick: () => setShowWithdrawModal(true), 
     },
     {
       id: 3,
@@ -347,7 +347,7 @@ const Profile = () => {
                         <th>{t("orderHistory.detail")}</th>
                       </tr>
                     </thead>
-                    {orders?.orders?.slice(0, 4).map((order) => (
+                    {orders?.orders?.slice(0, 3).map((order) => (
                       <OrderHistory key={order?.order_id} order={order} />
                     ))}
                   </table>

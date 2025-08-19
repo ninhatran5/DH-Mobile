@@ -389,7 +389,6 @@ const OrderDetail = () => {
           </div>
         </div>
 
-        {/* Progress */}
         <div className="row d-flex justify-content-center">
           <div className="col-12">
             <ul id="progressbar">
