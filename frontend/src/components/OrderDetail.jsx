@@ -12,6 +12,7 @@ import {
   fetchOrderDetail,
   receivedOrder,
 } from "../slices/orderSlice";
+import { accumulatePoints } from "../slices/rankSlice";
 import Loading from "./Loading";
 import numberFormat from "../../utils/numberFormat";
 import OrderProductRow from "./OrderProductRow";
@@ -325,11 +326,26 @@ const OrderDetail = () => {
   const handleConfirmReceived = async () => {
     try {
       await dispatch(receivedOrder({ id: orderDetail.order_id })).unwrap();
-      Swal.fire({
-        title: t("order.confirmReceivedSuccessTitle"),
-        icon: "success",
-        confirmButtonText: t("order.confirmReceivedSuccessBtn"),
-      });
+      dispatch(accumulatePoints(orderDetail.order_id))
+        .unwrap()
+        .then(() => {
+          Swal.fire({
+            icon: "success",
+            title: t("review.successTitle"),
+            text: t("review.successTextWithPoints"),
+            showConfirmButton: false,
+            timer: 2000,
+          });
+        })
+        .catch(() => {
+          Swal.fire({
+            icon: "success",
+            title: t("review.successTitle"),
+            text: t("review.successText"),
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        });
       dispatch(fetchOrderDetail(orderDetail.order_id));
     } catch (error) {
       Swal.fire({

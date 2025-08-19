@@ -556,6 +556,7 @@ const OrderDetails = () => {
       showCancelButton: true,
       confirmButtonText: "Xác nhận",
       cancelButtonText: "Hủy",
+      reverseButtons: true,
     });
 
     if (!confirmResult.isConfirmed) return;
