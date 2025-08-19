@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('points'); // có thể là âm
             $table->string('type')->default('manual'); // manual | order | refund ...
             $table->string('description')->nullable(); // ví dụ: cộng điểm từ đơn hàng DH001
+            $table->dateTime('expired_at')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
