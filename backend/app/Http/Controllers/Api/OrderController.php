@@ -902,8 +902,93 @@ class OrderController extends Controller
             ];
         });
 
+        // Lấy tất cả variant_id từ tất cả các yêu cầu hoàn trả
+        $allVariantIds = [];
+        $returnRequests->each(function ($r) use (&$allVariantIds) {
+            if ($r->return_items) {
+                $items = json_decode($r->return_items, true);
+                if (is_array($items)) {
+                    foreach ($items as $item) {
+                        if (isset($item['variant_id'])) {
+                            $allVariantIds[] = $item['variant_id'];
+                        }
+                    }
+                }
+            }
+        });
+
+        // Lấy thông tin chi tiết của tất cả các variant cần thiết trong 1 query
+        $variantDetails = collect();
+        $variantAttributes = collect();
+        if (!empty($allVariantIds)) {
+            $variantDetails = DB::table('product_variants')
+                ->join('products', 'product_variants.product_id', '=', 'products.product_id')
+                ->whereIn('product_variants.variant_id', array_unique($allVariantIds))
+                ->select(
+                    'products.name as product_name',
+                    'products.image_url as product_image',
+                    'product_variants.variant_id',
+                    'product_variants.price',
+                    'products.product_id'
+                )
+                ->get()
+                ->keyBy('variant_id'); // Dùng variant_id làm key để tra cứu nhanh
+
+            // Lấy thông tin thuộc tính của các variant
+            $variantAttributes = DB::table('variant_attribute_values')
+                ->join('attribute_values', 'variant_attribute_values.value_id', '=', 'attribute_values.value_id')
+                ->join('attributes', 'attribute_values.attribute_id', '=', 'attributes.attribute_id')
+                ->whereIn('variant_attribute_values.variant_id', array_unique($allVariantIds))
+                ->select(
+                    'variant_attribute_values.variant_id',
+                    'attributes.name as attribute_name',
+                    'attribute_values.value as attribute_value'
+                )
+                ->get()
+                ->groupBy('variant_id'); // Group theo variant_id
+        }
+
         //Format danh sách yêu cầu hoàn trả
-        $returnRequestsFormatted = $returnRequests->map(function ($r) {
+        $returnRequestsFormatted = $returnRequests->map(function ($r) use ($variantDetails, $variantAttributes) {
+            // Xử lý thông tin chi tiết các sản phẩm được hoàn trả
+            $returnedItemsInfo = [];
+            if ($r->return_items) {
+                $items = json_decode($r->return_items, true);
+                if (is_array($items)) {
+                    foreach ($items as $item) {
+                        $variantId = $item['variant_id'] ?? null;
+                        if ($variantId && isset($variantDetails[$variantId])) {
+                            $detail = $variantDetails[$variantId];
+                            
+                            // Lấy thông tin thuộc tính của variant này
+                            $variantAttrs = isset($variantAttributes[$variantId]) 
+                                ? $variantAttributes[$variantId]->map(function ($attr) {
+                                    return [
+                                        'attribute_name' => $attr->attribute_name,
+                                        'attribute_value' => $attr->attribute_value
+                                    ];
+                                })->toArray()
+                                : [];
+                            
+                            $price = $detail->price;
+                            $quantity = $item['quantity'];
+                            $subtotal = $price * $quantity;
+                            
+                            $returnedItemsInfo[] = [
+                                'product_id' => $detail->product_id,
+                                'variant_id' => $variantId,
+                                'quantity' => $quantity,
+                                'product_name' => $detail->product_name,
+                                'product_image' => $detail->product_image,
+                                'price' => number_format($price, 0, '.', ''),
+                                'subtotal' => number_format($subtotal, 0, '.', ''),
+                                'variant_attributes' => $variantAttrs
+                            ];
+                        }
+                    }
+                }
+            }
+
             return [
                 'return_id' => $r->return_id,
                 'reason' => $r->reason,
@@ -916,6 +1001,7 @@ class OrderController extends Controller
                 'created_at' => $r->created_at
                     ? date('d/m/Y H:i:s', strtotime($r->created_at))
                     : null,
+                'returned_items' => $returnedItemsInfo // Thông tin chi tiết các sản phẩm được hoàn trả
             ];
         });
 
@@ -925,18 +1011,16 @@ class OrderController extends Controller
             'order_code' => $order->order_code,
             'customer' => $order->customer ?? optional($order->user)->name,
             'email' => optional($order->user)->email,
-            'total_amount' => $order->total_amount !== null
-                ? number_format($order->total_amount, 0, '.', '')
-                : null,
+            // 'total_amount' => $order->total_amount !== null
+            //     ? number_format($order->total_amount, 0, '.', '')
+            //     : null,
             'order_status' => $order->status,
             'payment_status' => $order->payment_status,
-            'payment_method_name' => optional($order->paymentMethods)->name,
-            'payment_method_description' => optional($order->paymentMethods)->description,
-            'cancel_reason' => $order->cancel_reason,
+            'payment_method_name' => optional($order->paymentMethods)->name . ' - ' . optional($order->paymentMethods)->description,
+            // 'cancel_reason' => $order->cancel_reason,
             'order_created_at' => $order->created_at
                 ? $order->created_at->format('d/m/Y H:i:s')
                 : null,
-            'products' => $orderItems,
             'return_requests' => $returnRequestsFormatted
         ];
 
