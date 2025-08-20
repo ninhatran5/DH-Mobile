@@ -1,7 +1,3 @@
-
-/* Đẹp, nổi bật, bo tròn, bóng nhẹ */
-
-/* Trạng thái: hiển thị inline, không xuống dòng, căn giữa */
 .admin_order-status-pending {
   background: #fffbe6;
   color: #b8860b;
@@ -56,6 +52,7 @@
   display: inline-block;
   white-space: nowrap;
   vertical-align: middle;
+  text-align: center;
 }
 .admin_order-status-cancel {
   background: #ffebee;
