@@ -151,8 +151,7 @@ class ProductsViewsController extends Controller
             ->get()
             ->filter(function ($view) {
                 return $view->product !== null; // lọc chỉ lấy sản phẩm còn tồn tại
-            })
-            ->values(); // reset lại key cho đẹp
+            })->values();
 
         if ($views->isEmpty()) {
             return response()->json([
