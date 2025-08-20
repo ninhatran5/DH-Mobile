@@ -226,7 +226,7 @@ class OrderController extends Controller
             ->where('status', '!=', 'Đã từ chối')
             ->get();
 
-        // Thu thập tất cả sản phẩm đã trả và số lượng
+        // Thu thập tất cả sản phẩm đã trả và số lượng từ return_requests
         $returnedQuantities = [];
         foreach ($returnRequests as $returnRequest) {
             if ($returnRequest->return_items) {
@@ -242,10 +242,9 @@ class OrderController extends Controller
             }
         }
 
-        // Kiểm tra và lấy đơn hoàn trả riêng (nếu có)
+        // Kiểm tra và lấy đơn hoàn trả riêng (nếu có) - chỉ để hiển thị thông tin
         $returnOrder = null;
         $returnOrderFromDB = null;
-        $returnOrderProductKeys = []; // Lưu các key sản phẩm đã có trong đơn hoàn trả
         
         // Tìm đơn hoàn trả trong bảng orders (cho trường hợp hoàn trả một phần)
         if (!empty($returnRequests)) {
@@ -256,20 +255,11 @@ class OrderController extends Controller
                     ->where('return_request_id', $returnRequestId)
                     ->where('is_return_order', true)
                     ->first();
-                    
-                // Thu thập các key sản phẩm đã có trong đơn hoàn trả
-                if ($returnOrderFromDB) {
-                    foreach ($returnOrderFromDB->orderItems as $returnItem) {
-                        $variantId = $returnItem->variant_id ?? null;
-                        $key = $returnItem->product_id . '-' . $variantId;
-                        $returnOrderProductKeys[$key] = ($returnOrderProductKeys[$key] ?? 0) + $returnItem->quantity;
-                    }
-                }
             }
         }
         
         // Định dạng chi tiết sản phẩm còn lại (trừ đi số lượng đã trả)
-        $orderItems = $order->orderItems->map(function ($item) use ($returnedQuantities, $returnOrderProductKeys) {
+        $orderItems = $order->orderItems->map(function ($item) use ($returnedQuantities) {
             $variantAttributes = [];
             if ($item->variant) {
                 $variantAttributes = $item->variant->variantAttributeValues->map(function ($attrValue) {
@@ -284,12 +274,11 @@ class OrderController extends Controller
             $variantId = $item->variant_id ?? null;
             $key = $item->product_id . '-' . $variantId;
             
-            // Trừ đi số lượng đã được hoàn trả từ return_requests
-            $returnedQty = $returnedQuantities[$key] ?? 0;
-            // Trừ thêm số lượng đã có trong đơn hoàn trả riêng
-            $returnOrderQty = $returnOrderProductKeys[$key] ?? 0;
+            // Sử dụng số liệu từ return_requests làm nguồn chính xác
+            // vì đây là nơi lưu trữ thông tin chi tiết về sản phẩm được hoàn trả
+            $totalReturnedQty = $returnedQuantities[$key] ?? 0;
             
-            $remainingQty = $item->quantity - $returnedQty - $returnOrderQty;
+            $remainingQty = $item->quantity - $totalReturnedQty;
             
             // Chỉ trả về nếu còn số lượng (sản phẩm chưa được hoàn trả hết)
             if ($remainingQty > 0) {
@@ -787,18 +776,30 @@ class OrderController extends Controller
 
         $refundAmount = 0;
         foreach ($returnItems as $item) {
-            if (!isset($orderItems[$item['product_id']])) {
+            $productId = $item['product_id'];
+            
+            if (!isset($orderItems[$productId])) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Sản phẩm không tồn tại trong đơn hàng.'
                 ], 400);
             }
 
-            $orderItem = $orderItems[$item['product_id']];
-            if ($item['quantity'] > $orderItem->quantity) {
+            $orderItem = $orderItems[$productId];
+            $alreadyReturnedQty = $alreadyReturnedQuantities[$productId] ?? 0;
+            $availableQty = $orderItem->quantity - $alreadyReturnedQty;
+            
+            if ($availableQty <= 0) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Số lượng hoàn vượt quá số lượng đã mua.'
+                    'message' => "Sản phẩm '{$orderItem->product->name}' đã được hoàn trả hết rồi."
+                ], 400);
+            }
+            
+            if ($item['quantity'] > $availableQty) {
+                return response()->json([
+                    'status' => false,
+                    'message' => "Sản phẩm '{$orderItem->product->name}' chỉ còn {$availableQty} sản phẩm có thể hoàn trả, bạn đã yêu cầu hoàn {$alreadyReturnedQty} sản phẩm trước đó."
                 ], 400);
             }
 
@@ -806,15 +807,34 @@ class OrderController extends Controller
             $refundAmount += $orderItem->price * $item['quantity'];
         }
 
-        // Kiểm tra đã có yêu cầu hoàn hàng cho đơn này chưa
-        $existingRequest = DB::table('return_requests')
+        // Kiểm tra xem còn sản phẩm nào có thể hoàn trả không
+        // Lấy tất cả yêu cầu hoàn trả đã được chấp nhận (không bị từ chối)
+        $existingReturnRequests = DB::table('return_requests')
             ->where('order_id', $order->order_id)
             ->where('user_id', $request->user()->user_id)
-            ->first();
-        if ($existingRequest) {
+            ->where('status', '!=', 'Đã từ chối')
+            ->get();
+            
+        // Tính tổng số lượng đã được yêu cầu hoàn trả
+        $alreadyReturnedQuantities = [];
+        foreach ($existingReturnRequests as $existingRequest) {
+            if ($existingRequest->return_items) {
+                $items = json_decode($existingRequest->return_items, true);
+                if (is_array($items)) {
+                    foreach ($items as $item) {
+                        $productId = $item['product_id'];
+                        $alreadyReturnedQuantities[$productId] = ($alreadyReturnedQuantities[$productId] ?? 0) + $item['quantity'];
+                    }
+                }
+            }
+        }
+        
+        // Kiểm tra xem có yêu cầu đang chờ xử lý không
+        $pendingRequest = $existingReturnRequests->where('status', 'Đã yêu cầu')->first();
+        if ($pendingRequest) {
             return response()->json([
                 'status' => false,
-                'message' => 'Bạn đã gửi yêu cầu hoàn hàng cho đơn này rồi.'
+                'message' => 'Bạn có yêu cầu hoàn hàng đang chờ xử lý. Vui lòng đợi xử lý xong trước khi gửi yêu cầu mới.'
             ], 400);
         }
 
@@ -878,16 +898,28 @@ class OrderController extends Controller
                     'updated_at' => now(),
                 ]);
 
-                // Tạo order items cho đơn hoàn trả
+                // Tạo order items cho đơn hoàn trả - sử dụng thông tin từ return_items
                 foreach ($returnItems as $returnItem) {
-                    $originalOrderItem = $orderItems[$returnItem['product_id']];
+                    // Tìm order item tương ứng dựa trên cả product_id và variant_id
+                    $matchingOrderItem = null;
+                    foreach ($order->orderItems as $orderItem) {
+                        if ($orderItem->product_id == $returnItem['product_id'] && 
+                            $orderItem->variant_id == ($returnItem['variant_id'] ?? null)) {
+                            $matchingOrderItem = $orderItem;
+                            break;
+                        }
+                    }
+                    
+                    if (!$matchingOrderItem) {
+                        throw new \Exception("Không tìm thấy order item tương ứng cho product_id: {$returnItem['product_id']}, variant_id: {$returnItem['variant_id']}");
+                    }
                     
                     DB::table('order_items')->insert([
                         'order_id' => $returnOrderId,
                         'product_id' => $returnItem['product_id'],
-                        'variant_id' => $originalOrderItem->variant_id,
+                        'variant_id' => $returnItem['variant_id'] ?? null, // Sử dụng variant_id từ return_items
                         'quantity' => $returnItem['quantity'],
-                        'price' => $originalOrderItem->price,
+                        'price' => $matchingOrderItem->price,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
