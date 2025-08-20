@@ -28,6 +28,9 @@ class Orders extends Model
         'customer',
         'rank_discount',
         'voucher_discount',
+        'return_request_id',
+        'is_return_order',
+        'original_order_id',
         'created_at',
         'updated_at',
     ];
