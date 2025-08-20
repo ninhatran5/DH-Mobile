@@ -195,7 +195,8 @@ export const fetchChatUserList = createAsyncThunk(
         ...user,
         customer_id: normalizeCustomerId(user.customer_id)
       }));
-      
+      console.log("✅ fetchChatUserList response:", customers);
+      console.log("✅ RAW response:", response.data);
       return customers;
     } catch (error) {
       return rejectWithValue(
@@ -226,35 +227,22 @@ export const fetchChatHistory = createAsyncThunk(
   }
 );
 
-export const getUnreadCount = createAsyncThunk(
-  "adminchatLive/getUnreadCount",
-  async (customer_id, { rejectWithValue }) => {
+export const markMessagesAsRead = createAsyncThunk(
+  "adminchatLive/markMessagesAsRead",
+  async (customerId, { rejectWithValue }) => {
     try {
-      if (!customer_id) {
+      if (!customerId) {
         return rejectWithValue("ID khách hàng không hợp lệ");
       }
-
-      const token = localStorage.getItem("adminToken");
-      if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
-
-      const normalizedCustomerId = normalizeCustomerId(customer_id);
-      const response = await axiosAdmin.get(`/support-chats/unread-count/${normalizedCustomerId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      return {
-        customer_id: normalizedCustomerId,
-        unread_count: response.data?.unread_count || 0,
-      };
-    } catch (err) {
-      return rejectWithValue(
-        err.response?.data?.message || "Lỗi khi lấy số lượng chưa đọc"
-      );
+      const normalizedCustomerId = normalizeCustomerId(customerId);
+      await axiosAdmin.post(`/support-chats/mark-as-read-user/${normalizedCustomerId}`);
+      return normalizedCustomerId;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Lỗi khi đánh dấu tin nhắn đã đọc");
     }
   }
 );
 
-// ✅ SLICE DEFINITION
 const chatLiveSlice = createSlice({
   name: "adminchatLive",
   initialState,
@@ -526,25 +514,27 @@ const chatLiveSlice = createSlice({
         console.error("❌ Failed to send message:", action.payload);
       })
 
-      // getUnreadCount
-      .addCase(getUnreadCount.fulfilled, (state, action) => {
-        const { 
-          customer_id = null, 
-          unread_count = 0 
-        } = safeDestructure(action.payload, { 
-          customer_id: null, 
-          unread_count: 0 
-        });
-
-        if (!customer_id) return;
-
-        const normalizedCustomerId = normalizeCustomerId(customer_id);
-        const userIndex = state.chatUsers.findIndex((u) => 
-          normalizeCustomerId(u.customer_id) === normalizedCustomerId
+      // markMessagesAsRead
+      .addCase(markMessagesAsRead.pending, (state) => {
+        state.replyLoading = true;
+        state.replyError = null;
+      })
+      .addCase(markMessagesAsRead.fulfilled, (state, action) => {
+        state.replyLoading = false;
+        state.replyError = null;
+        const customerId = action.payload;
+        const userIndex = state.chatUsers.findIndex(
+          (user) => normalizeCustomerId(user.customer_id) === normalizeCustomerId(customerId)
         );
         if (userIndex !== -1) {
-          state.chatUsers[userIndex].unread_count = unread_count;
+          state.chatUsers[userIndex].unread_count = 0;
         }
+        console.log("✅ Messages marked as read for customerId:", customerId);
+      })
+      .addCase(markMessagesAsRead.rejected, (state, action) => {
+        state.replyLoading = false;
+        state.replyError = action.payload || "Lỗi không xác định";
+        console.error("❌ Failed to mark messages as read:", action.payload);
       });
   },
 });

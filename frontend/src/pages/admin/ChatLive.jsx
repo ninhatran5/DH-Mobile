@@ -11,11 +11,10 @@ import {
   replyToChat,
   fetchChatHistory,
   receiveMessageRealtime,
-  getUnreadCount,
   reorderChatUsers,
+  markMessagesAsRead,
 } from "../../slices/AdminChatLive";
 import "../../assets/admin/ChatLiveAdmin.css";
-import { fetchProfileAdmin } from "../../slices/adminProfile";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +22,8 @@ import Pusher from "pusher-js";
 import sound from "../../assets/sound/anhthanhtinnhanadmin.mp3";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/vi";
 import {
   AiOutlineSearch,
   AiOutlineInfoCircle,
@@ -32,7 +33,6 @@ import Loading from "../../components/Loading";
 import Avatar from "../../assets/images/adminacccount.jpg";
 
 const ChatLiveAdmin = () => {
-  // ✅ Helper function để remove Vietnamese tones
   const removeVietnameseTones = (str) => {
     return str
       .normalize("NFD")
@@ -67,21 +67,6 @@ const ChatLiveAdmin = () => {
     replyLoading 
   } = useSelector((state) => state.adminchatLive);
   const { adminProfile } = useSelector((state) => state.adminProfile);
-
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      const res = await dispatch(fetchChatUserList());
-      if (res.payload && Array.isArray(res.payload)) {
-        res.payload.forEach((user) => {
-          dispatch(getUnreadCount(user.customer_id));
-        });
-      }
-    };
-    
-    dispatch(fetchProfileAdmin());
-    fetchInitialData();
-  }, [dispatch]);
-
   useEffect(() => {
     if (activeUser?.customer_id) {
       dispatch(fetchChatHistory(activeUser.customer_id));
@@ -310,7 +295,7 @@ const ChatLiveAdmin = () => {
       const handleChat = (data) => {
         try {
           if (data.chat.sender_id === adminProfile?.user?.id) return;
-          
+
           const customerId = data.chat?.customer_id;
           const sender = data.chat?.sender;
           const attachments = data.chat?.attachments || [];
@@ -328,12 +313,14 @@ const ChatLiveAdmin = () => {
             attachments: attachments,
           }));
 
-          // Add to active chat history
           if (activeUserRef.current && customerId === activeUserRef.current.customer_id) {
             dispatch(receiveMessageRealtime({
               ...data.chat,
               attachments: attachments
             }));
+
+            dispatch(markMessagesAsRead(customerId));
+            dispatch(clearUnreadCount({ customer_id: customerId }));
           }
 
           // Play notification sound
@@ -349,6 +336,8 @@ const ChatLiveAdmin = () => {
 
       channel.bind("SupportChatSent", handleChat);
       dayjs.extend(utc);
+      dayjs.extend(relativeTime);
+      dayjs.locale("vi");
       
       return () => {
         if (channel) {
@@ -364,6 +353,29 @@ const ChatLiveAdmin = () => {
       return () => {}; // Return empty cleanup function
     }
   }, [adminProfile?.user?.id, dispatch]);
+
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        await dispatch(fetchChatUserList()).unwrap();
+      } catch (error) {
+        console.error("Error fetching chat user list:", error);
+        toast.error("Không thể tải danh sách người dùng. Vui lòng thử lại!");
+      }
+    };
+
+    fetchInitialData();
+  }, [dispatch]);
+
+  const handleUserClick = useCallback(async (user) => {
+    setActiveUser(user);
+    try {
+      await dispatch(markMessagesAsRead(user.customer_id)).unwrap();
+      dispatch(clearUnreadCount({ customer_id: user.customer_id }));
+    } catch (error) {
+      console.error("Error marking messages as read:", error);
+    }
+  }, [dispatch]);
 
   return (
     <div className="chat-live-admin-manage-app-wrapper">
@@ -441,13 +453,14 @@ const ChatLiveAdmin = () => {
                   removeVietnameseTones(user.customer_name.toLowerCase())
                     .includes(removeVietnameseTones(searchTerm.toLowerCase()))
                 )
+                
                 .map((user) => (
                   <div
                     key={user.customer_id}
                     className={`chat-live-admin-manage-chat-item${
                       activeUser?.customer_id === user.customer_id ? " active" : ""
                     }`}
-                    onClick={() => setActiveUser(user)}
+                    onClick={() => handleUserClick(user)}
                   >
                     <div className="chat-live-admin-manage-chat-item-inner">
                       <img
@@ -462,16 +475,34 @@ const ChatLiveAdmin = () => {
                         <div className="chat-live-admin-manage-chat-list-status">
                           {user.last_message_image ? (
                             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                             
-                              <span style={{ color: "#555", fontSize: "13px" }}>
+                              <span
+                                style={{
+                                  color: "#555",
+                                  fontSize: "13px",
+                                  fontWeight: user.unread_count > 0 ? "bold" : "normal",
+                                  fontSize: user.unread_count > 0 ? "15px" : "13px",
+                                }}
+                              >
                                 {user.last_message || "Đã gửi một hình ảnh"}
                               </span>
                             </div>
                           ) : (
-                            <div className="chat-last-message-preview" style={{ color: "#555" }}>
+                            <div
+                              className="chat-last-message-preview"
+                              style={{
+                                color: "#555",
+                                fontWeight: user.unread_count > 0 ? "bold" : "normal",
+                                fontSize: user.unread_count > 0 ? "15px" : "13px",
+                              }}
+                            >
                               {user.last_message}
                             </div>
                           )}
+                        </div>
+                        <div className="chat-live-admin-manage-chat-list-time">
+                          {dayjs(user.last_message_time).isBefore(dayjs().subtract(1, "day"))
+                            ? dayjs(user.last_message_time).format("DD/MM/YYYY HH:mm")
+                            : dayjs(user.last_message_time).fromNow()} 
                         </div>
                       </div>
                     </div>
@@ -761,5 +792,7 @@ const ChatLiveAdmin = () => {
     </div>
   );
 };
+
+
 
 export default ChatLiveAdmin;
