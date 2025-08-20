@@ -121,10 +121,6 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
   const { productVariationDetails } = useSelector(
     (state) => state.productVariationDetail
   );
-  console.log(
-    "🚀 ~ ProductDetail ~ productVariationDetails:",
-    productVariationDetails
-  );
   const userID = localStorage.getItem("userID");
   const { reviews } = useSelector((state) => state.review);
   const { specifications } = useSelector((state) => state.specification);
