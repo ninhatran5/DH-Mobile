@@ -144,13 +144,20 @@ class ProductsViewsController extends Controller
     // lấy danh sách sản phẩm đã xem của người dùng theo user_id
     public function getViewsByUserId(Request $request, $user_id)
     {
-        // kiểm tra xem user_id có tồn tại trong bảng users không
-        $views = ProductsViews::where('user_id', $user_id)->with(['user', 'product'])->orderBy('created_at', 'desc')->get();
+        // lấy danh sách views kèm product và user
+        $views = ProductsViews::where('user_id', $user_id)
+            ->with(['user', 'product'])
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->filter(function ($view) {
+                return $view->product !== null; // lọc chỉ lấy sản phẩm còn tồn tại
+            })
+            ->values(); // reset lại key cho đẹp
 
         if ($views->isEmpty()) {
             return response()->json([
                 'success' => false,
-                'message' => 'không tìm thấy sản phẩm đã xem của người dùng này',
+                'message' => 'Không tìm thấy sản phẩm đã xem của người dùng này',
             ], 404);
         }
 
