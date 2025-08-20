@@ -6,6 +6,7 @@ import { updateAdminProductVariant } from "../../slices/AdminProductVariants";
 import { fetchAttributeValues } from "../../slices/attributeValueSlice";
 import { fetchAttributes } from "../../slices/Attribute";
 import { fetchVariantAttributeValues, updateVariantAttributeValue } from "../../slices/variantAttributeValueSlice";
+import "../../assets/admin/UpdateVariant.css";
 
 const UpdateVariant = () => {
   const { variant_id } = useParams();
@@ -103,9 +104,18 @@ const UpdateVariant = () => {
     const { name, value, type, checked } = e.target;
     if (type === "checkbox") {
       setFormData((prev) => ({ ...prev, [name]: checked ? 1 : 0 }));
+    } else if (name === 'price' || name === 'price_original') {
+      // Remove formatting and store raw number
+      const rawValue = value.replace(/[^0-9]/g, '');
+      setFormData((prev) => ({ ...prev, [name]: rawValue }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
+  };
+
+  const formatPrice = (value) => {
+    if (!value) return '';
+    return new Intl.NumberFormat('vi-VN').format(Number(value));
   };
 
   const handleAttributeChange = (attribute_id, value_id) => {
@@ -260,8 +270,9 @@ const UpdateVariant = () => {
 
   return (
     <div className="container my-5">
-      <div className="card shadow">
-        <div className="card-body">
+      <div className="variant-form">
+        <div className="card shadow">
+          <div className="card-body">
           <div className="d-flex justify-content-between align-items-center mb-4">
             <h2 className="card-title mb-0">Cập nhật biến thể</h2>
             <Link 
@@ -285,26 +296,33 @@ const UpdateVariant = () => {
               />
             </div>
             <div className="mb-3">
-              <label htmlFor="price" className="form-label">Giá:</label>
-              <input
-                type="number"
-                className="form-control"
-                id="price"
-                name="price"
-                value={formData.price}
-                onChange={handleInputChange}
-              />
+              <label htmlFor="price" className="form-label">Giá <span className="text-danger">*</span>:</label>
+              <div className="input-group">
+                <input
+                  type="text"
+                  className="form-control"
+                  id="price"
+                  name="price"
+                  value={formatPrice(formData.price)}
+                  onChange={handleInputChange}
+                  placeholder="Nhập giá sản phẩm"
+                  required
+                />
+              </div>
             </div>
             <div className="mb-3">
               <label htmlFor="price_original" className="form-label">Giá gốc:</label>
-              <input
-                type="number"
-                className="form-control"
-                id="price_original"
-                name="price_original"
-                value={formData.price_original}
-                onChange={handleInputChange}
-              />
+              <div className="input-group">
+                <input
+                  type="text"
+                  className="form-control"
+                  id="price_original"
+                  name="price_original"
+                  value={formatPrice(formData.price_original)}
+                  onChange={handleInputChange}
+                  placeholder="Nhập giá gốc"
+                />
+              </div>
             </div>
             <div className="mb-3">
               <label htmlFor="stock" className="form-label">Tồn kho:</label>
@@ -318,19 +336,48 @@ const UpdateVariant = () => {
               />
             </div>
             <div className="mb-3">
-              <label htmlFor="image" className="form-label">Ảnh:</label>
-              <input
-                type="file"
-                className="form-control"
-                id="image"
-                accept="image/*"
-                onChange={handleFileChange}
-              />
-              {imagePreview && (
-                <div className="mt-2">
-                  <img src={imagePreview} alt="Preview" style={{ maxWidth: "120px", borderRadius: "4px" }} />
+              <label className="form-label">Ảnh sản phẩm <span className="text-danger">*</span></label>
+              <div className="variant-image-upload-container">
+                <div className="variant-image-upload-area" onClick={() => document.getElementById('image').click()}>
+                  {imagePreview ? (
+                    <div className="variant-image-preview-container">
+                      <img src={imagePreview} alt="Preview" className="variant-image-preview" />
+                      <div className="variant-image-overlay">
+                        <i className="bi bi-pencil-square"></i>
+                        <span>Thay đổi ảnh</span>
+                      </div>
+                      <button 
+                        type="button" 
+                        className="variant-btn-remove-image"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setImagePreview('');
+                          setFormData(prev => ({ ...prev, image_url: '' }));
+                          document.getElementById('image').value = '';
+                        }}
+                      >
+                        <i className="bi bi-x"></i>
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="variant-upload-placeholder">
+                      <i className="bi bi-image variant-upload-icon"></i>
+                      <h5>Chọn ảnh sản phẩm</h5>
+                      <p className="text-muted">JPG, PNG, GIF (tối đa 2MB)</p>
+                      <button type="button" className="btn btn-outline-primary btn-sm">
+                        <i className="bi bi-cloud-upload"></i> Chọn file
+                      </button>
+                    </div>
+                  )}
                 </div>
-              )}
+                <input
+                  type="file"
+                  className="d-none"
+                  id="image"
+                  accept="image/jpeg,image/jpg,image/png,image/gif"
+                  onChange={handleFileChange}
+                />
+              </div>
             </div>
             <div className="mb-4">
               <label className="form-label fw-bold">Thuộc tính:</label>
@@ -358,21 +405,7 @@ const UpdateVariant = () => {
                 );
               })}
             </div>
-            <div className="mb-4">
-              <div className="form-check">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="is_active"
-                  name="is_active"
-                  checked={formData.is_active === 1}
-                  onChange={handleInputChange}
-                />
-                <label className="form-check-label" htmlFor="is_active">
-                  Kích hoạt
-                </label>
-              </div>
-            </div>
+         
             <div className="d-flex gap-2">
               <button 
                 type="submit" 
@@ -396,6 +429,7 @@ const UpdateVariant = () => {
               </Link>
             </div>
           </form>
+          </div>
         </div>
       </div>
     </div>
