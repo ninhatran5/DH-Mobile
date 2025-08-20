@@ -690,7 +690,7 @@ class OrderController extends Controller
             'return_reason_other' => 'nullable|string|max:255',
             'upload_url' => 'nullable|array|max:3',
             'upload_url.*' => 'file|mimes:jpg,png,jpeg|max:4096',
-            'return_items' => 'required|array',
+            'return_items' => 'required',
             'return_items.*.product_id' => 'required|integer',
             'return_items.*.quantity' => 'required|integer|min:1',
         ]);
@@ -735,8 +735,54 @@ class OrderController extends Controller
             ], 400);
         }
 
-        // Kiểm tra sản phẩm trong đơn và tính số tiền refund
+        // Xử lý return_items - có thể là array hoặc JSON string
         $returnItems = $request->return_items;
+        
+        // Nếu return_items là string (JSON), decode nó
+        if (is_string($returnItems)) {
+            $returnItems = json_decode($returnItems, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'return_items must be a valid JSON array or array format. JSON error: ' . json_last_error_msg()
+                ], 400);
+            }
+        }
+        
+        // Kiểm tra xem $returnItems có phải là array không
+        if (!is_array($returnItems)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'return_items must be an array'
+            ], 400);
+        }
+        
+        // Kiểm tra xem array có rỗng không
+        if (empty($returnItems)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'return_items cannot be empty'
+            ], 400);
+        }
+        
+        // Validate từng item trong return_items
+        foreach ($returnItems as $index => $item) {
+            if (!isset($item['product_id']) || !is_numeric($item['product_id'])) {
+                return response()->json([
+                    'status' => false,
+                    'message' => "return_items[{$index}].product_id is required and must be a number"
+                ], 400);
+            }
+            
+            if (!isset($item['quantity']) || !is_numeric($item['quantity']) || $item['quantity'] < 1) {
+                return response()->json([
+                    'status' => false,
+                    'message' => "return_items[{$index}].quantity is required and must be a number greater than 0"
+                ], 400);
+            }
+        }
+        
+        // Kiểm tra sản phẩm trong đơn và tính số tiền refund
         $orderItems = $order->orderItems->keyBy('product_id');
 
         $refundAmount = 0;
