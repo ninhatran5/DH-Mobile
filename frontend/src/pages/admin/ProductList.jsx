@@ -65,7 +65,6 @@ const ProductList = () => {
     dispatch(fetchTrashedAdminProducts());
   }, [dispatch, error]);
 
-  // Sửa lại useEffect để lưu variants vào state
   useEffect(() => {
     const fetchAllVariants = async () => {
       if (adminproducts.length > 0) {
@@ -120,9 +119,7 @@ const ProductList = () => {
       
       setSelectedProducts([]);
       
-      const successMessage = skippedCount > 0 
-        ? `Đã chuyển ${productIds.length} sản phẩm vào thùng rác thành công. ${skippedCount} sản phẩm có biến thể đã được bỏ qua.`
-        : `Đã chuyển ${productIds.length} sản phẩm vào thùng rác thành công`;
+      const successMessage = `Đã chuyển ${productIds.length} sản phẩm vào thùng rác thành công`;
       
       toast.success(successMessage);
       
@@ -155,55 +152,6 @@ const ProductList = () => {
       return;
     }
 
-    // Kiểm tra sản phẩm nào có variants
-    const productsWithVariants = [];
-    const productsWithoutVariants = [];
-    
-    selectedProducts.forEach(productId => {
-      if (checkProductHasVariants(productId)) {
-        const product = adminproducts.find(p => p.product_id === productId);
-        productsWithVariants.push(product?.name || `ID: ${productId}`);
-      } else {
-        productsWithoutVariants.push(productId);
-      }
-    });
-
-    // Nếu có sản phẩm có variants, hiển thị cảnh báo
-    if (productsWithVariants.length > 0) {
-      const variantProductsList = productsWithVariants.slice(0, 3).join(", ");
-      const remainingCount = productsWithVariants.length - 3;
-      const displayText = remainingCount > 0 
-        ? `${variantProductsList} và ${remainingCount} sản phẩm khác`
-        : variantProductsList;
-
-      Swal.fire({
-        title: "Không thể xóa một số sản phẩm!",
-        html: `
-          <div style="text-align: left;">
-            <p><strong>Các sản phẩm sau có biến thể, không thể xóa:</strong></p>
-            <p style="color: #dc3545;">${displayText}</p>
-            <br>
-            <p>${productsWithoutVariants.length > 0 
-              ? `Còn lại ${productsWithoutVariants.length} sản phẩm có thể xóa. Bạn có muốn tiếp tục xóa những sản phẩm này không?`
-              : 'Vui lòng xóa tất cả biến thể trước khi xóa sản phẩm.'
-            }</p>
-          </div>
-        `,
-        icon: "warning",
-        showCancelButton: productsWithoutVariants.length > 0,
-        confirmButtonColor: productsWithoutVariants.length > 0 ? "#d33" : "#3085d6",
-        cancelButtonColor: "#6c757d",
-        confirmButtonText: productsWithoutVariants.length > 0 ? "Có, xóa các sản phẩm còn lại" : "Đã hiểu",
-        cancelButtonText: "Hủy"
-      }).then(async (result) => {
-        if (result.isConfirmed && productsWithoutVariants.length > 0) {
-          await performBulkDelete(productsWithoutVariants, productsWithVariants.length);
-        }
-      });
-      return;
-    }
-
-    // Nếu tất cả sản phẩm đều không có variants, tiếp tục như bình thường
     const result = await Swal.fire({
       title: "Xác nhận xóa",
       text: `Bạn có chắc chắn muốn chuyển ${selectedProducts.length} sản phẩm vào thùng rác?`,
@@ -225,17 +173,6 @@ const ProductList = () => {
   const handleDeleteSingle = async (productId) => {
     const product = adminproducts.find(p => p.product_id === productId);
     const productName = product?.name || "sản phẩm này";
-
-    // Kiểm tra sản phẩm có variants hay không
-    if (checkProductHasVariants(productId)) {
-      Swal.fire({
-        title: "Không thể xóa!",
-        text: `Sản phẩm "${productName}" có biến thể, không thể chuyển vào thùng rác. Vui lòng xóa tất cả biến thể trước.`,
-        icon: "warning",
-        confirmButtonText: "Đã hiểu"
-      });
-      return;
-    }
 
     const result = await Swal.fire({
       title: "Xác nhận xóa",
@@ -551,10 +488,10 @@ const ProductList = () => {
                   </Link>
                   {checkRole !== "sale" && (
                     <button
-                      className={`ProductsList1-action-btn ProductsList1-delete-btn ${checkProductHasVariants(product.product_id) ? 'disabled' : ''}`}
-                      title={checkProductHasVariants(product.product_id) ? "Sản phẩm có biến thể, không thể xóa" : "Chuyển vào thùng rác"}
+                      className="ProductsList1-action-btn ProductsList1-delete-btn"
+                      title="Chuyển vào thùng rác"
                       onClick={() => handleDeleteSingle(product.product_id)}
-                      disabled={isDeleting || checkProductHasVariants(product.product_id)}
+                      disabled={isDeleting}
                     >
                       <i className="bi bi-trash"></i>
                     </button>
@@ -653,10 +590,10 @@ const ProductList = () => {
                         </Link>
                         {checkRole !== "sale" && (
                           <button
-                            className={`ProductsList1-action-btn ProductsList1-delete-btn ${checkProductHasVariants(product.product_id) ? 'disabled' : ''}`}
-                            title={checkProductHasVariants(product.product_id) ? "Sản phẩm có biến thể, không thể xóa" : "Chuyển vào thùng rác"}
+                            className="ProductsList1-action-btn ProductsList1-delete-btn"
+                            title="Chuyển vào thùng rác"
                             onClick={() => handleDeleteSingle(product.product_id)}
-                            disabled={isDeleting || checkProductHasVariants(product.product_id)}
+                            disabled={isDeleting}
                           >
                             <i className="bi bi-trash"></i>
                           </button>

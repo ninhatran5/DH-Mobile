@@ -6,7 +6,9 @@ import {
   fetchTrashedAdminProducts,
   restoreAdminProduct,
   deleteAdminProduct,
+  
 } from "../slices/adminproductsSlice";
+import {fetchAdminProductVariants} from "../slices/AdminProductVariants";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import "../assets/admin/HomeAdmin.css";
@@ -17,6 +19,9 @@ const TrashList = () => {
   const { trashedProducts, loading, error } = useSelector(
     (state) => state.adminproduct
   );
+  const { productVariants, loading: variantsLoading } = useSelector(
+    (state) => state.adminProductVariants
+  );
 
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -25,6 +30,7 @@ const TrashList = () => {
 
   useEffect(() => {
     dispatch(fetchTrashedAdminProducts());
+    dispatch(fetchAdminProductVariants());
   }, [dispatch]);
 
   const handleSelectAll = (e) => {
@@ -41,6 +47,11 @@ const TrashList = () => {
     } else {
       setSelectedProducts([...selectedProducts, productId]);
     }
+  };
+
+  // Kiểm tra sản phẩm có variant không
+  const checkProductHasVariants = (productId) => {
+    return productVariants.some(variant => variant.product_id === productId);
   };
 
   // Khôi phục một sản phẩm
@@ -74,6 +85,12 @@ const TrashList = () => {
 
   // Xóa vĩnh viễn một sản phẩm
   const handleDeletePermanently = async (productId) => {
+    // Kiểm tra sản phẩm có variant không
+    if (checkProductHasVariants(productId)) {
+      toast.error("Không thể xóa sản phẩm này vì còn tồn tại biến thể (variants). Vui lòng xóa tất cả biến thể trước!");
+      return;
+    }
+
     const confirmResult = await Swal.fire({
       title: "⚠️ CẢNH BÁO!",
       text: "Bạn có chắc muốn xóa vĩnh viễn sản phẩm này? Hành động này KHÔNG THỂ KHÔI PHỤC!",
@@ -144,6 +161,21 @@ const TrashList = () => {
 
   // Xóa vĩnh viễn nhiều sản phẩm
   const handleDeleteSelectedPermanently = async () => {
+    // Kiểm tra từng sản phẩm đã chọn có variant không
+    const productsWithVariants = selectedProducts.filter(productId => 
+      checkProductHasVariants(productId)
+    );
+
+    if (productsWithVariants.length > 0) {
+      const productNames = productsWithVariants.map(productId => {
+        const product = trashedProducts.find(p => p.product_id === productId);
+        return product ? product.name : `ID: ${productId}`;
+      }).join(", ");
+      
+      toast.error(`Không thể xóa các sản phẩm sau vì còn tồn tại biến thể: ${productNames}. Vui lòng xóa tất cả biến thể trước!`);
+      return;
+    }
+
     const result = await Swal.fire({
       title: `⚠️ CẢNH BÁO!`,
       text: `Bạn có chắc muốn xóa vĩnh viễn ${selectedProducts.length} sản phẩm đã chọn? Hành động này KHÔNG THỂ KHÔI PHỤC!`,
@@ -254,7 +286,7 @@ const TrashList = () => {
 
       {/* Products Content */}
       <div className="TrashList1-content">
-        {loading ? (
+        {(loading || variantsLoading) ? (
           <div className="TrashList1-loading">
             <div className="TrashList1-spinner"></div>
             <p>Đang tải dữ liệu...</p>
@@ -343,11 +375,19 @@ const TrashList = () => {
                           <i className="bi bi-arrow-counterclockwise"></i>
                         </button>
                         <button
-                          className="TrashList1-action-btn TrashList1-delete-btn"
-                          title="Xóa vĩnh viễn"
+                          className={`TrashList1-action-btn TrashList1-delete-btn ${
+                            checkProductHasVariants(product.product_id) ? 'TrashList1-disabled' : ''
+                          }`}
+                          title={checkProductHasVariants(product.product_id) 
+                            ? "Không thể xóa - sản phẩm có biến thể" 
+                            : "Xóa vĩnh viễn"
+                          }
                           onClick={() => handleDeletePermanently(product.product_id)}
                         >
                           <i className="bi bi-trash"></i>
+                          {checkProductHasVariants(product.product_id) && (
+                            <i className="bi bi-exclamation-triangle" style={{marginLeft: '4px', fontSize: '12px'}}></i>
+                          )}
                         </button>
                       </div>
                     </td>
