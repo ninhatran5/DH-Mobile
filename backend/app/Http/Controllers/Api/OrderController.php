@@ -42,7 +42,12 @@ class OrderController extends Controller
             // Kiểm tra xem có phải đơn hoàn trả 100% không
             $isFullReturnOrder = $order->is_return_order && in_array($order->status, ['Yêu cầu hoàn hàng', 'Đã chấp thuận', 'Đang xử lý', 'Đã trả hàng']);
             
-            if (!$isFullReturnOrder) {
+            if ($isFullReturnOrder) {
+                // Trường hợp hoàn trả 100%: Tính lại total_amount dựa trên sản phẩm thực tế
+                $adjustedTotalAmount = $order->orderItems->sum(function ($item) {
+                    return $item->price * $item->quantity;
+                });
+            } else {
                 // Lấy thông tin các sản phẩm đã được trả (nếu có)
                 $returnRequests = DB::table('return_requests')
                     ->where('order_id', $order->order_id)
@@ -186,6 +191,11 @@ class OrderController extends Controller
                 ];
             })->values(); // Thêm values() để reset keys và trả về array
             
+            // Tính tổng tiền dựa trên các sản phẩm thực tế được hoàn trả
+            $calculatedTotalAmount = collect($groupedItems)->sum(function ($item) {
+                return $item->price * $item->total_quantity;
+            });
+            
             $formattedOrder = [
                 'order_id' => $order->order_id,
                 'order_code' => $order->order_code,
@@ -207,7 +217,7 @@ class OrderController extends Controller
                 'voucher' => $order->voucher_id,
                 'voucher_discount' => number_format($order->voucher_discount, 0, ".", ""),
                 'rank_discount' => number_format($order->rank_discount, 0, ".", ""),
-                'total_amount' => number_format($order->total_amount, 0, ".", ""),
+                'total_amount' => number_format($calculatedTotalAmount, 0, ".", ""),
                 'products' => $orderItems,
                 'updated_at' => $order->updated_at,
                 'is_full_return_order' => true
@@ -775,6 +785,8 @@ class OrderController extends Controller
         $orderItems = $order->orderItems->keyBy('product_id');
 
         $refundAmount = 0;
+        $refundBreakdown = []; 
+        
         foreach ($returnItems as $item) {
             $productId = $item['product_id'];
             
@@ -803,8 +815,19 @@ class OrderController extends Controller
                 ], 400);
             }
 
-            // ✅ Tính tiền hoàn cho từng sản phẩm
-            $refundAmount += $orderItem->price * $item['quantity'];
+            // ✅ Tính tiền hoàn cho từng sản phẩm - với logging chi tiết
+            $itemRefundAmount = $orderItem->price * $item['quantity'];
+            $refundAmount += $itemRefundAmount;
+            
+            // Debug: lưu chi tiết từng sản phẩm
+            $refundBreakdown[] = [
+                'product_id' => $productId,
+                'product_name' => $orderItem->product->name ?? 'Unknown',
+                'price' => $orderItem->price,
+                'quantity' => $item['quantity'],
+                'subtotal' => $itemRefundAmount
+            ];
+            
         }
 
         // Kiểm tra xem còn sản phẩm nào có thể hoàn trả không
@@ -838,16 +861,44 @@ class OrderController extends Controller
             ], 400);
         }
 
+        // ✅ Validation cuối cùng cho refund_amount
+        if ($refundAmount <= 0) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Số tiền hoàn trả phải lớn hơn 0. Vui lòng kiểm tra lại sản phẩm và số lượng.'
+            ], 400);
+        }
+        
+        // Kiểm tra xem refund_amount có vượt quá tổng giá trị đơn hàng không
+        $maxRefundAmount = $order->orderItems->sum(function ($item) {
+            return $item->price * $item->quantity;
+        });
+        
+        if ($refundAmount > $maxRefundAmount) {
+            Log::error("Refund amount exceeds order total", [
+                'order_id' => $order->order_id,
+                'order_code' => $order->order_code,
+                'calculated_refund_amount' => $refundAmount,
+                'max_allowed_refund_amount' => $maxRefundAmount,
+                'breakdown' => $refundBreakdown
+            ]);
+            
+            return response()->json([
+                'status' => false,
+                'message' => 'Số tiền hoàn trả vượt quá giá trị đơn hàng. Vui lòng kiểm tra lại.'
+            ], 400);
+        }
+
         DB::beginTransaction();
         try {
-            // Tạo mới yêu cầu hoàn hàng
+            // Tạo mới yêu cầu hoàn hàng với validation đã hoàn tất
             $returnId = DB::table('return_requests')->insertGetId([
                 'order_id' => $order->order_id,
                 'user_id' => $request->user()->user_id,
                 'reason' => $reason,
                 'return_reason_other' => $request->return_reason_other,
                 'status' => 'đã yêu cầu',
-                'refund_amount' => $refundAmount, // ✅ chỉ hoàn tiền theo sản phẩm được chọn
+                'refund_amount' => $refundAmount, // ✅ đã được validate kỹ lưỡng
                 'upload_url' => json_encode($imageUrls),
                 'return_items' => json_encode($returnItems),
                 'created_at' => now(),
@@ -1292,6 +1343,7 @@ class OrderController extends Controller
 
         //Format danh sách sản phẩm trong đơn hàng
         $orderItems = $order->orderItems->map(function ($item) {
+            
             // Lấy thông tin thuộc tính của biến thể (nếu có)
             $variantAttributes = $item->variant
                 ? $item->variant->variantAttributeValues->map(function ($attrValue) {
@@ -1366,10 +1418,12 @@ class OrderController extends Controller
                 ->groupBy('variant_id'); // Group theo variant_id
         }
 
-        //Format danh sách yêu cầu hoàn trả
+        //Format danh sách yêu cầu hoàn trả - sử dụng subtotal từ returned_items
         $returnRequestsFormatted = $returnRequests->map(function ($r) use ($variantDetails, $variantAttributes) {
             // Xử lý thông tin chi tiết các sản phẩm được hoàn trả
             $returnedItemsInfo = [];
+            $totalRefundFromItems = 0; // Tổng từ subtotal của returned items
+            
             if ($r->return_items) {
                 $items = json_decode($r->return_items, true);
                 if (is_array($items)) {
@@ -1402,24 +1456,48 @@ class OrderController extends Controller
                                 'subtotal' => number_format($subtotal, 0, '.', ''),
                                 'variant_attributes' => $variantAttrs
                             ];
+                            
+                            // Cộng subtotal vào tổng refund amount
+                            $totalRefundFromItems += $subtotal;
                         }
                     }
+                }
+            }
+            
+            // Sử dụng tổng subtotal làm refund_amount chính thức
+            $finalRefundAmount = $totalRefundFromItems;
+            $storedRefundAmount = $r->refund_amount;
+            
+            // Cập nhật refund_amount trong database nếu khác với tổng subtotal
+            if (abs($storedRefundAmount - $finalRefundAmount) > 1) {
+               
+                
+                try {
+                    DB::table('return_requests')
+                        ->where('return_id', $r->return_id)
+                        ->update([
+                            'refund_amount' => $finalRefundAmount,
+                            'updated_at' => now()
+                        ]);
+                } catch (\Exception $e) {
+                    Log::error("Failed to update refund_amount", [
+                        'return_id' => $r->return_id,
+                        'error' => $e->getMessage()
+                    ]);
                 }
             }
 
             return [
                 'return_id' => $r->return_id,
                 'reason' => $r->reason,
-                'return_reason_other' => $r->return_reason_other, //Thêm lý do khác
+                'return_reason_other' => $r->return_reason_other,
                 'status' => $r->status,
                 'upload_url' => $r->upload_url,
-                'refund_amount' => $r->refund_amount !== null
-                    ? number_format($r->refund_amount, 0, '.', '')
-                    : null,
+                'refund_amount' => number_format($finalRefundAmount, 0, '.', ''), // Sử dụng finalRefundAmount
                 'created_at' => $r->created_at
                     ? date('d/m/Y H:i:s', strtotime($r->created_at))
                     : null,
-                'returned_items' => $returnedItemsInfo // Thông tin chi tiết các sản phẩm được hoàn trả
+                'returned_items' => $returnedItemsInfo
             ];
         });
 
@@ -1555,7 +1633,70 @@ class OrderController extends Controller
         }
         $results = $query->orderByDesc('return_requests.created_at')->get();
 
-        $formatted = $results->map(function ($row) {
+        // Thu thập tất cả variant_id để truy vấn giá một lần
+        $allVariantIds = [];
+        foreach ($results as $row) {
+            if ($row->return_items) {
+                $items = json_decode($row->return_items, true);
+                if (is_array($items)) {
+                    foreach ($items as $it) {
+                        if (isset($it['variant_id']) && $it['variant_id'] !== null) {
+                            $allVariantIds[] = $it['variant_id'];
+                        }
+                    }
+                }
+            }
+        }
+        $variantPrices = [];
+        if (!empty($allVariantIds)) {
+            $variantPrices = DB::table('product_variants')
+                ->whereIn('variant_id', array_unique($allVariantIds))
+                ->pluck('price', 'variant_id')
+                ->toArray();
+        }
+
+        $formatted = $results->map(function ($row) use ($variantPrices) {
+            $storedAmount = (float) $row->refund_amount;
+            $itemsSubtotal = 0;
+            $decodedItems = [];
+            if ($row->return_items) {
+                $decodedItems = json_decode($row->return_items, true);
+                if (is_array($decodedItems)) {
+                    foreach ($decodedItems as $it) {
+                        $qty = isset($it['quantity']) ? (int) $it['quantity'] : 0;
+                        $variantId = $it['variant_id'] ?? null;
+                        $price = ($variantId !== null && isset($variantPrices[$variantId])) ? (float) $variantPrices[$variantId] : 0;
+                        $itemsSubtotal += $price * $qty;
+                    }
+                } else {
+                    $decodedItems = [];
+                }
+            }
+
+            // Đồng bộ database nếu chênh lệch đáng kể (> 1 do làm tròn)
+            if (abs($storedAmount - $itemsSubtotal) > 1) {
+                try {
+                    DB::table('return_requests')
+                        ->where('return_id', $row->return_id)
+                        ->update([
+                            'refund_amount' => $itemsSubtotal,
+                            'updated_at' => now()
+                        ]);
+                    Log::info('Synced refund_amount on admin return-requests', [
+                        'return_id' => $row->return_id,
+                        'old' => $storedAmount,
+                        'new' => $itemsSubtotal
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('Failed syncing refund_amount on admin return-requests', [
+                        'return_id' => $row->return_id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+                // Dùng itemsSubtotal cho hiển thị
+                $storedAmount = $itemsSubtotal;
+            }
+
             return [
                 'return_id' => $row->return_id,
                 'order_id' => $row->order_id,
@@ -1566,8 +1707,8 @@ class OrderController extends Controller
                 'email' => $row->email,
                 'reason' => $row->reason,
                 'status' => $row->status,
-                'refund_amount' => number_format($row->refund_amount, 0, '.', ''),
-                'return_items' => json_decode($row->return_items, true), // Giả sử return_items là JSON
+                'refund_amount' => number_format($storedAmount, 0, '.', ''), // hoàn toàn khớp subtotal
+                'return_items' => $decodedItems,
                 'created_at' => $row->created_at ? date('d/m/Y H:i:s', strtotime($row->created_at)) : null,
                 'updated_at' => $row->updated_at ? date('d/m/Y H:i:s', strtotime($row->updated_at)) : null,
             ];
