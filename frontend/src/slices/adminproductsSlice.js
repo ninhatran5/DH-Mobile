@@ -157,17 +157,22 @@ export const updateAdminProduct = createAsyncThunk(
   }
 );
 
-// Lấy danh sách variant của một sản phẩm
 export const fetchProductVariants = createAsyncThunk(
   "adminproduct/fetchProductVariants",
   async (productId, { rejectWithValue }) => {
     try {
       const res = await axiosAdmin.get(`/productvariants/${productId}`);
+
+      // 👇 log dữ liệu trả về từ server
+      console.log("✅ fetchProductVariants response:", res.data);
+
       return {
         productId,
         variants: res.data.data || [],
       };
     } catch (err) {
+      console.error("❌ fetchProductVariants error:", err.response || err);
+
       if (err.response?.status === 404) {
         return {
           productId,
@@ -180,6 +185,7 @@ export const fetchProductVariants = createAsyncThunk(
     }
   }
 );
+
 
 const adminProductSlice = createSlice({
   name: "adminproduct",

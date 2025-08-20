@@ -130,9 +130,10 @@ const DetailOrderReturn = () => {
   };
 
   const handleUpdateStatus = () => {
-    if (!currentReturnOrder || !currentReturnOrder.return_requests?.length) return;
+    const orderData = currentReturnOrder.order || currentReturnOrder;
+    if (!orderData || !orderData.return_requests?.length) return;
 
-    const currentStatus = currentReturnOrder.return_requests[0].status;
+    const currentStatus = orderData.return_requests[0].status;
     const nextStatus = getNextStatus(currentStatus);
 
     if (!nextStatus) {
@@ -158,7 +159,7 @@ const DetailOrderReturn = () => {
         setProcessing(true);
 
         dispatch(updateReturnOrderStatus({
-          orderId: currentReturnOrder.order_id,
+          orderId: orderData.order_id,
           status: nextStatus
         }))
           .unwrap()
@@ -188,9 +189,10 @@ const DetailOrderReturn = () => {
 
   // Cập nhật logic để kiểm tra có thể hủy đơn hay không
   const canCancelOrder = () => {
-    if (!currentReturnOrder || !currentReturnOrder.return_requests?.length) return false;
+    const orderData = currentReturnOrder?.order || currentReturnOrder;
+    if (!orderData || !orderData.return_requests?.length) return false;
     
-    const currentStatus = currentReturnOrder.return_requests[0].status;
+    const currentStatus = orderData.return_requests[0].status;
     
     // Chỉ có thể hủy khi ở trạng thái ban đầu (chưa được chấp thuận)
     const cancelableStatuses = [
@@ -206,7 +208,8 @@ const DetailOrderReturn = () => {
   };
 
   const handleCancelOrder = async () => {
-    if (!currentReturnOrder?.order_id) return;
+    const orderData = currentReturnOrder?.order || currentReturnOrder;
+    if (!orderData?.order_id) return;
 
     // Kiểm tra xem có thể hủy không
     if (!canCancelOrder()) {
@@ -234,7 +237,7 @@ const DetailOrderReturn = () => {
         setProcessing(true);
         
         await dispatch(updateReturnOrderStatus({
-          orderId: currentReturnOrder.order_id,
+          orderId: orderData.order_id,
           status: "Đã từ chối", 
         })).unwrap();
 
@@ -264,6 +267,8 @@ const DetailOrderReturn = () => {
   if (error) return <div className="error">Lỗi: {error}</div>;
   if (!currentReturnOrder) return <div className="error">Không tìm thấy thông tin đơn hoàn hàng.</div>;
 
+  // Extract data from the correct structure - API returns data inside 'order' key
+  const orderData = currentReturnOrder.order || currentReturnOrder;
   const {
     order_code,
     customer,
@@ -276,7 +281,7 @@ const DetailOrderReturn = () => {
     order_created_at,
     products,
     return_requests,
-  } = currentReturnOrder;
+  } = orderData;
 
   const currentReturnStatus = return_requests?.[0]?.status || 'pending';
   const statusMilestones = getStatusMilestones(currentReturnStatus);
@@ -365,12 +370,14 @@ const DetailOrderReturn = () => {
                   <div className="product-specs">
                     <span>📱 Bộ nhớ: {
                       product.variant_attributes?.find(attr => 
+                        attr.attribute_name === 'Bộ nhớ' ||
                         attr.attribute_name?.toLowerCase().includes('memory') || 
                         attr.attribute_name?.toLowerCase().includes('storage')
                       )?.attribute_value || '128GB'
                     }</span>
                     <span>🎨 Màu sắc: {
                       product.variant_attributes?.find(attr => 
+                        attr.attribute_name === 'Màu sắc' ||
                         attr.attribute_name?.toLowerCase().includes('color') || 
                         attr.attribute_name?.toLowerCase().includes('màu')
                       )?.attribute_value || 'White Titanium'

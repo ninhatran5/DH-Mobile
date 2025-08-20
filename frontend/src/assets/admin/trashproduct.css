@@ -402,6 +402,24 @@
   transform: translateY(-1px);
 }
 
+/* Disabled state for delete button */
+.TrashList1-delete-btn.TrashList1-disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.TrashList1-delete-btn.TrashList1-disabled:hover {
+  background: #f3f4f6;
+  color: #9ca3af;
+  transform: none;
+}
+
+.TrashList1-delete-btn.TrashList1-disabled i.bi-exclamation-triangle {
+  color: #f59e0b;
+}
+
 /* Pagination */
 .TrashList1-pagination-container {
   display: flex;

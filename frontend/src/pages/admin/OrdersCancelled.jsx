@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { format } from 'date-fns';
+import { format, parse } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import '../../assets/admin/HomeAdmin.css';
 import '../../assets/admin/AdminReturnOrder.css';
@@ -147,6 +147,11 @@ const OrdersCancelled = () => {
       style: 'currency',
       currency: 'VND'
     }).format(amount);
+  };
+
+  const formatDateTime = (dateTimeString) => {
+    const parsedDate = parse(dateTimeString, 'dd/MM/yyyy HH:mm:ss', new Date());
+    return format(parsedDate, 'dd/MM/yyyy HH:mm:ss', { locale: vi });
   };
 
   const getStatusColor = (status) => {
@@ -329,7 +334,7 @@ const OrdersCancelled = () => {
                         <div className="admin-return-order-email">{order.email}</div>
                       </td>
                       <td>
-                        <div>{order.created_at}</div>
+                        <div>{formatDateTime(order.created_at)}</div>
                       </td>
                       <td className="admin-return-order-hide-sm">
                         <div className="admin-return-order-amount">{formatCurrency(order.refund_amount)}</div>
