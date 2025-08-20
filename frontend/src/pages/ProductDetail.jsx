@@ -121,6 +121,10 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
   const { productVariationDetails } = useSelector(
     (state) => state.productVariationDetail
   );
+  console.log(
+    "🚀 ~ ProductDetail ~ productVariationDetails:",
+    productVariationDetails
+  );
   const userID = localStorage.getItem("userID");
   const { reviews } = useSelector((state) => state.review);
   const { specifications } = useSelector((state) => state.specification);
@@ -501,9 +505,7 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
 
           <div className={isQuickView ? "col-12" : "col-md-6"}>
             <div key={productDetails.data?.product_id}>
-              <h2 className="mb-3" >
-                {productDetails.data?.name}
-              </h2>
+              <h2 className="mb-3">{productDetails.data?.name}</h2>
               <div className="price">
                 <h4 className="text-price_sale" style={{ fontSize: 22 }}>
                   {numberFomat(
@@ -568,11 +570,19 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
               )}
               {Object.keys(selectedOptions).length === allAttributes.length && (
                 <p className="text-muted">
-                  {t("productDetail.quantity")}:{" "}
-                  <span className="fw-bold me-1">
-                    {selectedVariant?.stock ?? 0}
-                  </span>
-                  {t("productDetail.product")}
+                  {selectedVariant?.stock === 0 ? (
+                    <span style={{ color: "red", fontWeight: 600 }}>
+                      {t("productDetail.outOfStock") || "Đã hết hàng"}
+                    </span>
+                  ) : (
+                    <>
+                      {t("productDetail.quantity")}:{" "}
+                      <span className="fw-bold me-1">
+                        {selectedVariant?.stock ?? 0}
+                      </span>
+                      {t("productDetail.product")}
+                    </>
+                  )}
                 </p>
               )}
               <div
@@ -694,8 +704,19 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
 
               <button
                 onClick={addToShoppingCart}
-                className="btn-custom px-4"
+                className={`btn-custom px-4`}
                 disabled={selectedVariant?.stock === 0}
+                style={
+                  selectedVariant?.stock === 0
+                    ? {
+                        background: "#f5f5f5",
+                        color: "#9e9e9e",
+                        borderColor: "#ddd",
+                        cursor: "not-allowed",
+                        opacity: 0.7,
+                      }
+                    : {}
+                }
               >
                 {t("products.addToCart")}
               </button>
