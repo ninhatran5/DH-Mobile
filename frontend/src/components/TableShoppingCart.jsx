@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { MdOutlineNavigateNext } from "react-icons/md";
 import { GrFormPrevious } from "react-icons/gr";
 import numberFomat from "../../utils/numberFormat";
+import { FaTrash } from "react-icons/fa";
 
 const TableShoppingCart = ({
   item,
@@ -9,6 +10,7 @@ const TableShoppingCart = ({
   handleIncrease,
   handleDecrease,
   handleChangeQuantity,
+  handleDeleteItem,
 }) => {
   const navigate = useNavigate();
   const handleNextPageDetail = () => {
@@ -18,7 +20,6 @@ const TableShoppingCart = ({
     <tr>
       <td style={{ paddingRight: "20px" }}>
         {" "}
-        {/* Thêm padding-right để cách checkbox ra */}
         <input
           type="checkbox"
           checked={item.selected}
@@ -31,7 +32,6 @@ const TableShoppingCart = ({
           style={{ cursor: "pointer", marginRight: "20px" }}
         >
           {" "}
-          {/* Thêm margin-right để cách image ra */}
           <img src={item?.variant?.image_url} alt="product" />
         </div>
         <div className="product__cart__item__text">
@@ -70,8 +70,11 @@ const TableShoppingCart = ({
       <td className="cart__price text-end">
         {numberFomat(item?.quantity * item?.variant?.price)}
       </td>
-      <td className="cart__close" style={{ cursor: "pointer" }}>
-        <i style={{ marginLeft: 27 }}></i>
+      <td className="cart__close" style={{ cursor: "pointer", width: 48, minWidth: 40, textAlign: "center" }}>
+        <FaTrash
+          style={{ color: '#e11d48', fontSize: 18, marginLeft: 20 }}
+          onClick={() => handleDeleteItem(item.variant_id)}
+        />
       </td>
     </tr>
   );

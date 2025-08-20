@@ -74,8 +74,19 @@ const ShoppingCart = () => {
 
   const handleDecrease = (id) => {
     const item = cartItems.find((item) => item.variant_id === id);
-    if (item && item.quantity > 1) {
-      const newQuantity = item.quantity - 1;
+    if (!item) return;
+    const newQuantity = item.quantity - 1;
+    if (newQuantity <= 0) {
+      dispatch(deleteProductCart(item.variant_id))
+        .unwrap()
+        .then(() => {
+          dispatch(fetchCart());
+          toast.success(t("toast.deleteSuccess"));
+        })
+        .catch(() => {
+          toast.error(t("toast.deleteError"));
+        });
+    } else {
       dispatch(
         fetchUpdateCartQuantity({ variant_id: id, quantity: newQuantity })
       )
@@ -86,8 +97,6 @@ const ShoppingCart = () => {
         .catch(() => {
           toast.error(t("toast.updateQuantityError"));
         });
-    } else {
-      toast.warn(t("toast.minQuantity"));
     }
   };
 
@@ -209,6 +218,7 @@ const ShoppingCart = () => {
                           {t("tableHeaders.totalPrice")}
                         </th>
                         <th />
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -221,6 +231,17 @@ const ShoppingCart = () => {
                           handleIncrease={() => handleIncrease(item.variant_id)}
                           handleDecrease={() => handleDecrease(item.variant_id)}
                           handleChangeQuantity={handleChangeQuantity}
+                          handleDeleteItem={(id) => {
+                            dispatch(deleteProductCart(id))
+                              .unwrap()
+                              .then(() => {
+                                dispatch(fetchCart());
+                                toast.success(t("toast.deleteSuccess"));
+                              })
+                              .catch(() => {
+                                toast.error(t("toast.deleteError"));
+                              });
+                          }}
                           isSelected={item.selected}
                         />
                       ))}
