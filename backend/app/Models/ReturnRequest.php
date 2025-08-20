@@ -18,6 +18,7 @@ class ReturnRequest extends Model
         'status',
         'return_reason_other',
         'refund_amount',
+        'return_items', // JSON field to store items being returned
     ];
 
     public $timestamps = true;
