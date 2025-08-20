@@ -951,8 +951,22 @@ const OrderDetails = () => {
             <div className="summary-section">
               <div className="summary-row">
                 <span className="summary-label">Tạm tính:</span>
-                <span className="summary-value">{order?.total_amount ? formatCurrency(order.total_amount) : 'Đang tải...'}</span>
+                <span className="summary-value">{order?.total_amount && (Number(order.voucher_discount) > 0 || Number(order.rank_discount) > 0) ? formatCurrency((Number(order.total_amount) + Number(order.voucher_discount || 0) + Number(order.rank_discount || 0))) : (order?.total_amount ? formatCurrency(order.total_amount) : 'Đang tải...')}</span>
               </div>
+              
+              {Number(order?.voucher_discount) > 0 && (
+                <div className="summary-row discount">
+                  <span className="summary-label">Giảm giá voucher:</span>
+                  <span className="summary-value discount-amount">- {formatCurrency(order.voucher_discount)}</span>
+                </div>
+              )}
+              
+              {Number(order?.rank_discount) > 0 && (
+                <div className="summary-row discount">
+                  <span className="summary-label">Giảm giá theo hạng:</span>
+                  <span className="summary-value discount-amount">- {formatCurrency(order.rank_discount)}</span>
+                </div>
+              )}
             
               <div className="summary-row final">
                 <span className="summary-label">Tổng cộng:</span>

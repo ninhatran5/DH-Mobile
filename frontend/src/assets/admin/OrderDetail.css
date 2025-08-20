@@ -347,6 +347,20 @@
   font-size: 15px;
 }
 
+.summary-row.discount {
+  color: #22c55e;
+  font-weight: 500;
+}
+
+.summary-row.discount .summary-label {
+  color: #16a34a;
+}
+
+.summary-row.discount .discount-amount {
+  color: #16a34a;
+  font-weight: 600;
+}
+
 .summary-row.final {
   border-top: 1px solid #e0e0e0;
   margin-top: 8px;

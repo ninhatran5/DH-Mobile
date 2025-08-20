@@ -1,11 +1,10 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addCategory } from "../../slices/adminCategories";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "../../assets/admin/AddCategories.css";
-
+import Loading from "../../components/Loading";
 const AddCategory = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -13,6 +12,7 @@ const AddCategory = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [is_active, setIsActive] = useState(true);
   const [showValidation, setShowValidation] = useState(false);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -42,6 +42,8 @@ const AddCategory = () => {
     if (!name.trim() || !description.trim() || !imageFile) {
       return;
     }
+    
+    setLoading(true);
     const formData = new FormData();
     formData.append("name", name);
     formData.append("description", description);
@@ -55,11 +57,14 @@ const AddCategory = () => {
       navigate("/admin/categories");
     } catch (error) {
       toast.error("Có lỗi xảy ra khi thêm danh mục!");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="addcategories-container">
+      {loading && <Loading />}
       <button
         type="button"
         onClick={handleBack}
@@ -186,8 +191,12 @@ const AddCategory = () => {
           )}
         </div>
 
-        <button type="submit" className="addcategories-submit-btn">
-          Thêm danh mục
+        <button 
+          type="submit" 
+          className="addcategories-submit-btn"
+          disabled={loading}
+        >
+          {loading ? "Đang thêm..." : "Thêm danh mục"}
         </button>
       </form>
     </div>
