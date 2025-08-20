@@ -273,15 +273,16 @@ const DetailOrderReturn = () => {
     order_code,
     customer,
     email,
-    total_amount,
     order_status,
     payment_status,
     payment_method_name,
-    payment_method_description,
     order_created_at,
-    products,
     return_requests,
   } = orderData;
+
+  // Get total amount and products from return_requests
+  const totalAmount = return_requests?.[0]?.refund_amount || 0;
+  const products = return_requests?.[0]?.returned_items || [];
 
   const currentReturnStatus = return_requests?.[0]?.status || 'pending';
   const statusMilestones = getStatusMilestones(currentReturnStatus);
@@ -330,21 +331,28 @@ const DetailOrderReturn = () => {
               </div>
               
               <div className="info-item">
-                <span className="info-label">Tổng tiền</span>
-                <span className="info-value highlight">{formatCurrency(total_amount)}</span>
+                <span className="info-label">Tổng tiền hoàn</span>
+                <span className="info-value highlight">{formatCurrency(totalAmount)}</span>
               </div>
               
               <div className="info-item">
                 <span className="info-label mb-2">Phương thức thanh toán</span>
                 <div className="payment-method">
                   <span className="payment-icon">🇻🇳</span>
-                  {payment_method_name}( {payment_method_description })
+                  {payment_method_name}
                 </div>
               </div>
               
               <div className="info-item">
-                <span className="info-label">Trạng thái đơn hàng</span>
-                <span className="status-returned-text">{order_status}</span>
+                <span className="info-label">Trạng thái thanh toán</span>
+                <span className={`payment-status-badge ${
+                  payment_status?.toLowerCase().includes('đã thanh toán') ? 'status-paid' :
+                  payment_status?.toLowerCase().includes('chưa thanh toán') ? 'status-unpaid' :
+                  payment_status?.toLowerCase().includes('đã hoàn tiền') ? 'status-refunded' :
+                  'status-default'
+                }`}>
+                  {payment_status}
+                </span>
               </div>
             </div>
           </div>
@@ -359,37 +367,47 @@ const DetailOrderReturn = () => {
             </div>
             
             {products && products.map((product, index) => (
-              <div key={index} className="product-card">
-                <img 
-                  src={product.product_image} 
-                  alt={product.product_name}
-                  className="product-image"
-                />
-                <div className="product-details">
-                  <div className="product-name">{product.product_name}</div>
-                  <div className="product-specs">
-                    <span>📱 Bộ nhớ: {
-                      product.variant_attributes?.find(attr => 
-                        attr.attribute_name === 'Bộ nhớ' ||
-                        attr.attribute_name?.toLowerCase().includes('memory') || 
-                        attr.attribute_name?.toLowerCase().includes('storage')
-                      )?.attribute_value || '128GB'
-                    }</span>
-                    <span>🎨 Màu sắc: {
-                      product.variant_attributes?.find(attr => 
-                        attr.attribute_name === 'Màu sắc' ||
-                        attr.attribute_name?.toLowerCase().includes('color') || 
-                        attr.attribute_name?.toLowerCase().includes('màu')
-                      )?.attribute_value || 'White Titanium'
-                    }</span>
-                  </div>
-                  <div className="product-price-info">
-                    <span className="product-quantity">Số lượng: {product.quantity}</span>
-                    <span className="product-unit-price">Đơn giá: {formatCurrency(product.price)}</span>
+              <div key={index} className="return-product-card">
+                <div className="return-product-header">
+                  <img 
+                    src={product.product_image} 
+                    alt={product.product_name}
+                    className="return-product-image"
+                  />
+                  <div className="return-product-info">
+                    <div className="return-product-name">{product.product_name}</div>
+                    <div className="return-product-total">
+                      {formatCurrency(product.subtotal)}
+                    </div>
                   </div>
                 </div>
-                <div className="product-total">
-                  {formatCurrency(product.subtotal)}
+                <div className="return-product-attributes">
+                  <div className="return-attribute-row">
+                    <div className="return-attribute-item">
+                      <span className="return-attribute-icon">📱</span>
+                      <span className="return-attribute-text">
+                        Bộ nhớ: {product.variant_attributes?.find(attr => 
+                          attr.attribute_name === 'Bộ nhớ'
+                        )?.attribute_value || '128GB'}
+                      </span>
+                    </div>
+                    <div className="return-attribute-item">
+                      <span className="return-quantity-text">Số lượng: {product.quantity}</span>
+                    </div>
+                  </div>
+                  <div className="return-attribute-row">
+                    <div className="return-attribute-item">
+                      <span className="return-attribute-icon">🎨</span>
+                      <span className="return-attribute-text">
+                        Màu sắc: {product.variant_attributes?.find(attr => 
+                          attr.attribute_name === 'Màu sắc'
+                        )?.attribute_value || 'White Titanium'}
+                      </span>
+                    </div>
+                    <div className="return-attribute-item">
+                      <span className="return-unit-price-text">Đơn giá: {formatCurrency(product.price)}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -407,7 +425,7 @@ const DetailOrderReturn = () => {
             {return_requests && return_requests.map((request, index) => (
               <div key={index} className="return-request-card">
                 <div className="request-header">
-                  <span className="request-number">#{index + 3}</span>
+                  <span className="request-number">#{request.return_id}</span>
                   <span className="request-date">{request.created_at}</span>
                 </div>
                 
@@ -415,6 +433,18 @@ const DetailOrderReturn = () => {
                   <div className="info-item">
                     <span className="info-label">Ngày yêu cầu</span>
                     <span className="info-value">{request.created_at}</span>
+                  </div>
+                  
+                  <div className="info-item">
+                    <span className="info-label">Trạng thái</span>
+                    <span className={`info-value return-status-badge ${
+                      request.status?.toLowerCase().includes('đã yêu cầu') || request.status?.toLowerCase().includes('yêu cầu') ? 'status-requested' :
+                      request.status?.toLowerCase().includes('đã chấp thuận') ? 'status-approved' :
+                      request.status?.toLowerCase().includes('đang xử lý') ? 'status-processing' :
+                      request.status?.toLowerCase().includes('đã hoàn lại') || request.status?.toLowerCase().includes('hoàn thành') ? 'status-completed' :
+                      request.status?.toLowerCase().includes('đã từ chối') || request.status?.toLowerCase().includes('từ chối') ? 'status-rejected' :
+                      'status-default'
+                    }`}>{request.status}</span>
                   </div>
                   
                   <div className="info-item">
@@ -427,9 +457,11 @@ const DetailOrderReturn = () => {
                   <span className="reason-icon">⚠️</span>
                   Lý do: {request.reason}
                 </div>
-                <div className="request-reason">
-                  Mô tả : {request.return_reason_other}
-                </div>
+                {request.return_reason_other && (
+                  <div className="request-reason">
+                    📝 Mô tả thêm: {request.return_reason_other}
+                  </div>
+                )}
 
                 {/* Hiển thị hình ảnh */}
                 {request.upload_url && (
@@ -529,7 +561,7 @@ const DetailOrderReturn = () => {
                     </div>
                     {milestone.key === 'returned' && milestone.isCompleted && (
                       <div className="history-amount">
-                        Số tiền hoàn: {formatCurrency(total_amount)}
+                        Số tiền hoàn: {formatCurrency(totalAmount)}
                       </div>
                     )}
                     {milestone.key === 'rejected' && return_requests?.[0]?.reason && (
@@ -591,16 +623,16 @@ const DetailOrderReturn = () => {
             
             <div className="summary-section">
               <div className="summary-row">
-                <span className="summary-label">Tổng đơn hàng:</span>
-                <span className="summary-value">{formatCurrency(total_amount)}</span>
+                <span className="summary-label">Tổng sản phẩm trả:</span>
+                <span className="summary-value">{products.length} sản phẩm</span>
               </div>
               <div className="summary-row">
                 <span className="summary-label">Số tiền hoàn:</span>
-                <span className="summary-value highlight">{formatCurrency(total_amount)}</span>
+                <span className="summary-value highlight">{formatCurrency(totalAmount)}</span>
               </div>
               <div className="summary-row final">
-                <span className="summary-label">Thực nhận:</span>
-                <span className="summary-value highlight final-amount">{formatCurrency(total_amount)}</span>
+                <span className="summary-label">Khách nhận:</span>
+                <span className="summary-value highlight final-amount">{formatCurrency(totalAmount)}</span>
               </div>
             </div>
           </div>

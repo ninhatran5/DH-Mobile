@@ -141,9 +141,10 @@
 }
 
 .info-label {
-  font-size: 14px; /* Giảm từ 15px */
+  font-size: 14px; 
   color: #6b7280;
   font-weight: 500;
+  margin-block: 10px;
 }
 
 .info-value {
@@ -163,32 +164,205 @@
   font-weight: 600;
 }
 
-/* Payment Method */
-.payment-method {
+/* Payment Method and Status Badge - Unified Design */
+.payment-method,
+.payment-status-badge {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  background: #dcfce7;
-  color: #166534;
-  padding: 6px 16px;
-  border-radius: 6px;
-  font-size: 13px; /* Giảm từ 14px */
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 14px;
   font-weight: 500;
-  border: 1px solid #bbf7d0;
-  width: 270px;
+  border: 1px solid;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  min-width: 180px;
+  height: 40px;
+  box-sizing: border-box;
+  text-align: center;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+/* Payment Method - Blue theme */
+.payment-method {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  color: #1e40af;
+  border-color: #bfdbfe;
+}
+
+.payment-method:hover {
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .payment-icon {
-  font-size: 14px; /* Giảm từ 16px */
+  font-size: 16px;
+}
+
+/* Payment Status Badge Variations */
+.payment-status-badge.status-paid {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  color: #166534;
+  border-color: #bbf7d0;
+}
+
+.payment-status-badge.status-paid:hover {
+  background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(22, 101, 52, 0.2);
+}
+
+.payment-status-badge.status-unpaid {
+  background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.payment-status-badge.status-unpaid:hover {
+  background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+}
+
+.payment-status-badge.status-refunded {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  color: #2563eb;
+  border-color: #bfdbfe;
+}
+
+.payment-status-badge.status-refunded:hover {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+
+/* Default payment status styling */
+.payment-status-badge.status-default {
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.payment-status-badge.status-default:hover {
+  background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(55, 65, 81, 0.2);
+}
+
+/* Return Status Badge in Return Request Details */
+.return-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  min-width: 120px;
+  text-align: center;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+/* Status Requested - Orange */
+.return-status-badge.status-requested {
+  background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
+  color: #c2410c;
+  border-color: #fed7aa;
+}
+
+.return-status-badge.status-requested:hover {
+  background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(194, 65, 12, 0.2);
+}
+
+/* Status Approved - Blue */
+.return-status-badge.status-approved {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  color: #2563eb;
+  border-color: #bfdbfe;
+}
+
+.return-status-badge.status-approved:hover {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+
+/* Status Processing - Purple */
+.return-status-badge.status-processing {
+  background: linear-gradient(135deg, #faf5ff 0%, #e9d5ff 100%);
+  color: #7c3aed;
+  border-color: #c4b5fd;
+}
+
+.return-status-badge.status-processing:hover {
+  background: linear-gradient(135deg, #e9d5ff 0%, #c4b5fd 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(124, 58, 237, 0.2);
+}
+
+/* Status Completed - Green */
+.return-status-badge.status-completed {
+  background: linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%);
+  color: #166534;
+  border-color: #86efac;
+}
+
+.return-status-badge.status-completed:hover {
+  background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(22, 101, 52, 0.2);
+}
+
+/* Status Rejected - Red */
+.return-status-badge.status-rejected {
+  background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+  color: #dc2626;
+  border-color: #f87171;
+}
+
+.return-status-badge.status-rejected:hover {
+  background: linear-gradient(135deg, #fecaca 0%, #f87171 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+}
+
+/* Default Return Status */
+.return-status-badge.status-default {
+  background: linear-gradient(135deg, #f9fafb 0%, #e5e7eb 100%);
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.return-status-badge.status-default:hover {
+  background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(55, 65, 81, 0.2);
+}
+
+/* Status paid text - keeping for compatibility */
+.status-paid-text {
+  color: #007612;
+  font-weight: 600;
+  font-size: 15px;
 }
 
 .status-returned-text {
   color: #007612;
   font-weight: 600;
-  font-size: 15px; /* Giảm từ 16px */
+  font-size: 15px;
 }
 
 /* Product Card */
+/* Old Product Card Styles - Kept for compatibility */
 .product-card {
   display: flex;
   gap: 16px;
@@ -257,6 +431,149 @@
   text-align: right;
   align-self: flex-start;
   flex-shrink: 0;
+}
+
+/* New Product Card Styles - Based on Image Design */
+.product-card-new {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: white;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.product-card-new:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.product-card-new:last-child {
+  margin-bottom: 0;
+}
+
+.product-header {
+  display: flex;
+  padding: 16px;
+  border-bottom: 1px solid #f3f4f6;
+  align-items: center;
+  gap: 16px;
+}
+
+.product-image-new {
+  width: 70px;
+  height: 70px;
+  border-radius: 8px;
+  object-fit: contain;
+  background-color: #f9fafb;
+  border: 1px solid #f3f4f6;
+  padding: 4px;
+}
+
+.product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.product-name-new {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.4;
+}
+
+.product-total-new {
+  font-size: 16px;
+  font-weight: 700;
+  color: #dc2626;
+}
+
+.product-attributes {
+  padding: 16px;
+  background-color: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.attribute-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.attribute-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.attribute-icon {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.attribute-text {
+  font-size: 14px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.quantity-text {
+  font-size: 14px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.unit-price-text {
+  font-size: 14px;
+  color: #374151;
+  font-weight: 500;
+}
+
+/* Mobile Responsive for New Product Card */
+@media (max-width: 768px) {
+  .product-header {
+    padding: 12px;
+  }
+  
+  .product-attributes {
+    padding: 12px;
+  }
+  
+  .attribute-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .attribute-item:nth-child(2) {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-image-new {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .product-name-new {
+    font-size: 14px;
+  }
+  
+  .product-total-new {
+    font-size: 15px;
+  }
+  
+  .attribute-text, .quantity-text, .unit-price-text {
+    font-size: 13px;
+  }
 }
 
 /* Return Request Card */
@@ -987,7 +1304,7 @@
 
 .return-image {
   width: 30%;
-  height: 250px;
+  height: 200px;
   object-fit: cover;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
@@ -1023,5 +1340,154 @@
   
   .return-image {
     height: 200px;
+  }
+}
+
+/* New Return Product Card Styles - Unique class names to avoid conflicts */
+.return-product-card {
+  display: flex !important;
+  flex-direction: column !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  background: white !important;
+  margin-bottom: 16px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  overflow: hidden !important;
+  transition: all 0.2s ease !important;
+}
+
+.return-product-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
+  transform: translateY(-1px) !important;
+}
+
+.return-product-card:last-child {
+  margin-bottom: 0 !important;
+}
+
+.return-product-header {
+  display: flex !important;
+  padding: 20px !important;
+  border-bottom: 1px solid #f3f4f6 !important;
+  align-items: center !important;
+  gap: 16px !important;
+}
+
+.return-product-image {
+  width: 80px !important;
+  height: 80px !important;
+  border-radius: 8px !important;
+  object-fit: contain !important;
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  padding: 8px !important;
+  flex-shrink: 0 !important;
+}
+
+.return-product-info {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+
+.return-product-name {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #111827 !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
+}
+
+.return-product-total {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #dc2626 !important;
+  margin: 0 !important;
+}
+
+.return-product-attributes {
+  padding: 20px !important;
+  background-color: #f8fafc !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+}
+
+.return-attribute-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+.return-attribute-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.return-attribute-icon {
+  font-size: 16px !important;
+  color: #6b7280 !important;
+}
+
+.return-attribute-text {
+  font-size: 14px !important;
+  color: #374151 !important;
+  font-weight: 500 !important;
+  margin: 0 !important;
+}
+
+.return-quantity-text {
+  font-size: 14px !important;
+  color: #374151 !important;
+  font-weight: 500 !important;
+  margin: 0 !important;
+}
+
+.return-unit-price-text {
+  font-size: 14px !important;
+  color: #374151 !important;
+  font-weight: 500 !important;
+  margin: 0 !important;
+}
+
+/* Mobile Responsive for Return Product Cards */
+@media (max-width: 768px) {
+  .return-product-header {
+    padding: 12px !important;
+  }
+  
+  .return-product-attributes {
+    padding: 12px !important;
+  }
+  
+  .return-attribute-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+  
+  .return-attribute-item:nth-child(2) {
+    align-self: flex-start !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .return-product-image {
+    width: 60px !important;
+    height: 60px !important;
+  }
+  
+  .return-product-name {
+    font-size: 14px !important;
+  }
+  
+  .return-product-total {
+    font-size: 15px !important;
+  }
+  
+  .return-attribute-text, .return-quantity-text, .return-unit-price-text {
+    font-size: 13px !important;
   }
 }
