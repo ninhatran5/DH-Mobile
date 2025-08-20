@@ -126,7 +126,8 @@
     "comment": "Comments",
     "quantity": "Quantity",
     "product": "Products",
-    "coinReward": "Earn <b>{{coins}}</b> points when you complete this order"
+    "coinReward": "Earn <b>{{coins}}</b> points when you complete this order",
+    "outOfStock": "This product is out of stock"
   },
   "comment": {
     "replied_to": "replied to",

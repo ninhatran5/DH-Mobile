@@ -125,7 +125,8 @@
     "comment": "Bình luận",
     "quantity": "Số lượng",
     "product": "Sản Phẩm",
-    "coinReward": "Nhận thêm <b>{{coins}}</b> điểm khi hoàn tất đơn hàng này"
+    "coinReward": "Nhận thêm <b>{{coins}}</b> điểm khi hoàn tất đơn hàng này",
+    "outOfStock":"Sản phẩm này không còn hàng"
   },
   "comment": {
     "replied_to": "đã trả lời",
