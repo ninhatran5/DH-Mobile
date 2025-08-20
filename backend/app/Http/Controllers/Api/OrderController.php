@@ -1606,18 +1606,25 @@ class OrderController extends Controller
     }
 
 
-    // Danh sách tất cả yêu cầu hoàn hàng (admin)
+    // Danh sách tất cả yêu cầu hoàn hàng (admin) - Tối ưu performance
     public function getReturnRequestList(Request $request)
     {
         $status = $request->input('status'); // Lọc theo trạng thái nếu có
+        
+        // Chỉ lấy những cột cần thiết để giảm data transfer
+        // Sử dụng COALESCE để ưu tiên return_order_id trước khi fallback về order_id
         $query = DB::table('return_requests')
-            ->leftJoin('orders', 'return_requests.order_id', '=', 'orders.order_id')
+            ->leftJoin('orders as original_orders', 'return_requests.order_id', '=', 'original_orders.order_id')
+            ->leftJoin('orders as return_orders', 'return_requests.return_order_id', '=', 'return_orders.order_id')
             ->leftJoin('users', 'return_requests.user_id', '=', 'users.user_id')
             ->select(
                 'return_requests.return_id',
                 'return_requests.order_id',
-                'orders.order_code',
-                'orders.customer',
+                'return_requests.return_order_id',
+                // Ưu tiên order_code từ đơn hoàn trả (nếu có), nếu không thì lấy từ đơn gốc
+                DB::raw('COALESCE(return_orders.order_code, original_orders.order_code) as order_code'),
+                // Ưu tiên customer từ đơn hoàn trả (nếu có), nếu không thì lấy từ đơn gốc
+                DB::raw('COALESCE(return_orders.customer, original_orders.customer) as customer'),
                 'users.email',
                 'return_requests.user_id',
                 'users.full_name as user_name',
@@ -1628,72 +1635,73 @@ class OrderController extends Controller
                 'return_requests.created_at',
                 'return_requests.updated_at'
             );
+            
         if ($status) {
             $query->where('return_requests.status', $status);
         }
+        
         $results = $query->orderByDesc('return_requests.created_at')->get();
 
-        // Thu thập tất cả variant_id để truy vấn giá một lần
+        // Optimize: Thu thập và cache variant prices một lần duy nhất
         $allVariantIds = [];
-        foreach ($results as $row) {
-            if ($row->return_items) {
-                $items = json_decode($row->return_items, true);
-                if (is_array($items)) {
-                    foreach ($items as $it) {
-                        if (isset($it['variant_id']) && $it['variant_id'] !== null) {
-                            $allVariantIds[] = $it['variant_id'];
-                        }
-                    }
-                }
-            }
-        }
-        $variantPrices = [];
-        if (!empty($allVariantIds)) {
-            $variantPrices = DB::table('product_variants')
-                ->whereIn('variant_id', array_unique($allVariantIds))
-                ->pluck('price', 'variant_id')
-                ->toArray();
-        }
-
-        $formatted = $results->map(function ($row) use ($variantPrices) {
-            $storedAmount = (float) $row->refund_amount;
-            $itemsSubtotal = 0;
+        $returnItemsCache = []; // Cache JSON decoded items
+        
+        // First pass: decode JSON và collect variant IDs
+        foreach ($results as $index => $row) {
             $decodedItems = [];
-            if ($row->return_items) {
+            if (!empty($row->return_items)) {
                 $decodedItems = json_decode($row->return_items, true);
-                if (is_array($decodedItems)) {
-                    foreach ($decodedItems as $it) {
-                        $qty = isset($it['quantity']) ? (int) $it['quantity'] : 0;
-                        $variantId = $it['variant_id'] ?? null;
-                        $price = ($variantId !== null && isset($variantPrices[$variantId])) ? (float) $variantPrices[$variantId] : 0;
-                        $itemsSubtotal += $price * $qty;
-                    }
-                } else {
+                if (!is_array($decodedItems)) {
                     $decodedItems = [];
                 }
             }
-
-            // Đồng bộ database nếu chênh lệch đáng kể (> 1 do làm tròn)
-            if (abs($storedAmount - $itemsSubtotal) > 1) {
-                try {
-                    DB::table('return_requests')
-                        ->where('return_id', $row->return_id)
-                        ->update([
-                            'refund_amount' => $itemsSubtotal,
-                            'updated_at' => now()
-                        ]);
-                    Log::info('Synced refund_amount on admin return-requests', [
-                        'return_id' => $row->return_id,
-                        'old' => $storedAmount,
-                        'new' => $itemsSubtotal
-                    ]);
-                } catch (\Exception $e) {
-                    Log::error('Failed syncing refund_amount on admin return-requests', [
-                        'return_id' => $row->return_id,
-                        'error' => $e->getMessage()
-                    ]);
+            
+            $returnItemsCache[$index] = $decodedItems;
+            
+            // Collect variant IDs
+            foreach ($decodedItems as $item) {
+                $vid = $item['variant_id'] ?? null;
+                if ($vid !== null) {
+                    $allVariantIds[] = (int) $vid;
                 }
-                // Dùng itemsSubtotal cho hiển thị
+            }
+        }
+
+        // Batch fetch variant prices một lần
+        $variantPrices = [];
+        if (!empty($allVariantIds)) {
+            $uniqueVariantIds = array_unique($allVariantIds);
+            $variantPrices = DB::table('product_variants')
+                ->whereIn('variant_id', $uniqueVariantIds)
+                ->pluck('price', 'variant_id')
+                ->toArray();
+        }
+        
+        // Batch updates cho refund amounts (nếu cần)
+        $batchUpdates = [];
+        
+        $formatted = collect($results)->map(function ($row, $index) use ($variantPrices, $returnItemsCache, &$batchUpdates) {
+            $storedAmount = (float) $row->refund_amount;
+            $itemsSubtotal = 0;
+            $decodedItems = $returnItemsCache[$index] ?? [];
+            
+            // Calculate subtotal efficiently
+            foreach ($decodedItems as $item) {
+                $qty = (int) ($item['quantity'] ?? 0);
+                $variantId = $item['variant_id'] ?? null;
+                $price = ($variantId !== null && isset($variantPrices[$variantId])) 
+                    ? (float) $variantPrices[$variantId] 
+                    : 0;
+                $itemsSubtotal += $price * $qty;
+            }
+
+            // Prepare batch update nếu cần thiết
+            if (abs($storedAmount - $itemsSubtotal) > 1) {
+                $batchUpdates[] = [
+                    'return_id' => $row->return_id,
+                    'new_amount' => $itemsSubtotal,
+                    'old_amount' => $storedAmount
+                ];
                 $storedAmount = $itemsSubtotal;
             }
 
@@ -1707,16 +1715,47 @@ class OrderController extends Controller
                 'email' => $row->email,
                 'reason' => $row->reason,
                 'status' => $row->status,
-                'refund_amount' => number_format($storedAmount, 0, '.', ''), // hoàn toàn khớp subtotal
+                'refund_amount' => number_format($storedAmount, 0, '.', ''),
                 'return_items' => $decodedItems,
                 'created_at' => $row->created_at ? date('d/m/Y H:i:s', strtotime($row->created_at)) : null,
                 'updated_at' => $row->updated_at ? date('d/m/Y H:i:s', strtotime($row->updated_at)) : null,
             ];
         });
+        
+        // Batch update refund amounts nếu có changes
+        if (!empty($batchUpdates)) {
+            DB::transaction(function () use ($batchUpdates) {
+                foreach ($batchUpdates as $update) {
+                    try {
+                        DB::table('return_requests')
+                            ->where('return_id', $update['return_id'])
+                            ->update([
+                                'refund_amount' => $update['new_amount'],
+                                'updated_at' => now()
+                            ]);
+                        
+                        Log::info('Synced refund_amount in batch', [
+                            'return_id' => $update['return_id'],
+                            'old' => $update['old_amount'],
+                            'new' => $update['new_amount']
+                        ]);
+                    } catch (\Exception $e) {
+                        Log::error('Failed batch syncing refund_amount', [
+                            'return_id' => $update['return_id'],
+                            'error' => $e->getMessage()
+                        ]);
+                    }
+                }
+            });
+        }
 
         return response()->json([
             'status' => true,
-            'return_requests' => $formatted
+            'return_requests' => $formatted,
+            'meta' => [
+                'total_records' => $results->count(),
+                'synced_records' => count($batchUpdates)
+            ]
         ]);
     }
     // Admin hủy đơn hàng
