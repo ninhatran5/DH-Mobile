@@ -986,8 +986,13 @@ class OrderController extends Controller
             ], 422);
         }
 
-        $returnRequest = ReturnRequest::where('order_id', $id)
-            ->whereIn('status', array_keys($validTransitions))
+        // Cho phép truyền vào cả order_id (đơn gốc) hoặc return_order_id (đơn hoàn)
+        $returnRequest = ReturnRequest::whereIn('status', array_keys($validTransitions))
+            ->where(function ($q) use ($id) {
+                $q->where('order_id', $id)
+                    ->orWhere('return_order_id', $id);
+            })
+            ->orderByDesc('created_at')
             ->first();
 
         if (!$returnRequest) {
@@ -1015,8 +1020,11 @@ class OrderController extends Controller
             $returnRequest->updated_at = now();
             $returnRequest->save();
 
-            // 2. Cập nhật đơn hàng
-            $order = Orders::find($id);
+            // 2. Xác định và cập nhật đúng đơn hàng cần thay đổi trạng thái
+            // - Trường hợp hoàn toàn bộ: return_order_id = null -> cập nhật đơn gốc (order_id)
+            // - Trường hợp hoàn một phần: return_order_id != null -> chỉ cập nhật đơn hoàn (return_order_id)
+            $orderIdToUpdate = $returnRequest->return_order_id ? $returnRequest->return_order_id : $returnRequest->order_id;
+            $order = Orders::find($orderIdToUpdate);
             if ($order) {
                 if ($newStatus === 'Đã yêu cầu') {
                     $order->status = 'Đã yêu cầu hoàn hàng';
