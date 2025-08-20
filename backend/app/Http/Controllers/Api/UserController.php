@@ -322,7 +322,7 @@ class UserController extends Controller
         $validatedData = $request->validate([
             'username' => 'nullable|string|max:50',
             'full_name' => 'nullable|string|max:100',
-            'email' => 'nullable|string|email|max:100|unique:users,email',
+            'email' => 'nullable|string|email|max:100|unique:users,email,' . $user->user_id . ',user_id',
             'phone' => 'nullable|string|max:15',
             'address' => 'nullable|string|max:255',
             'ward' => 'string|max:100',
