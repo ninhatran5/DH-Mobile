@@ -6,6 +6,7 @@ import { addAdminVoucher } from "../../slices/AdminVoucher";
 import { toast, ToastContainer } from "react-toastify";
 import "../../assets/admin/AddVoucher.css";
 import { Link } from "react-router-dom";
+import Loading from "../../components/Loading";
 
 const AddVoucherPage = () => {
   const dispatch = useDispatch();
