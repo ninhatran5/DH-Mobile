@@ -14,6 +14,7 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id')->nullable();
             $table->dateTime('viewed_at')->useCurrent();
             $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
+            
             $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
             $table->timestamps();
         });
