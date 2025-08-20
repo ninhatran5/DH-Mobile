@@ -9,7 +9,7 @@ import {
 import "../../assets/admin/OrderDetail.css";
 import Swal from "sweetalert2";
 import Pusher from 'pusher-js';
-
+import Loading from "../../components/Loading";
 const ORDER_STATUS_OPTIONS = [
   "Chờ xác nhận",
   "Đã xác nhận", 
@@ -301,11 +301,22 @@ const usePusherConnection = (orderId, order, dispatch) => {
     }
   }, [getUserId, connectionDiagnostics, retryCount, maxRetries, scheduleRetry, orderId, dispatch, connectionStatus, isInitializing]);
 
-  // **Fixed main effect với proper dependencies**
+  // **Fixed main effect with proper dependencies**
   useEffect(() => {
     const userId = getUserId();
     
     if (!userId || !orderId) {
+      setConnectionStatus('failed');
+      setConnectionDetails(prev => ({ 
+        ...prev, 
+        status: 'failed', 
+        lastError: 'Missing userId or orderId'
+      }));
+      return;
+    }
+
+    // Avoid initializing if already connected or initializing
+    if (isRealtimeConnected || isInitializing) {
       return;
     }
 
@@ -316,9 +327,15 @@ const usePusherConnection = (orderId, order, dispatch) => {
 
     return () => {
       clearTimeout(initTimer);
-      cleanup();
     };
-  }, [orderId, retryCount]);
+  }, [orderId, getUserId]); // Remove retryCount from dependencies to avoid infinite loops
+
+  // Separate effect for retry logic
+  useEffect(() => {
+    if (retryCount > 0 && retryCount <= maxRetries && !isInitializing && !isRealtimeConnected) {
+      initializePusher();
+    }
+  }, [retryCount, maxRetries, isInitializing, isRealtimeConnected, initializePusher]);
 
   // **Manual reconnection**
   const forceReconnect = useCallback(() => {
@@ -404,11 +421,27 @@ const RealtimeStatusIndicator = React.memo(({
       };
     }
 
+    if (isRealtimeConnected) {
+      return { 
+        icon: '🟢', 
+        text: 'Live', 
+        color: '#28a745',
+        bgColor: '#d4edda'
+      };
+    }
+
     switch (connectionStatus) {
+      case 'connecting':
+        return { 
+          icon: '🟡', 
+          text: 'Connecting...', 
+          color: '#ffc107',
+          bgColor: '#fff3cd'
+        };
       case 'error':
       case 'failed':
         return { 
-          icon: '❌', 
+          icon: '🔴', 
           text: 'Error', 
           color: '#dc3545',
           bgColor: '#f8d7da'
@@ -420,6 +453,13 @@ const RealtimeStatusIndicator = React.memo(({
           color: '#fd7e14',
           bgColor: '#ffeaa7'
         };
+      case 'disconnected':
+        return { 
+          icon: '⚫', 
+          text: 'Offline', 
+          color: '#6c757d',
+          bgColor: '#e2e3e5'
+        };
       default:
         return { 
           icon: '⚪', 
@@ -428,7 +468,7 @@ const RealtimeStatusIndicator = React.memo(({
           bgColor: '#e2e3e5'
         };
     }
-  }, [connectionStatus, isInitializing]);
+  }, [connectionStatus, isInitializing, isRealtimeConnected]);
 
 
 
@@ -508,7 +548,10 @@ const OrderDetails = () => {
   const [updating, setUpdating] = useState(false);
 
   const {
+    connectionStatus,
+    isRealtimeConnected,
     lastUpdateTime,
+    retryCount,
     maxRetries,
     forceReconnect,
     runDiagnostics,
@@ -702,7 +745,9 @@ const OrderDetails = () => {
   
   // Hiển thị nội dung ngay lập tức, không cần chờ loading
   return (
-    <div className="detail-order-return-container">
+    <>
+      {updating && <Loading />}
+      <div className="detail-order-return-container">
       <button className="back-button" onClick={() => navigate("/admin/orders")}>
         <svg width="24" height="16" viewBox="0 0 24 24" fill="currentColor">
           <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
@@ -977,6 +1022,7 @@ const OrderDetails = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

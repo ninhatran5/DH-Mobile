@@ -316,3 +316,83 @@ body {
   color: #fff;
   outline: none;
 }
+
+/* Realtime update animations */
+@keyframes realtimeUpdate {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(255, 136, 0, 0);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 136, 0, 0.6);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(255, 136, 0, 0);
+  }
+}
+
+@keyframes statusHighlight {
+  0% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: rgba(255, 136, 0, 0.1);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.order-status-pending,
+.order-status-confirmed,
+.order-status-shipping,
+.order-status-shipped,
+.order-status-delivered {
+  transition: all 0.3s ease;
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+
+.realtime-update-received {
+  animation: realtimeUpdate 1s ease-in-out;
+}
+
+.status-updated {
+  animation: statusHighlight 2s ease-in-out;
+}
+
+/* Progress bar animation for realtime updates */
+#progressbar li.realtime-updated {
+  animation: realtimeUpdate 1.5s ease-in-out;
+}
+
+#progressbar li.realtime-updated:before {
+  animation: statusHighlight 2s ease-in-out;
+}
+
+/* Notification styles */
+.realtime-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #ff8800, #ffaa44);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(255, 136, 0, 0.3);
+  z-index: 9999;
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
