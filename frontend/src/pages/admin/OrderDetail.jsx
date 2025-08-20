@@ -7,6 +7,7 @@ import {
   cancelOrder,
 } from "../../slices/adminOrderSlice";
 import "../../assets/admin/OrderDetail.css";
+import "../../assets/admin/order-status-colors.css";
 import Swal from "sweetalert2";
 import Pusher from 'pusher-js';
 import Loading from "../../components/Loading";
@@ -585,6 +586,38 @@ const OrderDetails = () => {
     });
   }, []);
 
+  const getStatusClass = useCallback((status) => {
+    const s = status?.trim().toLowerCase();
+    switch (s) {
+      case "chờ xác nhận":
+        return "admin_order-status-pending";
+      case "đã xác nhận":
+        return "admin_order-status-confirmed";
+      case "đang vận chuyển":
+        return "admin_order-status-shipping";
+      case "đã giao hàng":
+        return "admin_order-status-delivered";
+      case "hoàn thành":
+        return "admin_order-status-success";
+      case "đã hủy":
+        return "admin_order-status-cancel";
+      case "yêu cầu hoàn hàng":
+        return "admin_order-status-pending";
+      case "đã chấp thuận":
+        return "admin_order-status-confirmed";
+      case "đang xử lý":
+        return "admin_order-status-shipping";
+      case "đã hoàn tiền":
+        return "admin_order-status-success";
+      case "đã trả hàng":
+        return "admin_order-status-success";
+      case "đã từ chối":
+        return "admin_order-status-cancel";
+      default:
+        return "admin_order-status-default";
+    }
+  }, []);
+
   // **Memoized next status**
   const nextStatus = useMemo(() => getNextStatus(order?.status), [order?.status]);
 
@@ -806,7 +839,7 @@ const OrderDetails = () => {
               
               <div className="info-item">
                 <span className="info-label">Trạng thái đơn hàng</span>
-                <span className="status-returned-text">{order?.status || 'Đang tải...'}</span>
+                <span className={getStatusClass(order?.status)}>{order?.status || 'Đang tải...'}</span>
               </div>
 
               <div className="info-item">
