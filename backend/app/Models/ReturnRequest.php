@@ -18,6 +18,8 @@ class ReturnRequest extends Model
         'status',
         'return_reason_other',
         'refund_amount',
+        'return_items', // JSON field to store items being returned
+        'return_order_id', // ID of the return order (for partial returns)
     ];
 
     public $timestamps = true;

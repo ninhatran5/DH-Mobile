@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -104,16 +105,25 @@ const TrashList = () => {
 
     if (confirmResult.isConfirmed) {
       try {
-        await dispatch(deleteAdminProduct(productId));
-        setSelectedProducts((prev) => prev.filter((id) => id !== productId));
-        Swal.fire({
-          icon: "success",
-          title: "Đã xóa vĩnh viễn!",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        const result = await dispatch(deleteAdminProduct(productId));
+        // Kiểm tra lỗi trả về từ backend hoặc error của redux
+        const backendError = result?.error || result?.payload?.error;
+        const backendMsg = result?.payload?.message || result?.error?.message;
+        if (!backendError && !backendMsg) {
+          setSelectedProducts((prev) => prev.filter((id) => id !== productId));
+          Swal.fire({
+            icon: "success",
+            title: "Đã xóa vĩnh viễn!",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        } else {
+          toast.error(backendMsg || "Lỗi khi xóa sản phẩm");
+          // Gọi lại API để cập nhật danh sách nếu xóa không thành công
+          dispatch(fetchTrashedAdminProducts());
+        }
       } catch (error) {
-        toast.error("Lỗi khi xóa sản phẩm");
+        toast.error(error?.message || "Lỗi khi xóa sản phẩm");
       }
     }
   };
@@ -282,10 +292,7 @@ const TrashList = () => {
             <p>Đang tải dữ liệu...</p>
           </div>
         ) : error ? (
-          <div className="TrashList1-error">
-            <i className="bi bi-exclamation-triangle"></i>
-            <p>{error}</p>
-          </div>
+          (() => { Swal.fire({ icon: 'error', title: 'Lỗi', text: error }); return null; })()
         ) : filteredProducts.length === 0 ? (
           <div className="TrashList1-empty-state">
             <i className="bi bi-trash3 TrashList1-empty-icon"></i>
