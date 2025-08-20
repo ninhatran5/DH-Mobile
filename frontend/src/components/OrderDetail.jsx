@@ -65,25 +65,64 @@ const OrderDetail = () => {
     setOrderDetail(reduxOrderDetail);
   }, [reduxOrderDetail]);
 
-  useOrderRealtime({
+  const [realtimeUpdateReceived, setRealtimeUpdateReceived] = useState(false);
+  
+  const realtimeStatus = useOrderRealtime({
     userId: localStorage.getItem("userID"),
     orderId: orderDetail?.order_id,
     onOrderUpdate: (orderUpdate) => {
-      setOrderDetail((prev) => ({
-        ...prev,
-        status: orderUpdate.status,
-        payment_status: orderUpdate.payment_status,
-        cancel_reason: orderUpdate.cancel_reason,
-      }));
+      console.log('🔄 Processing order update:', orderUpdate);
+      
+      // Update local state
+      setOrderDetail((prev) => {
+        if (!prev) return prev;
+        
+        const updated = {
+          ...prev,
+          status: orderUpdate.status,
+          payment_status: orderUpdate.payment_status,
+          cancel_reason: orderUpdate.cancel_reason,
+          updated_at: new Date().toISOString()
+        };
+        
+        console.log('📊 Order state updated:', { old: prev.status, new: updated.status });
+        return updated;
+      });
+      
+      // Show visual notification
+      setRealtimeUpdateReceived(true);
+      setTimeout(() => setRealtimeUpdateReceived(false), 3000);
+      
+      // Show toast notification
+      toast.success(`${t('orderDetail.statusUpdated')}: ${orderUpdate.status}`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+      
+      // Refresh order details from server to ensure consistency
+      setTimeout(() => {
+        dispatch(fetchOrderDetail(orderDetail?.order_id));
+      }, 1000);
     },
     onReturnUpdate: (returnData) => {
+      console.log('🔄 Processing return update:', returnData);
+      
       if (returnData.data) {
         setOrderDetail((prev) => ({
           ...prev,
           status: returnData.data.status,
           payment_status: returnData.data.payment_status,
           return_status: returnData.data.return_status,
+          updated_at: new Date().toISOString()
         }));
+        
+        toast.info(t('orderDetail.returnStatusUpdated'), {
+          position: "top-right",
+          autoClose: 3000,
+        });
       }
     },
   });
@@ -385,7 +424,7 @@ const OrderDetail = () => {
         <div className="row d-flex justify-content-between px-3">
           <div className="d-flex">
             <h5>
-              {t("orderDetail.order")}:{" "}
+              {t("orderDetail.order")}: 
               <span
                 style={{ color: "#ff8800" }}
                 className="font-weight-bold ms-2"
@@ -396,7 +435,7 @@ const OrderDetail = () => {
           </div>
           <div className="d-flex flex-column text-sm-right">
             <p className="mb-0">
-              {t("orderDetail.orderDate")}:{" "}
+              {t("orderDetail.orderDate")}: 
               {orderDetail?.order_date &&
               dayjs(orderDetail.order_date).isValid()
                 ? dayjs(orderDetail.order_date).format("HH:mm - DD/MM/YYYY")

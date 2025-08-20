@@ -453,6 +453,30 @@
   margin-left: 20px;
   margin-top: 6px;
 }
+
+/* Realtime highlight effect */
+@keyframes realtime-highlight {
+  0% {
+    background-color: #fff3cd;
+    transform: scale(1);
+  }
+  50% {
+    background-color: #ffeaa7;
+    transform: scale(1.02);
+  }
+  100% {
+    background-color: transparent;
+    transform: scale(1);
+  }
+}
+
+.realtime-highlight {
+  animation: realtime-highlight 2s ease-in-out;
+}
+
+.history-item {
+  transition: all 0.3s ease;
+}
 /* Styles cho các trạng thái mới */
 .cancelled-section {
   text-align: center;
