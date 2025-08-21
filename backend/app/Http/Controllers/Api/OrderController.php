@@ -923,81 +923,54 @@ class OrderController extends Controller
                 $hasPartialReturns = !empty($alreadyReturnedQuantities);
                 
                 if ($hasPartialReturns) {
-                    // 🔄 Trường hợp có hoàn trả từng phần trước đó → Tạo đơn hoàn trả riêng cho phần cuối cùng
-                    $existingReturnOrdersCount = DB::table('orders')
-                        ->where('original_order_id', $order->order_id)
-                        ->where('is_return_order', true)
-                        ->count();
-
-                    $returnOrderCode = 'TH' . $order->order_code . '-' . str_pad($existingReturnOrdersCount + 1, 2, '0', STR_PAD_LEFT);
-
-                    $returnOrderId = DB::table('orders')->insertGetId([
-                        'user_id' => $order->user_id,
-                        'order_code' => $returnOrderCode,
-                        'customer' => $order->customer,
-                        'email' => $order->email,
-                        'phone' => $order->phone,
-                        'address' => $order->address,
-                        'ward' => $order->ward,
-                        'district' => $order->district,
-                        'city' => $order->city,
-                        'method_id' => $order->method_id,
-                        'payment_status' => 'Đã thanh toán',
-                        'status' => 'Yêu cầu hoàn hàng',
-                        'total_amount' => $refundAmount,
-                        'voucher_discount' => 0,
-                        'rank_discount' => 0,
-                        'paid_by_wallet' => 0,
-                        'original_order_id' => $order->order_id,
-                        'is_return_order' => true,
-                        'return_request_id' => $returnId,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-
+                    // 🔄 Trường hợp có hoàn trả từng phần trước đó → Chia đều đơn gốc thay vì tạo đơn con
+                    
+                    // Tính số lượng sản phẩm còn lại trong đơn gốc
+                    $remainingQuantityInOriginal = 0;
                     foreach ($returnItems as $returnItem) {
-                        $matchingOrderItem = null;
+                        $remainingQuantityInOriginal += $returnItem['quantity'];
+                    }
+                    
+                    // Tính giá trị cho phần còn lại (theo tỷ lệ giảm giá)
+                    $priceAfterDiscountPerUnit = 0;
+                    foreach ($returnItems as $returnItem) {
                         foreach ($order->orderItems as $orderItem) {
                             if (
                                 $orderItem->product_id == $returnItem['product_id'] &&
                                 $orderItem->variant_id == ($returnItem['variant_id'] ?? null)
                             ) {
-                                $matchingOrderItem = $orderItem;
-                                break;
+                                $priceAfterDiscountPerUnit = $orderItem->price * (1 - $discountRate);
+                                break 2; // Thoát cả 2 vòng lặp
                             }
                         }
-
-                        if (!$matchingOrderItem) {
-                            throw new \Exception("Không tìm thấy order item tương ứng cho product_id: {$returnItem['product_id']}, variant_id: {$returnItem['variant_id']}");
-                        }
-
-                        // ✅ Tính giá sau khi trừ giảm giá cho sản phẩm hoàn trả
-                        $priceAfterDiscount = $matchingOrderItem->price * (1 - $discountRate);
-                        
-                        DB::table('order_items')->insert([
-                            'order_id' => $returnOrderId,
-                            'product_id' => $returnItem['product_id'],
-                            'variant_id' => $returnItem['variant_id'] ?? null,
-                            'quantity' => $returnItem['quantity'],
-                            'price' => $priceAfterDiscount,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]);
                     }
-
-                    DB::table('return_requests')->where('return_id', $returnId)->update([
-                        'return_order_id' => $returnOrderId,
+                    
+                    $adjustedTotalForRemainingPart = $priceAfterDiscountPerUnit * $remainingQuantityInOriginal;
+                    
+                    // Cập nhật đơn gốc chỉ còn phần cuối cùng (để chia đều)
+                    DB::table('orders')->where('order_id', $order->order_id)->update([
+                        'status' => 'Yêu cầu hoàn hàng',
+                        'return_request_id' => $returnId,
+                        'is_return_order' => true,
+                        'total_amount' => $adjustedTotalForRemainingPart,
                         'updated_at' => now(),
                     ]);
                     
-                    // 🔄 Cập nhật đơn gốc với total_amount = 0 (đã hoàn trả hết)
-                    DB::table('orders')->where('order_id', $order->order_id)->update([
-                        'status' => 'Đã hoàn hàng',
-                        'total_amount' => 0, // Không còn sản phẩm nào
-                        'updated_at' => now(),
-                    ]);
-
-                    $message = 'Đã hoàn trả toàn bộ đơn hàng (tạo đơn hoàn trả riêng cho phần cuối cùng)';
+                    // Cập nhật order_items của đơn gốc chỉ còn số lượng cuối cùng
+                    foreach ($returnItems as $returnItem) {
+                        DB::table('order_items')
+                            ->where('order_id', $order->order_id)
+                            ->where('product_id', $returnItem['product_id'])
+                            ->where('variant_id', $returnItem['variant_id'] ?? null)
+                            ->update([
+                                'quantity' => $returnItem['quantity'],
+                                'price' => $priceAfterDiscountPerUnit,
+                                'updated_at' => now()
+                            ]);
+                    }
+                    
+                    $returnOrderCode = $order->order_code;
+                    $message = 'Đã hoàn trả toàn bộ - đơn gốc được chia đều thành từng phần';
                 } else {
                     // ✅ Trường hợp hoàn trả 100% ngay từ đầu: Cập nhật đơn gốc với giá trị đúng sau chiết khấu
                     $totalOriginalForFullReturn = $order->orderItems->sum(function ($item) {
