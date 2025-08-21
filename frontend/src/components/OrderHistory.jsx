@@ -255,8 +255,8 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
                   tooltip={t("orderHistory.returnRequest")}
                   className="icon-circle"
                   onClick={handleOpenReasonModal}
-                  startTime={orderData?.updated_at || orderData?.delivered_at || orderData?.order_date}
-                  seconds={180} 
+                  // startTime={orderData?.updated_at || orderData?.delivered_at || orderData?.order_date}
+                  // seconds={180} 
                 />
                 {hasReviewableProduct && (
                   <TooltipIcon
