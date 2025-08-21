@@ -108,37 +108,37 @@ function AttributePage() {
   };
 
   return (
-    <div className="adminattributes">
+    <div className="AttributeList-adminattributes">
       <ToastContainer />
       <h1>Danh sách thuộc tính</h1>
 
-      {error && <p className="error">{error}</p>}
-      {loading && <p className="loading">Đang tải...</p>}
+      {error && <p className="AttributeList-error">{error}</p>}
+      {loading && <p className="AttributeList-loading">Đang tải...</p>}
 
-      <div className="header-actions" style={{ textAlign: "right", marginBottom: "1rem" }}>
+      <div className="AttributeList-header-actions" style={{ textAlign: "right", marginBottom: "1rem" }}>
         <Link to="/admin/Addattribute">
-          <button className="btn-add">+ Thêm mới tên thuộc tính</button>
+          <button className="AttributeList-btn-add">+ Thêm mới tên thuộc tính</button>
         </Link>
       </div>
 
-      <ul className="attribute-list">
+      <ul className="AttributeList-attribute-list">
         {attributes.map((attr) => {
           const values = attributeValues[attr.attribute_id] || [];
           return (
-            <li key={attr.attribute_id} className="attribute-item">
-              <div className="attribute-row">
-                <span className="attribute-label">Tên thuộc tính:</span>
-                <span className="attribute-data">{attr.name}</span>
+            <li key={attr.attribute_id} className="AttributeList-attribute-item">
+              <div className="AttributeList-attribute-row">
+                <span className="AttributeList-attribute-label">Tên thuộc tính:</span>
+                <span className="AttributeList-attribute-data">{attr.name}</span>
               </div>
 
               {values.length > 0 && (
-                <div className="attribute-row">
-                  <span className="attribute-label">Giá trị:</span>
-                  <span className="attribute-data">
+                <div className="AttributeList-attribute-row">
+                  <span className="AttributeList-attribute-label">Giá trị:</span>
+                  <span className="AttributeList-attribute-data">
                     {values.map((value) => (
-                      <div key={value.value_id} className="value-item">
+                      <div key={value.value_id} className="AttributeList-value-item">
                         <button
-                          className="btn-delete-value"
+                          className="AttributeList-btn-delete-value"
                           title="Xoá Value"
                           onClick={() => handleDeleteValue(value.value_id)}
                         >
@@ -146,12 +146,12 @@ function AttributePage() {
                         </button>
 
                         <Link to={`/admin/EditAttributevalues/${value.value_id}`}>
-                          <button className="btn-edit-value" title="Sửa Value" type="button">
+                          <button className="AttributeList-btn-edit-value" title="Sửa Value" type="button">
                             &#9998;
                           </button>
                         </Link>
 
-                        <span className="value-text">{value.value}</span>
+                        <span className="AttributeList-value-text">{value.value}</span>
                       </div>
                     ))}
                   </span>
@@ -160,14 +160,14 @@ function AttributePage() {
 
            <div style={{ display: "flex", gap: "12px", marginTop: "12px", flexWrap: "wrap" }}>
           <Link to={`/admin/Editattribute/${attr.attribute_id}`}>
-            <button className="btn-action btn-edit">
+            <button className="AttributeList-btn-action AttributeList-btn-edit">
               <i className="bi bi-pencil"></i>
               Cập nhật thuộc tính
             </button>
           </Link>
 
           <button
-            className="deleteAttribute"
+            className="AttributeList-deleteAttribute"
             onClick={() => handleDelete(attr.attribute_id)}
           >
             <i className="bi bi-trash"></i>
@@ -175,7 +175,7 @@ function AttributePage() {
           </button>
 
           <Link to={`/admin/AddAttributevalues/${attr.attribute_id}`}>
-            <button className="btn-action btn-add-value">
+            <button className="AttributeList-btn-action AttributeList-btn-add-value">
               <i className="bi bi-plus"></i>
               Thêm giá trị thuộc tính
             </button>
