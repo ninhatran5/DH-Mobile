@@ -157,7 +157,7 @@ const DetailOrderReturn = () => {
         setProcessing(true);
 
         dispatch(updateReturnOrderStatus({
-          orderId: orderData.order_id,
+          returnId: orderData.return_requests[0].return_id,
           status: nextStatus
         }))
           .unwrap()
@@ -235,7 +235,7 @@ const DetailOrderReturn = () => {
         setProcessing(true);
         
         await dispatch(updateReturnOrderStatus({
-          orderId: orderData.order_id,
+          returnId: orderData.return_requests[0].return_id,
           status: "Đã từ chối", 
         })).unwrap();
 
