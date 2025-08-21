@@ -50,13 +50,12 @@ export const fetchReturnOrderById = createAsyncThunk(
 
 export const updateReturnOrderStatus = createAsyncThunk(
   "adminReturnOrder/updateReturnOrderStatus",
-  async ({ orderId, status }, { rejectWithValue }) => {
+  async ({ returnId, status }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
-
       const response = await axiosAdmin.put(
-        `/admin/orders/${orderId}/handle-return`,
+        `/admin/orders/${returnId}/handle-return`,
         { status }, 
         {
           headers: {
@@ -140,15 +139,22 @@ const adminReturnOrderSlice = createSlice({
         const newStatus = action.payload.return_request_status;
         const refundAmount = action.payload.refund_amount;
         
-        // Update current return order if matches
-        if (state.currentReturnOrder?.return_id === returnRequestId) {
-          state.currentReturnOrder = {
-            ...state.currentReturnOrder,
-            status: newStatus,
-            refund_amount: refundAmount || state.currentReturnOrder.refund_amount
-          };
+        // Update nested currentReturnOrder -> order.return_requests if present
+        if (state.currentReturnOrder) {
+          const orderObj = state.currentReturnOrder.order || state.currentReturnOrder;
+          if (Array.isArray(orderObj.return_requests)) {
+            const idx = orderObj.return_requests.findIndex(r => r.return_id === returnRequestId);
+            if (idx !== -1) {
+              orderObj.return_requests[idx] = {
+                ...orderObj.return_requests[idx],
+                status: newStatus,
+                refund_amount: refundAmount || orderObj.return_requests[idx].refund_amount,
+              };
+            }
+          }
         }
         
+        // Update flat list of return orders (if present in this slice)
         state.returnOrders = state.returnOrders.map(order =>
           order.return_id === returnRequestId
             ? {
