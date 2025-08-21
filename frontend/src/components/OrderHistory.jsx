@@ -28,7 +28,6 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useDispatch();
-
   const [showReasonModal, setShowReasonModal] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
@@ -106,6 +105,7 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
 
   const handleCloseRequestModal = () => {
     setShowRequestModal(false);
+    dispatch(fetchOrder());
   };
 
   const handleOpenReviewAlert = () => {

@@ -61,7 +61,6 @@ export default function useOrderRealtime({
     }
     
     const delay = Math.min(Math.pow(2, retryCount) * 1000, 10000); // Max 10s delay
-    console.log(`🔄 Scheduling retry ${retryCount + 1}/${maxRetries} in ${delay}ms`);
     
     retryTimeoutRef.current = setTimeout(() => {
       setRetryCount(prev => prev + 1);
@@ -75,7 +74,6 @@ export default function useOrderRealtime({
     setConnectionStatus('connecting');
     
     try {
-      // Get authentication token
       const userToken = localStorage.getItem("userToken") || localStorage.getItem("token");
       if (!userToken) {
         throw new Error('No authentication token found');
@@ -112,7 +110,6 @@ export default function useOrderRealtime({
           setError(null);
           setRetryCount(0);
           setIsInitializing(false);
-          console.log('✅ Pusher connected for user:', userId);
           resolve();
         });
 
@@ -124,7 +121,6 @@ export default function useOrderRealtime({
 
       // Setup connection state handlers
       pusher.connection.bind('state_change', (states) => {
-        console.log(`📡 Connection state: ${states.previous} → ${states.current}`);
         if (states.current === 'disconnected' && isConnected) {
           setIsConnected(false);
           setConnectionStatus('disconnected');
@@ -136,17 +132,15 @@ export default function useOrderRealtime({
       channelsRef.current.orderChannel = orderChannel;
 
       orderChannel.bind('pusher:subscription_succeeded', () => {
-        console.log(`✅ Subscribed to orders.${userId}`);
       });
 
+      // eslint-disable-next-line no-unused-vars
       orderChannel.bind('pusher:subscription_error', (error) => {
-        console.error(`❌ Failed to subscribe to orders.${userId}:`, error);
         setError('Failed to subscribe to order updates');
       });
 
       orderChannel.bind('OrderUpdated', (data) => {
         if (data.order && data.order.order_id == orderId) {
-          console.log('📦 Order update received:', data.order);
           setLastUpdate(new Date().toISOString());
           onOrderUpdateRef.current?.(data.order);
           
@@ -171,17 +165,14 @@ export default function useOrderRealtime({
       channelsRef.current.returnChannel = returnChannel;
 
       returnChannel.bind('pusher:subscription_succeeded', () => {
-        console.log(`✅ Subscribed to order.${orderId}`);
       });
 
       returnChannel.bind('order-return-updated', (data) => {
-        console.log('🔄 Return update received:', data);
         setLastUpdate(new Date().toISOString());
         onReturnUpdateRef.current?.(data);
       });
 
     } catch (error) {
-      console.error('❌ Failed to initialize Pusher:', error);
       setError(error.message);
       setConnectionStatus('failed');
       setIsInitializing(false);
@@ -201,7 +192,6 @@ export default function useOrderRealtime({
     }
 
     if (!import.meta.env.VITE_PUSHER_KEY || !import.meta.env.VITE_PUSHER_CLUSTER) {
-      console.error('Missing Pusher environment variables');
       setError('Missing Pusher configuration');
       setConnectionStatus('failed');
       return;
