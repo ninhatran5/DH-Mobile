@@ -1075,7 +1075,7 @@ const Chart = () => {
             <div className="chart-admin-kpi-title">Tổng doanh thu</div>
             <div className="chart-admin-kpi-number">
               {revenueStats.totalRevenue > 0 
-                ? `${(revenueStats.totalRevenue / 1000000000).toFixed(1)}B VND`
+                ? `${(revenueStats.totalRevenue / 1000000000).toFixed(1)}Tỉ VND`
                 : '0 VND'
               }
             </div>
@@ -1105,7 +1105,7 @@ const Chart = () => {
               <div className="chart-admin-stat-label">
                 Doanh thu {dateFilter.isEnabled ? '(Đã lọc)' : currentMonthName}
               </div>
-              <div className="chart-admin-stat-value">{(monthlyStats.revenue / 1000000).toFixed(1)}M VND</div>
+              <div className="chart-admin-stat-value">{(monthlyStats.revenue / 1000000).toFixed(1)}Tr VND</div>
             </div>
           </div>
           
@@ -1307,7 +1307,7 @@ const Chart = () => {
                   </div>
                 </div>
                 <div className="chart-admin-buyer-amount">
-                  {(buyer.totalSpent / 1000000).toFixed(1)}M VND
+                  {(buyer.totalSpent / 1000000).toFixed(1)}Tr VND
                 </div>
               </div>
             ))}
