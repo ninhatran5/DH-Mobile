@@ -57,7 +57,7 @@ class OrderController extends Controller
                     ->get();
                     
                 if (!empty($returnRequests)) {
-                    // Thu thập tất cả sản phẩm đã trả và số lượng
+                    // Thu thập tất cả sản phẩm đã trả và số lượng từ return_requests
                     $returnedQuantities = [];
                     foreach ($returnRequests as $returnRequest) {
                         if ($returnRequest->return_items) {
@@ -72,47 +72,29 @@ class OrderController extends Controller
                         }
                     }
     
-                    // Kiểm tra đơn hoàn trả riêng
-                    $returnOrderProductKeys = [];
-                    $firstReturnRequest = $returnRequests->first();
-                    if ($firstReturnRequest && isset($firstReturnRequest->return_id)) {
-                        $returnRequestId = $firstReturnRequest->return_id;
-                        $returnOrderFromDB = Orders::with(['orderItems'])
-                            ->where('return_request_id', $returnRequestId)
-                            ->where('is_return_order', true)
-                            ->first();
-                            
-                        if ($returnOrderFromDB) {
-                            foreach ($returnOrderFromDB->orderItems as $returnItem) {
-                                $variantId = $returnItem->variant_id ?? null;
-                                $key = $returnItem->product_id . '-' . $variantId;
-                                $returnOrderProductKeys[$key] = ($returnOrderProductKeys[$key] ?? 0) + $returnItem->quantity;
-                            }
-                        }
-                    }
-    
-                    // Tính lại total_amount dựa trên sản phẩm còn lại (chỉ khi có hoàn trả một phần)
-                    $remainingAmount = 0;
-                    $originalAmount = 0;
+                    // Tính tỷ lệ sản phẩm còn lại và áp dụng vào total_amount từ database
+                    $originalProductAmount = 0;
+                    $remainingProductAmount = 0;
                     
                     foreach ($order->orderItems as $item) {
                         $variantId = $item->variant_id ?? null;
                         $key = $item->product_id . '-' . $variantId;
                         
-                        $returnedQty = $returnedQuantities[$key] ?? 0;
-                        $returnOrderQty = $returnOrderProductKeys[$key] ?? 0;
-                        $remainingQty = $item->quantity - $returnedQty - $returnOrderQty;
+                        $totalReturnedQty = $returnedQuantities[$key] ?? 0;
+                        $remainingQty = $item->quantity - $totalReturnedQty;
                         
-                        $originalAmount += $item->price * $item->quantity;
+                        $originalProductAmount += $item->price * $item->quantity;
                         if ($remainingQty > 0) {
-                            $remainingAmount += $item->price * $remainingQty;
+                            $remainingProductAmount += $item->price * $remainingQty;
                         }
                     }
                     
-                    // Tính tỷ lệ còn lại và áp dụng vào total_amount từ database
-                    if ($originalAmount > 0) {
-                        $ratio = $remainingAmount / $originalAmount;
+                    // Tính tỷ lệ và áp dụng vào total_amount từ database
+                    if ($originalProductAmount > 0) {
+                        $ratio = $remainingProductAmount / $originalProductAmount;
                         $adjustedTotalAmount = $order->total_amount * $ratio;
+                    } else {
+                        $adjustedTotalAmount = 0;
                     }
                 }
             }
