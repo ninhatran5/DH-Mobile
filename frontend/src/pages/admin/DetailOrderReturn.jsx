@@ -33,9 +33,7 @@ const DetailOrderReturn = () => {
     });
   };
 
-  // Function to get timeline based on status - FIXED
   const getStatusMilestones = (returnStatus) => {
-    // If rejected, only show rejection milestone
     if (returnStatus?.toLowerCase() === 'rejected' || returnStatus?.toLowerCase() === 'từ chối' || returnStatus?.toLowerCase() === 'đã từ chối') {
       return [{
         key: 'rejected',
@@ -493,7 +491,6 @@ const DetailOrderReturn = () => {
                               />
                             );
                           }
-                          // Nếu upload_url là array
                           else if (Array.isArray(request.upload_url)) {
                             return request.upload_url.map((url, idx) => (
                               <img 
@@ -509,7 +506,7 @@ const DetailOrderReturn = () => {
                           else {
                             return (
                               <img 
-                                src={request.upload_url} 
+                                src={request.upload_url } 
                                 alt="Hình ảnh hoàn hàng"
                                 className="return-image"
                                 onClick={() => window.open(request.upload_url, '_blank')}
