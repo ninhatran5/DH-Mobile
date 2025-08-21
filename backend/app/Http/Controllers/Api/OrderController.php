@@ -866,14 +866,6 @@ class OrderController extends Controller
             }
         }
         
-        // Kiểm tra xem có yêu cầu đang chờ xử lý không
-        $pendingRequest = $existingReturnRequests->where('status', 'Đã yêu cầu')->first();
-        if ($pendingRequest) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Bạn có yêu cầu hoàn hàng đang chờ xử lý. Vui lòng đợi xử lý xong trước khi gửi yêu cầu mới.'
-            ], 400);
-        }
 
         // ✅ Validation cuối cùng cho refund_amount
         if ($refundAmount <= 0) {
@@ -923,11 +915,15 @@ class OrderController extends Controller
             $totalOrderQuantity = $order->orderItems->sum('quantity');
             $totalReturnQuantity = array_sum(array_column($returnItems, 'quantity'));
             
+            // Tính tổng số lượng đã được hoàn trả trước đó (từ các yêu cầu khác)
+            $totalAlreadyReturnedQty = array_sum($alreadyReturnedQuantities);
+            $totalAfterThisReturn = $totalAlreadyReturnedQty + $totalReturnQuantity;
+            
             $returnOrderId = null;
             $returnOrderCode = null;
             
-            if ($totalReturnQuantity >= $totalOrderQuantity) {
-                // ✅ Hoàn trả 100%: Chỉ chuyển trạng thái đơn gốc, KHÔNG tạo đơn mới
+            if ($totalAfterThisReturn >= $totalOrderQuantity) {
+                // ✅ Hoàn trả hết số lượng còn lại hoặc 100%: Chỉ chuyển trạng thái đơn gốc, KHÔNG tạo đơn mới
                 DB::table('orders')->where('order_id', $order->order_id)->update([
                     'status' => 'Yêu cầu hoàn hàng',
                     'return_request_id' => $returnId,
@@ -936,12 +932,20 @@ class OrderController extends Controller
                 ]);
                 
                 $returnOrderCode = $order->order_code; // Sử dụng mã đơn gốc
-                $message = 'Đã gửi yêu cầu hoàn hàng toàn bộ đơn hàng';
+                $message = 'Đã gửi yêu cầu hoàn hàng toàn bộ đơn hàng còn lại';
             } else {
                 // ✅ Hoàn trả một phần: Đơn gốc giữ nguyên + Tạo đơn hoàn trả
+                // Tạo mã đơn hoàn trả duy nhất bằng cách thêm timestamp hoặc số thứ tự
+                $existingReturnOrdersCount = DB::table('orders')
+                    ->where('original_order_id', $order->order_id)
+                    ->where('is_return_order', true)
+                    ->count();
+                
+                $returnOrderCode = 'TH' . $order->order_code . '-' . str_pad($existingReturnOrdersCount + 1, 2, '0', STR_PAD_LEFT);
+                
                 $returnOrderId = DB::table('orders')->insertGetId([
                     'user_id' => $order->user_id,
-                    'order_code' => 'TH' . $order->order_code, // Prefix TH = Trả Hàng
+                    'order_code' => $returnOrderCode, // Mã đơn hoàn trả duy nhất
                     'customer' => $order->customer,
                     'email' => $order->email,
                     'phone' => $order->phone,
@@ -996,7 +1000,7 @@ class OrderController extends Controller
                     'updated_at' => now(),
                 ]);
                 
-                $returnOrderCode = 'TH' . $order->order_code;
+                // $returnOrderCode đã được tạo ở trên với số thứ tự
                 $message = 'Đã gửi yêu cầu hoàn hàng một phần và tạo đơn hoàn trả';
             }
 
