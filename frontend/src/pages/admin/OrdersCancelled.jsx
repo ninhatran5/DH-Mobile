@@ -72,7 +72,7 @@ const OrdersCancelled = () => {
         setProcessingOrderId(order.return_id);
 
         // Truyền status là chuỗi trạng thái tiếp theo
-        dispatch(updateReturnOrderStatus({ orderId: order.order_id, status: nextStatus }))
+        dispatch(updateReturnOrderStatus({ returnId: order.return_id, status: nextStatus }))
           .unwrap()
           .then((response) => {
             Swal.fire({
@@ -109,7 +109,7 @@ const OrdersCancelled = () => {
       if (result.isConfirmed) {
         setProcessingOrderId(order.return_id);
 
-        dispatch(updateReturnOrderStatus({ orderId: order.order_id, status: "Đã từ chối" }))
+        dispatch(updateReturnOrderStatus({ returnId: order.return_id, status: "Đã từ chối" }))
           .unwrap()
           .then((response) => {
             Swal.fire({
