@@ -41,6 +41,7 @@ const CheckOut = () => {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const [showAllProducts, setShowAllProducts] = useState(false);
   const { profile, loading } = useSelector((state) => state.profile);
   const { vouchers, loading: voucherLoading } = useSelector(
     (state) => state.voucher || {}
@@ -698,7 +699,11 @@ const CheckOut = () => {
                         </p>
                       </div>
                     </div>
-                    {selectedItems.map((item) => (
+                    {/* Show only first 2 products, with 'See more' button if more */}
+                    {(showAllProducts
+                      ? selectedItems
+                      : selectedItems.slice(0, 2)
+                    ).map((item) => (
                       <ul
                         key={item.cart_item_id}
                         className="checkout__total__products"
@@ -766,6 +771,67 @@ const CheckOut = () => {
                         </li>
                       </ul>
                     ))}
+                    {selectedItems.length > 2 && (
+                      <div className="text-center mt-4 mb-4">
+                        <button
+                          type="button"
+                          className="btn d-inline-flex align-items-center gap-2"
+                          style={{
+                            borderRadius: 20,
+                            fontWeight: 500,
+                            background: "#f8f9fa",
+                            color: "#33383dff",
+                            border: "1px solid #d0d5daff",
+                            padding: "8px 20px",
+                            fontSize: 14,
+                            transition: "all 0.2s ease",
+                            outline: "none",
+                            boxShadow: "none",
+                          }}
+                          onClick={() => setShowAllProducts((prev) => !prev)}
+                          onMouseOver={(e) => {
+                            e.currentTarget.style.background = "#e9ecef";
+                            e.currentTarget.style.color = "#495057";
+                            e.currentTarget.style.borderColor = "#dee2e6";
+                          }}
+                          onMouseOut={(e) => {
+                            e.currentTarget.style.background = "#f8f9fa";
+                            e.currentTarget.style.color = "#6c757d";
+                            e.currentTarget.style.borderColor = "#e9ecef";
+                          }}
+                        >
+                          {showAllProducts ? (
+                            <>
+                              <span>{t("comment.showLess") || "Ẩn bớt"}</span>
+                              <svg
+                                width="12"
+                                height="12"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                              >
+                                <path d="m18 15-6-6-6 6" />
+                              </svg>
+                            </>
+                          ) : (
+                            <>
+                              <span>{t("comment.showMore") || "Xem thêm"}</span>
+                              <svg
+                                width="12"
+                                height="12"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                              >
+                                <path d="m6 9 6 6 6-6" />
+                              </svg>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    )}
 
                     <ul className="checkout__total__all">
                       {rankDiscountAmount > 0 && (

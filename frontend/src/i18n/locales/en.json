@@ -596,7 +596,6 @@
     "noProductSelected": "You haven't selected a product!",
     "successTitle": "Review submitted successfully",
     "successText": "Thank you for reviewing the product!",
-    "successTextWithPoints": "Thank you for reviewing the product! You have earned bonus points!",
     "errorTitle": "Error",
     "errorText": "Unable to submit review",
     "selectProduct": "Select a product to review",
@@ -611,7 +610,9 @@
     "chooseImages": "Choose images",
     "uploadHint": "You can upload up to 5 images",
     "tooManyImages": "Too many images",
-    "maxImagesText": "You can only upload up to 5 images"
+    "maxImagesText": "You can only upload up to 5 images",
+    "confirmSuccessTitle": "Confirmation Successful",
+    "successTextWithPoints": "Thank you for confirming successful receipt of your order! You have earned reward points!"
   },
   "address": {
     "selectAddressTitle": "Select delivery address",
