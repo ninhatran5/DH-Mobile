@@ -1574,9 +1574,6 @@ class OrderController extends Controller
             // Bắn event
             event(new ReturnNotificationCreated($notification));
 
-
-
-
             DB::commit();
 
             // Broadcast event realtime
