@@ -356,6 +356,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/loyalty-points/reset-all', [LoyaltyPointController::class, 'resetAll']);
     // API đánh dấu đơn hàng hoàn thành + tự động cộng điểm
     Route::put('/orders/{order_id}/complete', [OrderController::class, 'markAsCompleted']);
+    
 });
 
 

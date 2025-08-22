@@ -1240,13 +1240,13 @@ class OrderController extends Controller
                 }
             }
         }
-        
+
         // 🔴 Debug: log thông tin về return requests hiện tại
         Log::info('Existing return requests debug', [
             'order_id' => $order->order_id,
             'existing_return_count' => count($existingReturnRequests),
             'already_returned_quantities' => $alreadyReturnedQuantities,
-            'existing_requests' => collect($existingReturnRequests)->map(function($req) {
+            'existing_requests' => collect($existingReturnRequests)->map(function ($req) {
                 return [
                     'return_id' => $req->return_id,
                     'status' => $req->status,
