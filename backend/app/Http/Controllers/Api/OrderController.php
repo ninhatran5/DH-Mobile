@@ -1240,13 +1240,13 @@ class OrderController extends Controller
                 }
             }
         }
-        
+
         // 🔴 Debug: log thông tin về return requests hiện tại
         Log::info('Existing return requests debug', [
             'order_id' => $order->order_id,
             'existing_return_count' => count($existingReturnRequests),
             'already_returned_quantities' => $alreadyReturnedQuantities,
-            'existing_requests' => collect($existingReturnRequests)->map(function($req) {
+            'existing_requests' => collect($existingReturnRequests)->map(function ($req) {
                 return [
                     'return_id' => $req->return_id,
                     'status' => $req->status,
@@ -2542,6 +2542,74 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Lỗi trong quá trình hoàn tất đơn hàng',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+///
+    public function markAsRefunded($returnId)
+    {
+        $returnRequest = ReturnRequest::find($returnId);
+        if (!$returnRequest) {
+            return response()->json(['message' => 'Không tìm thấy yêu cầu hoàn hàng'], 404);
+        }
+
+        $order = Orders::find($returnRequest->order_id);
+        if (!$order) {
+            return response()->json(['message' => 'Không tìm thấy đơn hàng'], 404);
+        }
+
+        // Kiểm tra đơn có từng được cộng điểm chưa
+        $reward = LoyaltyPoint::where('user_id', $order->user_id)
+            ->where('type', 'order')
+            ->where('description', 'like', '%#' . $order->order_code . '%')
+            ->first();
+
+        if (!$reward) {
+            return response()->json(['message' => 'Đơn hàng chưa được cộng điểm, không cần thu hồi'], 400);
+        }
+
+        try {
+            DB::transaction(function () use ($order, $returnRequest, $reward) {
+                // Nếu chưa ở trạng thái "Đã hoàn lại" thì cập nhật
+                if ($returnRequest->status !== 'Đã hoàn lại') {
+                    $returnRequest->update(['status' => 'Đã hoàn lại']);
+
+                    DB::table('return_logs')->insert([
+                        'return_id' => $returnRequest->return_id,
+                        'action' => 'refunded',
+                        'note' => 'Đơn hoàn hàng đã được xử lý hoàn lại tiền',
+                        'created_at' => now(),
+                    ]);
+                }
+
+                // Nếu đúng trạng thái "Đã hoàn lại" thì trừ điểm
+                if ($returnRequest->status === 'Đã hoàn lại') {
+                    LoyaltyPoint::create([
+                        'user_id' => $order->user_id,
+                        'points' => -$reward->points,
+                        'type' => 'order_return',
+                        'description' => 'Thu hồi điểm do hoàn lại đơn hàng #' . $order->order_code,
+                    ]);
+
+                    $this->updateUserLoyalty($order->user_id);
+
+                    DB::table('return_logs')->insert([
+                        'return_id' => $returnRequest->return_id,
+                        'action' => 'deduct_points',
+                        'note' => 'Đã thu hồi ' . $reward->points . ' điểm từ đơn hàng #' . $order->order_code,
+                        'created_at' => now(),
+                    ]);
+                }
+            });
+
+            return response()->json([
+                'message' => 'Đã hoàn lại, cập nhật log và thu hồi điểm',
+                'deducted_points' => $reward->points,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Lỗi khi xử lý hoàn lại',
                 'error' => $e->getMessage(),
             ], 500);
         }
