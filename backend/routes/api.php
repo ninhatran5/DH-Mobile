@@ -33,6 +33,7 @@ use App\Http\Controllers\Api\PercentVoucherController;
 use App\Http\Controllers\Api\ProductVariantsController;
 use App\Http\Controllers\Api\WithdrawRequestController;
 use App\Http\Controllers\Api\ProductSpecificationsController;
+use App\Http\Controllers\Api\ReturnNotificationController;
 use App\Http\Controllers\Api\VariantAttributeValuesController;
 
 
@@ -279,6 +280,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('admin/notifications', [NotificationController::class, 'index']);
     Route::post('admin/notifications/read/{id}', [NotificationController::class, 'markAsRead']);
     Route::post('admin/notifications/readAll', [NotificationController::class, 'markAsReadAll']);
+
+    Route::get('/return-notifications', [ReturnNotificationController::class, 'index']);
+    Route::put('/return-notifications/{id}/read', [ReturnNotificationController::class, 'markAsRead']);
 });
 
 // quản lý đơn hàng dành cho admin
