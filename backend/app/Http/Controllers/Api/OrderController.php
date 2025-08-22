@@ -405,7 +405,7 @@ class OrderController extends Controller
     }
 
     // quản lý đơn hàng admin
-      public function adminIndex(Request $request)
+    public function adminIndex(Request $request)
     {
         // Tự động hoàn thành các đơn đã giao quá 3 ngày
         Orders::autoCompleteIfNeeded();
@@ -492,7 +492,7 @@ class OrderController extends Controller
                     }
                 }
             }
-            
+
             $products = $order->orderItems->map(function ($item) {
                 return [
                     'product_id' => $item->product_id,
@@ -501,7 +501,7 @@ class OrderController extends Controller
                     'quantity' => $item->quantity,
                 ];
             });
-            
+
             return [
                 'order_id' => $order->order_id,
                 'order_code' => $order->order_code,
@@ -840,7 +840,224 @@ class OrderController extends Controller
         ]);
     }
 
-    // Client gửi yêu cầu hoàn hàng (sử dụng bảng return_requests)
+    // public function clientRequestReturn(Request $request, $id)
+    // {
+    //     $order = Orders::find($id);
+    //     if (!$order) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Không tìm thấy đơn hàng'
+    //         ], 404);
+    //     }
+
+    //     // Chỉ cho phép khi đơn đã giao hoặc hoàn thành
+    //     if (!in_array($order->status, ['Đã giao hàng', 'Hoàn thành'])) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Chỉ được yêu cầu hoàn hàng khi đơn hàng ở trạng thái Đã giao hàng hoặc Hoàn thành'
+    //         ], 400);
+    //     }
+
+    //     // Danh sách lý do hợp lệ
+    //     $reasons = [
+    //         'Thiếu hàng',
+    //         'Người bán gửi sai hàng',
+    //         'Hàng bể vỡ',
+    //         'Hàng lỗi, không hoạt động',
+    //         'Hàng giả, nhái',
+    //         'Hàng khác với mô tả',
+    //         'Hàng đã qua sử dụng',
+    //         'Lý do khác'
+    //     ];
+
+    //     // Validate request
+    //     $request->validate([
+    //         'return_reason' => 'required|string',
+    //         'return_reason_other' => 'nullable|string|max:255',
+    //         'upload_url' => 'nullable|array|max:3',
+    //         'upload_url.*' => 'file|mimes:jpg,png,jpeg|max:4096',
+    //         'return_items' => 'required',
+    //         'return_items.*.product_id' => 'required|integer',
+    //         'return_items.*.quantity' => 'required|integer|min:1',
+    //     ]);
+
+    //     // Upload ảnh lên Cloudinary
+    //     $imageUrls = [];
+    //     if ($request->hasFile('upload_url')) {
+    //         try {
+    //             $cloudinary = app(Cloudinary::class);
+    //             $uploadApi = $cloudinary->uploadApi();
+
+    //             foreach ($request->file('upload_url') as $imageFile) {
+    //                 $result = $uploadApi->upload($imageFile->getRealPath(), [
+    //                     'folder' => 'comments_img'
+    //                 ]);
+    //                 $imageUrls[] = $result['secure_url'];
+    //             }
+    //         } catch (\Exception $e) {
+    //             return response()->json([
+    //                 'message' => 'Lỗi khi upload ảnh: ' . $e->getMessage(),
+    //                 'file' => $e->getFile(),
+    //                 'line' => $e->getLine()
+    //             ], 500);
+    //         }
+    //     }
+
+    //     $reason = $request->return_reason;
+
+    //     if (!in_array($reason, $reasons)) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Lý do hoàn hàng không hợp lệ.'
+    //         ], 400);
+    //     }
+
+    //     if ($reason === 'Lý do khác' && empty($request->return_reason_other)) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Vui lòng nhập lý do hoàn hàng cụ thể.'
+    //         ], 400);
+    //     }
+
+    //     $returnItems = $request->return_items;
+    //     if (is_string($returnItems)) {
+    //         $returnItems = json_decode($returnItems, true);
+    //         if (json_last_error() !== JSON_ERROR_NONE) {
+    //             return response()->json([
+    //                 'status' => false,
+    //                 'message' => 'return_items must be a valid JSON array or array format. JSON error: ' . json_last_error_msg()
+    //             ], 400);
+    //         }
+    //     }
+
+    //     if (!is_array($returnItems) || empty($returnItems)) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'return_items must be a non-empty array'
+    //         ], 400);
+    //     }
+
+    //     foreach ($returnItems as $index => $item) {
+    //         if (!isset($item['product_id']) || !is_numeric($item['product_id'])) {
+    //             return response()->json([
+    //                 'status' => false,
+    //                 'message' => "return_items[{$index}].product_id is required and must be a number"
+    //             ], 400);
+    //         }
+    //         if (!isset($item['quantity']) || !is_numeric($item['quantity']) || $item['quantity'] < 1) {
+    //             return response()->json([
+    //                 'status' => false,
+    //                 'message' => "return_items[{$index}].quantity is required and must be a number greater than 0"
+    //             ], 400);
+    //         }
+    //     }
+
+    //     // Lấy tất cả yêu cầu hoàn trả trước đã được chấp nhận
+    //     $existingReturnRequests = DB::table('return_requests')
+    //         ->where('order_id', $order->order_id)
+    //         ->where('user_id', $request->user()->user_id)
+    //         ->where('status', '!=', 'Đã từ chối')
+    //         ->get();
+
+    //     $alreadyReturnedQuantities = [];
+    //     foreach ($existingReturnRequests as $existingRequest) {
+    //         if ($existingRequest->return_items) {
+    //             $items = json_decode($existingRequest->return_items, true);
+    //             if (is_array($items)) {
+    //                 foreach ($items as $item) {
+    //                     $productId = $item['product_id'];
+    //                     $alreadyReturnedQuantities[$productId] = ($alreadyReturnedQuantities[$productId] ?? 0) + $item['quantity'];
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     $orderItems = $order->orderItems->keyBy('product_id');
+    //     $totalOriginalAmount = $order->orderItems->sum(fn($i) => $i->price * $i->quantity);
+    //     $totalDiscountAmount = ($order->voucher_discount ?? 0) + ($order->rank_discount ?? 0);
+    //     $discountRate = $totalOriginalAmount > 0 ? $totalDiscountAmount / $totalOriginalAmount : 0;
+
+    //     $refundAmount = 0;
+    //     $refundBreakdown = [];
+
+    //     foreach ($returnItems as $item) {
+    //         $productId = $item['product_id'];
+    //         if (!isset($orderItems[$productId])) {
+    //             return response()->json([
+    //                 'status' => false,
+    //                 'message' => 'Sản phẩm không tồn tại trong đơn hàng.'
+    //             ], 400);
+    //         }
+    //         $orderItem = $orderItems[$productId];
+    //         $alreadyReturnedQty = $alreadyReturnedQuantities[$productId] ?? 0;
+    //         $availableQty = $orderItem->quantity - $alreadyReturnedQty;
+    //         if ($availableQty <= 0 || $item['quantity'] > $availableQty) {
+    //             return response()->json([
+    //                 'status' => false,
+    //                 'message' => "Sản phẩm '{$orderItem->product->name}' chỉ còn {$availableQty} sản phẩm có thể hoàn trả."
+    //             ], 400);
+    //         }
+    //         $itemRefundAmount = $orderItem->price * $item['quantity'] * (1 - $discountRate);
+    //         $refundAmount += $itemRefundAmount;
+
+    //         $refundBreakdown[] = [
+    //             'product_id' => $productId,
+    //             'product_name' => $orderItem->product->name ?? 'Unknown',
+    //             'quantity' => $item['quantity'],
+    //             'refund_subtotal' => round($itemRefundAmount, 0)
+    //         ];
+    //     }
+
+    //     if ($refundAmount <= 0) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Số tiền hoàn trả phải lớn hơn 0.'
+    //         ], 400);
+    //     }
+
+    //     DB::beginTransaction();
+    //     try {
+    //         $returnId = DB::table('return_requests')->insertGetId([
+    //             'order_id' => $order->order_id,
+    //             'user_id' => $request->user()->user_id,
+    //             'reason' => $reason,
+    //             'return_reason_other' => $request->return_reason_other,
+    //             'status' => 'đã yêu cầu',
+    //             'refund_amount' => $refundAmount,
+    //             'upload_url' => json_encode($imageUrls),
+    //             'return_items' => json_encode($returnItems),
+    //             'created_at' => now(),
+    //             'updated_at' => now(),
+    //         ]);
+
+    //         // 🔔 Thêm thông báo admin
+    //         DB::table('return_notifications')->insert([
+    //             'order_id' => $order->order_id,
+    //             'return_request_id' => $returnId,
+    //             'message' => "Khách hàng {$order->customer} vừa gửi yêu cầu hoàn hàng cho đơn #{$order->order_code}",
+    //             'is_read' => false,
+    //             'created_at' => now(),
+    //             'updated_at' => now(),
+    //         ]);
+
+    //         DB::commit();
+
+    //         return response()->json([
+    //             'status' => true,
+    //             'message' => 'Yêu cầu hoàn hàng đã được gửi thành công',
+    //             'return_request_id' => $returnId,
+    //             'refund_amount' => round($refundAmount, 0)
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Có lỗi xảy ra khi tạo yêu cầu hoàn hàng: ' . $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
+
     public function clientRequestReturn(Request $request, $id)
     {
         $order = Orders::find($id);
@@ -906,6 +1123,7 @@ class OrderController extends Controller
 
         $reason = $request->return_reason;
 
+        // Kiểm tra lý do có hợp lệ không
         if (!in_array($reason, $reasons)) {
             return response()->json([
                 'status' => false,
@@ -913,6 +1131,7 @@ class OrderController extends Controller
             ], 400);
         }
 
+        // Nếu chọn "Lý do khác" thì bắt buộc nhập chi tiết
         if ($reason === 'Lý do khác' && empty($request->return_reason_other)) {
             return response()->json([
                 'status' => false,
@@ -920,7 +1139,10 @@ class OrderController extends Controller
             ], 400);
         }
 
+        // Xử lý return_items - có thể là array hoặc JSON string
         $returnItems = $request->return_items;
+
+        // Nếu return_items là string (JSON), decode nó
         if (is_string($returnItems)) {
             $returnItems = json_decode($returnItems, true);
             if (json_last_error() !== JSON_ERROR_NONE) {
@@ -931,13 +1153,23 @@ class OrderController extends Controller
             }
         }
 
-        if (!is_array($returnItems) || empty($returnItems)) {
+        // Kiểm tra xem $returnItems có phải là array không
+        if (!is_array($returnItems)) {
             return response()->json([
                 'status' => false,
-                'message' => 'return_items must be a non-empty array'
+                'message' => 'return_items must be an array'
             ], 400);
         }
 
+        // Kiểm tra xem array có rỗng không
+        if (empty($returnItems)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'return_items cannot be empty'
+            ], 400);
+        }
+
+        // Validate từng item trong return_items
         foreach ($returnItems as $index => $item) {
             if (!isset($item['product_id']) || !is_numeric($item['product_id'])) {
                 return response()->json([
@@ -945,6 +1177,7 @@ class OrderController extends Controller
                     'message' => "return_items[{$index}].product_id is required and must be a number"
                 ], 400);
             }
+
             if (!isset($item['quantity']) || !is_numeric($item['quantity']) || $item['quantity'] < 1) {
                 return response()->json([
                     'status' => false,
@@ -953,13 +1186,15 @@ class OrderController extends Controller
             }
         }
 
-        // Lấy tất cả yêu cầu hoàn trả trước đã được chấp nhận
+        // 🔴 QUAN TRỌNG: Phải lấy thông tin các yêu cầu hoàn trả trước đã để tính toán chính xác
+        // Lấy tất cả yêu cầu hoàn trả đã được chấp nhận (không bị từ chối)
         $existingReturnRequests = DB::table('return_requests')
             ->where('order_id', $order->order_id)
             ->where('user_id', $request->user()->user_id)
             ->where('status', '!=', 'Đã từ chối')
             ->get();
 
+        // Tính tổng số lượng đã được yêu cầu hoàn trả từ các yêu cầu trước đó
         $alreadyReturnedQuantities = [];
         foreach ($existingReturnRequests as $existingRequest) {
             if ($existingRequest->return_items) {
@@ -973,8 +1208,13 @@ class OrderController extends Controller
             }
         }
 
+        // Kiểm tra sản phẩm trong đơn và tính số tiền refund
         $orderItems = $order->orderItems->keyBy('product_id');
-        $totalOriginalAmount = $order->orderItems->sum(fn($i) => $i->price * $i->quantity);
+
+        // ✅ Tính tỷ lệ giảm giá của đơn hàng
+        $totalOriginalAmount = $order->orderItems->sum(function ($item) {
+            return $item->price * $item->quantity;
+        });
         $totalDiscountAmount = ($order->voucher_discount ?? 0) + ($order->rank_discount ?? 0);
         $discountRate = $totalOriginalAmount > 0 ? $totalDiscountAmount / $totalOriginalAmount : 0;
 
@@ -983,72 +1223,364 @@ class OrderController extends Controller
 
         foreach ($returnItems as $item) {
             $productId = $item['product_id'];
+
             if (!isset($orderItems[$productId])) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Sản phẩm không tồn tại trong đơn hàng.'
                 ], 400);
             }
+
             $orderItem = $orderItems[$productId];
             $alreadyReturnedQty = $alreadyReturnedQuantities[$productId] ?? 0;
             $availableQty = $orderItem->quantity - $alreadyReturnedQty;
-            if ($availableQty <= 0 || $item['quantity'] > $availableQty) {
+
+            if ($availableQty <= 0) {
                 return response()->json([
                     'status' => false,
-                    'message' => "Sản phẩm '{$orderItem->product->name}' chỉ còn {$availableQty} sản phẩm có thể hoàn trả."
+                    'message' => "Sản phẩm '{$orderItem->product->name}' đã được hoàn trả hết rồi."
                 ], 400);
             }
-            $itemRefundAmount = $orderItem->price * $item['quantity'] * (1 - $discountRate);
+
+            if ($item['quantity'] > $availableQty) {
+                return response()->json([
+                    'status' => false,
+                    'message' => "Sản phẩm '{$orderItem->product->name}' chỉ còn {$availableQty} sản phẩm có thể hoàn trả, bạn đã yêu cầu hoàn {$alreadyReturnedQty} sản phẩm trước đó."
+                ], 400);
+            }
+
+            // ✅ Tính tiền hoàn cho từng sản phẩm - có tính tỷ lệ giảm giá
+            $originalItemAmount = $orderItem->price * $item['quantity'];
+            $itemRefundAmount = $originalItemAmount * (1 - $discountRate);
             $refundAmount += $itemRefundAmount;
 
+            // 📝 Debug: lưu chi tiết từng sản phẩm với thông tin chi tiết
             $refundBreakdown[] = [
                 'product_id' => $productId,
                 'product_name' => $orderItem->product->name ?? 'Unknown',
+                'order_item_price' => $orderItem->price, // Giá trong order_items
                 'quantity' => $item['quantity'],
-                'refund_subtotal' => round($itemRefundAmount, 0)
+                'original_subtotal' => $originalItemAmount, // = order_item_price * quantity
+                'discount_rate' => round($discountRate * 100, 2) . '%',
+                'final_refund_subtotal' => round($itemRefundAmount, 0) // = original_subtotal * (1 - discount_rate)
             ];
+            
+            // 🔴 Log debug cho vấn đề này
+            Log::info('Refund calculation debug', [
+                'product_id' => $productId,
+                'order_item_price' => $orderItem->price,
+                'quantity' => $item['quantity'],
+                'original_subtotal' => $originalItemAmount,
+                'discount_rate' => $discountRate,
+                'total_original_amount' => $totalOriginalAmount,
+                'total_discount_amount' => $totalDiscountAmount,
+                'voucher_discount' => $order->voucher_discount ?? 0,
+                'rank_discount' => $order->rank_discount ?? 0,
+                'item_refund_amount' => $itemRefundAmount,
+                'running_refund_total' => $refundAmount
+            ]);
         }
+        
+        // 🔴 Log tổng kết
+        Log::info('Final refund calculation', [
+            'order_id' => $order->order_id,
+            'order_code' => $order->order_code,
+            'final_refund_amount' => $refundAmount,
+            'breakdown' => $refundBreakdown
+        ]);
 
+
+        // ✅ Validation cuối cùng cho refund_amount
         if ($refundAmount <= 0) {
             return response()->json([
                 'status' => false,
-                'message' => 'Số tiền hoàn trả phải lớn hơn 0.'
+                'message' => 'Số tiền hoàn trả phải lớn hơn 0. Vui lòng kiểm tra lại sản phẩm và số lượng.'
+            ], 400);
+        }
+
+        // Kiểm tra xem refund_amount có vượt quá tổng giá trị đơn hàng không
+        $maxRefundAmount = $order->orderItems->sum(function ($item) {
+            return $item->price * $item->quantity;
+        });
+
+        if ($refundAmount > $maxRefundAmount) {
+            // Log::error("Refund amount exceeds order total", [
+            //     'order_id' => $order->order_id,
+            //     'order_code' => $order->order_code,
+            //     'calculated_refund_amount' => $refundAmount,
+            //     'max_allowed_refund_amount' => $maxRefundAmount,
+            //     'breakdown' => $refundBreakdown
+            // ]);
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Số tiền hoàn trả vượt quá giá trị đơn hàng. Vui lòng kiểm tra lại.'
             ], 400);
         }
 
         DB::beginTransaction();
         try {
+            // Tạo mới yêu cầu hoàn hàng với validation đã hoàn tất
             $returnId = DB::table('return_requests')->insertGetId([
                 'order_id' => $order->order_id,
                 'user_id' => $request->user()->user_id,
                 'reason' => $reason,
                 'return_reason_other' => $request->return_reason_other,
                 'status' => 'đã yêu cầu',
-                'refund_amount' => $refundAmount,
+                'refund_amount' => $refundAmount, // ✅ đã được validate kỹ lưỡng
                 'upload_url' => json_encode($imageUrls),
                 'return_items' => json_encode($returnItems),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
-            // 🔔 Thêm thông báo admin
-            DB::table('return_notifications')->insert([
-                'order_id' => $order->order_id,
-                'return_request_id' => $returnId,
-                'message' => "Khách hàng {$order->customer} vừa gửi yêu cầu hoàn hàng cho đơn #{$order->order_code}",
-                'is_read' => false,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // Kiểm tra xem có phải hoàn trả toàn bộ sản phẩm không
+            $totalOrderQuantity = $order->orderItems->sum('quantity');
+            $totalReturnQuantity = array_sum(array_column($returnItems, 'quantity'));
+
+            // Tính tổng số lượng đã được hoàn trả trước đó (từ các yêu cầu khác)
+            $totalAlreadyReturnedQty = array_sum($alreadyReturnedQuantities);
+            $totalAfterThisReturn = $totalAlreadyReturnedQty + $totalReturnQuantity;
+
+            $returnOrderId = null;
+            $returnOrderCode = null;
+
+            if ($totalAfterThisReturn >= $totalOrderQuantity) {
+
+                // ✅ Kiểm tra xem có phải hoàn trả 100% ngay từ đầu hay có hoàn trả từng phần trước đó
+                $hasPartialReturns = !empty($alreadyReturnedQuantities);
+
+                if ($hasPartialReturns) {
+                    // 🔄 Trường hợp có hoàn trả từng phần trước đó → Cập nhật đơn gốc với đúng từng sản phẩm
+
+                    // ✨ Tính toán chính xác cho từng sản phẩm riêng biệt
+                    $adjustedTotalForRemainingPart = 0;
+                    $itemsToUpdateInOriginalOrder = [];
+                    $totalRemainingQuantity = 0;
+
+                    foreach ($returnItems as $returnItem) {
+                        $productId = $returnItem['product_id'];
+                        $variantId = $returnItem['variant_id'] ?? null;
+                        $quantityToReturn = $returnItem['quantity'];
+
+                        // Tìm sản phẩm tương ứng trong đơn gốc
+                        $matchingOrderItem = null;
+                        foreach ($order->orderItems as $orderItem) {
+                            if (
+                                $orderItem->product_id == $productId &&
+                                $orderItem->variant_id == $variantId
+                            ) {
+                                $matchingOrderItem = $orderItem;
+                                break;
+                            }
+                        }
+
+                        if ($matchingOrderItem) {
+                            // Tính giá sau chiết khấu cho sản phẩm này
+                            $priceAfterDiscountForThisItem = $matchingOrderItem->price * (1 - $discountRate);
+
+                            // Tính tổng tiền cho sản phẩm này
+                            $subtotalForThisItem = $priceAfterDiscountForThisItem * $quantityToReturn;
+                            $adjustedTotalForRemainingPart += $subtotalForThisItem;
+                            $totalRemainingQuantity += $quantityToReturn;
+
+                            // Lưu thông tin để cập nhật sau
+                            $itemsToUpdateInOriginalOrder[] = [
+                                'product_id' => $productId,
+                                'variant_id' => $variantId,
+                                'quantity' => $quantityToReturn,
+                                'price' => $priceAfterDiscountForThisItem,
+                                'subtotal' => $subtotalForThisItem
+                            ];
+                        }
+                    }
+
+                    // ✨ Cập nhật đơn gốc với tổng tiền chính xác
+                    DB::table('orders')->where('order_id', $order->order_id)->update([
+                        'status' => 'Yêu cầu hoàn hàng',
+                        'return_request_id' => $returnId,
+                        'is_return_order' => true,
+                        'total_amount' => $adjustedTotalForRemainingPart, // Tổng chính xác của tất cả sản phẩm
+                        'updated_at' => now(),
+                    ]);
+
+                    // ✨ Xóa tất cả order_items cũ trong đơn gốc
+                    DB::table('order_items')->where('order_id', $order->order_id)->delete();
+
+                    // ✨ Tạo lại order_items mới cho đơn gốc với thông tin đúng
+                    foreach ($itemsToUpdateInOriginalOrder as $itemData) {
+                        DB::table('order_items')->insert([
+                            'order_id' => $order->order_id,
+                            'product_id' => $itemData['product_id'],
+                            'variant_id' => $itemData['variant_id'],
+                            'quantity' => $itemData['quantity'],
+                            'price' => $itemData['price'],
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ]);
+                    }
+
+                    $returnOrderCode = $order->order_code;
+                    $message = "Hoàn trả toàn bộ - đơn gốc còn lại {$totalRemainingQuantity} sản phẩm";
+
+                    // 📝 Log thông tin chi tiết để debug
+                    Log::info('Multi-product partial return completed - Updated original order', [
+                        'order_id' => $order->order_id,
+                        'total_remaining_quantity' => $totalRemainingQuantity,
+                        'adjusted_total' => $adjustedTotalForRemainingPart,
+                        'items_breakdown' => $itemsToUpdateInOriginalOrder,
+                        'discount_rate' => $discountRate,
+                        'original_return_items' => $returnItems
+                    ]);
+                } else {
+                    // ✅ Trường hợp hoàn trả 100% ngay từ đầu: Cập nhật đơn gốc với giá trị đúng sau chiết khấu
+                    $totalOriginalForFullReturn = $order->orderItems->sum(function ($item) {
+                        return $item->price * $item->quantity;
+                    });
+                    $adjustedTotalForFullReturn = $totalOriginalForFullReturn * (1 - $discountRate);
+
+                    DB::table('orders')->where('order_id', $order->order_id)->update([
+                        'status' => 'Yêu cầu hoàn hàng',
+                        'return_request_id' => $returnId,
+                        'is_return_order' => true,
+                        'total_amount' => $adjustedTotalForFullReturn, // ✅ Cập nhật giá trị sau chiết khấu
+                        'updated_at' => now(),
+                    ]);
+
+                    // ✅ Cập nhật giá sản phẩm trong order_items theo tỷ lệ giảm giá
+                    foreach ($order->orderItems as $orderItem) {
+                        $priceAfterDiscountForItem = $orderItem->price * (1 - $discountRate);
+                        DB::table('order_items')
+                            ->where('order_id', $order->order_id)
+                            ->where('product_id', $orderItem->product_id)
+                            ->where('variant_id', $orderItem->variant_id)
+                            ->update([
+                                'price' => $priceAfterDiscountForItem,
+                                'updated_at' => now()
+                            ]);
+                    }
+
+                    $returnOrderCode = $order->order_code;
+                    $message = 'Đã gửi yêu cầu hoàn hàng toàn bộ đơn hàng ngay từ đầu';
+                }
+
+                // ✅ Hoàn trả hết số lượng còn lại hoặc 100%: Chỉ chuyển trạng thái đơn gốc, KHÔNG tạo đơn mới
+                DB::table('orders')->where('order_id', $order->order_id)->update([
+                    'status' => 'Yêu cầu hoàn hàng',
+                    'return_request_id' => $returnId,
+                    'is_return_order' => true,
+                    'updated_at' => now(),
+                ]);
+
+                $returnOrderCode = $order->order_code; // Sử dụng mã đơn gốc
+                $message = 'Đã gửi yêu cầu hoàn hàng toàn bộ đơn hàng còn lại';
+            } else {
+                // ✅ Hoàn trả một phần: Đơn gốc giữ nguyên + Tạo đơn hoàn trả
+                // Tạo mã đơn hoàn trả duy nhất bằng cách thêm timestamp hoặc số thứ tự
+                $existingReturnOrdersCount = DB::table('orders')
+                    ->where('original_order_id', $order->order_id)
+                    ->where('is_return_order', true)
+                    ->count();
+
+                $returnOrderCode = 'TH' . $order->order_code . '-' . str_pad($existingReturnOrdersCount + 1, 2, '0', STR_PAD_LEFT);
+
+                $returnOrderId = DB::table('orders')->insertGetId([
+                    'user_id' => $order->user_id,
+                    'order_code' => $returnOrderCode, // Mã đơn hoàn trả duy nhất
+                    'customer' => $order->customer,
+                    'email' => $order->email,
+                    'phone' => $order->phone,
+                    'address' => $order->address,
+                    'ward' => $order->ward,
+                    'district' => $order->district,
+                    'city' => $order->city,
+                    'method_id' => $order->method_id,
+                    'payment_status' => 'Đã thanh toán',
+                    'status' => 'Yêu cầu hoàn hàng',
+                    'total_amount' => $refundAmount,
+                    'voucher_discount' => 0,
+                    'rank_discount' => 0,
+                    'paid_by_wallet' => 0,
+                    'original_order_id' => $order->order_id, // Liên kết với đơn gốc
+                    'is_return_order' => true, // Đánh dấu đây là đơn hoàn trả
+                    'return_request_id' => $returnId, // Liên kết với yêu cầu hoàn trả
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                // Tạo order items cho đơn hoàn trả - sử dụng thông tin từ return_items
+                foreach ($returnItems as $returnItem) {
+                    // Tìm order item tương ứng dựa trên cả product_id và variant_id
+                    $matchingOrderItem = null;
+                    foreach ($order->orderItems as $orderItem) {
+                        if (
+                            $orderItem->product_id == $returnItem['product_id'] &&
+                            $orderItem->variant_id == ($returnItem['variant_id'] ?? null)
+                        ) {
+                            $matchingOrderItem = $orderItem;
+                            break;
+                        }
+                    }
+
+                    if (!$matchingOrderItem) {
+                        throw new \Exception("Không tìm thấy order item tương ứng cho product_id: {$returnItem['product_id']}, variant_id: {$returnItem['variant_id']}");
+                    }
+
+                    // ✅ Tính giá sau khi trừ giảm giá cho sản phẩm hoàn trả
+                    $priceAfterDiscount = $matchingOrderItem->price * (1 - $discountRate);
+
+                    DB::table('order_items')->insert([
+                        'order_id' => $returnOrderId,
+                        'product_id' => $returnItem['product_id'],
+                        'variant_id' => $returnItem['variant_id'] ?? null, // Sử dụng variant_id từ return_items
+                        'quantity' => $returnItem['quantity'],
+                        'price' => $priceAfterDiscount,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+
+                // Cập nhật return_request với order_id của đơn hoàn trả
+                DB::table('return_requests')->where('return_id', $returnId)->update([
+                    'return_order_id' => $returnOrderId,
+                    'updated_at' => now(),
+                ]);
+
+                // $returnOrderCode đã được tạo ở trên với số thứ tự
+                $message = 'Đã gửi yêu cầu hoàn hàng một phần và tạo đơn hoàn trả';
+            }
 
             DB::commit();
 
-            return response()->json([
+            // Broadcast event realtime
+            $order = Orders::find($order->order_id);
+            event(new OrderUpdated($order, $order->user_id));
+
+
+            // 🔔 Thông báo cho admin
+            // DB::table('admin_notifications')->insert([
+            //     'title' => 'Yêu cầu hoàn hàng mới',
+            //     'message' => "Khách hàng {$order->customer} vừa gửi yêu cầu hoàn hàng cho đơn #{$order->order_code}",
+            //     'order_id' => $order->order_id,
+            //     'return_request_id' => $returnId,
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ]);
+
+
+            $response = [
                 'status' => true,
-                'message' => 'Yêu cầu hoàn hàng đã được gửi thành công',
+                'message' => $message,
                 'return_request_id' => $returnId,
-                'refund_amount' => round($refundAmount, 0)
-            ]);
+                'return_order_code' => $returnOrderCode,
+                'is_full_return' => $totalReturnQuantity >= $totalOrderQuantity
+            ];
+
+            if ($returnOrderId) {
+                $response['return_order_id'] = $returnOrderId;
+            }
+
+            return response()->json($response);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -1459,6 +1991,13 @@ class OrderController extends Controller
                 ->groupBy('variant_id');
         }
 
+        // ✅ Tính tỷ lệ giảm giá để áp dụng đúng như logic clientRequestReturn
+        $totalOriginalAmount = $order->orderItems->sum(function ($item) {
+            return $item->price * $item->quantity;
+        });
+        $totalDiscountAmount = ($order->voucher_discount ?? 0) + ($order->rank_discount ?? 0);
+        $discountRate = $totalOriginalAmount > 0 ? $totalDiscountAmount / $totalOriginalAmount : 0;
+
         // 6) Ghép returned_items + tính tổng refund
         $returnedItemsInfo    = [];
         $totalRefundFromItems = 0.0;
@@ -1475,14 +2014,16 @@ class OrderController extends Controller
 
             // Ưu tiên giá của variant; nếu không có thì lấy giá từ order item tương ứng
             if ($detail && $detail->variant_price !== null) {
-                $price = (float) $detail->variant_price;
+                $originalPrice = (float) $detail->variant_price;
             } elseif (array_key_exists($variantId, $orderItemPriceByVariant)) {
-                $price = (float) $orderItemPriceByVariant[$variantId];
+                $originalPrice = (float) $orderItemPriceByVariant[$variantId];
             } else {
-                $price = 0.0;
+                $originalPrice = 0.0;
             }
 
-            $subtotal = $price * $qty;
+            // ✅ Áp dụng discount rate như trong clientRequestReturn
+            $priceAfterDiscount = $originalPrice * (1 - $discountRate);
+            $subtotal = $priceAfterDiscount * $qty;
 
             $attrs = isset($variantAttrsMap[$variantId])
                 ? $variantAttrsMap[$variantId]->map(function ($a) {
@@ -1499,7 +2040,7 @@ class OrderController extends Controller
                 'quantity'           => $qty,
                 'product_name'       => $detail->product_name ?? null,
                 'product_image'      => ($detail && $detail->variant_image) ? $detail->variant_image : ($detail->product_image ?? null),
-                'price'              => number_format($price, 0, '.', ''),
+                'price'              => number_format($priceAfterDiscount, 0, '.', ''),
                 'subtotal'           => number_format($subtotal, 0, '.', ''),
                 'variant_attributes' => $attrs,
             ];
@@ -1706,8 +2247,10 @@ class OrderController extends Controller
             }
         }
 
-        // Batch fetch variant prices một lần
+        // Batch fetch variant prices và thông tin đơn hàng một lần
         $variantPrices = [];
+        $orderDiscountRates = []; // Cache discount rates cho từng order
+        
         if (!empty($allVariantIds)) {
             $uniqueVariantIds = array_unique($allVariantIds);
             $variantPrices = DB::table('product_variants')
@@ -1716,22 +2259,50 @@ class OrderController extends Controller
                 ->toArray();
         }
 
+        // ✅ Lấy thông tin discount rate của từng order một lần
+        $uniqueOrderIds = collect($results)->pluck('order_id')->unique()->filter()->values()->all();
+        if (!empty($uniqueOrderIds)) {
+            $orderDiscounts = DB::table('orders')
+                ->leftJoin('order_items', 'orders.order_id', '=', 'order_items.order_id')
+                ->whereIn('orders.order_id', $uniqueOrderIds)
+                ->select(
+                    'orders.order_id',
+                    'orders.voucher_discount',
+                    'orders.rank_discount',
+                    DB::raw('SUM(order_items.price * order_items.quantity) as total_original_amount')
+                )
+                ->groupBy('orders.order_id', 'orders.voucher_discount', 'orders.rank_discount')
+                ->get();
+
+            foreach ($orderDiscounts as $orderDiscount) {
+                $totalDiscountAmount = ($orderDiscount->voucher_discount ?? 0) + ($orderDiscount->rank_discount ?? 0);
+                $totalOriginalAmount = (float) $orderDiscount->total_original_amount;
+                $discountRate = $totalOriginalAmount > 0 ? $totalDiscountAmount / $totalOriginalAmount : 0;
+                $orderDiscountRates[$orderDiscount->order_id] = $discountRate;
+            }
+        }
+
         // Batch updates cho refund amounts (nếu cần)
         $batchUpdates = [];
 
-        $formatted = collect($results)->map(function ($row, $index) use ($variantPrices, $returnItemsCache, &$batchUpdates) {
+        $formatted = collect($results)->map(function ($row, $index) use ($variantPrices, $orderDiscountRates, $returnItemsCache, &$batchUpdates) {
             $storedAmount = (float) $row->refund_amount;
             $itemsSubtotal = 0;
             $decodedItems = $returnItemsCache[$index] ?? [];
+            
+            // ✅ Lấy discount rate cho order này
+            $discountRate = $orderDiscountRates[$row->order_id] ?? 0;
 
-            // Calculate subtotal efficiently
+            // Calculate subtotal efficiently with discount rate
             foreach ($decodedItems as $item) {
                 $qty = (int) ($item['quantity'] ?? 0);
                 $variantId = $item['variant_id'] ?? null;
-                $price = ($variantId !== null && isset($variantPrices[$variantId]))
+                $originalPrice = ($variantId !== null && isset($variantPrices[$variantId]))
                     ? (float) $variantPrices[$variantId]
                     : 0;
-                $itemsSubtotal += $price * $qty;
+                // ✅ Áp dụng discount rate như trong clientRequestReturn
+                $priceAfterDiscount = $originalPrice * (1 - $discountRate);
+                $itemsSubtotal += $priceAfterDiscount * $qty;
             }
 
             // Prepare batch update nếu cần thiết
