@@ -15,7 +15,7 @@ class BannerSeeder extends Seeder
         $banners = [
             [
                 'title' => 'Banner_1',
-                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1747942785/banners/xkmzz0wokcpi8mzpw6ys.jpg',
+                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1755872733/banners/zcxsp1shd9fztadayrqs.jpg',
                 'link_url' => null,
                 'is_active' => true,
                 'created_at' => '2025-05-22 03:24:24',
@@ -31,7 +31,7 @@ class BannerSeeder extends Seeder
             ],
             [
                 'title' => 'Slider_1',
-                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1747884461/banners/w5htplfmdlv9akjglkxz.jpg',
+                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1755872706/banners/oijtmwln9a3a9w93mctq.jpg',
                 'link_url' => null,
                 'is_active' => true,
                 'created_at' => '2025-05-22 03:24:49',
@@ -55,7 +55,15 @@ class BannerSeeder extends Seeder
             ],
              [
                 'title' => 'Event_1',
-                'image_url' => '',
+                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1755874522/banners/n2afazbfzajjumeuqedr.jpg',
+                'link_url' => null,
+                'is_active' => true,
+                'created_at' => '2025-05-22 10:25:10',
+                'updated_at' => '2025-05-22 03:28:18'
+            ],
+             [
+                'title' => 'Event_2',
+                'image_url' => 'https://res.cloudinary.com/dvxpjf2zb/image/upload/v1755875332/banners/ffonv1h2gjap2kicouq0.jpg',
                 'link_url' => null,
                 'is_active' => true,
                 'created_at' => '2025-05-22 10:25:10',

@@ -1256,7 +1256,12 @@ class OrderController extends Controller
         ]);
 
         // Kiểm tra sản phẩm trong đơn và tính số tiền refund
-        $orderItems = $order->orderItems->keyBy('product_id');
+        // ✅ Tạo map theo cả product_id và variant_id để tránh ghi đè
+        $orderItemsMap = [];
+        foreach ($order->orderItems as $orderItem) {
+            $key = $orderItem->product_id . '-' . $orderItem->variant_id;
+            $orderItemsMap[$key] = $orderItem;
+        }
 
         // ✅ Tính tỷ lệ giảm giá của đơn hàng
         $totalOriginalAmount = $order->orderItems->sum(function ($item) {
@@ -1273,14 +1278,14 @@ class OrderController extends Controller
             $variantId = $item['variant_id'] ?? null;
             $key = $productId . '-' . $variantId;
 
-            if (!isset($orderItems[$productId])) {
+            if (!isset($orderItemsMap[$key])) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Sản phẩm không tồn tại trong đơn hàng.'
+                    'message' => 'Sản phẩm với variant này không tồn tại trong đơn hàng.'
                 ], 400);
             }
 
-            $orderItem = $orderItems[$productId];
+            $orderItem = $orderItemsMap[$key];
             $alreadyReturnedQty = $alreadyReturnedQuantities[$key] ?? 0;
             $availableQty = $orderItem->quantity - $alreadyReturnedQty;
 
@@ -1314,29 +1319,29 @@ class OrderController extends Controller
                 'final_refund_subtotal' => round($itemRefundAmount, 0) // = original_subtotal * (1 - discount_rate)
             ];
 
-            // 🔴 Log debug cho vấn đề này
-            Log::info('Refund calculation debug', [
-                'product_id' => $productId,
-                'order_item_price' => $orderItem->price,
-                'quantity' => $item['quantity'],
-                'original_subtotal' => $originalItemAmount,
-                'discount_rate' => $discountRate,
-                'total_original_amount' => $totalOriginalAmount,
-                'total_discount_amount' => $totalDiscountAmount,
-                'voucher_discount' => $order->voucher_discount ?? 0,
-                'rank_discount' => $order->rank_discount ?? 0,
-                'item_refund_amount' => $itemRefundAmount,
-                'running_refund_total' => $refundAmount
-            ]);
+            // // 🔴 Log debug cho vấn đề này
+            // Log::info('Refund calculation debug', [
+            //     'product_id' => $productId,
+            //     'order_item_price' => $orderItem->price,
+            //     'quantity' => $item['quantity'],
+            //     'original_subtotal' => $originalItemAmount,
+            //     'discount_rate' => $discountRate,
+            //     'total_original_amount' => $totalOriginalAmount,
+            //     'total_discount_amount' => $totalDiscountAmount,
+            //     'voucher_discount' => $order->voucher_discount ?? 0,
+            //     'rank_discount' => $order->rank_discount ?? 0,
+            //     'item_refund_amount' => $itemRefundAmount,
+            //     'running_refund_total' => $refundAmount
+            // ]);
         }
 
         // 🔴 Log tổng kết
-        Log::info('Final refund calculation', [
-            'order_id' => $order->order_id,
-            'order_code' => $order->order_code,
-            'final_refund_amount' => $refundAmount,
-            'breakdown' => $refundBreakdown
-        ]);
+        // Log::info('Final refund calculation', [
+        //     'order_id' => $order->order_id,
+        //     'order_code' => $order->order_code,
+        //     'final_refund_amount' => $refundAmount,
+        //     'breakdown' => $refundBreakdown
+        // ]);
 
 
         // ✅ Validation cuối cùng cho refund_amount
@@ -1353,13 +1358,13 @@ class OrderController extends Controller
         });
 
         if ($refundAmount > $maxRefundAmount) {
-            // Log::error("Refund amount exceeds order total", [
-            //     'order_id' => $order->order_id,
-            //     'order_code' => $order->order_code,
-            //     'calculated_refund_amount' => $refundAmount,
-            //     'max_allowed_refund_amount' => $maxRefundAmount,
-            //     'breakdown' => $refundBreakdown
-            // ]);
+            Log::error("Refund amount exceeds order total", [
+                'order_id' => $order->order_id,
+                'order_code' => $order->order_code,
+                'calculated_refund_amount' => $refundAmount,
+                'max_allowed_refund_amount' => $maxRefundAmount,
+                'breakdown' => $refundBreakdown
+            ]);
 
             return response()->json([
                 'status' => false,
