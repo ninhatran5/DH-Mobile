@@ -1215,10 +1215,18 @@ class OrderController extends Controller
             $returnRequest->save();
 
             // 2. Cập nhật trạng thái đơn gốc (orders) ở mức tổng quát
-            $order = Orders::find($returnRequest->order_id);
+            // - Trường hợp hoàn một phần: return_order_id != null -> chỉ cập nhật đơn hoàn (return_order_id)
+            $orderIdToUpdate = $returnRequest->return_order_id ? $returnRequest->return_order_id : $returnRequest->order_id;
+            $order = Orders::find($orderIdToUpdate);
             if ($order) {
                 if ($newStatus === 'Đã yêu cầu') {
-                    $order->status = 'Đang chờ hoàn hàng';
+                    $order->status = 'Đã yêu cầu hoàn hàng';
+                } elseif ($newStatus === 'Đã chấp thuận') {
+                    $order->status = 'Đã chấp thuận';
+                } elseif ($newStatus === 'Đang xử lý') {
+                    $order->status = 'Đang xử lý';
+                } elseif ($newStatus === 'Đã từ chối') {
+                    $order->status = 'Đã từ chối';
                 } elseif ($newStatus === 'Đã hoàn lại') {
                     $order->status = 'Đã trả hàng';
                     $order->payment_status = 'Đã hoàn tiền';
