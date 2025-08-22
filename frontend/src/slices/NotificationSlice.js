@@ -2,22 +2,22 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { axiosAdmin } from '../../utils/axiosConfig';
 
+// FETCH THÔNG BÁO CHUNG
 export const fetchNotifications = createAsyncThunk(
   'notifications/fetchNotifications',
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
       const response = await axiosAdmin.get('/admin/notifications', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-      // Transform the response to ensure we have order_id
+
       const notifications = (response.data.data || []).map(notification => ({
         ...notification,
         order_id: notification.order_id || notification.data?.order_id,
         title: notification.title || notification.data?.message,
-        message: notification.message || notification.data?.message
+        message: notification.message || notification.data?.message,
+        type: 'normal'
       }));
       return notifications;
     } catch (error) {
@@ -32,9 +32,7 @@ export const markNotificationsRead = createAsyncThunk(
     try {
       const token = localStorage.getItem("adminToken");
       const response = await axiosAdmin.post('/admin/notifications/readAll', {}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
     } catch (error) {
@@ -49,22 +47,68 @@ export const markNotificationRead = createAsyncThunk(
     try {
       const token = localStorage.getItem("adminToken");
       const response = await axiosAdmin.post(`/admin/notifications/read/${notification_id}`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-      
-      if (response.data.notification) {
-        return response.data.notification;
-      } else {
-        return rejectWithValue('Không thể đánh dấu đã đọc thông báo');
-      }
+
+      return response.data.notification || response.data; // fallback
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Lỗi khi cập nhật trạng thái đọc thông báo');
     }
   }
 );
 
+// FETCH THÔNG BÁO HOÀN HÀNG
+export const fetchRefundNotifications = createAsyncThunk(
+  'notifications/fetchRefundNotifications',
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      const response = await axiosAdmin.get('/return-notifications', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      // API trả trực tiếp mảng thông báo
+      const rawNotifications = Array.isArray(response.data) ? response.data : [];
+
+      const refundNotifications = rawNotifications.map(notification => ({
+        return_notification_id: notification.return_notification_id,  // Sử dụng return_notification_id thay vì return_request_id
+        order_id: notification.order_id,
+        title: notification.message,
+        message: notification.message,
+        is_read: notification.is_read,
+        created_at: notification.created_at,
+        updated_at: notification.updated_at,
+        type: 'refund',
+        return_request: notification.return_request,
+        order: notification.order,
+      }));
+
+      return refundNotifications;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Lỗi khi lấy thông báo hoàn hàng');
+    }
+  }
+);
+
+// ĐÁNH DẤU ĐÃ ĐỌC HOÀN HÀNG
+export const markRefundNotificationRead = createAsyncThunk(
+  'notifications/markRefundNotificationRead',
+  async (return_notification_id, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      // đổi sang call API với return_request_id
+      const response = await axiosAdmin.post(`/return-notifications/read/${return_notification_id}`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      return response.data.notification || response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Lỗi khi cập nhật trạng thái đọc thông báo hoàn hàng');
+    }
+  }
+);
+
+// SLICE
 const notificationSlice = createSlice({
   name: 'notifications',
   initialState: {
@@ -80,6 +124,7 @@ const notificationSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // ==== NOTIFICATIONS ====
       .addCase(fetchNotifications.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -95,25 +140,53 @@ const notificationSlice = createSlice({
       .addCase(markNotificationsRead.fulfilled, (state) => {
         state.notifications = state.notifications.map(n => ({ ...n, is_read: 1 }));
       })
-      .addCase(markNotificationRead.pending, (state, action) => {
-        state.loading = true;
-        state.error = null;
-      })
       .addCase(markNotificationRead.fulfilled, (state, action) => {
         state.loading = false;
         state.notifications = state.notifications.map(notification =>
           notification.notification_id === action.payload.notification_id
-            ? { 
-                ...notification,
-                is_read: action.payload.is_read,
-                message: action.payload.message,
-                order_id: action.payload.order_id,
-                updated_at: action.payload.updated_at
-              }
+            ? { ...notification, ...action.payload }
             : notification
         );
       })
       .addCase(markNotificationRead.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // ==== REFUND NOTIFICATIONS ====
+      .addCase(fetchRefundNotifications.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchRefundNotifications.fulfilled, (state, action) => {
+        state.loading = false;
+        const refundNotifications = Array.isArray(action.payload) ? action.payload : [];
+
+        // Xóa các thông báo refund cũ để tránh trùng lặp
+        const regularNotifications = state.notifications.filter(n => n.type !== 'refund');
+
+        // Gộp và sort theo created_at desc
+        state.notifications = [...regularNotifications, ...refundNotifications]
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      })
+      .addCase(fetchRefundNotifications.rejected, (state, action) => {
+        state.loading = false;
+        if (action.error?.message?.includes('404')) {
+          console.log('Refund notifications API not implemented yet');
+        } else {
+          state.error = action.payload;
+        }
+      })
+      .addCase(markRefundNotificationRead.fulfilled, (state, action) => {
+        state.loading = false;
+        state.notifications = state.notifications.map(notification =>
+          notification.return_notification_id === action.payload.return_notification_id ||
+          notification.return_notification_id === action.meta.arg  // Sử dụng arg từ meta để match
+            ? { ...notification, is_read: 1, ...action.payload }
+            : notification
+        );
+      })
+      .addCase(markRefundNotificationRead.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

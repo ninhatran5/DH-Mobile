@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import "../../assets/admin/HomeAdmin.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -12,6 +12,10 @@ import {
   fetchNotifications,
   markNotificationsRead,
   markNotificationRead,
+} from "../../slices/NotificationSlice";
+import {
+  fetchRefundNotifications,
+  markRefundNotificationRead,
 } from "../../slices/NotificationSlice";
 import Thongbao from "../../assets/sound/thongbaomuahang.mp3";
 import { fetchProfileAdmin } from "../../slices/adminProfile";
@@ -48,9 +52,12 @@ const Homeadmin = () => {
   const { notifications } = useSelector((state) => state.adminNotification);
   const prevUnreadCount = useRef(0);
   const audioRef = useRef(null);
+  const spokenNotifications = useRef(new Set()); // Track which notifications have been spoken
 
-  // Số lượng thông báo chưa đọc
-  const unreadCount = notifications.filter((n) => n.is_read === 0).length;
+  // Số lượng thông báo chưa đọc - mêmó hóa
+  const unreadCount = useMemo(() => 
+    notifications.filter((n) => n.is_read === 0).length, [notifications]
+  );
 
   useEffect(() => {
     const handleScroll = () => {
@@ -113,6 +120,7 @@ const Homeadmin = () => {
       setSoundEnabled(savedSoundPreference === "true");
     }
 
+
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = (e) => {
       setIsDarkMode(e.matches);
@@ -123,39 +131,148 @@ const Homeadmin = () => {
   }, []);
 
   useEffect(() => {
+    // Initial fetch
     dispatch(fetchNotifications());
-    prevUnreadCount.current = notifications.filter(
-      (n) => n.is_read === 0
-    ).length;
+    dispatch(fetchRefundNotifications());
+    
+    // Set up interval for periodic fetch
     const interval = setInterval(() => {
-      dispatch(fetchNotifications()).then((action) => {
-        if (action.payload && Array.isArray(action.payload)) {
-          const newUnread = action.payload.filter(
-            (n) => n.is_read === 0
-          ).length;
-          // Cập nhật badge và hiệu ứng chuông
-          if (newUnread > 0) {
-            setShowNotificationDot(true);
-          } else {
-            setShowNotificationDot(false);
-          }
-          if (newUnread > prevUnreadCount.current) {
-            toast.info("Bạn có đơn hàng mới!", {
-              position: "top-right",
-              autoClose: 4000,
-            });
-            if (audioRef.current && isSoundEnabled) {
-              audioRef.current.currentTime = 0;
-              audioRef.current.play();
-            }
-          }
-          prevUnreadCount.current = newUnread;
-        }
-      });
-    }, 2000);
+      dispatch(fetchNotifications());
+      dispatch(fetchRefundNotifications());
+    }, 10000); // Tăng thời gian từ 2s lên 10s
+    
     return () => clearInterval(interval);
-    // eslint-disable-next-line
-  }, [dispatch, isSoundEnabled]);
+  }, [dispatch]);
+
+  // Speech synthesis function with queue management - optimized with useCallback
+  const speak = useCallback((message) => {
+    if (!isSoundEnabled) return;
+    
+    // Stop any current speech to avoid overlapping
+    window.speechSynthesis.cancel();
+    
+    const speech = new SpeechSynthesisUtterance(message);
+    speech.lang = "vi-VN";   // giọng đọc tiếng Việt
+    speech.rate = 1.5;       // tốc độ đọc (1 = bình thường, >1 = nhanh hơn, <1 = chậm hơn)
+    speech.volume = 0.8;     // âm lượng (0.0 - 1.0)
+    
+    window.speechSynthesis.speak(speech);
+  }, [isSoundEnabled]);
+  
+  // Function to speak multiple messages sequentially - optimized with useCallback
+  const speakSequentially = useCallback((messages) => {
+    if (!isSoundEnabled || messages.length === 0) return;
+    
+    // Stop any current speech
+    window.speechSynthesis.cancel();
+    
+    let currentIndex = 0;
+    
+    const speakNext = () => {
+      if (currentIndex >= messages.length) return;
+      
+      const speech = new SpeechSynthesisUtterance(messages[currentIndex]);
+      speech.lang = "vi-VN";
+      speech.rate = 1.5;
+      speech.volume = 0.8;
+      
+      speech.onend = () => {
+        currentIndex++;
+        // Wait a bit before next message
+        setTimeout(() => {
+          speakNext();
+        }, 1000); // 1 second pause between messages
+      };
+      
+      speech.onerror = () => {
+        currentIndex++;
+        speakNext();
+      };
+      
+      window.speechSynthesis.speak(speech);
+    };
+    
+    speakNext();
+  }, [isSoundEnabled]);
+
+  // Memoized values for notification processing
+  const notificationData = useMemo(() => {
+    const currentUnread = notifications.filter((n) => n.is_read === 0).length;
+    const newNotifications = notifications.filter(n => n.is_read === 0);
+    const refundNotifications = newNotifications.filter(n => n.type === 'refund');
+    
+    return {
+      currentUnread,
+      newNotifications,
+      refundNotifications
+    };
+  }, [notifications]);
+
+  // Optimized effect to handle notification changes and sound
+  useEffect(() => {
+    const { currentUnread, refundNotifications } = notificationData;
+    
+    // Cập nhật badge và hiệu ứng chuông
+    setShowNotificationDot(currentUnread > 0);
+    
+    // Play sound and show toast for new notifications
+    if (currentUnread > prevUnreadCount.current && prevUnreadCount.current > 0 && isSoundEnabled) {
+      // Show toast
+      toast.info("Bạn có thông báo mới!", {
+        position: "top-right",
+        autoClose: 4000,
+      });
+      
+      // Play sound
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(console.error);
+      }
+      
+      // Process refund notifications for speech
+      if (refundNotifications.length > 0) {
+        // Chỉ lấy các thông báo hoàn hàng chưa được đọc (is_read = 0)
+        const unreadRefundNotifications = refundNotifications.filter(notification => 
+          notification.is_read === 0
+        );
+        
+        if (unreadRefundNotifications.length > 0) {
+          // Lọc thêm các thông báo chưa từng được đọc bằng giọng nói
+          const unspokenRefundNotifications = unreadRefundNotifications.filter(notification => {
+            const notificationId = notification.return_notification_id || notification.notification_id;
+            return !spokenNotifications.current.has(notificationId);
+          });
+          
+          if (unspokenRefundNotifications.length > 0) {
+            // Đánh dấu những thông báo này là đã đọc bằng giọng nói
+            unspokenRefundNotifications.forEach(notification => {
+              const notificationId = notification.return_notification_id || notification.notification_id;
+              if (notificationId) {
+                spokenNotifications.current.add(notificationId);
+              }
+            });
+            
+            // Use requestAnimationFrame to defer speech to avoid blocking UI
+            requestAnimationFrame(() => {
+              if (unspokenRefundNotifications.length === 1) {
+                // Nếu chỉ có 1 thông báo mới, dùng speak thông thường
+                const refundNotification = unspokenRefundNotifications[0];
+                speak(refundNotification.message || "Bạn có yêu cầu hoàn hàng mới");
+              } else {
+                // Nếu có nhiều thông báo mới, đọc lần lượt
+                const messages = unspokenRefundNotifications.map(notification => 
+                  notification.message || "Bạn có yêu cầu hoàn hàng mới"
+                );
+                speakSequentially(messages);
+              }
+            });
+          }
+        }
+      }
+    }
+    
+    prevUnreadCount.current = currentUnread;
+  }, [notificationData, isSoundEnabled, speak, speakSequentially]);
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -254,10 +371,28 @@ const Homeadmin = () => {
   };
 
   const handleNotificationItemClick = (noti) => {
-    if (noti.is_read !== 1 && noti.notification_id) {
-      dispatch(markNotificationRead(noti.notification_id));
+    // Mark notification as read
+    if (noti.is_read !== 1) {
+      if (noti.type === 'refund' && noti.return_notification_id) {
+        // For refund notifications, use the return_notification_id to mark as read
+        dispatch(markRefundNotificationRead(noti.return_notification_id));
+      } else if (noti.notification_id) {
+        // For regular notifications
+        dispatch(markNotificationRead(noti.notification_id));
+      }
     }
-    if (noti.order_id) {
+    
+    // Navigate to appropriate detail page
+    if (noti.type === 'refund') {
+      // For refund notifications, navigate to return request detail using return_request.return_id
+      if (noti.return_request && noti.return_request.return_id) {
+        navigate(`/admin/detailorderreturn/${noti.return_request.return_id}`);
+      } else if (noti.order_id) {
+        // Fallback to order detail if no return_request.return_id
+        navigate(`/admin/orderdetail/${noti.order_id}`);
+      }
+    } else if (noti.order_id) {
+      // For regular order notifications, navigate to order detail
       navigate(`/admin/orderdetail/${noti.order_id}`);
     }
   };
@@ -267,6 +402,7 @@ const Homeadmin = () => {
     setSoundEnabled(newSoundState);
     localStorage.setItem("notificationSound", newSoundState);
   };
+
 
   const { adminProfile } = useSelector((state) => state.adminProfile);
 
@@ -872,8 +1008,8 @@ const Homeadmin = () => {
                           : "Bật âm thanh thông báo"
                       }
                       style={{
-                        marginRight: "-13px",
-                        fontSize: 23,
+                        marginRight: "-8px",
+                        fontSize: 20,
                         color: isSoundEnabled
                           ? "var(--admin_dh-primary)"
                           : "var(--admin_dh-text-muted)",
@@ -887,6 +1023,7 @@ const Homeadmin = () => {
                         }`}
                       ></i>
                     </button>
+
 
                     <div className="admin_dh-notifications-nav">
                       <div className="dropdown">
@@ -936,7 +1073,7 @@ const Homeadmin = () => {
                           ) : (
                             notifications.map((noti, idx) => (
                               <div
-                                key={noti.notification_id || idx}
+                                key={`${noti.type || 'default'}-${noti.type === 'refund' ? noti.return_notification_id : noti.notification_id || idx}-${idx}`}
                                 className={`dropdown-item admin_dh-notification-item d-flex align-items-start ${
                                   noti.is_read === 1 ? "" : "unread"
                                 }`}
@@ -945,8 +1082,16 @@ const Homeadmin = () => {
                                 }
                                 style={{ cursor: "pointer" }}
                               >
-                                <div className="admin_dh-notification-icon admin_dh-bg-primary-soft">
-                                  <i className="bi bi-bell"></i>
+                                <div className={`admin_dh-notification-icon ${
+                                  noti.type === 'refund' 
+                                    ? 'admin_dh-bg-warning-soft' 
+                                    : 'admin_dh-bg-primary-soft'
+                                }`}>
+                                  <i className={`bi ${
+                                    noti.type === 'refund' 
+                                      ? 'bi-arrow-return-left' 
+                                      : 'bi-bell'
+                                  }`}></i>
                                 </div>
                                 <div className="flex-grow-1 ms-3">
                                   <p className="mb-0" title={noti.message}>
