@@ -1233,12 +1233,27 @@ class OrderController extends Controller
                 $items = json_decode($existingRequest->return_items, true);
                 if (is_array($items)) {
                     foreach ($items as $item) {
-                        $productId = $item['product_id'];
-                        $alreadyReturnedQuantities[$productId] = ($alreadyReturnedQuantities[$productId] ?? 0) + $item['quantity'];
+                        $variantId = $item['variant_id'] ?? null;
+                        $key = $item['product_id'] . '-' . $variantId;
+                        $alreadyReturnedQuantities[$key] = ($alreadyReturnedQuantities[$key] ?? 0) + $item['quantity'];
                     }
                 }
             }
         }
+        
+        // 🔴 Debug: log thông tin về return requests hiện tại
+        Log::info('Existing return requests debug', [
+            'order_id' => $order->order_id,
+            'existing_return_count' => count($existingReturnRequests),
+            'already_returned_quantities' => $alreadyReturnedQuantities,
+            'existing_requests' => collect($existingReturnRequests)->map(function($req) {
+                return [
+                    'return_id' => $req->return_id,
+                    'status' => $req->status,
+                    'return_items' => $req->return_items
+                ];
+            })->toArray()
+        ]);
 
         // Kiểm tra sản phẩm trong đơn và tính số tiền refund
         $orderItems = $order->orderItems->keyBy('product_id');
@@ -1255,6 +1270,8 @@ class OrderController extends Controller
 
         foreach ($returnItems as $item) {
             $productId = $item['product_id'];
+            $variantId = $item['variant_id'] ?? null;
+            $key = $productId . '-' . $variantId;
 
             if (!isset($orderItems[$productId])) {
                 return response()->json([
@@ -1264,7 +1281,7 @@ class OrderController extends Controller
             }
 
             $orderItem = $orderItems[$productId];
-            $alreadyReturnedQty = $alreadyReturnedQuantities[$productId] ?? 0;
+            $alreadyReturnedQty = $alreadyReturnedQuantities[$key] ?? 0;
             $availableQty = $orderItem->quantity - $alreadyReturnedQty;
 
             if ($availableQty <= 0) {
