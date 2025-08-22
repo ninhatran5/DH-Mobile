@@ -27,12 +27,12 @@ export const fetchReturnOrders = createAsyncThunk(
 // Lấy chi tiết đơn hoàn hàng theo ID
 export const fetchReturnOrderById = createAsyncThunk(
   "adminReturnOrder/fetchReturnOrderById",
-  async (orderId, { rejectWithValue }) => {
+  async (returnId, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("adminToken");
       if (!token) return rejectWithValue("Token không tồn tại hoặc hết hạn");
 
-      const response = await axiosAdmin.get(`/admin/orders/return-orders/${orderId}`, {
+      const response = await axiosAdmin.get(`/admin/orders/return-orders/${returnId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
