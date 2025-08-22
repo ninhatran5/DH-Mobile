@@ -60,7 +60,7 @@ const Home = () => {
       eventBanner.length > 0 &&
       !sessionStorage.getItem("hasSeenBannerPopup")
     ) {
-      setPopupBanner(eventBanner[0]);
+      setPopupBanner(eventBanner);
       setShowBannerPopup(true);
       sessionStorage.setItem("hasSeenBannerPopup", "1");
     }
@@ -205,7 +205,7 @@ const Home = () => {
                 right: 8,
                 background: "rgba(0,0,0,0.12)",
                 border: "none",
-                borderRadius: "50%",
+                borderRadius: "500px",
                 width: 32,
                 height: 32,
                 fontSize: 20,
@@ -221,21 +221,35 @@ const Home = () => {
             >
               ×
             </button>
-            <img
-              src={popupBanner.image_url}
-              alt={popupBanner.title}
-              style={{
-                width: "100%",
-                height: "auto",
-                display: "block",
-                borderRadius: 12,
-                maxHeight: 480,
-                objectFit: "contain",
-              }}
-            />
+
+            {/* Slider */}
+            <Swiper
+              modules={[Pagination, Autoplay]}
+              pagination={{ clickable: true }}
+              autoplay={{ delay: 3000, disableOnInteraction: false }}
+              style={{ width: "100%", maxHeight: 480 }}
+            >
+              {eventBanner.map((banner, index) => (
+                <SwiperSlide key={index}>
+                  <img
+                    src={banner.image_url}
+                    alt={banner.title}
+                    style={{
+                      width: "100%",
+                       objectFit: "cover",
+                      height: "400px",
+                      display: "block",
+                      borderRadius: 12,
+                      maxHeight: 480,
+                    }}
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
         </div>
       )}
+
       <section
         className="py-3"
         style={{
