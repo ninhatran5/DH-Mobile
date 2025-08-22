@@ -127,6 +127,24 @@ const DetailOrderReturn = () => {
     return statusFlow[currentIndex + 1];
   };
 
+  const isOrderCompleted = () => {
+    const orderData = currentReturnOrder?.order || currentReturnOrder;
+    if (!orderData || !orderData.return_requests?.length) return false;
+    
+    const currentStatus = orderData.return_requests[0].status;
+    const completedStatuses = [
+      'đã hoàn lại',
+      'đã trả hàng', 
+      'hoàn thành',
+      'completed',
+      'returned'
+    ];
+    
+    return completedStatuses.some(status => 
+      currentStatus?.toLowerCase().includes(status.toLowerCase())
+    );
+  };
+
   const handleUpdateStatus = () => {
     const orderData = currentReturnOrder.order || currentReturnOrder;
     if (!orderData || !orderData.return_requests?.length) return;
@@ -462,18 +480,38 @@ const DetailOrderReturn = () => {
                 )}
 
                 {/* Hiển thị hình ảnh */}
-                {request.upload_url && (
-                  <div className="request-images">
-                    <div className="images-label">
-                      <span className="images-icon">📸</span>
-                      Hình ảnh đính kèm:
-                    </div>
-                    <div className="images-grid">
-                      {(() => {
-                        try {
-                          // Nếu upload_url là JSON string
-                          if (typeof request.upload_url === 'string') {
+                <div className="request-images">
+                  <div className="images-label">
+                    <span className="images-icon">📸</span>
+                    Hình ảnh đính kèm:
+                  </div>
+                  <div className="images-grid">
+                    {(() => {
+                      // Kiểm tra nếu không có upload_url hoặc upload_url là null/undefined/empty
+                      if (!request.upload_url || request.upload_url === '' || request.upload_url === 'null' || request.upload_url === null) {
+                        return (
+                          <div className="no-image-placeholder">
+                            <span className="placeholder-icon">🖼️</span>
+                            <span className="placeholder-text">Không có hình ảnh đính kèm</span>
+                          </div>
+                        );
+                      }
+
+                      try {
+                        // Nếu upload_url là JSON string
+                        if (typeof request.upload_url === 'string') {
+                          // Kiểm tra nếu là JSON string
+                          if (request.upload_url.startsWith('[') || request.upload_url.startsWith('{')) {
                             const urls = JSON.parse(request.upload_url);
+                            // Kiểm tra nếu là array rỗng
+                            if (Array.isArray(urls) && urls.length === 0) {
+                              return (
+                                <div className="no-image-placeholder">
+                                  <span className="placeholder-icon">🖼️</span>
+                                  <span className="placeholder-text">Không có hình ảnh đính kèm</span>
+                                </div>
+                              );
+                            }
                             return Array.isArray(urls) ? urls.map((url, idx) => (
                               <img 
                                 key={idx} 
@@ -490,37 +528,60 @@ const DetailOrderReturn = () => {
                                 onClick={() => window.open(urls, '_blank')}
                               />
                             );
-                          }
-                          else if (Array.isArray(request.upload_url)) {
-                            return request.upload_url.map((url, idx) => (
-                              <img 
-                                key={idx} 
-                                src={url} 
-                                alt={`Hình ảnh hoàn hàng ${idx + 1}`}
-                                className="return-image"
-                                onClick={() => window.open(url, '_blank')}
-                              />
-                            ));
-                          }
-                          // Nếu upload_url là string URL đơn
-                          else {
+                          } else {
+                            // Nếu là string URL đơn
                             return (
                               <img 
-                                src={request.upload_url } 
+                                src={request.upload_url} 
                                 alt="Hình ảnh hoàn hàng"
                                 className="return-image"
                                 onClick={() => window.open(request.upload_url, '_blank')}
                               />
                             );
                           }
-                        } catch (error) {
-                          console.error('Error parsing upload_url:', error);
-                          return <div className="error-message">Không thể tải hình ảnh</div>;
                         }
-                      })()}
-                    </div>
+                        else if (Array.isArray(request.upload_url)) {
+                          // Kiểm tra nếu là array rỗng
+                          if (request.upload_url.length === 0) {
+                            return (
+                              <div className="no-image-placeholder">
+                                <span className="placeholder-icon">🖼️</span>
+                                <span className="placeholder-text">Không có hình ảnh đính kèm</span>
+                              </div>
+                            );
+                          }
+                          return request.upload_url.map((url, idx) => (
+                            <img 
+                              key={idx} 
+                              src={url} 
+                              alt={`Hình ảnh hoàn hàng ${idx + 1}`}
+                              className="return-image"
+                              onClick={() => window.open(url, '_blank')}
+                            />
+                          ));
+                        }
+                        else {
+                          // Trường hợp khác
+                          return (
+                            <div className="no-image-placeholder">
+                              <span className="placeholder-icon">🖼️</span>
+                              <span className="placeholder-text">Không có hình ảnh đính kèm</span>
+                            </div>
+                          );
+                        }
+                      } catch (error) {
+                        console.error('Error parsing upload_url:', error);
+                        return (
+                          <div className="no-image-placeholder">
+                            <span className="placeholder-icon">🖼️</span>
+                            <span className="placeholder-text">Không có hình ảnh đính kèm</span>
+                          </div>
+                        );
+                      }
+                    })()
+                  }
                   </div>
-                )}
+                </div>
               </div>
             ))}
           </div>
@@ -582,29 +643,37 @@ const DetailOrderReturn = () => {
             </div>
             
             <div className="action-buttons">
-              {/* Nút cập nhật trạng thái */}
-              <button 
-                className="action-button button-primary" 
-                onClick={handleUpdateStatus}
-                disabled={processing}
-              >
-                {processing ? 'Đang xử lý...' : 'Cập nhật trạng thái đơn hàng'}
-              </button>
+              {isOrderCompleted() ? (
+                <div className="completion-message">
+                  <span className="success-text">Đã trả hàng thành công</span>
+                </div>
+              ) : (
+                <>
+                  {/* Nút cập nhật trạng thái */}
+                  <button 
+                    className="action-button button-primary" 
+                    onClick={handleUpdateStatus}
+                    disabled={processing}
+                  >
+                    {processing ? 'Đang xử lý...' : 'Cập nhật trạng thái đơn hàng'}
+                  </button>
 
-              {/* Nút hủy chỉ hiển thị khi có thể hủy */}
-              {canCancelOrder() && (
-                <button 
-                  className="action-button button-danger" 
-                  onClick={handleCancelOrder}
-                  disabled={processing}
-                  style={{
-                    backgroundColor: '#dc3545',
-                    borderColor: '#dc3545',
-                    color: 'white'
-                  }}
-                >
-                  {processing ? 'Đang xử lý...' : 'Từ chối yêu cầu'}
-                </button>
+                  {/* Nút hủy chỉ hiển thị khi có thể hủy */}
+                  {canCancelOrder() && (
+                    <button 
+                      className="action-button button-danger" 
+                      onClick={handleCancelOrder}
+                      disabled={processing}
+                      style={{
+                        backgroundColor: '#dc3545',
+                        borderColor: '#dc3545',
+                        color: 'white'
+                      }}
+                    >
+                      {processing ? 'Đang xử lý...' : 'Từ chối yêu cầu'}
+                    </button>
+                  )}
+                </>
               )}
             </div>
           </div>
