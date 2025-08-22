@@ -9,7 +9,7 @@ use App\Models\Wallet;
 use Cloudinary\Cloudinary;
 use App\Models\LoyaltyTier;
 use App\Events\OrderUpdated;
-
+use App\Events\ReturnNotificationCreated;
 use App\Models\LoyaltyPoint;
 use Illuminate\Http\Request;
 use App\Models\ReturnRequest;
@@ -22,6 +22,7 @@ use App\Mail\OrderStatusUpdatedMail;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderCancelledByAdminMail;
 use App\Models\OrderStatusHistory; // Thêm dòng này để sử dụng model OrderStatusHistory
+use Carbon\Carbon;
 
 class OrderController extends Controller
 {
@@ -1581,14 +1582,31 @@ class OrderController extends Controller
                 $message = 'Đã gửi yêu cầu hoàn hàng một phần và tạo đơn hoàn trả';
             }
 
-            DB::table('return_notifications')->insert([
+            $notificationId = DB::table('return_notifications')->insertGetId([
                 'order_id' => $order->order_id,
                 'return_request_id' => $returnId,
-                'message' => "Khách hàng {$order->customer} vừa gửi yêu cầu hoàn hàng cho đơn #{$order->order_code}",
+                'message' => "Khách hàng {$order->customer} vừa gửi yêu cầu hoàn hàng.",
                 'is_read' => false,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
+            $notification = DB::table('return_notifications')
+                ->where('notification_id', $notificationId)
+                ->first();
+
+            // Fix thêm thuộc tính id
+            $notification->id = $notification->notification_id;
+
+            // Ép kiểu Carbon cho ngày tháng
+            $notification->created_at = Carbon::parse($notification->created_at);
+            $notification->updated_at = Carbon::parse($notification->updated_at);
+
+            // Bắn event
+            event(new ReturnNotificationCreated($notification));
+
+
+
 
             DB::commit();
 
