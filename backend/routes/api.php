@@ -282,7 +282,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('admin/notifications/readAll', [NotificationController::class, 'markAsReadAll']);
 
     Route::get('/return-notifications', [ReturnNotificationController::class, 'index']);
-    Route::put('/return-notifications/{id}/read', [ReturnNotificationController::class, 'markAsRead']);
+    Route::put('/return-notifications/read/{id}', [ReturnNotificationController::class, 'markAsRead']);
 });
 
 // quản lý đơn hàng dành cho admin
