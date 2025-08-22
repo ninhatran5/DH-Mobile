@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('return_notifications', function (Blueprint $table) {
-            $table->bigIncrements('notification_id'); // primary key
+            $table->bigIncrements('return_notification_id'); // primary key
             $table->unsignedBigInteger('order_id');
             $table->unsignedBigInteger('return_request_id');
             $table->string('message');
