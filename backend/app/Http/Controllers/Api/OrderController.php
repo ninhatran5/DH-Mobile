@@ -1264,7 +1264,7 @@ class OrderController extends Controller
                 'discount_rate' => round($discountRate * 100, 2) . '%',
                 'final_refund_subtotal' => round($itemRefundAmount, 0) // = original_subtotal * (1 - discount_rate)
             ];
-            
+
             // 🔴 Log debug cho vấn đề này
             Log::info('Refund calculation debug', [
                 'product_id' => $productId,
@@ -1280,7 +1280,7 @@ class OrderController extends Controller
                 'running_refund_total' => $refundAmount
             ]);
         }
-        
+
         // 🔴 Log tổng kết
         Log::info('Final refund calculation', [
             'order_id' => $order->order_id,
@@ -1549,6 +1549,15 @@ class OrderController extends Controller
                 // $returnOrderCode đã được tạo ở trên với số thứ tự
                 $message = 'Đã gửi yêu cầu hoàn hàng một phần và tạo đơn hoàn trả';
             }
+
+            DB::table('return_notifications')->insert([
+                'order_id' => $order->order_id,
+                'return_request_id' => $returnId,
+                'message' => "Khách hàng {$order->customer} vừa gửi yêu cầu hoàn hàng cho đơn #{$order->order_code}",
+                'is_read' => false,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
             DB::commit();
 
@@ -2250,7 +2259,7 @@ class OrderController extends Controller
         // Batch fetch variant prices và thông tin đơn hàng một lần
         $variantPrices = [];
         $orderDiscountRates = []; // Cache discount rates cho từng order
-        
+
         if (!empty($allVariantIds)) {
             $uniqueVariantIds = array_unique($allVariantIds);
             $variantPrices = DB::table('product_variants')
@@ -2289,7 +2298,7 @@ class OrderController extends Controller
             $storedAmount = (float) $row->refund_amount;
             $itemsSubtotal = 0;
             $decodedItems = $returnItemsCache[$index] ?? [];
-            
+
             // ✅ Lấy discount rate cho order này
             $discountRate = $orderDiscountRates[$row->order_id] ?? 0;
 
