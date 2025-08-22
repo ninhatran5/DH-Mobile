@@ -334,7 +334,7 @@ const OrderDetail = () => {
         .then(() => {
           Swal.fire({
             icon: "success",
-            title: t("review.successTitle"),
+            title: t("review.confirmSuccessTitle"),
             text: t("review.successTextWithPoints"),
             showConfirmButton: false,
             timer: 2000,
@@ -343,7 +343,7 @@ const OrderDetail = () => {
         .catch(() => {
           Swal.fire({
             icon: "success",
-            title: t("review.successTitle"),
+            title: t("review.confirmSuccessTitle"),
             text: t("review.successText"),
             showConfirmButton: false,
             timer: 1500,
