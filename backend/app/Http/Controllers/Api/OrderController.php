@@ -1565,18 +1565,6 @@ class OrderController extends Controller
             $order = Orders::find($order->order_id);
             event(new OrderUpdated($order, $order->user_id));
 
-
-            // 🔔 Thông báo cho admin
-            // DB::table('admin_notifications')->insert([
-            //     'title' => 'Yêu cầu hoàn hàng mới',
-            //     'message' => "Khách hàng {$order->customer} vừa gửi yêu cầu hoàn hàng cho đơn #{$order->order_code}",
-            //     'order_id' => $order->order_id,
-            //     'return_request_id' => $returnId,
-            //     'created_at' => now(),
-            //     'updated_at' => now(),
-            // ]);
-
-
             $response = [
                 'status' => true,
                 'message' => $message,
