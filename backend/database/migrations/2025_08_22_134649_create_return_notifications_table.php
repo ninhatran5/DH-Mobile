@@ -22,10 +22,6 @@ return new class extends Migration
             // Index
             $table->index('order_id', 'idx_return_notifications_order');
             $table->index('return_request_id', 'idx_return_notifications_request');
-
-            // Optionally: foreign keys if needed
-            // $table->foreign('order_id')->references('order_id')->on('orders')->onDelete('cascade');
-            // $table->foreign('return_request_id')->references('return_request_id')->on('return_requests')->onDelete('cascade');
         });
     }
 
