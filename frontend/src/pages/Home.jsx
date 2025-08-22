@@ -11,7 +11,7 @@ import Blogs from "../components/Blogs";
 import SliderLogoBrand from "../components/SliderLogoBrand";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ListProductCard from "../components/ListProductCard";
 import ProductsCarousel from "../components/ProductsCarousel";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,10 +22,11 @@ import { fetchCategory } from "../slices/categorySlice";
 import { fetchViewProduct } from "../slices/viewProductSlice";
 
 const Home = () => {
+  const [showBannerPopup, setShowBannerPopup] = useState(false);
+  const [popupBanner, setPopupBanner] = useState(null);
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isPercentDecrease = true;
-
   const dispatch = useDispatch();
   const { banners } = useSelector((state) => state.home);
   const { products, loading } = useSelector((state) => state.product);
@@ -53,6 +54,14 @@ const Home = () => {
     dispatch(fetchViewProduct(userId));
   }, [dispatch, userId]);
 
+  useEffect(() => {
+    if (smallBanner.length > 0 && !sessionStorage.getItem('hasSeenBannerPopup')) {
+      setPopupBanner(smallBanner[0]);
+      setShowBannerPopup(true);
+      sessionStorage.setItem('hasSeenBannerPopup', '1');
+    }
+  }, [smallBanner]);
+
   const convertPriceToNumber = (priceString) => {
     if (!priceString || typeof priceString !== "string") return 0;
     return Number(priceString.replace(/\./g, "").replace("đ", ""));
@@ -70,8 +79,6 @@ const Home = () => {
       sale >= original
     )
       return null;
-
-    // Làm tròn về phía dưới để luôn nhất quán
     return Math.floor(((original - sale) / original) * 100);
   };
 
@@ -155,6 +162,76 @@ const Home = () => {
   };
   return (
     <>
+      {showBannerPopup && popupBanner && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0,0,0,0.45)',
+            zIndex: 2000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <div
+            style={{
+              position: 'relative',
+              background: '#fff',
+              borderRadius: 16,
+              boxShadow: '0 8px 32px 0 rgba(0,0,0,0.18)',
+              padding: 0,
+              maxWidth: 720,
+              width: '90vw',
+              maxHeight: '90vh',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <button
+              onClick={() => setShowBannerPopup(false)}
+              style={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                background: 'rgba(0,0,0,0.12)',
+                border: 'none',
+                borderRadius: '50%',
+                width: 32,
+                height: 32,
+                fontSize: 20,
+                color: '#333',
+                cursor: 'pointer',
+                zIndex: 2,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'background 0.18s',
+              }}
+              aria-label="Đóng"
+            >
+              ×
+            </button>
+            <img
+              src={popupBanner.image_url}
+              alt={popupBanner.title}
+              style={{
+                width: '100%',
+                height: 'auto',
+                display: 'block',
+                borderRadius: 12,
+                maxHeight: 480,
+                objectFit: 'contain',
+              }}
+            />
+          </div>
+        </div>
+      )}
       <section
         className="py-3"
         style={{
