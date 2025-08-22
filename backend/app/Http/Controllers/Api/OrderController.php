@@ -95,6 +95,22 @@ class OrderController extends Controller
                     }
                 }
             }
+            // Lấy return_id nếu có yêu cầu hoàn trả
+            $returnId = null;
+            if ($isFullReturnOrder && $order->return_request_id) {
+                $returnId = $order->return_request_id;
+            } elseif (!$isFullReturnOrder) {
+                // Trường hợp đơn thường có thể có return requests
+                $returnRequests = DB::table('return_requests')
+                    ->where('order_id', $order->order_id)
+                    ->where('status', '!=', 'Đã từ chối')
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+                if ($returnRequests) {
+                    $returnId = $returnRequests->return_id;
+                }
+            }
+
             return [
                 'order_id' => $order->order_id,
                 'order_code' => $order->order_code,
@@ -109,6 +125,7 @@ class OrderController extends Controller
                 'payment_method' => optional($order->paymentMethods)->name,
                 'status' => $order->status,
                 'cancel_reason' => $order->cancel_reason,
+                'return_id' => $returnId, // Thêm return_id để frontend có thể listen realtime
                 'created_at' => $order->created_at,
                 'updated_at' => $order->updated_at,
             ];
@@ -183,6 +200,9 @@ class OrderController extends Controller
                 return $item->price * $item->total_quantity;
             });
 
+            // Lấy return_id cho đơn hoàn trả 100%
+            $returnId = $order->return_request_id ?? null;
+
             $formattedOrder = [
                 'order_id' => $order->order_id,
                 'order_code' => $order->order_code,
@@ -206,6 +226,7 @@ class OrderController extends Controller
                 'rank_discount' => number_format($order->rank_discount, 0, ".", ""),
                 'total_amount' => number_format($calculatedTotalAmount, 0, ".", ""),
                 'products' => $orderItems,
+                'return_id' => $returnId, // Thêm return_id để frontend có thể listen realtime
                 'updated_at' => $order->updated_at,
                 'is_full_return_order' => true
             ];
@@ -367,6 +388,15 @@ class OrderController extends Controller
             ];
         }
 
+        // Lấy return_id cho trường hợp thường
+        $returnId = null;
+        if (!empty($returnRequests)) {
+            $latestReturnRequest = collect($returnRequests)->sortByDesc('created_at')->first();
+            if ($latestReturnRequest) {
+                $returnId = $latestReturnRequest->return_id;
+            }
+        }
+
         $formattedOrder = [
             'order_id' => $order->order_id,
             'order_code' => $order->order_code,
@@ -390,6 +420,7 @@ class OrderController extends Controller
             'rank_discount' => number_format($order->rank_discount, 0, ".", ""),
             'total_amount' => number_format($adjustedTotalAmount, 0, ".", ""),
             'products' => $orderItems, // Chỉ còn sản phẩm chưa hoàn trả
+            'return_id' => $returnId, // Thêm return_id để frontend có thể listen realtime
             'updated_at' => $order->updated_at,
         ];
 
