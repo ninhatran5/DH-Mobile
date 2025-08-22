@@ -782,12 +782,48 @@ const Chart = () => {
       .slice(0, topN);
   };
 
-  const getAccountsList = (limit = 9) => {
-    const userStats = getUserStatsFromOrders();
+  const getRecentOrders = (limit = 9) => {
+    const filteredOrders = getFilteredOrders();
     
-    return Object.values(userStats)
-      .sort((a, b) => b.totalSpent - a.totalSpent)
+    return filteredOrders
+      .filter(order => order.created_at && order.customer && order.email)
+      .sort((a, b) => {
+        const dateA = parseCreatedAt(a.created_at);
+        const dateB = parseCreatedAt(b.created_at);
+        return dateB - dateA; // Sắp xếp từ mới nhất đến cũ nhất
+      })
       .slice(0, limit);
+  };
+
+  const formatOrderDate = (dateString) => {
+    const date = parseCreatedAt(dateString);
+    if (!date) return 'N/A';
+    
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) {
+      return 'Hôm nay';
+    } else if (diffDays === 1) {
+      return 'Hôm qua';
+    } else if (diffDays < 7) {
+      return `${diffDays} ngày trước`;
+    } else {
+      return date.toLocaleDateString('vi-VN');
+    }
+  };
+
+  const getStatusColor = (status) => {
+    const statusColors = {
+      'Hoàn thành': '#10b981',
+      'Đã giao hàng': '#10b981', 
+      'Đang xử lý': '#f59e0b',
+      'Chờ xác nhận': '#6b7280',
+      'Đã hủy': '#ef4444',
+      'Đã trả hàng': '#8b5cf6'
+    };
+    return statusColors[status] || '#6b7280';
   };
 
   const getTopSellingProducts = (limit = 5) => {
@@ -1265,26 +1301,43 @@ const Chart = () => {
 
       {/* Bottom Section */}
       <div className="chart-admin-bottom-section">
-        <div className="chart-admin-accounts-table">
-          <h4 className="chart-admin-section-title">👥 Danh Sách Tài Khoản</h4>
-          <div className="chart-admin-table-container">
-            <div className="chart-admin-table-header">
+        <div className="recent-orders-table">
+          <h4 className="recent-orders-title">🛒 Đơn Hàng Gần Đây</h4>
+          <div className="recent-orders-container">
+            <div className="recent-orders-header">
               <span>STT</span>
-              <span>Tên</span>
+              <span>Khách hàng</span>
               <span>Email</span>
-              <span>Đơn</span>
-              <span>Chi tiêu</span>
+              <span>Mã đơn</span>
+              <span>Trạng thái</span>
+              <span>Thời gian</span>
+              <span>Giá trị</span>
             </div>
-            {getAccountsList(9).map((account, index) => (
-              <div key={`account-${account.email || index}`} className="chart-admin-table-row">
-                <span>{index + 1}</span>
-                <span>{account.full_name || 'Chưa cập nhật'}</span>
-                <span>{account.email}</span>
-                <span>{account.completedOrders}</span>
-                <span className="chart-admin-amount">
-                  {account.totalSpent > 0 
-                    ? `${(account.totalSpent / 1000000).toFixed(1)}M` 
-                    : '0M'
+            {getRecentOrders(9).map((order, index) => (
+              <div key={`order-${order.id || order.order_id || index}`} className="recent-orders-row">
+                <span className="recent-orders-stt">{index + 1}</span>
+                <span className="recent-orders-customer">
+                  {order.customer || 'N/A'}
+                </span>
+                <span className="recent-orders-email">
+                  {order.email || 'N/A'}
+                </span>
+                <span className="recent-orders-code">
+                  #{order.order_code || order.id || 'N/A'}
+                </span>
+                <span 
+                  className="recent-orders-status"
+                  data-status={order.status}
+                >
+                  {order.status || 'N/A'}
+                </span>
+                <span className="recent-orders-time">
+                  {formatOrderDate(order.created_at)}
+                </span>
+                <span className="recent-orders-amount">
+                  {order.total_amount 
+                    ? `${(parseFloat(order.total_amount) / 1000000).toFixed(1)}Tr VND` 
+                    : '0M VND'
                   }
                 </span>
               </div>
