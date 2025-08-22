@@ -43,12 +43,12 @@ class VoucherSeeder extends Seeder
 
         Voucher::create([
             'code' => 'NEWUSER80K', // Bạn có thể tùy chỉnh mã voucher cố định hoặc random
-            'title' => 'Voucher cho người mới - Giảm 80K',
+            'title' => 'Voucher Giảm 80K',
             'discount_amount' => 80000,
             'min_order_value' => 0,
             'quantity' => 100, // Tùy chỉnh số lượng voucher
             'start_date' => now(),
-            'end_date' => now()->addDays(30), // Hiệu lực trong 30 ngày
+            'end_date' => now()->addDays(300), // Hiệu lực trong 300 ngày
             'is_active' => true,
         ]);
     }
