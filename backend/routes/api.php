@@ -292,7 +292,7 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->prefix('admin')->group(f
     // danh sách hoàn hàng
     Route::get('return-orders', [OrderController::class, 'getReturnOrdersByStatus']);
     // chi tiết hoàn hàng
-    Route::get('orders/return-orders/{order_id}', [OrderController::class, 'getReturnOrderDetail']);
+    Route::get('orders/return-orders/{return_id}', [OrderController::class, 'getReturnOrderDetail']);
     // lấy danh sách lịch sử cập nhật đơn hàng (theo order_id)
     Route::get('orders/{order_id}/status-history', [OrderController::class, 'getOrderStatusHistory']);
     // Lấy tất cả lịch sử thay đổi trạng thái của mọi đơn hàng (admin)
