@@ -52,6 +52,14 @@ class BannerSeeder extends Seeder
                 'is_active' => true,
                 'created_at' => '2025-05-22 10:25:10',
                 'updated_at' => '2025-05-22 03:28:18'
+            ],
+             [
+                'title' => 'Event_1',
+                'image_url' => '',
+                'link_url' => null,
+                'is_active' => true,
+                'created_at' => '2025-05-22 10:25:10',
+                'updated_at' => '2025-05-22 03:28:18'
             ]
         ];
 
