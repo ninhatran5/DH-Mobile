@@ -1220,7 +1220,7 @@ class OrderController extends Controller
                 if ($newStatus === 'Đã yêu cầu') {
                     $order->status = 'Đang chờ hoàn hàng';
                 } elseif ($newStatus === 'Đã hoàn lại') {
-                    $order->status = 'Đã hoàn hàng';
+                    $order->status = 'Đã trả hàng';
                     $order->payment_status = 'Đã hoàn tiền';
 
                     // 3. Hoàn tiền vào ví
