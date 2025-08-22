@@ -871,7 +871,7 @@ class OrderController extends Controller
             'order' => $order
         ]);
     }
-   
+
     //     $order = Orders::find($id);
     //     if (!$order) {
     //         return response()->json([
@@ -1266,7 +1266,7 @@ class OrderController extends Controller
         // thì không cần áp dụng discount nữa
         $isAlreadyProcessedReturnOrder = false;
         $discountRate = 0;
-        
+
         // Kiểm tra xem đây có phải là đơn hoàn trả 100% đã được chuyển đổi không
         if ($order->is_return_order && in_array($order->status, ['Yêu cầu hoàn hàng', 'Đã chấp thuận', 'Đang xử lý', 'Đã trả hàng'])) {
             // Trường hợp hoàn trả 100%: giá trong order_items đã được điều chỉnh
@@ -1621,26 +1621,27 @@ class OrderController extends Controller
             }
 
             $notificationId = DB::table('return_notifications')->insertGetId([
-                'order_id' => $order->order_id,
+                'order_id'          => $order->order_id,
                 'return_request_id' => $returnId,
-                'message' => "Khách hàng {$order->customer} vừa gửi yêu cầu hoàn hàng.",
-                'is_read' => false,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+                'message'           => "Khách hàng {$order->customer} vừa gửi yêu cầu hoàn hàng.",
+                'is_read'           => false,
+                'created_at'        => now(),
+                'updated_at'        => now(),
+            ], 'return_notification_id'); // 👈 báo rõ tên cột ID trong bảng
 
+            // Lấy lại thông báo vừa tạo
             $notification = DB::table('return_notifications')
-                ->where('notification_id', $notificationId)
+                ->where('return_notification_id', $notificationId)
                 ->first();
 
-            // Fix thêm thuộc tính id
-            $notification->id = $notification->notification_id;
+            // Gắn thuộc tính id cho thống nhất (frontend thường cần 'id')
+            $notification->id = $notification->return_notification_id;
 
             // Ép kiểu Carbon cho ngày tháng
             $notification->created_at = Carbon::parse($notification->created_at);
             $notification->updated_at = Carbon::parse($notification->updated_at);
 
-            // Bắn event
+            // Bắn event realtime
             event(new ReturnNotificationCreated($notification));
 
             DB::commit();

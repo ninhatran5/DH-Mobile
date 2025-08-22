@@ -10,7 +10,7 @@ class ReturnNotification extends Model
     use HasFactory;
 
     protected $table = 'return_notifications';
-    protected $primaryKey = 'notification_id';
+    protected $primaryKey = 'return_notification_id';
     public $incrementing = true;
     protected $keyType = 'int';
 
