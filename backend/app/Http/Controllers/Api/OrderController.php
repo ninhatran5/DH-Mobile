@@ -2552,9 +2552,6 @@ class OrderController extends Controller
         }
     }
 
-
-
-
     protected function updateUserLoyalty($userId)
     {
         $totalPoints = LoyaltyPoint::where('user_id', $userId)->sum('points');
