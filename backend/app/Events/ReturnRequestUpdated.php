@@ -13,22 +13,22 @@ class ReturnRequestUpdated implements ShouldBroadcastNow
 {
     use InteractsWithSockets, SerializesModels;
 
-    public $orderId;
+    public $returnId;
     public $data;
 
-    public function __construct($orderId, $data)
+    public function __construct($returnId, $data)
     {
-        $this->orderId = $orderId;
+        $this->returnId = $returnId;
         $this->data = $data;
     }
 
     public function broadcastOn()
     {
-        return new Channel('order.' . $this->orderId);
+        return new Channel('return-request.' . $this->returnId);
     }
 
     public function broadcastAs()
     {
-        return 'order-return-updated';
+        return 'return-request-updated';
     }
 }
