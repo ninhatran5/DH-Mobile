@@ -49,6 +49,7 @@ const OrderDetail = () => {
   const [refreshFlag, setRefreshFlag] = useState(0);
   const [hasReviewableProduct, setHasReviewableProduct] = useState(false);
   const [orderDetail, setOrderDetail] = useState(reduxOrderDetail);
+  const returnID = orderDetail?.return_id;
 
   useEffect(() => {
     if (!id) return;
@@ -71,6 +72,7 @@ const OrderDetail = () => {
   useOrderRealtime({
     userId: localStorage.getItem("userID"),
     orderId: orderDetail?.order_id,
+    returnId: returnID,
     onOrderUpdate: (orderUpdate) => {
       setOrderDetail((prev) => ({
         ...prev,
