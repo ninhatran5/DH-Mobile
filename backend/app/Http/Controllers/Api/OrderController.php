@@ -871,9 +871,7 @@ class OrderController extends Controller
             'order' => $order
         ]);
     }
-
-    // public function clientRequestReturn(Request $request, $id)
-    // {
+   
     //     $order = Orders::find($id);
     //     if (!$order) {
     //         return response()->json([
@@ -1263,12 +1261,24 @@ class OrderController extends Controller
             $orderItemsMap[$key] = $orderItem;
         }
 
-        // ✅ Tính tỷ lệ giảm giá của đơn hàng
-        $totalOriginalAmount = $order->orderItems->sum(function ($item) {
-            return $item->price * $item->quantity;
-        });
-        $totalDiscountAmount = ($order->voucher_discount ?? 0) + ($order->rank_discount ?? 0);
-        $discountRate = $totalOriginalAmount > 0 ? $totalDiscountAmount / $totalOriginalAmount : 0;
+        // ✅ Kiểm tra logic để tính discount rate chính xác
+        // Nếu đơn hàng đã là return order và có giá trong order_items đã được điều chỉnh,
+        // thì không cần áp dụng discount nữa
+        $isAlreadyProcessedReturnOrder = false;
+        $discountRate = 0;
+        
+        // Kiểm tra xem đây có phải là đơn hoàn trả 100% đã được chuyển đổi không
+        if ($order->is_return_order && in_array($order->status, ['Yêu cầu hoàn hàng', 'Đã chấp thuận', 'Đang xử lý', 'Đã trả hàng'])) {
+            // Trường hợp hoàn trả 100%: giá trong order_items đã được điều chỉnh
+            $isAlreadyProcessedReturnOrder = true;
+        } else {
+            // Trường hợp bình thường hoặc hoàn trả một phần: tính discount rate từ dữ liệu gốc
+            $totalOriginalAmount = $order->orderItems->sum(function ($item) {
+                return $item->price * $item->quantity;
+            });
+            $totalDiscountAmount = ($order->voucher_discount ?? 0) + ($order->rank_discount ?? 0);
+            $discountRate = $totalOriginalAmount > 0 ? $totalDiscountAmount / $totalOriginalAmount : 0;
+        }
 
         $refundAmount = 0;
         $refundBreakdown = [];
@@ -1303,9 +1313,15 @@ class OrderController extends Controller
                 ], 400);
             }
 
-            // ✅ Tính tiền hoàn cho từng sản phẩm - có tính tỷ lệ giảm giá
+            // ✅ Tính tiền hoàn cho từng sản phẩm 
             $originalItemAmount = $orderItem->price * $item['quantity'];
-            $itemRefundAmount = $originalItemAmount * (1 - $discountRate);
+            if ($isAlreadyProcessedReturnOrder) {
+                // Nếu đã là đơn hoàn trả -> giá trong order_items đã được điều chỉnh -> không cần áp dụng discount
+                $itemRefundAmount = $originalItemAmount;
+            } else {
+                // Đơn thường -> áp dụng discount rate
+                $itemRefundAmount = $originalItemAmount * (1 - $discountRate);
+            }
             $refundAmount += $itemRefundAmount;
 
             // 📝 Debug: lưu chi tiết từng sản phẩm với thông tin chi tiết
