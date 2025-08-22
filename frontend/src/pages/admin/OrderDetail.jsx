@@ -576,7 +576,38 @@ const OrderDetails = () => {
   }, []);
 
   const formatDate = useCallback((dateString) => {
-    return new Date(dateString).toLocaleString('vi-VN', {
+    if (!dateString) return 'N/A';
+    
+    // Handle DD/MM/YYYY HH:mm:ss format
+    if (typeof dateString === 'string' && dateString.includes('/')) {
+      const [datePart, timePart] = dateString.split(' ');
+      const [day, month, year] = datePart.split('/');
+      
+      // Convert DD/MM/YYYY to MM/DD/YYYY for JavaScript Date constructor
+      const isoDateString = `${month}/${day}/${year}${timePart ? ' ' + timePart : ''}`;
+      const date = new Date(isoDateString);
+      
+      if (isNaN(date.getTime())) {
+        return dateString; // Return original if parsing fails
+      }
+      
+      return date.toLocaleString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+    }
+    
+    // Handle standard ISO format or other formats
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return dateString; // Return original if parsing fails
+    }
+    
+    return date.toLocaleString('vi-VN', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',

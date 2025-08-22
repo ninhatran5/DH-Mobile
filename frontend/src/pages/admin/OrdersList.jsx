@@ -45,34 +45,37 @@ const OrdersList = () => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  
+  // Thêm state cho pagination và filters giống ProductList
+  const ordersPerPage = 15;
+  const [filters, setFilters] = useState({
+    paymentMethod: "all",
+    paymentStatus: "all",
+    amountRange: "all",
+  });
 
   const navigate = useNavigate();
 
-  const currentPage = parseInt(searchParams.get("page")) || 1;
+  // Client-side pagination giống ProductList
+  const pageParam = parseInt(searchParams.get("page") || "1", 10);
+  const [currentPage, setCurrentPage] = useState(pageParam);
 
-  // Chỉ sử dụng fetchPaginatedAdminOrders cho tất cả trường hợp
+  // Lấy tất cả orders một lần thay vì fetch theo trang
   useEffect(() => {
-    dispatch(fetchPaginatedAdminOrders(currentPage));
-  }, [currentPage, dispatch]);
+    dispatch(fetchAdminOrders()); // Lấy tất cả đơn hàng
+  }, [dispatch]);
+
+  // Đồng bộ currentPage với URL
+  useEffect(() => {
+    setSearchParams((params) => {
+      params.set("page", currentPage);
+      return params;
+    });
+  }, [currentPage, setSearchParams]);
 
   useEffect(() => {
-    if (!searchParams.has("page")) {
-      setSearchParams({ page: "1" }, { replace: true });
-    }
-  }, [searchParams, setSearchParams]);
-
-  const handlePageChange = (newPage) => {
-    const pageNumber = parseInt(newPage);
-    if (
-      pageNumber &&
-      pageNumber > 0 &&
-      pageNumber <= (pagination?.lastPage || 1)
-    ) {
-      setSearchParams({ page: pageNumber.toString() });
-    } else {
-      console.log("❌ Invalid page:", pageNumber);
-    }
-  };
+    if (pageParam !== currentPage) setCurrentPage(pageParam);
+  }, [pageParam]);
 
   // Function để xử lý thay đổi tab trạng thái
   const handleStatusTabChange = (status) => {
@@ -107,8 +110,8 @@ const OrdersList = () => {
     "Đã trả hàng",
   ];
 
-  // Lọc đơn hàng chỉ theo search term và status tab (không phân trang client-side)
-  const filteredOrders = useMemo(() => {
+  // Cập nhật hàm lọc đƢn hàng với nhiều bộ lọc hơn
+  const getFilteredOrders = () => {
     return orders.filter((order) => {
       const normalizedStatus = normalizeString(order.status);
 
@@ -129,13 +132,56 @@ const OrdersList = () => {
         selectedStatusTab === "Tất cả" ||
         normalizedStatus === normalizeString(selectedStatusTab);
 
-      return !isHiddenStatus && matchesSearch && matchesStatus;
+      // Lọc theo phương thức thanh toán
+      const matchesPaymentMethod =
+        filters.paymentMethod === "all" ||
+        order.payment_method === filters.paymentMethod;
+
+      // Lọc theo trạng thái thanh toán
+      const matchesPaymentStatus =
+        filters.paymentStatus === "all" ||
+        order.payment_status === filters.paymentStatus;
+
+      // Lọc theo khoảng giá trị đơn hàng
+      let matchesAmountRange = true;
+      const amount = parseFloat(order.total_amount);
+      switch (filters.amountRange) {
+        case "under1m":
+          matchesAmountRange = amount < 1000000;
+          break;
+        case "1to5m":
+          matchesAmountRange = amount >= 1000000 && amount < 5000000;
+          break;
+        case "5to10m":
+          matchesAmountRange = amount >= 5000000 && amount < 10000000;
+          break;
+        case "10to20m":
+          matchesAmountRange = amount >= 10000000 && amount < 20000000;
+          break;
+        case "over20m":
+          matchesAmountRange = amount >= 20000000;
+          break;
+        default:
+          matchesAmountRange = true;
+      }
+
+      return !isHiddenStatus && matchesSearch && matchesStatus && 
+             matchesPaymentMethod && matchesPaymentStatus && matchesAmountRange;
     });
-  }, [orders, searchTerm, selectedStatusTab, hiddenStatuses]);
+  };
+  
+  const filteredOrders = useMemo(() => getFilteredOrders(), [orders, searchTerm, selectedStatusTab, hiddenStatuses, filters]);
+  
+  // Tính toán phân trang client-side
+  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+  const paginatedOrders = filteredOrders.slice(
+    (currentPage - 1) * ordersPerPage,
+    currentPage * ordersPerPage
+  );
 
   // Hàm refresh data sau khi cập nhật
   const refreshCurrentPage = () => {
-    dispatch(fetchPaginatedAdminOrders(currentPage));
+    dispatch(fetchAdminOrders()); // Lấy lại tất cả orders
   };
 
   const handleViewOrder = (order) => {
@@ -264,37 +310,161 @@ const OrdersList = () => {
         </div>
       </div>
 
-      {/* Search box */}
-      <div style={{ width: "100%", margin: "0 auto", marginBottom: 16 }}>
-        <div
-          className="admin_order-search-box"
-          style={{
-            width: "100%",
-            position: "relative",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <i
-            className="bi bi-search admin_order-search-icon"
-            style={{
+      {/* Search and Filter Section */}
+      <div className="admin_order-search-filter-section" style={{ width: "100%", marginBottom: 16 }}>
+        <div className="admin_order-search-controls" style={{ display: "flex", gap: "12px", alignItems: "center", marginBottom: showFilters ? "16px" : "0" }}>
+          <div className="admin_order-search-box" style={{ flex: 1, position: "relative" }}>
+            <i className="bi bi-search" style={{
               color: "#0071e3",
               position: "absolute",
               left: 12,
               top: "50%",
               transform: "translateY(-50%)",
               pointerEvents: "none",
+              zIndex: 1
+            }}></i>
+            <input
+              type="text"
+              className="admin_order-search-input"
+              placeholder="Tìm kiếm theo mã đơn, tên khách hàng..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                width: "100%",
+                paddingLeft: 36,
+                padding: "10px 12px 10px 36px",
+                border: "2px solid #e1e5e9",
+                borderRadius: "8px",
+                fontSize: "14px",
+                transition: "border-color 0.2s",
+                outline: "none"
+              }}
+              onFocus={(e) => e.target.style.borderColor = "#007aff"}
+              onBlur={(e) => e.target.style.borderColor = "#e1e5e9"}
+            />
+          </div>
+          
+          <button
+            className={`admin_order-filter-toggle ${showFilters ? 'active' : ''}`}
+            onClick={handleFilterToggle}
+            style={{
+              padding: "10px 16px",
+              border: `2px solid ${showFilters ? '#007aff' : '#e1e5e9'}`,
+              borderRadius: "8px",
+              background: showFilters ? "#007aff" : "#fff",
+              color: showFilters ? "#fff" : "#666",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              fontSize: "14px",
+              fontWeight: 500,
+              transition: "all 0.2s"
             }}
-          ></i>
-          <input
-            type="text"
-            className="admin_order-search-input"
-            placeholder="Tìm kiếm theo mã đơn, tên khách hàng..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ width: "100%", paddingLeft: 36 }}
-          />
+          >
+            <i className="bi bi-funnel"></i>
+            <span>Bộ lọc</span>
+          </button>
         </div>
+
+        {/* Filters Panel */}
+        {showFilters && (
+          <div className="admin_order-filters-panel" style={{
+            padding: "16px",
+            background: "#f8f9fa",
+            borderRadius: "8px",
+            border: "1px solid #e1e5e9",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: "16px"
+          }}>
+            <div className="admin_order-filter-group">
+              <label className="admin_order-filter-label" style={{
+                display: "block",
+                marginBottom: "6px",
+                fontSize: "14px",
+                fontWeight: 500,
+                color: "#333"
+              }}>Phương thức thanh toán</label>
+              <select
+                value={filters.paymentMethod}
+                onChange={(e) => setFilters(prev => ({ ...prev, paymentMethod: e.target.value }))}
+                className="admin_order-filter-select"
+                style={{
+                  width: "100%",
+                  padding: "8px 12px",
+                  border: "1px solid #ddd",
+                  borderRadius: "6px",
+                  fontSize: "14px",
+                  background: "#fff"
+                }}
+              >
+                <option value="all">Tất cả phương thức</option>
+                <option value="COD">COD (Tiền mặt)</option>
+                <option value="VNPay">VNPay</option>
+                <option value="Bank Transfer">Chuyển khoản</option>
+              </select>
+            </div>
+
+            <div className="admin_order-filter-group">
+              <label className="admin_order-filter-label" style={{
+                display: "block",
+                marginBottom: "6px",
+                fontSize: "14px",
+                fontWeight: 500,
+                color: "#333"
+              }}>Trạng thái thanh toán</label>
+              <select
+                value={filters.paymentStatus}
+                onChange={(e) => setFilters(prev => ({ ...prev, paymentStatus: e.target.value }))}
+                className="admin_order-filter-select"
+                style={{
+                  width: "100%",
+                  padding: "8px 12px",
+                  border: "1px solid #ddd",
+                  borderRadius: "6px",
+                  fontSize: "14px",
+                  background: "#fff"
+                }}
+              >
+                <option value="all">Tất cả trạng thái</option>
+                <option value="Đã thanh toán">Đã thanh toán</option>
+                <option value="Chưa thanh toán">Chưa thanh toán</option>
+                <option value="Hoàn tiền">Hoàn tiền</option>
+              </select>
+            </div>
+
+            <div className="admin_order-filter-group">
+              <label className="admin_order-filter-label" style={{
+                display: "block",
+                marginBottom: "6px",
+                fontSize: "14px",
+                fontWeight: 500,
+                color: "#333"
+              }}>Khoảng giá trị</label>
+              <select
+                value={filters.amountRange}
+                onChange={(e) => setFilters(prev => ({ ...prev, amountRange: e.target.value }))}
+                className="admin_order-filter-select"
+                style={{
+                  width: "100%",
+                  padding: "8px 12px",
+                  border: "1px solid #ddd",
+                  borderRadius: "6px",
+                  fontSize: "14px",
+                  background: "#fff"
+                }}
+              >
+                <option value="all">Tất cả</option>
+                <option value="under1m">Dưới 1 triệu</option>
+                <option value="1to5m">1 - 5 triệu</option>
+                <option value="5to10m">5 - 10 triệu</option>
+                <option value="10to20m">10 - 20 triệu</option>
+                <option value="over20m">Trên 20 triệu</option>
+              </select>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Status tabs */}
@@ -387,9 +557,9 @@ const OrdersList = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredOrders.length > 0 ? (
-                filteredOrders.map((order, idx) => {
-                  const stt = (currentPage - 1) * (pagination?.perPage || 15) + idx + 1;
+              {paginatedOrders.length > 0 ? (
+                paginatedOrders.map((order, idx) => {
+                  const stt = (currentPage - 1) * ordersPerPage + idx + 1;
                   return (
                     <tr key={order.order_id}>
                       <td>
@@ -612,7 +782,7 @@ const OrdersList = () => {
         >
           {/* First page button */}
           <button
-            onClick={() => handlePageChange(1)}
+            onClick={() => setCurrentPage(1)}
             disabled={currentPage <= 1}
             style={{
               padding: "8px 12px",
@@ -633,7 +803,7 @@ const OrdersList = () => {
 
           {/* Previous button */}
           <button
-            onClick={() => handlePageChange(currentPage - 1)}
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
             disabled={currentPage <= 1}
             style={{
               padding: "8px 12px",
@@ -651,39 +821,54 @@ const OrdersList = () => {
             <FiChevronLeft size={16} />
             Trước
           </button>
-
-          {/* Current page indicator */}
-          <div
-            style={{
-              padding: "8px 16px",
-              backgroundColor: "#007aff",
-              color: "white",
-              borderRadius: "6px",
-              fontWeight: "bold",
-              border: "2px solid #007aff",
-            }}
-          >
-            {currentPage}
+          
+          {/* Page numbers giống ProductList */}
+          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum;
+              if (totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (currentPage <= 3) {
+                pageNum = i + 1;
+              } else if (currentPage >= totalPages - 2) {
+                pageNum = totalPages - 4 + i;
+              } else {
+                pageNum = currentPage - 2 + i;
+              }
+              
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  style={{
+                    padding: "8px 12px",
+                    border: `2px solid #007aff`,
+                    borderRadius: "6px",
+                    background: currentPage === pageNum ? "#007aff" : "#fff",
+                    color: currentPage === pageNum ? "#fff" : "#007aff",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                    fontWeight: currentPage === pageNum ? "bold" : "normal",
+                    minWidth: "40px"
+                  }}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
           </div>
 
           {/* Next button */}
           <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage >= (pagination?.lastPage || 1)}
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage >= totalPages}
             style={{
               padding: "8px 12px",
               border: "1px solid #007aff",
               borderRadius: "6px",
-              background:
-                currentPage >= (pagination?.lastPage || 1)
-                  ? "#f5f5f5"
-                  : "#007aff",
-              color:
-                currentPage >= (pagination?.lastPage || 1) ? "#999" : "#fff",
-              cursor:
-                currentPage >= (pagination?.lastPage || 1)
-                  ? "not-allowed"
-                  : "pointer",
+              background: currentPage >= totalPages ? "#f5f5f5" : "#007aff",
+              color: currentPage >= totalPages ? "#999" : "#fff",
+              cursor: currentPage >= totalPages ? "not-allowed" : "pointer",
               fontSize: "14px",
               display: "flex",
               alignItems: "center",
@@ -695,22 +880,15 @@ const OrdersList = () => {
           </button>
 
           <button
-            onClick={() => handlePageChange(pagination?.lastPage || 1)}
-            disabled={currentPage >= (pagination?.lastPage || 1)}
+            onClick={() => setCurrentPage(totalPages)}
+            disabled={currentPage >= totalPages}
             style={{
               padding: "8px 12px",
               border: "1px solid #007aff",
               borderRadius: "6px",
-              background:
-                currentPage >= (pagination?.lastPage || 1)
-                  ? "#f5f5f5"
-                  : "#007aff",
-              color:
-                currentPage >= (pagination?.lastPage || 1) ? "#999" : "#fff",
-              cursor:
-                currentPage >= (pagination?.lastPage || 1)
-                  ? "not-allowed"
-                  : "pointer",
+              background: currentPage >= totalPages ? "#f5f5f5" : "#007aff",
+              color: currentPage >= totalPages ? "#999" : "#fff",
+              cursor: currentPage >= totalPages ? "not-allowed" : "pointer",
               fontSize: "14px",
               display: "flex",
               alignItems: "center",
@@ -730,19 +908,16 @@ const OrdersList = () => {
             textAlign: "center",
           }}
         >
-          Trang {currentPage} / {pagination?.lastPage || 1} - Hiển thị{" "}
-          {filteredOrders.length} đơn hàng
-          {pagination && (
-            <div style={{ fontSize: "12px", color: "#999", marginTop: "4px" }}>
-              Tổng: {pagination.total || 0} đơn hàng
-              {selectedStatusTab !== "Tất cả" && (
-                <span style={{ color: "#007aff", fontWeight: 500 }}>
-                  {" "}
-                  (Đang lọc theo: {selectedStatusTab})
-                </span>
-              )}
-            </div>
-          )}
+          Trang {currentPage} / {totalPages} - Hiển thị {(currentPage - 1) * ordersPerPage + 1} - {Math.min(currentPage * ordersPerPage, filteredOrders.length)} của {filteredOrders.length} đơn hàng
+          <div style={{ fontSize: "12px", color: "#999", marginTop: "4px" }}>
+            Tổng có: {orders.length || 0} đơn hàng trong hệ thống
+            {(searchTerm || selectedStatusTab !== "Tất cả" || filters.paymentMethod !== "all" || filters.paymentStatus !== "all" || filters.amountRange !== "all") && (
+              <span style={{ color: "#007aff", fontWeight: 500 }}>
+                {" "}
+                (Đang lọc kết quả)
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
