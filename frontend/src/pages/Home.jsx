@@ -40,6 +40,7 @@ const Home = () => {
   const smallBanner = banners.filter((banner) =>
     banner.title.includes("Banner")
   );
+  const eventBanner = banners.filter((event) => event.title.includes("Event"));
   const bestSellingProducts = [...products]
     .filter((item) => item.view_count && item.view_count > 0)
     .sort((a, b) => b.view_count - a.view_count)
@@ -55,12 +56,15 @@ const Home = () => {
   }, [dispatch, userId]);
 
   useEffect(() => {
-    if (smallBanner.length > 0 && !sessionStorage.getItem('hasSeenBannerPopup')) {
-      setPopupBanner(smallBanner[0]);
+    if (
+      eventBanner.length > 0 &&
+      !sessionStorage.getItem("hasSeenBannerPopup")
+    ) {
+      setPopupBanner(eventBanner[0]);
       setShowBannerPopup(true);
-      sessionStorage.setItem('hasSeenBannerPopup', '1');
+      sessionStorage.setItem("hasSeenBannerPopup", "1");
     }
-  }, [smallBanner]);
+  }, [eventBanner]);
 
   const convertPriceToNumber = (priceString) => {
     if (!priceString || typeof priceString !== "string") return 0;
@@ -165,53 +169,53 @@ const Home = () => {
       {showBannerPopup && popupBanner && (
         <div
           style={{
-            position: 'fixed',
+            position: "fixed",
             top: 0,
             left: 0,
-            width: '100vw',
-            height: '100vh',
-            background: 'rgba(0,0,0,0.45)',
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0,0,0,0.45)",
             zIndex: 2000,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           <div
             style={{
-              position: 'relative',
-              background: '#fff',
+              position: "relative",
+              background: "#fff",
               borderRadius: 16,
-              boxShadow: '0 8px 32px 0 rgba(0,0,0,0.18)',
+              boxShadow: "0 8px 32px 0 rgba(0,0,0,0.18)",
               padding: 0,
               maxWidth: 720,
-              width: '90vw',
-              maxHeight: '90vh',
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
+              width: "90vw",
+              maxHeight: "90vh",
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
             }}
           >
             <button
               onClick={() => setShowBannerPopup(false)}
               style={{
-                position: 'absolute',
+                position: "absolute",
                 top: 8,
                 right: 8,
-                background: 'rgba(0,0,0,0.12)',
-                border: 'none',
-                borderRadius: '50%',
+                background: "rgba(0,0,0,0.12)",
+                border: "none",
+                borderRadius: "50%",
                 width: 32,
                 height: 32,
                 fontSize: 20,
-                color: '#333',
-                cursor: 'pointer',
+                color: "#333",
+                cursor: "pointer",
                 zIndex: 2,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'background 0.18s',
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "background 0.18s",
               }}
               aria-label="Đóng"
             >
@@ -221,12 +225,12 @@ const Home = () => {
               src={popupBanner.image_url}
               alt={popupBanner.title}
               style={{
-                width: '100%',
-                height: 'auto',
-                display: 'block',
+                width: "100%",
+                height: "auto",
+                display: "block",
                 borderRadius: 12,
                 maxHeight: 480,
-                objectFit: 'contain',
+                objectFit: "contain",
               }}
             />
           </div>
