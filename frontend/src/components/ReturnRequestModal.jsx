@@ -47,31 +47,6 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
   const returnReasons =
     caseType === 1 ? returnReasonsCase1 : returnReasonsCase2;
 
-  // Function to calculate discounted price for a product
-  const calculateDiscountedPrice = (originalPrice) => {
-    if (!orderDetail) return originalPrice;
-    
-    const totalOriginalAmount = orderDetail.products?.reduce((sum, product) => {
-      return sum + (Number(product.price) * product.quantity);
-    }, 0) || 0;
-
-    if (totalOriginalAmount === 0) return originalPrice;
-
-    // Calculate total discount
-    const rankDiscount = Number(orderDetail.rank_discount) || 0;
-    const voucherDiscount = Number(orderDetail.voucher_discount) || 0;
-    const totalDiscount = rankDiscount + voucherDiscount;
-
-    // Calculate discount rate
-    const discountRate = totalDiscount / totalOriginalAmount;
-    
-    // Apply proportional discount to this product
-    const productDiscount = originalPrice * discountRate;
-    const discountedPrice = originalPrice - productDiscount;
-    
-    return Math.max(0, discountedPrice); // Ensure price doesn't go below 0
-  };
-
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
     if (files.length + images.length > 3) {
@@ -151,11 +126,7 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
       const product = orderDetail.products.find(
         (p) => p.variant_id === item.variant_id
       );
-      if (product) {
-        const discountedPrice = calculateDiscountedPrice(Number(product.price));
-        return total + (discountedPrice * item.return_quantity);
-      }
-      return total;
+      return total + (product ? product.price * item.return_quantity : 0);
     }, 0);
   };
 
@@ -240,119 +211,101 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
         <div className="container">
           <div className="mb-3">
             <p style={{ marginTop: 10 }}>{t("returnRequest.selectProduct")}</p>
-            {orderDetail?.products?.map((product) => {
-              const originalPrice = Number(product.price) || 0;
-              const discountedPrice = calculateDiscountedPrice(originalPrice);
-              const hasDiscount = originalPrice !== discountedPrice;
-              
-              return (
-                <div
-                  key={product.variant_id}
-                  className="d-flex align-items-center mb-2"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedItems.some(
-                      (item) => item.variant_id === product.variant_id
-                    )}
-                    onChange={(e) =>
-                      handleItemSelection(product.variant_id, e.target.checked)
-                    }
-                    className="me-2"
-                  />
-                  <div className="d-flex flex-grow-1">
-                    <div className="border_image_return">
-                      <img
-                        style={{ cursor: "pointer" }}
-                        onClick={() =>
-                          handleNextPageOrderDetail(product.product_id)
-                        }
-                        className="image_return"
-                        src={product.product_image || ""}
-                        alt={product.product_name}
-                      />
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <p
-                        style={{ cursor: "pointer" }}
-                        onClick={() =>
-                          handleNextPageOrderDetail(product.product_id)
-                        }
-                        className="title_return_product"
-                      >
-                        {product.product_name}
+            {orderDetail?.products?.map((product) => (
+              <div
+                key={product.variant_id}
+                className="d-flex align-items-center mb-2"
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedItems.some(
+                    (item) => item.variant_id === product.variant_id
+                  )}
+                  onChange={(e) =>
+                    handleItemSelection(product.variant_id, e.target.checked)
+                  }
+                  className="me-2"
+                />
+                <div className="d-flex flex-grow-1">
+                  <div className="border_image_return">
+                    <img
+                      style={{ cursor: "pointer" }}
+                      onClick={() =>
+                        handleNextPageOrderDetail(product.product_id)
+                      }
+                      className="image_return"
+                      src={product.product_image || ""}
+                      alt={product.product_name}
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <p
+                      style={{ cursor: "pointer" }}
+                      onClick={() =>
+                        handleNextPageOrderDetail(product.product_id)
+                      }
+                      className="title_return_product"
+                    >
+                      {product.product_name}
+                    </p>
+                    <div className="color_return_product">
+                      <p className="desc_return_product">
+                        {product.variant_attributes?.find(
+                          (attr) =>
+                            attr.attribute_name.toLowerCase() === "màu sắc"
+                        )?.attribute_value || t("returnRequest.unknownColor")}
                       </p>
-                      <div className="color_return_product">
-                        <p className="desc_return_product">
-                          {product.variant_attributes?.find(
-                            (attr) =>
-                              attr.attribute_name.toLowerCase() === "màu sắc"
-                          )?.attribute_value || t("returnRequest.unknownColor")}
-                        </p>
-                        <p className="quantity_return_product">
-                          x{product.quantity}
-                        </p>
-                      </div>
-                      <div className="price_return_product" style={{ marginTop: 1 }}>
-                        {hasDiscount && (
-                          <span 
-                            style={{ 
-                              textDecoration: 'line-through', 
-                              color: '#999', 
-                              marginRight: '8px',
-                              fontSize: '0.9em',
-                              fontWeight: '600'
-                            }}
-                          >
-                            {numberFormat(originalPrice)}
-                          </span>
-                        )}
-                        <span style={{ color: hasDiscount ? '#e74c3c' : 'inherit',  fontWeight: '600' }}>
-                          {numberFormat(discountedPrice)}
-                        </span>
-                      </div>
-                      {selectedItems.some(
-                        (item) => item.variant_id === product.variant_id
-                      ) && (
-                        <div>
-                          <label style={{ fontSize: 14 }} className="me-2">
-                            {t("returnRequest.returnQuantity")}
-                          </label>
-                          <input
-                            type="number"
-                            style={{ fontSize: 14, marginTop: 10, marginBottom: 10 }}
-                            max={product.quantity}
-                            min={1}
-                            value={
-                              selectedItems.find(
-                                (item) => item.variant_id === product.variant_id
-                              )?.return_quantity === undefined
-                                ? ""
-                                : selectedItems.find(
-                                    (item) =>
-                                      item.variant_id === product.variant_id
-                                  )?.return_quantity
-                            }
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              if (val === "") {
-                                handleQuantityChange(product.variant_id, "");
-                              } else {
-                                handleQuantityChange(
-                                  product.variant_id,
-                                  Number(val)
-                                );
-                              }
-                            }}
-                            className="form-control w-25 d-inline-block"
-                          />
-                        </div>
-                      )}
+                      <p className="quantity_return_product">
+                        x{product.quantity}
+                      </p>
                     </div>
+                    <p
+                      className="price_return_product"
+                      style={{ marginTop: 1, fontWeight: 600 }}
+                    >
+                      {numberFormat(product.price || 0)}
+                    </p>
+                    {selectedItems.some(
+                      (item) => item.variant_id === product.variant_id
+                    ) && (
+                      <div>
+                        <label style={{ fontSize: 14 }} className="me-2">
+                          {t("returnRequest.returnQuantity")}
+                        </label>
+                        <input
+                          type="number"
+                          style={{ fontSize: 14 }}
+                          max={product.quantity}
+                          min={1}
+                          value={
+                            selectedItems.find(
+                              (item) => item.variant_id === product.variant_id
+                            )?.return_quantity === undefined
+                              ? ""
+                              : selectedItems.find(
+                                  (item) =>
+                                    item.variant_id === product.variant_id
+                                )?.return_quantity
+                          }
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            if (val === "") {
+                              handleQuantityChange(product.variant_id, "");
+                            } else {
+                              handleQuantityChange(
+                                product.variant_id,
+                                Number(val)
+                              );
+                            }
+                          }}
+                          className="form-control w-25 d-inline-block"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
 
           <hr className="hr_return" />
