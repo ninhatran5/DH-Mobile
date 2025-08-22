@@ -781,9 +781,31 @@ class OrderController extends Controller
             }
         }
 
+        // 🔴 QUAN TRỌNG: Phải lấy thông tin các yêu cầu hoàn trả trước đã để tính toán chính xác
+        // Lấy tất cả yêu cầu hoàn trả đã được chấp nhận (không bị từ chối)
+        $existingReturnRequests = DB::table('return_requests')
+            ->where('order_id', $order->order_id)
+            ->where('user_id', $request->user()->user_id)
+            ->where('status', '!=', 'Đã từ chối')
+            ->get();
+
+        // Tính tổng số lượng đã được yêu cầu hoàn trả từ các yêu cầu trước đó
+        $alreadyReturnedQuantities = [];
+        foreach ($existingReturnRequests as $existingRequest) {
+            if ($existingRequest->return_items) {
+                $items = json_decode($existingRequest->return_items, true);
+                if (is_array($items)) {
+                    foreach ($items as $item) {
+                        $productId = $item['product_id'];
+                        $alreadyReturnedQuantities[$productId] = ($alreadyReturnedQuantities[$productId] ?? 0) + $item['quantity'];
+                    }
+                }
+            }
+        }
+        
         // Kiểm tra sản phẩm trong đơn và tính số tiền refund
         $orderItems = $order->orderItems->keyBy('product_id');
-
+        
         // ✅ Tính tỷ lệ giảm giá của đơn hàng
         $totalOriginalAmount = $order->orderItems->sum(function ($item) {
             return $item->price * $item->quantity;
@@ -839,28 +861,6 @@ class OrderController extends Controller
             ];
         }
 
-        // Kiểm tra xem còn sản phẩm nào có thể hoàn trả không
-        // Lấy tất cả yêu cầu hoàn trả đã được chấp nhận (không bị từ chối)
-        $existingReturnRequests = DB::table('return_requests')
-            ->where('order_id', $order->order_id)
-            ->where('user_id', $request->user()->user_id)
-            ->where('status', '!=', 'Đã từ chối')
-            ->get();
-
-        // Tính tổng số lượng đã được yêu cầu hoàn trả
-        $alreadyReturnedQuantities = [];
-        foreach ($existingReturnRequests as $existingRequest) {
-            if ($existingRequest->return_items) {
-                $items = json_decode($existingRequest->return_items, true);
-                if (is_array($items)) {
-                    foreach ($items as $item) {
-                        $productId = $item['product_id'];
-                        $alreadyReturnedQuantities[$productId] = ($alreadyReturnedQuantities[$productId] ?? 0) + $item['quantity'];
-                    }
-                }
-            }
-        }
-
 
         // ✅ Validation cuối cùng cho refund_amount
         if ($refundAmount <= 0) {
@@ -876,13 +876,13 @@ class OrderController extends Controller
         });
 
         if ($refundAmount > $maxRefundAmount) {
-            Log::error("Refund amount exceeds order total", [
-                'order_id' => $order->order_id,
-                'order_code' => $order->order_code,
-                'calculated_refund_amount' => $refundAmount,
-                'max_allowed_refund_amount' => $maxRefundAmount,
-                'breakdown' => $refundBreakdown
-            ]);
+            // Log::error("Refund amount exceeds order total", [
+            //     'order_id' => $order->order_id,
+            //     'order_code' => $order->order_code,
+            //     'calculated_refund_amount' => $refundAmount,
+            //     'max_allowed_refund_amount' => $maxRefundAmount,
+            //     'breakdown' => $refundBreakdown
+            // ]);
 
             return response()->json([
                 'status' => false,
