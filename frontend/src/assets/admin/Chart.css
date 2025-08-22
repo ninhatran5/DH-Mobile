@@ -391,6 +391,7 @@
 }
 
 .chart-admin-accounts-table,
+.chart-admin-recent-orders-table,
 .chart-admin-top-buyers {
   background: white;
   padding: 20px;
@@ -405,19 +406,22 @@
 }
 
 /* Enhanced Table */
-.chart-admin-accounts-table {
+.chart-admin-accounts-table,
+.chart-admin-recent-orders-table {
   max-height: 600px;
   overflow-y: auto;
 }
 
-.chart-admin-table-container {
+.chart-admin-table-container,
+.chart-admin-recent-orders-container {
   display: flex;
   flex-direction: column;
 }
 
+/* Accounts Table Header (6 columns) */
 .chart-admin-table-header {
   display: grid;
-  grid-template-columns: 40px 1fr 2fr 60px 80px;
+  grid-template-columns: 40px 1fr 120px 100px 80px 80px;
   gap: 10px;
   padding: 10px;
   background: #f8f9fa;
@@ -431,9 +435,10 @@
   z-index: 10;
 }
 
+/* Accounts Table Row (6 columns) */
 .chart-admin-table-row {
   display: grid;
-  grid-template-columns: 40px 1fr 2fr 60px 80px;
+  grid-template-columns: 40px 1fr 120px 100px 80px 80px;
   gap: 10px;
   padding: 10px;
   border-bottom: 1px solid #f0f0f0;
@@ -453,6 +458,237 @@
 .chart-admin-amount {
   color: #34a853;
   font-weight: 600;
+}
+
+.chart-admin-customer-name {
+  font-weight: 500;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chart-admin-order-code {
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  background: #f8f9fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.chart-admin-order-status {
+  font-weight: 500;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(107, 114, 128, 0.1);
+  text-align: center;
+  display: inline-block;
+  min-width: 60px;
+}
+
+.chart-admin-order-time {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* ============================================ */
+/* RECENT ORDERS TABLE - COMPLETE REDESIGN    */
+/* ============================================ */
+
+/* Recent Orders Container */
+.recent-orders-table {
+  background: white;
+  border-radius: 6px;
+  padding: 12px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.03);
+  border: 1px solid #e5e7eb;
+}
+
+.recent-orders-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.recent-orders-container {
+  display: flex;
+  flex-direction: column;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+/* Recent Orders Header */
+.recent-orders-header {
+  display: grid;
+  grid-template-columns: 30px 1fr 1.3fr 120px 90px 70px 70px;
+  gap: 10px;
+  padding: 6px 8px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 10px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  margin-bottom: 4px;
+  border: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Recent Orders Row */
+.recent-orders-row {
+  display: grid;
+  grid-template-columns: 30px 1fr 1.3fr 120px 90px 70px 70px;
+  gap: 10px;
+  padding: 6px 8px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 12px;
+  align-items: center;
+  transition: all 0.2s ease;
+  border-radius: 3px;
+  margin-bottom: 1px;
+}
+
+.recent-orders-row:hover {
+  background: linear-gradient(135deg, #f8faff 0%, #f0f9ff 100%);
+  transform: translateX(1px);
+  box-shadow: 0 1px 3px rgba(59, 130, 246, 0.06);
+  border-color: #bfdbfe;
+}
+
+.recent-orders-row:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+/* Recent Orders Cells */
+.recent-orders-stt {
+  font-weight: 500;
+  color: #6b7280;
+  text-align: center;
+  font-size: 11px;
+}
+
+.recent-orders-customer {
+  font-weight: 500;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.recent-orders-email {
+  font-size: 10px;
+  color: #3b82f6;
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  background: #eff6ff;
+  padding: 2px 4px;
+  border-radius: 3px;
+  border: 1px solid #dbeafe;
+  display: inline-block;
+  max-width: 100%;
+  transition: all 0.2s ease;
+}
+
+.recent-orders-email:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+}
+
+.recent-orders-code {
+  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  font-size: 9px;
+  font-weight: 600;
+  color: #374151;
+  background: #f9fafb;
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid #e5e7eb;
+  text-align: center;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.recent-orders-status {
+  font-weight: 500;
+  font-size: 9px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  display: inline-block;
+  min-width: 70px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Status Colors */
+.recent-orders-status[data-status="Hoàn thành"],
+.recent-orders-status[data-status="Đã giao hàng"] {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  color: #065f46;
+  border-color: #6ee7b7;
+}
+
+.recent-orders-status[data-status="Đang xử lý"] {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  border-color: #f59e0b;
+}
+
+.recent-orders-status[data-status="Chờ xác nhận"] {
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  color: #374151;
+  border-color: #9ca3af;
+}
+
+.recent-orders-status[data-status="Đã hủy"] {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #991b1b;
+  border-color: #f87171;
+}
+
+.recent-orders-status[data-status="Đã trả hàng"] {
+  background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+  color: #5b21b6;
+  border-color: #a78bfa;
+}
+
+.recent-orders-time {
+  font-size: 10px;
+  color: #6b7280;
+  font-weight: 400;
+  text-align: center;
+}
+
+.recent-orders-amount {
+  font-weight: 600;
+  font-size: 11px;
+  color: #059669;
+  text-align: right;
+  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
 }
 
 /* Top Buyers */
@@ -628,17 +864,51 @@
     font-size: 11px;
   }
   
-  .chart-admin-accounts-table {
+  .chart-admin-accounts-table,
+  .chart-admin-recent-orders-table {
     max-height: 400px;
   }
   
+  /* Accounts table mobile (6 columns -> 4 columns) */
   .chart-admin-table-header,
   .chart-admin-table-row {
-    grid-template-columns: 30px 1fr 60px 60px;
+    grid-template-columns: 30px 1fr 80px 60px;
+    font-size: 11px;
+    gap: 6px;
   }
   
+  /* Recent Orders table mobile (7 columns -> 4 columns) */
+  .recent-orders-header,
+  .recent-orders-row {
+    grid-template-columns: 25px 1fr 50px 45px;
+    gap: 4px;
+    padding: 4px 6px;
+    font-size: 9px;
+  }
+  
+  .recent-orders-title {
+    font-size: 12px;
+  }
+  
+  .recent-orders-table {
+    padding: 8px;
+  }
+  
+  /* Ẩn cột cho Accounts table trên mobile */
   .chart-admin-table-header span:nth-child(3),
-  .chart-admin-table-row span:nth-child(3) {
+  .chart-admin-table-row span:nth-child(3),
+  .chart-admin-table-header span:nth-child(5),
+  .chart-admin-table-row span:nth-child(5) {
+    display: none;
+  }
+  
+  /* Ẩn Email, Mã đơn và Thời gian cho Recent Orders trên mobile */
+  .recent-orders-header span:nth-child(3),
+  .recent-orders-row span:nth-child(3),
+  .recent-orders-header span:nth-child(4),
+  .recent-orders-row span:nth-child(4),
+  .recent-orders-header span:nth-child(6),
+  .recent-orders-row span:nth-child(6) {
     display: none;
   }
 }
