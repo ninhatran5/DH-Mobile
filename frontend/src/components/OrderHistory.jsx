@@ -36,11 +36,14 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
   const [hasReviewableProduct, setHasReviewableProduct] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(0);
   const [orderData, setOrderData] = useState(order);
+  const returnID = orderData?.return_id;
+
   const userId = localStorage.getItem("userID");
 
   useOrderRealtime({
     userId,
     orderId: orderData.order_id,
+    returnId: returnID,
     onOrderUpdate: (orderUpdate) => {
       setOrderData((prev) => ({
         ...prev,
@@ -255,8 +258,12 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
                   tooltip={t("orderHistory.returnRequest")}
                   className="icon-circle"
                   onClick={handleOpenReasonModal}
-                  startTime={orderData?.updated_at || orderData?.delivered_at || orderData?.order_date}
-                  seconds={180} 
+                  startTime={
+                    orderData?.updated_at ||
+                    orderData?.delivered_at ||
+                    orderData?.order_date
+                  }
+                  seconds={180}
                 />
                 {hasReviewableProduct && (
                   <TooltipIcon
