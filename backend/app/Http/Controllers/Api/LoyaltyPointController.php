@@ -48,7 +48,7 @@ class LoyaltyPointController extends Controller
                 $oldPoints = $user->loyalty_points;
 
                 // Giảm cố định 35%
-                $percent = 0.35;
+                $percent = 0.33;
 
                 // Tính điểm bị trừ
                 $pointsToDeduct = (int) floor($oldPoints * $percent);
