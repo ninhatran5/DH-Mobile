@@ -102,17 +102,30 @@ class VoucherController extends Controller
      */
     public function store(Request $request)
     {
+        $messages = [
+            'min_order_value.gt' => 'Giá trị đơn tối thiểu phải lớn hơn số tiền giảm.',
+        ];
+
         $validated = $request->validate([
             'code' => 'required|string|max:150|min:10|unique:vouchers,code',
             'title' => 'required|string|min:5|max:255',
-            'discount_amount' => 'required|numeric',
+            'discount_amount' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:0|max:255',
-            'min_order_value' => 'required|integer',
+            'min_order_value' => 'required|integer|gt:discount_amount',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'is_active' => 'boolean',
-        ]);
+        ], $messages);
+
+        // ✅ Double check để đảm bảo chắc chắn
+        if ($validated['min_order_value'] <= $validated['discount_amount']) {
+            return response()->json([
+                'message' => 'Giá trị đơn tối thiểu phải lớn hơn số tiền giảm (kiểm tra bổ sung).'
+            ], 422);
+        }
+
         $voucher = Voucher::create($validated);
+
         return response()->json([
             'message' => 'Tạo voucher thành công',
             'data' => $voucher
@@ -185,21 +198,38 @@ class VoucherController extends Controller
     public function update(Request $request, string $id)
     {
         $voucher = Voucher::findOrFail($id);
+
+        $messages = [
+            'min_order_value.gt' => 'Giá trị đơn tối thiểu phải lớn hơn số tiền giảm.',
+        ];
+
         $validated = $request->validate([
-            'code' => 'string|max:150|min:10|unique:vouchers,code,' . $id . ',voucher_id',
-            'title' => 'string|min:5|max:255',
-            'discount_amount' => 'numeric',
-            'min_order_value' => 'integer',
-            'quantity' => 'required|integer|min:0|max:255',
-            'start_date' => 'date',
-            'end_date' => 'date|after_or_equal:start_date',
-            'is_active' => 'boolean',
-        ]);
+            'code' => 'sometimes|string|max:150|min:10|unique:vouchers,code,' . $id . ',voucher_id',
+            'title' => 'sometimes|string|min:5|max:255',
+            'discount_amount' => 'sometimes|numeric|min:0',
+            'min_order_value' => 'sometimes|integer|gt:discount_amount',
+            'quantity' => 'sometimes|integer|min:0|max:255',
+            'start_date' => 'sometimes|date',
+            'end_date' => 'sometimes|date|after_or_equal:start_date',
+            'is_active' => 'sometimes|boolean',
+        ], $messages);
+
+        // ✅ Double-check điều kiện an toàn
+        if (
+            isset($validated['discount_amount'], $validated['min_order_value']) &&
+            $validated['min_order_value'] <= $validated['discount_amount']
+        ) {
+            return response()->json([
+                'message' => 'Giá trị đơn tối thiểu phải lớn hơn số tiền giảm (kiểm tra bổ sung).'
+            ], 422);
+        }
+
         $voucher->update($validated);
+
         return response()->json([
             'message' => 'Cập nhật voucher thành công',
             'data' => $voucher
-        ])->setStatusCode(200, 'OK',);
+        ])->setStatusCode(200, 'OK');
     }
 
     /**
