@@ -11,7 +11,7 @@ class ReturnNotificationController extends Controller
     // Lấy danh sách thông báo (ví dụ cho admin)
     public function index()
     {
-        $notifications = ReturnNotification::orderBy('created_at', 'desc')->get();
+        $notifications = ReturnNotification::with('return_request')->orderBy('created_at', 'desc')->get();
         return response()->json($notifications);
     }
 
