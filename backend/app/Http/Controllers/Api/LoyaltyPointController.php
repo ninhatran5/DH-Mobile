@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\LoyaltyPoint;
-use App\Models\LoyaltyTier;
 use Illuminate\Support\Facades\DB;
 
 class LoyaltyPointController extends Controller
