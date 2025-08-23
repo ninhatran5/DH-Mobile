@@ -11,7 +11,7 @@ import Blogs from "../components/Blogs";
 import SliderLogoBrand from "../components/SliderLogoBrand";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import ListProductCard from "../components/ListProductCard";
 import ProductsCarousel from "../components/ProductsCarousel";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,8 +22,6 @@ import { fetchCategory } from "../slices/categorySlice";
 import { fetchViewProduct } from "../slices/viewProductSlice";
 
 const Home = () => {
-  const [showBannerPopup, setShowBannerPopup] = useState(false);
-  const [popupBanner, setPopupBanner] = useState(null);
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isPercentDecrease = true;
@@ -40,7 +38,6 @@ const Home = () => {
   const smallBanner = banners.filter((banner) =>
     banner.title.includes("Banner")
   );
-  const eventBanner = banners.filter((event) => event.title.includes("Event"));
   const bestSellingProducts = [...products]
     .filter((item) => item.view_count && item.view_count > 0)
     .sort((a, b) => b.view_count - a.view_count)
@@ -54,17 +51,6 @@ const Home = () => {
     dispatch(fetchCategory());
     dispatch(fetchViewProduct(userId));
   }, [dispatch, userId]);
-
-  useEffect(() => {
-    if (
-      eventBanner.length > 0 &&
-      !sessionStorage.getItem("hasSeenBannerPopup")
-    ) {
-      setPopupBanner(eventBanner);
-      setShowBannerPopup(true);
-      sessionStorage.setItem("hasSeenBannerPopup", "1");
-    }
-  }, [eventBanner]);
 
   const convertPriceToNumber = (priceString) => {
     if (!priceString || typeof priceString !== "string") return 0;
@@ -166,88 +152,6 @@ const Home = () => {
   };
   return (
     <>
-      {showBannerPopup && popupBanner && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            background: "rgba(0,0,0,0.45)",
-            zIndex: 2000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <div
-            style={{
-              position: "relative",
-              background: "#fff",
-              borderRadius: 16,
-              boxShadow: "0 8px 32px 0 rgba(0,0,0,0.18)",
-              padding: 0,
-              maxWidth: 720,
-              width: "90vw",
-              maxHeight: "90vh",
-              overflow: "hidden",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <button
-              onClick={() => setShowBannerPopup(false)}
-              style={{
-                position: "absolute",
-                top: 8,
-                right: 8,
-                background: "rgba(0,0,0,0.12)",
-                border: "none",
-                borderRadius: "500px",
-                width: 32,
-                height: 32,
-                fontSize: 20,
-                color: "white",
-                cursor: "pointer",
-                zIndex: 2,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                transition: "background 0.18s",
-              }}
-              aria-label="Đóng"
-            >
-              ×
-            </button>
-            <Swiper
-              modules={[Pagination, Autoplay]}
-              pagination={{ clickable: true }}
-              autoplay={{ delay: 3000, disableOnInteraction: false }}
-              style={{ width: "100%", maxHeight: 480 }}
-            >
-              {eventBanner.map((banner, index) => (
-                <SwiperSlide key={index}>
-                  <img
-                    src={banner.image_url}
-                    alt={banner.title}
-                    style={{
-                      width: "100%",
-                      objectFit: "cover",
-                      height: "400px",
-                      display: "block",
-                      borderRadius: 12,
-                      maxHeight: 480,
-                    }}
-                  />
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
-        </div>
-      )}
-
       <section
         className="py-3"
         style={{
