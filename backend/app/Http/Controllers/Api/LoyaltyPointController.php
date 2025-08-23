@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\LoyaltyPoint;
+use App\Models\LoyaltyTier;
 use Illuminate\Support\Facades\DB;
 
 class LoyaltyPointController extends Controller
@@ -42,14 +43,36 @@ class LoyaltyPointController extends Controller
     public function resetAll(Request $request)
     {
         DB::transaction(function () {
-            // Xóa lịch sử tích điểm chi tiết
-            LoyaltyPoint::query()->delete();
-            // Đặt lại cột tổng điểm đã cache trên bảng users
-            User::query()->update(['loyalty_points' => 0]);
+            $users = User::all();
+
+            foreach ($users as $user) {
+                $oldPoints = $user->loyalty_points;
+
+                // Random % từ 30 đến 35
+                $percent = rand(30, 35) / 100;
+
+                // Tính điểm bị trừ
+                $pointsToDeduct = (int) floor($oldPoints * $percent);
+
+                // Điểm mới
+                $newPoints = max(0, $oldPoints - $pointsToDeduct);
+
+                // Cập nhật user
+                $user->loyalty_points = $newPoints;
+                $user->save();
+
+                // Lưu lịch sử reset
+                LoyaltyPoint::create([
+                    'user_id'     => $user->user_id,
+                    'points'      => -$pointsToDeduct, // số điểm bị trừ (âm)
+                    'type'        => 'reset',
+                    'description' => "Reset: trừ {$pointsToDeduct} điểm (từ {$oldPoints} xuống {$newPoints})",
+                ]);
+            }
         });
 
         return response()->json([
-            'message' => 'Đã reset điểm của tất cả người dùng về 0.'
+            'message' => 'Đã reset: tất cả user bị trừ ngẫu nhiên 30% - 35% điểm.'
         ]);
     }
 }
