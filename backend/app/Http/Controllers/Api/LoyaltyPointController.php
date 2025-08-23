@@ -48,7 +48,8 @@ class LoyaltyPointController extends Controller
                 $oldPoints = $user->loyalty_points;
 
                 // Random % từ 30 đến 35
-                $percent = rand(30, 35) / 100;
+                $percentOptions = [32, 33, 36, 38, 39];
+                $percent = $percentOptions[array_rand($percentOptions)] / 100;
 
                 // Tính điểm bị trừ
                 $pointsToDeduct = (int) floor($oldPoints * $percent);
