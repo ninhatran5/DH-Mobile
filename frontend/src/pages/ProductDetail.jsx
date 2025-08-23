@@ -404,16 +404,80 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
     <>
       {loading && <Loading />}
       {!isQuickView && !hideExtraInfo && (
-        <Breadcrumb
-          title={t("breadcrumbProductDetail.breadcrumbHeader")}
-          mainItem={t("breadcrumbProductDetail.breadcrumbTitleHome")}
-          mainItem2={t("breadcrumbProductDetail.breadcrumbTitleProduct")}
-          secondaryItem={productDetails.data?.name}
-          linkMainItem={"/"}
-          linkMainItem2={"/products"}
-        />
-      )}
+        <div
+          style={{
+            marginBottom: "20px",
+          }}
+        >
+          <div className="container">
+            <nav
+              style={{
+                fontSize: "14px",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <a
+                href="/"
+                style={{
+                  textDecoration: "none",
+                  color: "#98a2b3",
+                  transition: "color 0.2s ease",
+                  fontWeight: "500",
+                }}
+                onMouseOver={(e) => (e.target.style.color = "#0056b3")}
+                onMouseOut={(e) => (e.target.style.color = "#98a2b3")}
+              >
+                {t("breadcrumbProductDetail.breadcrumbTitleHome")}
+              </a>
 
+              <span
+                style={{
+                  margin: "0 10px",
+                  color: "#6c757d",
+                  fontSize: "12px",
+                }}
+              >
+                ›
+              </span>
+
+              <a
+                href="/products"
+                style={{
+                  textDecoration: "none",
+                  color: "#98a2b3",
+                  transition: "color 0.2s ease",
+                  fontWeight: "500",
+                }}
+                onMouseOver={(e) => (e.target.style.color = "#0056b3")}
+                onMouseOut={(e) => (e.target.style.color = "#98a2b3")}
+              >
+                {t("breadcrumbProductDetail.breadcrumbTitleProduct")}
+              </a>
+
+              <span
+                style={{
+                  margin: "0 10px",
+                  color: "#6c757d",
+                  fontSize: "12px",
+                }}
+              >
+                ›
+              </span>
+
+              <span
+                style={{
+                  color: "#495057",
+                  fontWeight: "600",
+                  fontSize: "14px",
+                }}
+              >
+                {productDetails.data?.name}
+              </span>
+            </nav>
+          </div>
+        </div>
+      )}
       <div
         className={isQuickView ? "" : "container"}
         style={isQuickView ? { padding: 0, margin: 0 } : { marginBottom: 80 }}
@@ -601,12 +665,16 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
               </div>
             </div>
             <div className="mb-3">
-              <label className="font-weight-bold mt-2">
+              <label
+                style={{ fontSize: 15.5 }}
+                className="font-weight-bold mt-2"
+              >
                 {t("productDetail.selectVersion")}:
               </label>
               <div className="d-flex flex-column gap-2 version-button-group">
                 {allAttributes.map((attr) => (
                   <div
+                    style={{ fontSize: 15.5 }}
                     key={attr.attribute_id}
                     className="d-flex align-items-center mb-2"
                   >
@@ -637,6 +705,7 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
                                 : ""
                             } ${!isValid ? "disabled" : ""}`}
                             disabled={!isValid}
+                            style={{ fontSize: 15 }}
                             onClick={() =>
                               setSelectedOptions((prev) => {
                                 if (prev[attr.attribute_id] === val.value_id) {
@@ -661,7 +730,10 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
               </div>
             </div>
             <div>
-              <label className="font-weight-bold mb-2 me-3">
+              <label
+                style={{ fontSize: 15.5 }}
+                className="font-weight-bold mb-2 me-3"
+              >
                 {t("productDetail.quantity")}:
               </label>
               <div className="quantity-group mb-4">

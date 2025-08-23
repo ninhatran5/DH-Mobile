@@ -209,7 +209,7 @@ const Home = () => {
                 width: 32,
                 height: 32,
                 fontSize: 20,
-                color: "#333",
+                color: "white",
                 cursor: "pointer",
                 zIndex: 2,
                 display: "flex",
@@ -221,8 +221,6 @@ const Home = () => {
             >
               ×
             </button>
-
-            {/* Slider */}
             <Swiper
               modules={[Pagination, Autoplay]}
               pagination={{ clickable: true }}
@@ -236,7 +234,7 @@ const Home = () => {
                     alt={banner.title}
                     style={{
                       width: "100%",
-                       objectFit: "cover",
+                      objectFit: "cover",
                       height: "400px",
                       display: "block",
                       borderRadius: 12,
