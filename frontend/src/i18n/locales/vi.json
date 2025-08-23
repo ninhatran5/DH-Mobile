@@ -646,6 +646,7 @@
   },
   "returnRequest": {
     "title": "Yêu cầu Trả hàng/Hoàn tiền",
+    "selectAll": "Chọn tất cả",
     "selectReason": "Chọn lý do",
     "reasonBroken": "Hàng bể vỡ",
     "reasonDefective": "Hàng lỗi, không hoạt động",

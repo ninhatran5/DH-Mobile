@@ -211,6 +211,37 @@ const ReturnRequestModal = ({ show, handleClose, orderId, caseType = 1 }) => {
         <div className="container">
           <div className="mb-3">
             <p style={{ marginTop: 10 }}>{t("returnRequest.selectProduct")}</p>
+            {orderDetail?.products?.length > 0 && (
+              <div className="d-flex align-items-center mb-2">
+                <input
+                  type="checkbox"
+                  className="me-2"
+                  checked={
+                    selectedItems.length === orderDetail.products.length &&
+                    orderDetail.products.length > 0
+                  }
+                  indeterminate={
+                    selectedItems.length > 0 &&
+                    selectedItems.length < orderDetail.products.length
+                  }
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedItems(
+                        orderDetail.products.map((p) => ({
+                          variant_id: p.variant_id,
+                          return_quantity: 1,
+                        }))
+                      );
+                    } else {
+                      setSelectedItems([]);
+                    }
+                  }}
+                />
+                <span style={{fontSize: 14, fontWeight: 500 }}>
+                  {t("returnRequest.selectAll")}
+                </span>
+              </div>
+            )}
             {orderDetail?.products?.map((product) => (
               <div
                 key={product.variant_id}
