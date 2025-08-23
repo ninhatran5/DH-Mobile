@@ -391,7 +391,7 @@ class VnpayController extends Controller
                 'updated_at' => now(),
             ]);
 
-$wallet = DB::table('wallets')->where('user_id', $user_id)->first();
+            $wallet = DB::table('wallets')->where('user_id', $user_id)->first();
             // Thêm order items và trừ tồn kho
             foreach ($items as $item) {
                 if (isset($item['variant_id'], $item['quantity'], $item['price_snapshot'])) {
@@ -417,17 +417,17 @@ $wallet = DB::table('wallets')->where('user_id', $user_id)->first();
                 }
             }
 
-               // Trừ ví nếu có
-        if ($pending->paid_by_wallet > 0 && $wallet) {
-            DB::table('wallets')->where('wallet_id', $wallet->wallet_id)->decrement('balance', $pending->paid_by_wallet);
-            DB::table('wallet_transactions')->insert([
-                'wallet_id' => $wallet->wallet_id,
-                'amount' => -$pending->paid_by_wallet,
-                'type' => 'tiêu tiền',
-                'note' => 'Thanh toán đơn hàng #' . $orderCode,
-                'created_at' => now(),
-            ]);
-        }
+            // Trừ ví nếu có
+            if ($pending->paid_by_wallet > 0 && $wallet) {
+                DB::table('wallets')->where('wallet_id', $wallet->wallet_id)->decrement('balance', $pending->paid_by_wallet);
+                DB::table('wallet_transactions')->insert([
+                    'wallet_id' => $wallet->wallet_id,
+                    'amount' => -$pending->paid_by_wallet,
+                    'type' => 'tiêu tiền',
+                    'note' => 'Thanh toán đơn hàng #' . $orderCode,
+                    'created_at' => now(),
+                ]);
+            }
 
             // Xử lý voucher sau khi tạo đơn hàng thành công
             if ($voucherId) {
