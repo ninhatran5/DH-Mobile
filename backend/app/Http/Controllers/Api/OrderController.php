@@ -872,221 +872,7 @@ class OrderController extends Controller
         ]);
     }
 
-    //     $order = Orders::find($id);
-    //     if (!$order) {
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => 'Không tìm thấy đơn hàng'
-    //         ], 404);
-    //     }
-
-    //     // Chỉ cho phép khi đơn đã giao hoặc hoàn thành
-    //     if (!in_array($order->status, ['Đã giao hàng', 'Hoàn thành'])) {
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => 'Chỉ được yêu cầu hoàn hàng khi đơn hàng ở trạng thái Đã giao hàng hoặc Hoàn thành'
-    //         ], 400);
-    //     }
-
-    //     // Danh sách lý do hợp lệ
-    //     $reasons = [
-    //         'Thiếu hàng',
-    //         'Người bán gửi sai hàng',
-    //         'Hàng bể vỡ',
-    //         'Hàng lỗi, không hoạt động',
-    //         'Hàng giả, nhái',
-    //         'Hàng khác với mô tả',
-    //         'Hàng đã qua sử dụng',
-    //         'Lý do khác'
-    //     ];
-
-    //     // Validate request
-    //     $request->validate([
-    //         'return_reason' => 'required|string',
-    //         'return_reason_other' => 'nullable|string|max:255',
-    //         'upload_url' => 'nullable|array|max:3',
-    //         'upload_url.*' => 'file|mimes:jpg,png,jpeg|max:4096',
-    //         'return_items' => 'required',
-    //         'return_items.*.product_id' => 'required|integer',
-    //         'return_items.*.quantity' => 'required|integer|min:1',
-    //     ]);
-
-    //     // Upload ảnh lên Cloudinary
-    //     $imageUrls = [];
-    //     if ($request->hasFile('upload_url')) {
-    //         try {
-    //             $cloudinary = app(Cloudinary::class);
-    //             $uploadApi = $cloudinary->uploadApi();
-
-    //             foreach ($request->file('upload_url') as $imageFile) {
-    //                 $result = $uploadApi->upload($imageFile->getRealPath(), [
-    //                     'folder' => 'comments_img'
-    //                 ]);
-    //                 $imageUrls[] = $result['secure_url'];
-    //             }
-    //         } catch (\Exception $e) {
-    //             return response()->json([
-    //                 'message' => 'Lỗi khi upload ảnh: ' . $e->getMessage(),
-    //                 'file' => $e->getFile(),
-    //                 'line' => $e->getLine()
-    //             ], 500);
-    //         }
-    //     }
-
-    //     $reason = $request->return_reason;
-
-    //     if (!in_array($reason, $reasons)) {
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => 'Lý do hoàn hàng không hợp lệ.'
-    //         ], 400);
-    //     }
-
-    //     if ($reason === 'Lý do khác' && empty($request->return_reason_other)) {
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => 'Vui lòng nhập lý do hoàn hàng cụ thể.'
-    //         ], 400);
-    //     }
-
-    //     $returnItems = $request->return_items;
-    //     if (is_string($returnItems)) {
-    //         $returnItems = json_decode($returnItems, true);
-    //         if (json_last_error() !== JSON_ERROR_NONE) {
-    //             return response()->json([
-    //                 'status' => false,
-    //                 'message' => 'return_items must be a valid JSON array or array format. JSON error: ' . json_last_error_msg()
-    //             ], 400);
-    //         }
-    //     }
-
-    //     if (!is_array($returnItems) || empty($returnItems)) {
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => 'return_items must be a non-empty array'
-    //         ], 400);
-    //     }
-
-    //     foreach ($returnItems as $index => $item) {
-    //         if (!isset($item['product_id']) || !is_numeric($item['product_id'])) {
-    //             return response()->json([
-    //                 'status' => false,
-    //                 'message' => "return_items[{$index}].product_id is required and must be a number"
-    //             ], 400);
-    //         }
-    //         if (!isset($item['quantity']) || !is_numeric($item['quantity']) || $item['quantity'] < 1) {
-    //             return response()->json([
-    //                 'status' => false,
-    //                 'message' => "return_items[{$index}].quantity is required and must be a number greater than 0"
-    //             ], 400);
-    //         }
-    //     }
-
-    //     // Lấy tất cả yêu cầu hoàn trả trước đã được chấp nhận
-    //     $existingReturnRequests = DB::table('return_requests')
-    //         ->where('order_id', $order->order_id)
-    //         ->where('user_id', $request->user()->user_id)
-    //         ->where('status', '!=', 'Đã từ chối')
-    //         ->get();
-
-    //     $alreadyReturnedQuantities = [];
-    //     foreach ($existingReturnRequests as $existingRequest) {
-    //         if ($existingRequest->return_items) {
-    //             $items = json_decode($existingRequest->return_items, true);
-    //             if (is_array($items)) {
-    //                 foreach ($items as $item) {
-    //                     $productId = $item['product_id'];
-    //                     $alreadyReturnedQuantities[$productId] = ($alreadyReturnedQuantities[$productId] ?? 0) + $item['quantity'];
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     $orderItems = $order->orderItems->keyBy('product_id');
-    //     $totalOriginalAmount = $order->orderItems->sum(fn($i) => $i->price * $i->quantity);
-    //     $totalDiscountAmount = ($order->voucher_discount ?? 0) + ($order->rank_discount ?? 0);
-    //     $discountRate = $totalOriginalAmount > 0 ? $totalDiscountAmount / $totalOriginalAmount : 0;
-
-    //     $refundAmount = 0;
-    //     $refundBreakdown = [];
-
-    //     foreach ($returnItems as $item) {
-    //         $productId = $item['product_id'];
-    //         if (!isset($orderItems[$productId])) {
-    //             return response()->json([
-    //                 'status' => false,
-    //                 'message' => 'Sản phẩm không tồn tại trong đơn hàng.'
-    //             ], 400);
-    //         }
-    //         $orderItem = $orderItems[$productId];
-    //         $alreadyReturnedQty = $alreadyReturnedQuantities[$productId] ?? 0;
-    //         $availableQty = $orderItem->quantity - $alreadyReturnedQty;
-    //         if ($availableQty <= 0 || $item['quantity'] > $availableQty) {
-    //             return response()->json([
-    //                 'status' => false,
-    //                 'message' => "Sản phẩm '{$orderItem->product->name}' chỉ còn {$availableQty} sản phẩm có thể hoàn trả."
-    //             ], 400);
-    //         }
-    //         $itemRefundAmount = $orderItem->price * $item['quantity'] * (1 - $discountRate);
-    //         $refundAmount += $itemRefundAmount;
-
-    //         $refundBreakdown[] = [
-    //             'product_id' => $productId,
-    //             'product_name' => $orderItem->product->name ?? 'Unknown',
-    //             'quantity' => $item['quantity'],
-    //             'refund_subtotal' => round($itemRefundAmount, 0)
-    //         ];
-    //     }
-
-    //     if ($refundAmount <= 0) {
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => 'Số tiền hoàn trả phải lớn hơn 0.'
-    //         ], 400);
-    //     }
-
-    //     DB::beginTransaction();
-    //     try {
-    //         $returnId = DB::table('return_requests')->insertGetId([
-    //             'order_id' => $order->order_id,
-    //             'user_id' => $request->user()->user_id,
-    //             'reason' => $reason,
-    //             'return_reason_other' => $request->return_reason_other,
-    //             'status' => 'đã yêu cầu',
-    //             'refund_amount' => $refundAmount,
-    //             'upload_url' => json_encode($imageUrls),
-    //             'return_items' => json_encode($returnItems),
-    //             'created_at' => now(),
-    //             'updated_at' => now(),
-    //         ]);
-
-    //         // 🔔 Thêm thông báo admin
-    //         DB::table('return_notifications')->insert([
-    //             'order_id' => $order->order_id,
-    //             'return_request_id' => $returnId,
-    //             'message' => "Khách hàng {$order->customer} vừa gửi yêu cầu hoàn hàng cho đơn #{$order->order_code}",
-    //             'is_read' => false,
-    //             'created_at' => now(),
-    //             'updated_at' => now(),
-    //         ]);
-
-    //         DB::commit();
-
-    //         return response()->json([
-    //             'status' => true,
-    //             'message' => 'Yêu cầu hoàn hàng đã được gửi thành công',
-    //             'return_request_id' => $returnId,
-    //             'refund_amount' => round($refundAmount, 0)
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => 'Có lỗi xảy ra khi tạo yêu cầu hoàn hàng: ' . $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
-
+    
 
     public function clientRequestReturn(Request $request, $id)
     {
@@ -1199,19 +985,68 @@ class OrderController extends Controller
             ], 400);
         }
 
+        // 🔴 Debug: Log return_items structure
+        Log::info('Return items validation debug', [
+            'return_items_raw' => $request->input('return_items'),
+            'return_items_processed' => $returnItems,
+            'is_array' => is_array($returnItems),
+            'count' => is_array($returnItems) ? count($returnItems) : 'not array'
+        ]);
+
+        // ✅ Pre-process return_items to derive product_id from variant_id if missing
+        $variantIds = [];
+        foreach ($returnItems as $item) {
+            if (isset($item['variant_id']) && !isset($item['product_id'])) {
+                $variantIds[] = $item['variant_id'];
+            }
+        }
+
+        // Fetch product_id for variants if needed
+        $variantProductMap = [];
+        if (!empty($variantIds)) {
+            $variantProductMap = DB::table('product_variants')
+                ->whereIn('variant_id', $variantIds)
+                ->pluck('product_id', 'variant_id')
+                ->toArray();
+        }
+
+        // Update return_items with derived product_id
+        foreach ($returnItems as $index => &$item) {
+            if (!isset($item['product_id']) && isset($item['variant_id'])) {
+                if (isset($variantProductMap[$item['variant_id']])) {
+                    $item['product_id'] = $variantProductMap[$item['variant_id']];
+                    Log::info("Derived product_id for item {$index}", [
+                        'variant_id' => $item['variant_id'],
+                        'derived_product_id' => $item['product_id']
+                    ]);
+                }
+            }
+        }
+        unset($item); // Break reference
+
         // Validate từng item trong return_items
         foreach ($returnItems as $index => $item) {
+            // 🔴 Debug: Log each item structure
+            Log::info("Item {$index} validation debug", [
+                'item_data' => $item,
+                'has_product_id' => isset($item['product_id']),
+                'product_id_value' => $item['product_id'] ?? 'missing',
+                'is_numeric_product_id' => isset($item['product_id']) ? is_numeric($item['product_id']) : false,
+                'has_quantity' => isset($item['quantity']),
+                'quantity_value' => $item['quantity'] ?? 'missing'
+            ]);
+            
             if (!isset($item['product_id']) || !is_numeric($item['product_id'])) {
                 return response()->json([
                     'status' => false,
-                    'message' => "return_items[{$index}].product_id is required and must be a number"
+                    'message' => "return_items[{$index}].product_id is required and must be a number. If you only provided variant_id, make sure the variant exists in the database. Received: " . json_encode($item)
                 ], 400);
             }
 
             if (!isset($item['quantity']) || !is_numeric($item['quantity']) || $item['quantity'] < 1) {
                 return response()->json([
                     'status' => false,
-                    'message' => "return_items[{$index}].quantity is required and must be a number greater than 0"
+                    'message' => "return_items[{$index}].quantity is required and must be a number greater than 0. Received: " . json_encode($item)
                 ], 400);
             }
         }
