@@ -47,9 +47,8 @@ class LoyaltyPointController extends Controller
             foreach ($users as $user) {
                 $oldPoints = $user->loyalty_points;
 
-                // Random % từ 30 đến 35
-                $percentOptions = [32, 33, 36, 38, 39];
-                $percent = $percentOptions[array_rand($percentOptions)] / 100;
+                // Giảm cố định 35%
+                $percent = 0.35;
 
                 // Tính điểm bị trừ
                 $pointsToDeduct = (int) floor($oldPoints * $percent);
@@ -72,7 +71,7 @@ class LoyaltyPointController extends Controller
         });
 
         return response()->json([
-            'message' => 'Đã reset: tất cả user bị trừ ngẫu nhiên 30% - 35% điểm.'
+            'message' => 'Đã reset: tất cả user bị trừ cố định 35% điểm.'
         ]);
     }
 }
