@@ -646,6 +646,7 @@
   },
   "returnRequest": {
     "title": "Return/Refund Request",
+    "selectAll": "Select All",
     "selectReason": "Select reason",
     "reasonBroken": "Broken item",
     "reasonDefective": "Defective, not working",
