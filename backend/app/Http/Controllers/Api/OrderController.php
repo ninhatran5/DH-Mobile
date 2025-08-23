@@ -872,7 +872,7 @@ class OrderController extends Controller
         ]);
     }
 
-    
+
 
     public function clientRequestReturn(Request $request, $id)
     {
@@ -1035,7 +1035,7 @@ class OrderController extends Controller
                 'has_quantity' => isset($item['quantity']),
                 'quantity_value' => $item['quantity'] ?? 'missing'
             ]);
-            
+
             if (!isset($item['product_id']) || !is_numeric($item['product_id'])) {
                 return response()->json([
                     'status' => false,
@@ -1560,7 +1560,6 @@ class OrderController extends Controller
             $returnRequest->save();
 
             // 2. Cập nhật trạng thái đơn gốc (orders) ở mức tổng quát
-            // - Trường hợp hoàn một phần: return_order_id != null -> chỉ cập nhật đơn hoàn (return_order_id)
             $orderIdToUpdate = $returnRequest->return_order_id ? $returnRequest->return_order_id : $returnRequest->order_id;
             $order = Orders::find($orderIdToUpdate);
             if ($order) {
@@ -1589,6 +1588,38 @@ class OrderController extends Controller
                         'note' => 'Hoàn tiền đơn hàng #' . $order->order_code,
                         'return_id' => $returnRequest->return_id,
                     ]);
+
+                    // 5. Trừ điểm theo đúng đơn hoàn (ưu tiên return_order_id nếu có)
+                    try {
+                        $orderForPoints = $returnRequest->return_order_id
+                            ? Orders::find($returnRequest->return_order_id)
+                            : Orders::find($returnRequest->order_id);
+
+                        if ($orderForPoints) {
+                            // Công thức tính điểm giống lúc cộng khi mua
+                            $calcPoints = function ($amount) {
+                                return (int)(ceil(ceil($amount / 100) / 1000) * 1000);
+                            };
+
+                            $pointsFromOrder = $calcPoints($orderForPoints->total_amount);
+
+                            $user = User::find($userId);
+                            if ($user && $pointsFromOrder > 0) {
+                                $user->loyalty_points = max(0, $user->loyalty_points - $pointsFromOrder);
+                                $user->save();
+
+                                // Nếu có bảng log loyalty thì ghi thêm
+                                LoyaltyPoint::create([
+                                    'user_id' => $userId,
+                                    'points'  => -$pointsFromOrder,
+                                    'type'    => 'return',
+                                    'description' => 'Trừ điểm do hoàn đơn #' . $orderForPoints->order_code,
+                                ]);
+                            }
+                        }
+                    } catch (\Exception $e) {
+                        Log::error("Lỗi trừ điểm khi hoàn đơn: " . $e->getMessage());
+                    }
                 } elseif ($newStatus === 'Đã từ chối') {
                     $order->status = 'Từ chối hoàn hàng';
                 }
@@ -1620,6 +1651,7 @@ class OrderController extends Controller
             ], 500);
         }
     }
+
 
 
     // Client hủy đơn hàng khi đang ở trạng thái Chờ xác nhận
