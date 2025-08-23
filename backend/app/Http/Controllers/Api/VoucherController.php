@@ -100,37 +100,37 @@ class VoucherController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-public function store(Request $request)
-{
-    $messages = [
-        'min_order_value.gt' => 'Giá trị đơn tối thiểu phải lớn hơn số tiền giảm.',
-    ];
+    public function store(Request $request)
+    {
+        $messages = [
+            'min_order_value.gt' => 'Giá trị đơn tối thiểu phải lớn hơn số tiền giảm.',
+        ];
 
-    $validated = $request->validate([
-        'code' => 'required|string|max:150|min:10|unique:vouchers,code',
-        'title' => 'required|string|min:5|max:255',
-        'discount_amount' => 'required|numeric|min:0',
-        'quantity' => 'required|integer|min:0|max:255',
-        'min_order_value' => 'required|integer|gt:discount_amount', // ✅ rule Laravel
-        'start_date' => 'required|date',
-        'end_date' => 'required|date|after_or_equal:start_date',
-        'is_active' => 'boolean',
-    ], $messages);
+        $validated = $request->validate([
+            'code' => 'required|string|max:150|min:10|unique:vouchers,code',
+            'title' => 'required|string|min:5|max:255',
+            'discount_amount' => 'required|numeric|min:0',
+            'quantity' => 'required|integer|min:0|max:255',
+            'min_order_value' => 'required|integer|gt:discount_amount',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'is_active' => 'boolean',
+        ], $messages);
 
-    // ✅ Double check để đảm bảo chắc chắn
-    if ($validated['min_order_value'] <= $validated['discount_amount']) {
+        // ✅ Double check để đảm bảo chắc chắn
+        if ($validated['min_order_value'] <= $validated['discount_amount']) {
+            return response()->json([
+                'message' => 'Giá trị đơn tối thiểu phải lớn hơn số tiền giảm (kiểm tra bổ sung).'
+            ], 422);
+        }
+
+        $voucher = Voucher::create($validated);
+
         return response()->json([
-            'message' => 'Giá trị đơn tối thiểu phải lớn hơn số tiền giảm (kiểm tra bổ sung).'
-        ], 422);
+            'message' => 'Tạo voucher thành công',
+            'data' => $voucher
+        ])->setStatusCode(201, 'Created');
     }
-
-    $voucher = Voucher::create($validated);
-
-    return response()->json([
-        'message' => 'Tạo voucher thành công',
-        'data' => $voucher
-    ])->setStatusCode(201, 'Created');
-}
 
     /**
      * @OA\Get(
