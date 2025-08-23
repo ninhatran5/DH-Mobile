@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAdminLoyaltyTiers,
   updateAdminLoyaltyTier,
+  resetAllLoyaltyPoints,
 } from "../../slices/adminMembership";
 import "../../assets/admin/AdminMembership.css";
 import coinIcon from "../../assets/images/icons8-coin.gif";
@@ -12,10 +13,11 @@ import cancel from "../../assets/images/cancel-close-svgrepo-com.svg";
 import dayjs from "dayjs";
 import Loading from "../../components/Loading";
 import { FaEdit } from "react-icons/fa";
-
+import Swal from "sweetalert2";
+import { toast } from "react-toastify";
 const AdminMembership = () => {
   const dispatch = useDispatch();
-  const { loyaltyTiers, loading, error, updateLoading, updateError } =
+  const { loyaltyTiers, loading, error, updateLoading, updateError, resetLoading, resetError, resetSuccess } =
     useSelector((state) => state.adminMembership);
 
   const [editTier, setEditTier] = useState(null);
@@ -84,14 +86,93 @@ const AdminMembership = () => {
     dispatch(fetchAdminLoyaltyTiers());
   };
 
+  const handleResetAllPoints = async () => {
+    const result = await Swal.fire({
+      title: 'Xác nhận Reset Điểm',
+      text: 'Bạn có chắc chắn muốn reset tất cả điểm thành viên về 0?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Xác nhận Reset',
+      cancelButtonText: 'Hủy',
+      reverseButtons: true,
+      customClass: {
+        popup: 'swal2-popup-custom'
+      },
+      footer: '<p style="color: #dc3545; font-weight: bold;">⚠️ Hành động này không thể hoàn tác!</p>'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await dispatch(resetAllLoyaltyPoints()).unwrap();
+        toast.success('🎉 Đã reset tất cả điểm thành viên thành công!', {
+          position: 'top-right',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      } catch (error) {
+        toast.error(`❌ Có lỗi xảy ra khi reset điểm: ${error.message || error}`, {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      }
+    }
+  };
+
   if (loading) return <Loading />;
   if (error)
     return <div className="text-danger text-center my-4">Lỗi: {error}</div>;
 
   return (
     <div className="admin-membership-tier-cards container">
+      {/* Header with Reset Button */}
+      <div className="row mb-1">
+        <div className="col-12">
+          <div className="d-flex justify-content-between align-items-center mb-1">
+            <h2 className="admin-title mb-0">
+              <i className="fas fa-crown me-2 text-warning"></i>
+              Quản lý Hạng Thành Viên
+            </h2>
+            <button
+              className="btn-reset-points"
+              onClick={handleResetAllPoints}
+              disabled={resetLoading}
+            >
+              {resetLoading ? (
+                <>
+                  <div className="spinner-border spinner-border-sm me-2" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                  Đang reset...
+                </>
+              ) : (
+                <>
+                  Reset Tất Cả Điểm
+                </>
+              )}
+            </button>
+          </div>
+          {resetError && (
+            <div className="alert alert-danger mt-1">
+              <i className="fas fa-exclamation-triangle me-2"></i>
+              Lỗi khi reset điểm: {resetError.message || resetError}
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className="row">
-        {loyaltyTiers.map((tier) => {
+        {[...loyaltyTiers]
+          .sort((a, b) => b.min_points - a.min_points)
+          .map((tier) => {
           const isEditing = editTier?.tier_id === tier.tier_id;
           return (
             <div className="col-md-3 mb-4" key={tier.tier_id}>

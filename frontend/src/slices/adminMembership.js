@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosAdmin } from "../../utils/axiosConfig";
 
+// Fetch all loyalty tiers
 export const fetchAdminLoyaltyTiers = createAsyncThunk(
   "adminMembership/fetchAdminLoyaltyTiers",
   async (_, { rejectWithValue }) => {
@@ -13,11 +14,24 @@ export const fetchAdminLoyaltyTiers = createAsyncThunk(
   }
 );
 
+// Update one tier
 export const updateAdminLoyaltyTier = createAsyncThunk(
   "adminMembership/updateAdminLoyaltyTier",
   async ({ id, data }, { rejectWithValue }) => {
     try {
       const response = await axiosAdmin.put(`/loyalty-tiers/${id}`, data);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
+export const resetAllLoyaltyPoints = createAsyncThunk(
+  "adminMembership/resetAllLoyaltyPoints",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosAdmin.post("/loyalty-points/reset-all");
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
@@ -33,10 +47,14 @@ const adminMembershipSlice = createSlice({
     error: null,
     updateLoading: false,
     updateError: null,
+    resetLoading: false,
+    resetError: null,
+    resetSuccess: false,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // fetch
       .addCase(fetchAdminLoyaltyTiers.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -51,6 +69,8 @@ const adminMembershipSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
+      // update
       .addCase(updateAdminLoyaltyTier.pending, (state) => {
         state.updateLoading = true;
         state.updateError = null;
@@ -59,7 +79,6 @@ const adminMembershipSlice = createSlice({
         state.updateLoading = false;
         const updatedTier = action.payload.data;
         if (updatedTier) {
-          // Tìm theo cả id và tier_id
           const idx = state.loyaltyTiers.findIndex(
             (tier) =>
               tier.id === updatedTier.id || tier.tier_id === updatedTier.tier_id
@@ -75,6 +94,21 @@ const adminMembershipSlice = createSlice({
       .addCase(updateAdminLoyaltyTier.rejected, (state, action) => {
         state.updateLoading = false;
         state.updateError = action.payload;
+      })
+
+      // reset all points
+      .addCase(resetAllLoyaltyPoints.pending, (state) => {
+        state.resetLoading = true;
+        state.resetError = null;
+        state.resetSuccess = false;
+      })
+      .addCase(resetAllLoyaltyPoints.fulfilled, (state, action) => {
+        state.resetLoading = false;
+        state.resetSuccess = true;
+      })
+      .addCase(resetAllLoyaltyPoints.rejected, (state, action) => {
+        state.resetLoading = false;
+        state.resetError = action.payload;
       });
   },
 });
