@@ -53,11 +53,13 @@ const Homeadmin = () => {
   const prevUnreadCount = useRef(0);
   const audioRef = useRef(null);
   const spokenNotifications = useRef(new Set()); // Track which notifications have been spoken
+  
+  // Removed realtime return notification states
 
-  // Số lượng thông báo chưa đọc - mêmó hóa
-  const unreadCount = useMemo(() => 
-    notifications.filter((n) => n.is_read === 0).length, [notifications]
-  );
+  // Số lượng thông báo chưa đọc - chỉ tính thông báo từ Redux
+  const unreadCount = useMemo(() => {
+    return notifications.filter((n) => n.is_read === 0).length;
+  }, [notifications]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -365,9 +367,31 @@ const Homeadmin = () => {
     }
   };
 
-  const handleMarkAsRead = () => {
-    dispatch(markNotificationsRead());
-    setShowNotificationDot(false);
+  const handleMarkAsRead = async () => {
+    try {
+      // Đánh dấu tất cả thông báo thường đã đọc
+      await dispatch(markNotificationsRead()).unwrap();
+      
+      // Lấy tất cả thông báo hoàn hàng chưa đọc
+      const unreadRefundNotifications = notifications.filter(
+        (n) => n.type === 'refund' && n.is_read === 0
+      );
+      
+      // Đánh dấu từng thông báo hoàn hàng đã đọc
+      const refundPromises = unreadRefundNotifications.map((notification) => {
+        if (notification.return_notification_id) {
+          return dispatch(markRefundNotificationRead(notification.return_notification_id));
+        }
+        return Promise.resolve();
+      });
+      
+      // Chờ tất cả thông báo hoàn hàng được đánh dấu đã đọc
+      await Promise.all(refundPromises);
+      
+      setShowNotificationDot(false);
+    } catch (error) {
+      console.error('Lỗi khi đánh dấu thông báo đã đọc:', error);
+    }
   };
 
   const handleNotificationItemClick = (noti) => {
@@ -1071,49 +1095,48 @@ const Homeadmin = () => {
                               Không có thông báo mới
                             </div>
                           ) : (
-                            notifications.map((noti, idx) => (
-                              <div
-                                key={`${noti.type || 'default'}-${noti.type === 'refund' ? noti.return_notification_id : noti.notification_id || idx}-${idx}`}
-                                className={`dropdown-item admin_dh-notification-item d-flex align-items-start ${
-                                  noti.is_read === 1 ? "" : "unread"
-                                }`}
-                                onClick={() =>
-                                  handleNotificationItemClick(noti)
-                                }
-                                style={{ cursor: "pointer" }}
-                              >
-                                <div className={`admin_dh-notification-icon ${
-                                  noti.type === 'refund' 
-                                    ? 'admin_dh-bg-warning-soft' 
-                                    : 'admin_dh-bg-primary-soft'
-                                }`}>
-                                  <i className={`bi ${
+                            <>
+                              {/* Hiển thị thông báo thường từ Redux */}
+                              {notifications.map((noti, idx) => (
+                                <div
+                                  key={`${noti.type || 'default'}-${noti.type === 'refund' ? noti.return_notification_id : noti.notification_id || idx}-${idx}`}
+                                  className={`dropdown-item admin_dh-notification-item d-flex align-items-start ${
+                                    noti.is_read === 1 ? "" : "unread"
+                                  }`}
+                                  onClick={() => handleNotificationItemClick(noti)}
+                                  style={{ cursor: "pointer" }}
+                                >
+                                  <div className={`admin_dh-notification-icon ${
                                     noti.type === 'refund' 
-                                      ? 'bi-arrow-return-left' 
-                                      : 'bi-bell'
-                                  }`}></i>
+                                      ? 'admin_dh-bg-warning-soft' 
+                                      : 'admin_dh-bg-primary-soft'
+                                  }`}>
+                                    <i className={`bi ${
+                                      noti.type === 'refund' 
+                                        ? 'bi-arrow-return-left' 
+                                        : 'bi-bell'
+                                    }`}></i>
+                                  </div>
+                                  <div className="flex-grow-1 ms-3">
+                                    <p className="mb-0" title={noti.message}>
+                                      {noti.message}
+                                    </p>
+                                    <small className="text-muted">
+                                      <i className="bi bi-clock me-1"></i>
+                                      {noti.created_at
+                                        ? new Date(noti.created_at).toLocaleDateString("vi-VN", {
+                                            year: "numeric",
+                                            month: "2-digit",
+                                            day: "2-digit",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                          })
+                                        : ""}
+                                    </small>
+                                  </div>
                                 </div>
-                                <div className="flex-grow-1 ms-3">
-                                  <p className="mb-0" title={noti.message}>
-                                    {noti.message}
-                                  </p>
-                                  <small className="text-muted">
-                                    <i className="bi bi-clock me-1"></i>
-                                    {noti.created_at
-                                      ? new Date(
-                                          noti.created_at
-                                        ).toLocaleDateString("vi-VN", {
-                                          year: "numeric",
-                                          month: "2-digit",
-                                          day: "2-digit",
-                                          hour: "2-digit",
-                                          minute: "2-digit",
-                                        })
-                                      : ""}
-                                  </small>
-                                </div>
-                              </div>
-                            ))
+                              ))}
+                            </>
                           )}
                         </div>
                       </div>
