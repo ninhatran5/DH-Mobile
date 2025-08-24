@@ -134,6 +134,27 @@ const CheckOut = () => {
       return;
     }
 
+    const voucherInfo = selectedVoucher.voucher || selectedVoucher;
+    const discountType = voucherInfo.discount_type;
+    const discountValue = parseFloat(voucherInfo.discount_amount);
+    const maxDiscount = voucherInfo.max_discount
+      ? parseFloat(voucherInfo.max_discount)
+      : null;
+    const orderTotal = selectedItems.reduce(
+      (sum, item) => sum + item.quantity * item?.variant?.price,
+      0
+    );
+
+    let discount = 0;
+    if (discountType === "fixed") {
+      discount = discountValue;
+    } else if (discountType === "percent") {
+      discount = (orderTotal * discountValue) / 100;
+      if (maxDiscount !== null && discount > maxDiscount) {
+        discount = maxDiscount;
+      }
+    }
+
     const voucherData = {
       voucher_id:
         selectedVoucher.voucher_id || selectedVoucher.voucher?.voucher_id,
@@ -145,14 +166,10 @@ const CheckOut = () => {
     };
 
     try {
-      const result = await dispatch(applyVoucher(voucherData)).unwrap();
-      if (result && result.discount_amount) {
-        setDiscountAmount(result.discount_amount);
-        toast.success(t("voucher.applySuccess"));
-        setShowVoucherDropdown(false);
-      } else {
-        toast.error(t("voucher.applyFail"));
-      }
+      await dispatch(applyVoucher(voucherData)).unwrap();
+      setDiscountAmount(discount);
+      toast.success(t("voucher.applySuccess"));
+      setShowVoucherDropdown(false);
     } catch (error) {
       toast.error(error || t("voucher.invalid"));
     }
