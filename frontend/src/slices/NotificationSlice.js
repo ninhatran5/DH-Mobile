@@ -97,7 +97,7 @@ export const markRefundNotificationRead = createAsyncThunk(
     try {
       const token = localStorage.getItem("adminToken");
       // đổi sang call API với return_request_id
-      const response = await axiosAdmin.post(`/return-notifications/read/${return_notification_id}`, {}, {
+      const response = await axiosAdmin.put(`/return-notifications/read/${return_notification_id}`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
