@@ -204,7 +204,59 @@ const adminOrderSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    // ⚡ Ultra-fast optimistic update for instant UI feedback
+    updateOrderStatusOptimistic: (state, action) => {
+      const { orderId, status } = action.payload;
+      
+      // Update current order immediately
+      if (state.order && state.order.order_id === orderId) {
+        state.order = { ...state.order, status };
+      }
+      
+      // Update orders list immediately
+      state.orders = state.orders.map(order =>
+        order?.order_id === orderId
+          ? { ...order, status }
+          : order
+      );
+    },
+    
+    // ⚡ Revert optimistic update if API call fails
+    revertOrderStatusOptimistic: (state, action) => {
+      const { orderId, status } = action.payload;
+      
+      // Revert current order
+      if (state.order && state.order.order_id === orderId) {
+        state.order = { ...state.order, status };
+      }
+      
+      // Revert orders list
+      state.orders = state.orders.map(order =>
+        order?.order_id === orderId
+          ? { ...order, status }
+          : order
+      );
+    },
+    
+    // ⚡ Update from real-time data instantly
+    updateOrderFromRealtime: (state, action) => {
+      const realtimeOrder = action.payload;
+      const orderId = realtimeOrder.order_id;
+      
+      // Update current order
+      if (state.order && state.order.order_id === orderId) {
+        state.order = { ...state.order, ...realtimeOrder };
+      }
+      
+      // Update orders list
+      state.orders = state.orders.map(order =>
+        order?.order_id === orderId
+          ? { ...order, ...realtimeOrder }
+          : order
+      );
+    }
+  },
   extraReducers: (builder) => {
     builder
       // Lấy danh sách đơn hàng

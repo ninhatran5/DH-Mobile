@@ -168,17 +168,22 @@ const usePusherConnection = (orderId, order, dispatch) => {
         },
         forceTLS: true,
         enabledTransports: ['ws', 'wss'],
-        activityTimeout: 30000, // Giảm từ 60s xuống 30s
-        pongTimeout: 15000, // Giảm từ 30s xuống 15s
-        unavailableTimeout: 6000, // Thêm timeout cho unavailable state
+        activityTimeout: 20000, // ⚡ Ultra-fast: 20s
+        pongTimeout: 8000, // ⚡ Ultra-fast: 8s  
+        unavailableTimeout: 3000, // ⚡ Ultra-fast: 3s
         disableStats: true,
+        // ⚡ Performance optimizations
+        wsPort: 443,
+        wssPort: 443,
+        httpHost: import.meta.env.VITE_PUSHER_HOST || 'ws-ap1.pusher-channels.com',
+        enableStats: false,
       });
 
       // ⚡ Optimized connection promise với shorter timeout
       const connectionPromise = new Promise((resolve, reject) => {
         const connectionTimeout = setTimeout(() => {
-          reject(new Error('Connection timeout after 5 seconds'));
-        }, 5000); // Giảm từ 10s xuống 5s
+          reject(new Error('Connection timeout after 3 seconds'));
+        }, 3000); // ⚡ Ultra-fast 3s timeout
 
         const handleConnected = () => {
           clearTimeout(connectionTimeout);
@@ -229,7 +234,7 @@ const usePusherConnection = (orderId, order, dispatch) => {
       const subscriptionPromise = new Promise((resolve, reject) => {
         const subTimeout = setTimeout(() => {
           reject(new Error('Channel subscription timeout'));
-        }, 3000); // Giảm từ 5s xuống 3s
+        }, 2000); // ⚡ Ultra-fast 2s subscription timeout
 
         const handleSubscriptionSuccess = () => {
           clearTimeout(subTimeout);
@@ -251,20 +256,40 @@ const usePusherConnection = (orderId, order, dispatch) => {
 
       await subscriptionPromise;
 
-      // ⚡ Optimized event handler với immediate UI update
+      // ⚡ Ultra-optimized event handler với zero-delay UI updates
       channel.bind('OrderUpdated', (data) => {
         if (data.order && data.order.order_id === parseInt(orderId)) {
           setLastUpdateTime(new Date().toISOString());
           
-          // 🚀 Immediate UI feedback - không cần chờ API response
-          const activeItem = document.querySelector('.history-item.active');
-          if (activeItem) {
-            activeItem.classList.add('realtime-highlight');
-            setTimeout(() => activeItem.classList.remove('realtime-highlight'), 1500);
+          // 🚀 INSTANT status update from real-time data
+          if (data.order.status) {
+            dispatch({
+              type: 'adminOrder/updateOrderFromRealtime',
+              payload: data.order
+            });
           }
           
-          // Fetch updated data
-          dispatch(fetchorderdetails(orderId));
+          // 🚀 Immediate visual feedback - no delays
+          const activeItem = document.querySelector('.history-item.active');
+          const statusElements = document.querySelectorAll('[data-status]');
+          
+          if (activeItem) {
+            activeItem.classList.add('realtime-highlight');
+            setTimeout(() => activeItem.classList.remove('realtime-highlight'), 1200);
+          }
+          
+          // 🚀 Update all status indicators immediately
+          statusElements.forEach(el => {
+            if (el.dataset.status === data.order.status) {
+              el.classList.add('status-active', 'pulse-animation');
+              setTimeout(() => el.classList.remove('pulse-animation'), 1000);
+            }
+          });
+          
+          // 🚀 Background data refresh - non-blocking
+          setTimeout(() => {
+            dispatch(fetchorderdetails(orderId));
+          }, 0);
         }
       });
 
@@ -325,13 +350,11 @@ const usePusherConnection = (orderId, order, dispatch) => {
       return;
     }
 
-    // ⚡ Giảm delay để kết nối nhanh hơn
-    const initTimer = setTimeout(() => {
-      initializePusher();
-    }, 50); // Giảm từ 100ms xuống 50ms
+    // ⚡ Zero delay initialization for maximum speed
+    initializePusher(); // Execute immediately without any delay
 
     return () => {
-      clearTimeout(initTimer);
+      // Cleanup handled by initializePusher function
     };
   }, [orderId, getUserId]); // Remove retryCount from dependencies to avoid infinite loops
 
@@ -672,36 +695,78 @@ const OrderDetails = () => {
 
     if (!confirmResult.isConfirmed) return;
 
-    setUpdating(true);
-    
-    // 🚀 Optimistic update - cập nhật UI ngay lập tức
+    // ⚡ INSTANT UI UPDATE - Update UI immediately without any delays
     const previousStatus = order.status;
+    const optimisticOrder = { ...order, status: nextStatus };
     
-    try {
-      // 🚀 Cập nhật UI trước khi gọi API
-      const optimisticOrder = { ...order, status: nextStatus };
-      
-      // Gọi API
-      await dispatch(updateOrderStatus({ orderId: order.order_id, status: nextStatus })).unwrap();
-      
-      // 🎉 Thông báo thành công ngắn gọn
-      Swal.fire({
-        title: "Thành công!",
-        text: `Trạng thái đã được cập nhật sang "${nextStatus}".`,
-        icon: "success",
-        timer: 1500, // Giảm thời gian hiển thị
-        showConfirmButton: false,
-        toast: true,
-        position: "top-end",
-      });
-    } catch (e) {
-      console.error('Update status error:', e);
-      // Revert optimistic update nếu có lỗi
-      dispatch(fetchorderdetails(order.order_id));
-      Swal.fire("Lỗi", "Không thể cập nhật trạng thái", "error");
-    } finally {
-      setUpdating(false);
+    // 🚀 Update Redux store immediately for instant UI feedback
+    dispatch({
+      type: 'adminOrder/updateOrderStatusOptimistic',
+      payload: { orderId: order.order_id, status: nextStatus }
+    });
+
+    // 🚀 Update local state immediately
+    setNewStatus(nextStatus);
+    
+    // 🚀 Instant visual feedback
+    const statusElement = document.querySelector(`[data-status="${previousStatus}"]`);
+    if (statusElement) {
+      statusElement.classList.add('status-updating');
     }
+
+    // 🚀 Show immediate success notification
+    const successToast = Swal.fire({
+      title: "Đang cập nhật...",
+      text: `Trạng thái đang được cập nhật sang "${nextStatus}".`,
+      icon: "info",
+      timer: 800,
+      showConfirmButton: false,
+      toast: true,
+      position: "top-end",
+      timerProgressBar: true,
+    });
+
+    // 🔥 Background API call - non-blocking
+    setTimeout(async () => {
+      try {
+        setUpdating(true);
+        await dispatch(updateOrderStatus({ orderId: order.order_id, status: nextStatus })).unwrap();
+        
+        // 🎉 Quick success confirmation
+        Swal.fire({
+          text: `Trạng thái đã cập nhật thành công.`,
+          icon: "success",
+          timer: 1000,
+          showConfirmButton: false,
+          toast: true,
+          position: "top-end",
+        });
+      } catch (e) {
+        console.error('Update status error:', e);
+        
+        // Revert optimistic update
+        dispatch({
+          type: 'adminOrder/revertOrderStatusOptimistic',
+          payload: { orderId: order.order_id, status: previousStatus }
+        });
+        setNewStatus(previousStatus);
+        
+        Swal.fire({
+          title: "❌ Lỗi", 
+          text: "Không thể cập nhật trạng thái. Đã hoàn tác.", 
+          icon: "error",
+          timer: 2000,
+          toast: true,
+          position: "top-end"
+        });
+        
+        // Force refresh data to ensure consistency
+        dispatch(fetchorderdetails(order.order_id));
+      } finally {
+        setUpdating(false);
+      }
+    }, 0); // Execute immediately but asynchronously
+
   }, [order?.order_id, order?.status, nextStatus, dispatch]);
 
   const handleCancelOrder = useCallback(async () => {
@@ -819,11 +884,9 @@ const OrderDetails = () => {
     }));
   }, [order?.status, order?.cancel_reason, order?.order_date, lastUpdateTime]);
 
-  // ✅ BỎ LOADING - chỉ hiển thị nếu không có dữ liệu
   if (error) return <p className="order-detail-error">{error}</p>;
   if (!order && !loading) return <div>Không tìm thấy đơn hàng</div>;
   
-  // Hiển thị nội dung ngay lập tức, không cần chờ loading
   return (
     <>
       {updating && <Loading />}
