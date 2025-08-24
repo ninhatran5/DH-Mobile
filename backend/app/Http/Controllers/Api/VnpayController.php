@@ -64,9 +64,14 @@ class VnpayController extends Controller
                 ->where('quantity', '>', 0)
                 ->first();
             if ($voucher && $total >= $voucher->min_order_value) {
-                $voucherDiscount = $voucher->discount_amount;
+                if ($voucher->discount_type === 'percent') {
+                    $voucherDiscount = min(($total * $voucher->discount_amount) / 100, $voucher->max_discount);
+                } else {
+                    $voucherDiscount = $voucher->discount_amount;
+                }
             } else {
                 $voucherId = null;
+                $voucherDiscount = 0;
             }
         }
 
@@ -259,9 +264,13 @@ class VnpayController extends Controller
                 ->first();
 
             if ($voucher && $total >= $voucher->min_order_value) {
-                $discount = $voucher->discount_amount;
+                if ($voucher->discount_type === 'percent') {
+                    $discount = min(($total * $voucher->discount_amount) / 100, $voucher->max_discount);
+                } else {
+                    $discount = $voucher->discount_amount;
+                }
             } else {
-                $voucherId = null; // không hợp lệ
+                $voucherId = null;
                 $discount = 0;
             }
         }

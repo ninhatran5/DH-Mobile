@@ -27,7 +27,9 @@ export default function VoucherDropdown({ voucher, handleSelectVoucher }) {
         <div className="checkout-voucher-apply-details">
           {t("voucher.discount")}{" "}
           <span className="discount-value">
-            {numberFormat(voucherData?.discount_amount)}
+            {voucherData?.discount_type === "percent"
+              ? `${parseFloat(voucherData?.discount_amount)}%`
+              : `${numberFormat(voucherData?.discount_amount)}`}
           </span>{" "}
           {t("voucher.forOrdersFrom")}{" "}
           <span className="minimum-value">
