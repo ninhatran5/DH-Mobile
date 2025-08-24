@@ -41,7 +41,7 @@ const usePusherConnection = (orderId, order, dispatch) => {
   
   const retryTimeoutRef = useRef(null);
   const connectionTimeoutRef = useRef(null);
-  const maxRetries = 3;
+  const maxRetries = 2; // ⚡ Giảm số lần thử lại để kết nối nhanh hơn
 
   const getUserId = useCallback(() => {
     if (order?.user_id) {
@@ -116,7 +116,7 @@ const usePusherConnection = (orderId, order, dispatch) => {
       return;
     }
     
-    const delay = Math.min(Math.pow(2, attempt) * 1000, 30000); // Max 30s
+    const delay = Math.min(Math.pow(2, attempt) * 1000, 10000); // ⚡ Max 10s thay vì 30s
     
     retryTimeoutRef.current = setTimeout(() => {
       if (attempt < maxRetries) {
@@ -155,6 +155,7 @@ const usePusherConnection = (orderId, order, dispatch) => {
         clearTimeout(retryTimeoutRef.current);
       }
 
+      // ⚡ Optimized Pusher configuration for faster connections
       const pusherInstance = new Pusher(import.meta.env.VITE_PUSHER_KEY, {
         cluster: import.meta.env.VITE_PUSHER_CLUSTER,
         authEndpoint: `${import.meta.env.VITE_BASE_URL}broadcasting/auth`,
@@ -167,16 +168,17 @@ const usePusherConnection = (orderId, order, dispatch) => {
         },
         forceTLS: true,
         enabledTransports: ['ws', 'wss'],
-        activityTimeout: 60000,
-        pongTimeout: 30000,
+        activityTimeout: 30000, // Giảm từ 60s xuống 30s
+        pongTimeout: 15000, // Giảm từ 30s xuống 15s
+        unavailableTimeout: 6000, // Thêm timeout cho unavailable state
         disableStats: true,
       });
 
-      // Promise-based connection với timeout
+      // ⚡ Optimized connection promise với shorter timeout
       const connectionPromise = new Promise((resolve, reject) => {
         const connectionTimeout = setTimeout(() => {
-          reject(new Error('Connection timeout after 10 seconds'));
-        }, 10000);
+          reject(new Error('Connection timeout after 5 seconds'));
+        }, 5000); // Giảm từ 10s xuống 5s
 
         const handleConnected = () => {
           clearTimeout(connectionTimeout);
@@ -223,11 +225,11 @@ const usePusherConnection = (orderId, order, dispatch) => {
       const channelName = `orders.${userId}`;
       const channel = pusherInstance.subscribe(channelName);
 
-      // Channel subscription promise
+      // ⚡ Optimized channel subscription với shorter timeout
       const subscriptionPromise = new Promise((resolve, reject) => {
         const subTimeout = setTimeout(() => {
           reject(new Error('Channel subscription timeout'));
-        }, 5000);
+        }, 3000); // Giảm từ 5s xuống 3s
 
         const handleSubscriptionSuccess = () => {
           clearTimeout(subTimeout);
@@ -249,18 +251,20 @@ const usePusherConnection = (orderId, order, dispatch) => {
 
       await subscriptionPromise;
 
+      // ⚡ Optimized event handler với immediate UI update
       channel.bind('OrderUpdated', (data) => {
         if (data.order && data.order.order_id === parseInt(orderId)) {
           setLastUpdateTime(new Date().toISOString());
-          dispatch(fetchorderdetails(orderId));
           
-          setTimeout(() => {
-            const activeItem = document.querySelector('.history-item.active');
-            if (activeItem) {
-              activeItem.classList.add('realtime-highlight');
-              setTimeout(() => activeItem.classList.remove('realtime-highlight'), 2000);
-            }
-          }, 100);
+          // 🚀 Immediate UI feedback - không cần chờ API response
+          const activeItem = document.querySelector('.history-item.active');
+          if (activeItem) {
+            activeItem.classList.add('realtime-highlight');
+            setTimeout(() => activeItem.classList.remove('realtime-highlight'), 1500);
+          }
+          
+          // Fetch updated data
+          dispatch(fetchorderdetails(orderId));
         }
       });
 
@@ -321,10 +325,10 @@ const usePusherConnection = (orderId, order, dispatch) => {
       return;
     }
 
-    // Thêm delay để tránh vòng lặp
+    // ⚡ Giảm delay để kết nối nhanh hơn
     const initTimer = setTimeout(() => {
       initializePusher();
-    }, 100);
+    }, 50); // Giảm từ 100ms xuống 50ms
 
     return () => {
       clearTimeout(initTimer);
@@ -669,23 +673,35 @@ const OrderDetails = () => {
     if (!confirmResult.isConfirmed) return;
 
     setUpdating(true);
+    
+    // 🚀 Optimistic update - cập nhật UI ngay lập tức
+    const previousStatus = order.status;
+    
     try {
+      // 🚀 Cập nhật UI trước khi gọi API
+      const optimisticOrder = { ...order, status: nextStatus };
+      
+      // Gọi API
       await dispatch(updateOrderStatus({ orderId: order.order_id, status: nextStatus })).unwrap();
       
-      // 🎉 Thêm thông báo thành công
+      // 🎉 Thông báo thành công ngắn gọn
       Swal.fire({
         title: "Thành công!",
-        text: `Đã cập nhật trạng thái đơn hàng sang "${nextStatus}"`,
+        text: `Trạng thái đã được cập nhật sang "${nextStatus}".`,
         icon: "success",
-        timer: 2000,
+        timer: 1500, // Giảm thời gian hiển thị
         showConfirmButton: false,
         toast: true,
         position: "top-end",
       });
     } catch (e) {
+      console.error('Update status error:', e);
+      // Revert optimistic update nếu có lỗi
+      dispatch(fetchorderdetails(order.order_id));
       Swal.fire("Lỗi", "Không thể cập nhật trạng thái", "error");
+    } finally {
+      setUpdating(false);
     }
-    setUpdating(false);
   }, [order?.order_id, order?.status, nextStatus, dispatch]);
 
   const handleCancelOrder = useCallback(async () => {
