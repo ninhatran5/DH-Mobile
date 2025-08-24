@@ -30,7 +30,20 @@ const negativeWords = [
   "ghê tởm", "đáng ghét", "phiền phức", "phiền toái", "chán ngán", 
   "ngán ngẩm", "khó ưa", "chướng mắt", "khó chịu vãi", "ức chế vl", 
   "chán đời", "quá dở", "nản", "bất mãn", "ghê gớm", "ngứa mắt", 
-  "khó ở", "bực bội", "tồi", "thảm", "hết chịu nổi"
+  "khó ở", "bực bội", "tồi", "thảm", "hết chịu nổi",
+
+
+    "fuck", "fuk", "f***", "fking", "fk", "fucking", "motherfucker", "mf",
+  "shit", "bullshit", "bs", "crap", "damn", "dammit", 
+  "asshole", "jerk", "bastard", "bitch", "son of a bitch", 
+  "slut", "whore", "hoe", "prostitute",
+  "dick", "cock", "pussy", "cunt", "prick", "wanker",
+  "dumbass", "stupid", "idiot", "moron", "retard", "loser", 
+  "scumbag", "garbage", "trash", "useless", "worthless", 
+  "pathetic", "lame", "terrible", "awful", "disgusting", "gross",
+  "nonsense", "fake", "liar", "cheater", "fraud", "scam", "scammer",
+  "suck", "sucks", "you suck", "douche", "douchebag", 
+  "pig", "dog", "coward", "weakling", "stinky", "dirty", "filthy"
 ];
 
 export default negativeWords
