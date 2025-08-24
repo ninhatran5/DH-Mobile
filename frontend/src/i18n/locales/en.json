@@ -612,7 +612,8 @@
     "tooManyImages": "Too many images",
     "maxImagesText": "You can only upload up to 5 images",
     "confirmSuccessTitle": "Confirmation Successful",
-    "successTextWithPoints": "Thank you for confirming successful receipt of your order! You have earned reward points!"
+    "successTextWithPoints": "Thank you for confirming successful receipt of your order! You have earned reward points!",
+    "containsNegative": "The content contains negative words, please enter again."
   },
   "address": {
     "selectAddressTitle": "Select delivery address",

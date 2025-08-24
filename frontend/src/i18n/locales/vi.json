@@ -612,7 +612,8 @@
     "chooseImages": "Chọn hình ảnh",
     "uploadHint": "Bạn có thể tải lên tối đa 5 hình ảnh",
     "tooManyImages": "Quá nhiều hình ảnh",
-    "maxImagesText": "Bạn chỉ có thể tải lên tối đa 5 hình ảnh"
+    "maxImagesText": "Bạn chỉ có thể tải lên tối đa 5 hình ảnh",
+    "containsNegative": "Nội dung chứa từ ngữ tiêu cực, vui lòng nhập lại"
   },
   "address": {
     "selectAddressTitle": "Chọn địa chỉ nhận hàng",

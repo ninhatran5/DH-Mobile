@@ -13,6 +13,7 @@ import {
   receiveMessageRealtime,
   reorderChatUsers,
   markMessagesAsRead,
+  clearUnreadCount,
 } from "../../slices/AdminChatLive";
 import "../../assets/admin/ChatLiveAdmin.css";
 import Swal from "sweetalert2";
@@ -478,7 +479,6 @@ const ChatLiveAdmin = () => {
                               <span
                                 style={{
                                   color: "#555",
-                                  fontSize: "13px",
                                   fontWeight: user.unread_count > 0 ? "bold" : "normal",
                                   fontSize: user.unread_count > 0 ? "15px" : "13px",
                                 }}

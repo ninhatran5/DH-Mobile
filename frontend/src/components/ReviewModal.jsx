@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "../assets/css/reviewModal.css";
 import { SlCloudUpload } from "react-icons/sl";
+import negativeWords from "../../utils/negativeWords";
 
 const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
   const { t } = useTranslation();
@@ -26,6 +27,21 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
   const [selectedImages, setSelectedImages] = useState([]);
   const maxLength = 200;
   const [isLoading, setIsLoading] = useState(false);
+
+  const removeVietnameseTones = (str) => {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D");
+  };
+
+  const containsNegativeWords = (text) => {
+    const lowerText = removeVietnameseTones(text.toLowerCase());
+    return negativeWords.some((word) =>
+      lowerText.includes(removeVietnameseTones(word.toLowerCase()))
+    );
+  };
 
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -82,6 +98,14 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
     e.preventDefault();
     if (!selectedVariantId) {
       Swal.fire({ icon: "error", title: t("review.noProductSelected") });
+      return;
+    }
+    if (containsNegativeWords(comment)) {
+      Swal.fire({
+        icon: "error",
+        title: t("review.errorTitle"),
+        text: t("review.containsNegative"),
+      });
       return;
     }
     setIsLoading(true);
