@@ -10,16 +10,19 @@ import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchNotifications,
-  markNotificationsRead,
   markNotificationRead,
+  markNotificationsRead,
 } from "../../slices/NotificationSlice";
 import {
   fetchRefundNotifications,
   markRefundNotificationRead,
+  markReturnNotificationRead,
 } from "../../slices/NotificationSlice";
 import Thongbao from "../../assets/sound/thongbaomuahang.mp3";
+import HoanHang from "../../assets/sound/yeucauhoanhang.mp3";
 import { fetchProfileAdmin } from "../../slices/adminProfile";
 import Swal from "sweetalert2";
+import Pusher from "pusher-js";
 const sidebarCollapsedStyles = {
   submenu: {
     position: "absolute",
@@ -51,15 +54,27 @@ const Homeadmin = () => {
   const dispatch = useDispatch();
   const { notifications } = useSelector((state) => state.adminNotification);
   const prevUnreadCount = useRef(0);
-  const audioRef = useRef(null);
+  const audioRef = useRef(null); // Audio cho thông báo đơn hàng
+  const hoanHangAudioRef = useRef(null); // Audio cho thông báo hoàn hàng
   const spokenNotifications = useRef(new Set()); // Track which notifications have been spoken
   
-  // Removed realtime return notification states
+  // Realtime return notification states
+  const [returnNotifications, setReturnNotifications] = useState([]);
+  const [isRealtimeConnected, setIsRealtimeConnected] = useState(false);
+  const pusherRef = useRef(null);
+  const channelRef = useRef(null);
+  const [connectionStatus, setConnectionStatus] = useState('disconnected');
+  const spokenReturnNotifications = useRef(new Set()); // Track spoken return notifications
+  const speechQueue = useRef([]); // Queue for speech messages
+  const isSpeaking = useRef(false); // Track if currently speaking
+  const globalSpeechLock = useRef(false); // Global lock to prevent speech conflicts
 
-  // Số lượng thông báo chưa đọc - chỉ tính thông báo từ Redux
+  // Số lượng thông báo chưa đọc - bao gồm cả thông báo hoàn hàng realtime
   const unreadCount = useMemo(() => {
-    return notifications.filter((n) => n.is_read === 0).length;
-  }, [notifications]);
+    const regularUnread = notifications.filter((n) => n.is_read === 0).length;
+    const returnUnread = returnNotifications.filter((n) => n.is_read === 0).length;
+    return regularUnread + returnUnread;
+  }, [notifications, returnNotifications]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -146,9 +161,20 @@ const Homeadmin = () => {
     return () => clearInterval(interval);
   }, [dispatch]);
 
-  // Speech synthesis function with queue management - optimized with useCallback
-  const speak = useCallback((message) => {
+  // Function to add speech to queue and process sequentially
+  const addToSpeechQueue = useCallback((message) => {
     if (!isSoundEnabled) return;
+    
+    speechQueue.current.push(message);
+    processSpeechQueue();
+  }, [isSoundEnabled]);
+  
+  // Process speech queue immediately without delay
+  const processSpeechQueue = useCallback(() => {
+    if (isSpeaking.current || speechQueue.current.length === 0) return;
+    
+    isSpeaking.current = true;
+    const message = speechQueue.current.shift();
     
     // Stop any current speech to avoid overlapping
     window.speechSynthesis.cancel();
@@ -158,46 +184,31 @@ const Homeadmin = () => {
     speech.rate = 1.5;       // tốc độ đọc (1 = bình thường, >1 = nhanh hơn, <1 = chậm hơn)
     speech.volume = 0.8;     // âm lượng (0.0 - 1.0)
     
-    window.speechSynthesis.speak(speech);
-  }, [isSoundEnabled]);
-  
-  // Function to speak multiple messages sequentially - optimized with useCallback
-  const speakSequentially = useCallback((messages) => {
-    if (!isSoundEnabled || messages.length === 0) return;
-    
-    // Stop any current speech
-    window.speechSynthesis.cancel();
-    
-    let currentIndex = 0;
-    
-    const speakNext = () => {
-      if (currentIndex >= messages.length) return;
-      
-      const speech = new SpeechSynthesisUtterance(messages[currentIndex]);
-      speech.lang = "vi-VN";
-      speech.rate = 1.5;
-      speech.volume = 0.8;
-      
-      speech.onend = () => {
-        currentIndex++;
-        // Wait a bit before next message
-        setTimeout(() => {
-          speakNext();
-        }, 1000); // 1 second pause between messages
-      };
-      
-      speech.onerror = () => {
-        currentIndex++;
-        speakNext();
-      };
-      
-      window.speechSynthesis.speak(speech);
+    speech.onend = () => {
+      isSpeaking.current = false;
+      // Process next message immediately
+      if (speechQueue.current.length > 0) {
+        processSpeechQueue();
+      }
     };
     
-    speakNext();
-  }, [isSoundEnabled]);
+    speech.onerror = () => {
+      isSpeaking.current = false;
+      // Process next message immediately on error
+      if (speechQueue.current.length > 0) {
+        processSpeechQueue();
+      }
+    };
+    
+    window.speechSynthesis.speak(speech);
+  }, []);
 
-  // Memoized values for notification processing
+  // Speech synthesis function with queue management - optimized with useCallback
+  const speak = useCallback((message) => {
+    addToSpeechQueue(message);
+  }, [addToSpeechQueue]);
+  
+ 
   const notificationData = useMemo(() => {
     const currentUnread = notifications.filter((n) => n.is_read === 0).length;
     const newNotifications = notifications.filter(n => n.is_read === 0);
@@ -210,71 +221,92 @@ const Homeadmin = () => {
     };
   }, [notifications]);
 
-  // Optimized effect to handle notification changes and sound
   useEffect(() => {
     const { currentUnread, refundNotifications } = notificationData;
     
-    // Cập nhật badge và hiệu ứng chuông
-    setShowNotificationDot(currentUnread > 0);
+    const totalUnreadCount = currentUnread + returnNotifications.filter(n => n.is_read === 0).length;
+    setShowNotificationDot(totalUnreadCount > 0);
     
-    // Play sound and show toast for new notifications
-    if (currentUnread > prevUnreadCount.current && prevUnreadCount.current > 0 && isSoundEnabled) {
+    // CHỈ XỬ LÝ THÔNG BÁO THƯỜNG TỪ API (KHÔNG BAO GỒM REALTIME)
+    if (currentUnread > prevUnreadCount.current && isSoundEnabled) {
       // Show toast
       toast.info("Bạn có thông báo mới!", {
         position: "top-right",
         autoClose: 4000,
       });
       
-      // Play sound
-      if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(console.error);
+      // Lấy thông báo mới chưa được xử lý
+      const allUnreadNotifications = notifications.filter(n => n.is_read === 0);
+      const newUnspokenNotifications = allUnreadNotifications.filter(notification => {
+        const notificationId = notification.return_notification_id || notification.notification_id;
+        const hasBeenSpoken = spokenNotifications.current.has(notificationId);
+        return !hasBeenSpoken;
+      });
+      
+      // Phân loại thông báo
+      const refundNotifications = newUnspokenNotifications.filter(notification => 
+        notification.type === 'refund' || notification.return_notification_id || notification.return_request
+      );
+      
+      const regularNotifications = newUnspokenNotifications.filter(notification => 
+        !(notification.type === 'refund' || notification.return_notification_id || notification.return_request)
+      );
+      
+      // Đánh dấu đã xử lý ngay lập tức để tránh lặp lại
+      newUnspokenNotifications.forEach(notification => {
+        const notificationId = notification.return_notification_id || notification.notification_id;
+        if (notificationId) {
+          spokenNotifications.current.add(notificationId);
+        }
+      });
+      
+      // XỬ LÝ THÔNG BÁO ĐƠN HÀNG THƯỜNG (ĐƠN GIẢN VÀ ỔN ĐỊNH)
+      if (regularNotifications.length > 0) {
+        // Phát MP3 cho đơn hàng thường
+        if (audioRef.current) {
+          audioRef.current.currentTime = 0;
+          audioRef.current.play().catch(() => {});
+        }
+        
+        // Phát speech cho đơn hàng thường
+        try {
+          const speech = new SpeechSynthesisUtterance("Bạn có đơn hàng mới");
+          speech.lang = "vi-VN";
+          speech.rate = 1.5;
+          speech.volume = 0.8;
+          window.speechSynthesis.speak(speech);
+        } catch (error) {
+          console.error('Lỗi speech đơn hàng:', error);
+        }
       }
       
-      // Process refund notifications for speech
+      // XỬ LÝ THÔNG BÁO HOÀN HÀNG TỪ API (KHÔNG PHẢI REALTIME)
       if (refundNotifications.length > 0) {
-        // Chỉ lấy các thông báo hoàn hàng chưa được đọc (is_read = 0)
-        const unreadRefundNotifications = refundNotifications.filter(notification => 
-          notification.is_read === 0
-        );
-        
-        if (unreadRefundNotifications.length > 0) {
-          // Lọc thêm các thông báo chưa từng được đọc bằng giọng nói
-          const unspokenRefundNotifications = unreadRefundNotifications.filter(notification => {
-            const notificationId = notification.return_notification_id || notification.notification_id;
-            return !spokenNotifications.current.has(notificationId);
-          });
-          
-          if (unspokenRefundNotifications.length > 0) {
-            // Đánh dấu những thông báo này là đã đọc bằng giọng nói
-            unspokenRefundNotifications.forEach(notification => {
-              const notificationId = notification.return_notification_id || notification.notification_id;
-              if (notificationId) {
-                spokenNotifications.current.add(notificationId);
-              }
-            });
-            
-            // Use requestAnimationFrame to defer speech to avoid blocking UI
-            requestAnimationFrame(() => {
-              if (unspokenRefundNotifications.length === 1) {
-                // Nếu chỉ có 1 thông báo mới, dùng speak thông thường
-                const refundNotification = unspokenRefundNotifications[0];
-                speak(refundNotification.message || "Bạn có yêu cầu hoàn hàng mới");
-              } else {
-                // Nếu có nhiều thông báo mới, đọc lần lượt
-                const messages = unspokenRefundNotifications.map(notification => 
-                  notification.message || "Bạn có yêu cầu hoàn hàng mới"
-                );
-                speakSequentially(messages);
-              }
-            });
-          }
+        // Phát MP3 cho hoàn hàng
+        if (hoanHangAudioRef.current) {
+          hoanHangAudioRef.current.currentTime = 0;
+          hoanHangAudioRef.current.play().catch(() => {});
         }
+        
+        // Phát speech cho hoàn hàng từ API
+        refundNotifications.forEach((notification) => {
+          if (notification.message) {
+            try {
+              const speech = new SpeechSynthesisUtterance(notification.message);
+              speech.lang = "vi-VN";
+              speech.rate = 1.5;
+              speech.volume = 0.8;
+              window.speechSynthesis.speak(speech);
+            } catch (error) {
+              console.error('Lỗi speech hoàn hàng API:', error);
+            }
+          }
+        });
       }
     }
     
     prevUnreadCount.current = currentUnread;
-  }, [notificationData, isSoundEnabled, speak, speakSequentially]);
+  }, [notificationData, isSoundEnabled, returnNotifications]);
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -435,6 +467,160 @@ const Homeadmin = () => {
   useEffect(() => {
     dispatch(fetchProfileAdmin());
   }, [dispatch]);
+
+  // Xử lý thông báo hoàn hàng realtime
+  const setupReturnNotificationsRealtime = useCallback(() => {
+    // Nếu đã có kết nối trước đó, dọn dẹp
+    if (pusherRef.current) {
+      if (channelRef.current) {
+        channelRef.current.unbind_all();
+        pusherRef.current.unsubscribe('admin.notifications');
+      }
+      pusherRef.current.disconnect();
+    }
+    
+    setConnectionStatus('connecting');
+    
+    try {
+      // Khởi tạo kết nối Pusher
+      const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
+      if (!token) {
+        setConnectionStatus('failed');
+        return;
+      }
+      
+      const pusher = new Pusher('dcc715adcba25f4b8d09', {
+        cluster: 'ap1',
+        forceTLS: true,
+        authEndpoint: `${import.meta.env.VITE_BASE_URL}broadcasting/auth`,
+        auth: {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+        },
+      });
+      
+      pusherRef.current = pusher;
+      
+      // Lắng nghe sự kiện kết nối
+      pusher.connection.bind('connected', () => {
+        setConnectionStatus('connected');
+        setIsRealtimeConnected(true);
+      });
+      
+      pusher.connection.bind('error', () => {
+        setConnectionStatus('failed');
+        setIsRealtimeConnected(false);
+      });
+      
+      // Lắng nghe thay đổi trạng thái kết nối
+      pusher.connection.bind('state_change', (states) => {
+        if (states.current === 'disconnected') {
+          setIsRealtimeConnected(false);
+          setConnectionStatus('disconnected');
+        }
+      });
+      
+      const channel = pusher.subscribe('admin.notifications');
+      channelRef.current = channel;
+      
+      channel.bind('ReturnNotificationCreated', (data) => {
+        setReturnNotifications(prevNotifications => [
+          {
+            id: data.id,
+            order_id: data.order_id,
+            return_request_id: data.return_request_id,
+            message: data.message,
+            is_read: data.is_read,
+            created_at: data.created_at,
+            type: 'refund',
+            return_notification_id: data.id
+          },
+          ...prevNotifications
+        ]);
+        
+        toast.info(
+          <div>
+            <strong>Thông báo hoàn hàng mới</strong>
+            <br />
+            <small>{data.message}</small>
+          </div>,
+          {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          }
+        );
+        
+        const currentSoundEnabled = localStorage.getItem("notificationSound");
+        const soundEnabled = currentSoundEnabled === null ? true : currentSoundEnabled === "true";
+        
+       
+      });
+      
+    } catch (error) {
+      setConnectionStatus('failed');
+    }
+  }, []); // Loại bỏ dependency để tránh tạo lại kết nối
+
+  useEffect(() => {
+    if (checkRole && checkRole !== 'sale') {
+      setupReturnNotificationsRealtime();
+
+      return () => {
+        if (pusherRef.current) {
+          if (channelRef.current) {
+            channelRef.current.unbind_all();
+            pusherRef.current.unsubscribe('admin.notifications');
+          }
+          pusherRef.current.disconnect();
+        }
+      };
+    }
+  }, [setupReturnNotificationsRealtime, checkRole]);
+
+  // Hàm xử lý để đánh dấu đã đọc thông báo hoàn hàng - sử dụng Redux
+  const markReturnNotificationAsRead = useCallback(async (notificationId) => {
+    try {
+      const result = await dispatch(markReturnNotificationRead(notificationId));
+      
+      if (markReturnNotificationRead.fulfilled.match(result)) {
+        // Cập nhật state local sau khi Redux thành công
+        setReturnNotifications(prevNotifications => 
+          prevNotifications.map(notification => 
+            notification.id === notificationId ? { ...notification, is_read: 1 } : notification
+          )
+        );
+        return true;
+      } else {
+        console.error('Lỗi đánh dấu đã đọc thông báo:', result.payload);
+        return false;
+      }
+    } catch (error) {
+      console.error('Lỗi đánh dấu đã đọc thông báo:', error);
+      return false;
+    }
+  }, [dispatch]);
+  
+  // Xử lý khi click vào thông báo hoàn hàng
+  const handleReturnNotificationClick = useCallback(async (notification) => {
+    // Đánh dấu đã đọc nếu chưa đọc
+    if (notification.is_read === 0) {
+      await markReturnNotificationAsRead(notification.id);
+    }
+    
+    // Chuyển hướng đến trang chi tiết đơn hoàn hàng
+    if (notification.return_request_id) {
+      navigate(`/admin/detailorderreturn/${notification.return_request_id}`);
+    } else if (notification.order_id) {
+      navigate(`/admin/orderdetail/${notification.order_id}`);
+    }
+  }, [markReturnNotificationAsRead, navigate]);
 
   return (
     <>
@@ -1090,12 +1276,54 @@ const Homeadmin = () => {
                               </button>
                             )}
                           </div>
-                          {notifications.length === 0 ? (
+                          {(notifications.length === 0 && returnNotifications.length === 0) ? (
                             <div className="dropdown-item text-muted">
                               Không có thông báo mới
                             </div>
                           ) : (
                             <>
+                              {/* Hiển thị thông báo hoàn hàng realtime trước */}
+                              {returnNotifications.map((noti, idx) => (
+                                <div
+                                  key={`return-realtime-${noti.id}-${idx}`}
+                                  className={`dropdown-item admin_dh-notification-item d-flex align-items-start ${
+                                    noti.is_read === 1 ? "" : "unread"
+                                  }`}
+                                  onClick={() => handleReturnNotificationClick(noti)}
+                                  style={{ cursor: "pointer" }}
+                                >
+                                  <div className="admin_dh-notification-icon admin_dh-bg-warning-soft">
+                                    <i className="bi bi-arrow-return-left"></i>
+                                  </div>
+                                  <div className="flex-grow-1 ms-3">
+                                    <div className="d-flex align-items-center gap-2 mb-1">
+                                      <span className="badge bg-warning text-dark">Realtime</span>
+                                      <span className="text-primary fw-bold">Hoàn hàng</span>
+                                    </div>
+                                    <p className="mb-0" title={noti.message}>
+                                      {noti.message}
+                                    </p>
+                                    <small className="text-muted">
+                                      <i className="bi bi-clock me-1"></i>
+                                      {noti.created_at
+                                        ? new Date(noti.created_at).toLocaleDateString("vi-VN", {
+                                            year: "numeric",
+                                            month: "2-digit",
+                                            day: "2-digit",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                          })
+                                        : ""}
+                                      {noti.order_id && (
+                                        <span className="ms-2 text-info">
+                                          Đơn #{noti.order_id}
+                                        </span>
+                                      )}
+                                    </small>
+                                  </div>
+                                </div>
+                              ))}
+                              
                               {/* Hiển thị thông báo thường từ Redux */}
                               {notifications.map((noti, idx) => (
                                 <div
@@ -1218,9 +1446,17 @@ const Homeadmin = () => {
           </button>
         )}
       </div>
+      {/* Audio cho thông báo đơn hàng */}
       <audio
         ref={audioRef}
         src={Thongbao}
+        preload="auto"
+        style={{ display: "none" }}
+      />
+      {/* Audio cho thông báo hoàn hàng */}
+      <audio
+        ref={hoanHangAudioRef}
+        src={HoanHang}
         preload="auto"
         style={{ display: "none" }}
       />

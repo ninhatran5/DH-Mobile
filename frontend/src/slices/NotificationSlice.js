@@ -108,6 +108,27 @@ export const markRefundNotificationRead = createAsyncThunk(
   }
 );
 
+// ĐÁNH DẤU ĐÃ ĐỌC THÔNG BÁO HOÀN HÀNG REALTIME
+export const markReturnNotificationRead = createAsyncThunk(
+  'notifications/markReturnNotificationRead',
+  async (notificationId, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
+      const response = await axiosAdmin.patch(`/admin/return-notifications/${notificationId}/read`, {}, {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+      });
+      
+      return { id: notificationId, ...response.data };
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Lỗi khi đánh dấu thông báo hoàn hàng đã đọc');
+    }
+  }
+);
+
 // SLICE
 const notificationSlice = createSlice({
   name: 'notifications',
@@ -187,6 +208,17 @@ const notificationSlice = createSlice({
         );
       })
       .addCase(markRefundNotificationRead.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      
+      // ==== RETURN NOTIFICATIONS REALTIME ====
+      .addCase(markReturnNotificationRead.fulfilled, (state, action) => {
+        state.loading = false;
+        // Không cần cập nhật state.notifications vì đây là realtime notifications riêng
+        // Chỉ return success để component xử lý
+      })
+      .addCase(markReturnNotificationRead.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
