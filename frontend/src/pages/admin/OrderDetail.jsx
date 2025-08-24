@@ -166,17 +166,6 @@ const usePusherConnection = (orderId, order, dispatch) => {
             'Accept': 'application/json',
           },
         },
-        forceTLS: true,
-        enabledTransports: ['ws', 'wss'],
-        activityTimeout: 20000, // ⚡ Ultra-fast: 20s
-        pongTimeout: 8000, // ⚡ Ultra-fast: 8s  
-        unavailableTimeout: 3000, // ⚡ Ultra-fast: 3s
-        disableStats: true,
-        // ⚡ Performance optimizations
-        wsPort: 443,
-        wssPort: 443,
-        httpHost: import.meta.env.VITE_PUSHER_HOST || 'ws-ap1.pusher-channels.com',
-        enableStats: false,
       });
 
       // ⚡ Optimized connection promise với shorter timeout
@@ -788,7 +777,6 @@ const OrderDetails = () => {
     try {
       await dispatch(cancelOrder({ orderId: order.order_id, cancel_reason: reason })).unwrap();
       
-      // 🎉 Thêm thông báo thành công cho việc hủy đơn
       Swal.fire({
         title: 'Đã hủy đơn hàng!',
         text: 'Đơn hàng đã được hủy thành công',
@@ -845,7 +833,7 @@ const OrderDetails = () => {
         key: 'shipping',
         title: 'Đang vận chuyển',
         icon: '🚚',
-        description: 'Đang giao hàng',
+        description: 'Đang vận chuyển',
         priority: 3,
         timestamp: order.status === 'Đang vận chuyển' ? (lastUpdateTime || new Date().toISOString()) : null
       },
@@ -853,14 +841,14 @@ const OrderDetails = () => {
         key: 'delivered',
         title: 'Đã giao hàng',
         icon: '📦',
-        description: 'Giao thành công',
+        description: 'Đã giao hàng',
         priority: 4,
       },
       {
         key: 'completed',
         title: 'Hoàn thành',
         icon: '🎉',
-        description: 'Đơn hàng hoàn tất',
+        description: 'Hoàn thành',
         priority: 5,
       }
     ];

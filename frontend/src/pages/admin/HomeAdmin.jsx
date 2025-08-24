@@ -53,10 +53,14 @@ const Homeadmin = () => {
   const sidebarOpenRef = useRef(null);
   const dispatch = useDispatch();
   const { notifications } = useSelector((state) => state.adminNotification);
-  const prevUnreadCount = useRef(0);
-  const audioRef = useRef(null); // Audio cho thông báo đơn hàng
-  const hoanHangAudioRef = useRef(null); // Audio cho thông báo hoàn hàng
-  const spokenNotifications = useRef(new Set()); // Track which notifications have been spoken
+  
+  // Audio và tracking refs
+  const audioRef = useRef(null);
+  const hoanHangAudioRef = useRef(null);
+  const processedNotifications = useRef(new Set()); // Track tất cả thông báo đã xử lý
+  const lastNotificationCount = useRef(0); // Track số lượng thông báo cuối cùng
+  const globalNotificationLock = useRef(false); // Global lock cho tất cả notification processing
+  const soundPlayTimeout = useRef(null); // Timeout để debounce sound
   
   // Realtime return notification states
   const [returnNotifications, setReturnNotifications] = useState([]);
@@ -64,10 +68,8 @@ const Homeadmin = () => {
   const pusherRef = useRef(null);
   const channelRef = useRef(null);
   const [connectionStatus, setConnectionStatus] = useState('disconnected');
-  const spokenReturnNotifications = useRef(new Set()); // Track spoken return notifications
-  const speechQueue = useRef([]); // Queue for speech messages
-  const isSpeaking = useRef(false); // Track if currently speaking
-  const globalSpeechLock = useRef(false); // Global lock to prevent speech conflicts
+  const speechQueue = useRef([]);
+  const isSpeaking = useRef(false);
 
   // Số lượng thông báo chưa đọc - bao gồm cả thông báo hoàn hàng realtime
   const unreadCount = useMemo(() => {
@@ -161,152 +163,174 @@ const Homeadmin = () => {
     return () => clearInterval(interval);
   }, [dispatch]);
 
-  // Function to add speech to queue and process sequentially
-  const addToSpeechQueue = useCallback((message) => {
-    if (!isSoundEnabled) return;
+  // Singleton notification handler - chỉ cho phép 1 notification được xử lý tại một thời điểm
+  const playNotificationSound = useCallback((type, message = '', source = 'unknown') => {
+    // Kiểm tra nếu âm thanh bị tắt
+    if (!isSoundEnabled) {
+      return;
+    }
+
+    // Kiểm tra nếu đang có lock - TUYỆT ĐỐI KHÔNG CHO PHÉP
+    if (globalNotificationLock.current) {
+      return;
+    }
+
+    // Đặt lock NGAY LẬP TỨC
+    globalNotificationLock.current = true;
     
-    speechQueue.current.push(message);
-    processSpeechQueue();
+    // Cancel timeout cũ nếu có
+    if (soundPlayTimeout.current) {
+      clearTimeout(soundPlayTimeout.current);
+      soundPlayTimeout.current = null;
+    }
+
+    // FORCE CANCEL tất cả speech đang phát
+    try {
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        // Đợi 200ms để đảm bảo cancel hoàn toàn
+        setTimeout(() => {
+          window.speechSynthesis.cancel();
+        }, 200);
+      }
+    } catch (e) {
+      // Speech cancel error - silent fail
+    }
+
+    // Hàm thực hiện notification
+    const executeNotification = () => {
+      try {
+        if (type === 'order') {
+          // Phát MP3 cho đơn hàng
+          if (audioRef.current) {
+            audioRef.current.currentTime = 0;
+            audioRef.current.play().catch((error) => {
+              // MP3 play error - silent fail
+            });
+          }
+          
+          // Giải phóng lock sau khi MP3 đã phát (delay ngắn)
+          setTimeout(() => {
+            globalNotificationLock.current = false;
+          }, 1000); // 1 giây để MP3 phát xong
+          
+        } else if (type === 'refund') {
+          // Chỉ dùng Speech Synthesis cho hoàn hàng (không MP3)
+          try {
+            // Kiểm tra xem speechSynthesis có khả dụng không
+            if (!window.speechSynthesis) {
+              globalNotificationLock.current = false;
+              return;
+            }
+            
+            const speechText = message || "Có yêu cầu hoàn hàng mới";
+            const utterance = new SpeechSynthesisUtterance(speechText);
+            utterance.lang = "vi-VN";
+            utterance.rate = 1.5;
+            utterance.volume = 0.8;
+            
+            utterance.onstart = () => {
+              // Speech started - no logging
+            };
+            
+            utterance.onend = () => {
+              globalNotificationLock.current = false;
+            };
+            
+            utterance.onerror = (event) => {
+              // GIỮU LOCK ÍT NHẤT 2 GIÂY ĐỂ TRÁNH OVERLAP
+              setTimeout(() => {
+                if (globalNotificationLock.current) {
+                  globalNotificationLock.current = false;
+                }
+              }, 2000); // Giữ lock 2 giây sau khi error
+            };
+            
+            // Phát speech ngay lập tức
+            window.speechSynthesis.speak(utterance);
+            
+            // Fallback: Nếu speech không phát trong 3 giây, giải phóng lock
+            setTimeout(() => {
+              if (globalNotificationLock.current && window.speechSynthesis.speaking === false) {
+                globalNotificationLock.current = false;
+              }
+            }, 3000);
+            
+          } catch (speechError) {
+            globalNotificationLock.current = false;
+          }
+        }
+
+        // Emergency timeout to release lock (10 seconds)
+        setTimeout(() => {
+          if (globalNotificationLock.current) {
+            globalNotificationLock.current = false;
+          }
+        }, 10000);
+        
+      } catch (error) {
+        globalNotificationLock.current = false;
+      }
+    };
+
+    // Execute với delay 100ms để đảm bảo cancel hoàn tất
+    setTimeout(executeNotification, 100);
   }, [isSoundEnabled]);
-  
-  // Process speech queue immediately without delay
-  const processSpeechQueue = useCallback(() => {
-    if (isSpeaking.current || speechQueue.current.length === 0) return;
-    
-    isSpeaking.current = true;
-    const message = speechQueue.current.shift();
-    
-    // Stop any current speech to avoid overlapping
-    window.speechSynthesis.cancel();
-    
-    const speech = new SpeechSynthesisUtterance(message);
-    speech.lang = "vi-VN";   // giọng đọc tiếng Việt
-    speech.rate = 1.5;       // tốc độ đọc (1 = bình thường, >1 = nhanh hơn, <1 = chậm hơn)
-    speech.volume = 0.8;     // âm lượng (0.0 - 1.0)
-    
-    speech.onend = () => {
-      isSpeaking.current = false;
-      // Process next message immediately
-      if (speechQueue.current.length > 0) {
-        processSpeechQueue();
-      }
-    };
-    
-    speech.onerror = () => {
-      isSpeaking.current = false;
-      // Process next message immediately on error
-      if (speechQueue.current.length > 0) {
-        processSpeechQueue();
-      }
-    };
-    
-    window.speechSynthesis.speak(speech);
-  }, []);
 
-  // Speech synthesis function with queue management - optimized with useCallback
-  const speak = useCallback((message) => {
-    addToSpeechQueue(message);
-  }, [addToSpeechQueue]);
-  
- 
-  const notificationData = useMemo(() => {
-    const currentUnread = notifications.filter((n) => n.is_read === 0).length;
-    const newNotifications = notifications.filter(n => n.is_read === 0);
-    const refundNotifications = newNotifications.filter(n => n.type === 'refund');
-    
-    return {
-      currentUnread,
-      newNotifications,
-      refundNotifications
-    };
-  }, [notifications]);
-
+  // Xử lý thông báo từ API (không bao gồm realtime)
   useEffect(() => {
-    const { currentUnread, refundNotifications } = notificationData;
+    const currentUnreadCount = notifications.filter(n => n.is_read === 0).length;
+    const totalUnreadCount = currentUnreadCount + returnNotifications.filter(n => n.is_read === 0).length;
     
-    const totalUnreadCount = currentUnread + returnNotifications.filter(n => n.is_read === 0).length;
     setShowNotificationDot(totalUnreadCount > 0);
     
-    // CHỈ XỬ LÝ THÔNG BÁO THƯỜNG TỪ API (KHÔNG BAO GỒM REALTIME)
-    if (currentUnread > prevUnreadCount.current && isSoundEnabled) {
-      // Show toast
+    // Chỉ xử lý khi có thông báo mới (tăng số lượng)
+    if (currentUnreadCount > lastNotificationCount.current) {
+      // Hiển thị toast
       toast.info("Bạn có thông báo mới!", {
         position: "top-right",
         autoClose: 4000,
       });
       
       // Lấy thông báo mới chưa được xử lý
-      const allUnreadNotifications = notifications.filter(n => n.is_read === 0);
-      const newUnspokenNotifications = allUnreadNotifications.filter(notification => {
+      const unreadNotifications = notifications.filter(n => n.is_read === 0);
+      const newNotifications = unreadNotifications.filter(notification => {
         const notificationId = notification.return_notification_id || notification.notification_id;
-        const hasBeenSpoken = spokenNotifications.current.has(notificationId);
-        return !hasBeenSpoken;
+        return notificationId && !processedNotifications.current.has(notificationId);
       });
       
-      // Phân loại thông báo
-      const refundNotifications = newUnspokenNotifications.filter(notification => 
-        notification.type === 'refund' || notification.return_notification_id || notification.return_request
-      );
-      
-      const regularNotifications = newUnspokenNotifications.filter(notification => 
-        !(notification.type === 'refund' || notification.return_notification_id || notification.return_request)
-      );
-      
-      // Đánh dấu đã xử lý ngay lập tức để tránh lặp lại
-      newUnspokenNotifications.forEach(notification => {
-        const notificationId = notification.return_notification_id || notification.notification_id;
-        if (notificationId) {
-          spokenNotifications.current.add(notificationId);
-        }
-      });
-      
-      // XỬ LÝ THÔNG BÁO ĐƠN HÀNG THƯỜNG (ĐƠN GIẢN VÀ ỔN ĐỊNH)
-      if (regularNotifications.length > 0) {
-        // Phát MP3 cho đơn hàng thường
-        if (audioRef.current) {
-          audioRef.current.currentTime = 0;
-          audioRef.current.play().catch(() => {});
-        }
-        
-        // Phát speech cho đơn hàng thường
-        try {
-          const speech = new SpeechSynthesisUtterance("Bạn có đơn hàng mới");
-          speech.lang = "vi-VN";
-          speech.rate = 1.5;
-          speech.volume = 0.8;
-          window.speechSynthesis.speak(speech);
-        } catch (error) {
-          console.error('Lỗi speech đơn hàng:', error);
-        }
-      }
-      
-      // XỬ LÝ THÔNG BÁO HOÀN HÀNG TỪ API (KHÔNG PHẢI REALTIME)
-      if (refundNotifications.length > 0) {
-        // Phát MP3 cho hoàn hàng
-        if (hoanHangAudioRef.current) {
-          hoanHangAudioRef.current.currentTime = 0;
-          hoanHangAudioRef.current.play().catch(() => {});
-        }
-        
-        // Phát speech cho hoàn hàng từ API
-        refundNotifications.forEach((notification) => {
-          if (notification.message) {
-            try {
-              const speech = new SpeechSynthesisUtterance(notification.message);
-              speech.lang = "vi-VN";
-              speech.rate = 1.5;
-              speech.volume = 0.8;
-              window.speechSynthesis.speak(speech);
-            } catch (error) {
-              console.error('Lỗi speech hoàn hàng API:', error);
-            }
+      if (newNotifications.length > 0) {
+        // Đánh dấu đã xử lý ngay lập tức
+        newNotifications.forEach(notification => {
+          const notificationId = notification.return_notification_id || notification.notification_id;
+          if (notificationId) {
+            processedNotifications.current.add(notificationId);
           }
         });
+        
+        // Phân loại và phát âm thanh
+        const hasRegularOrder = newNotifications.some(n => 
+          !(n.type === 'refund' || n.return_notification_id || n.return_request)
+        );
+        const hasRefundOrder = newNotifications.some(n => 
+          n.type === 'refund' || n.return_notification_id || n.return_request
+        );
+        
+        if (hasRegularOrder && !hasRefundOrder) {
+          // Chỉ có đơn hàng thường
+          playNotificationSound('order', '', 'API-useEffect');
+        } else if (hasRefundOrder) {
+          // Có hoàn hàng (ưu tiên hoàn hàng)
+          const firstRefundNotification = newNotifications.find(n => 
+            n.type === 'refund' || n.return_notification_id || n.return_request
+          );
+          playNotificationSound('refund', firstRefundNotification?.message, 'API-useEffect');
+        }
       }
     }
     
-    prevUnreadCount.current = currentUnread;
-  }, [notificationData, isSoundEnabled, returnNotifications]);
+    lastNotificationCount.current = currentUnreadCount;
+  }, [notifications, returnNotifications, playNotificationSound]);
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -541,6 +565,7 @@ const Homeadmin = () => {
           ...prevNotifications
         ]);
         
+        // Hiển thị toast cho realtime notification
         toast.info(
           <div>
             <strong>Thông báo hoàn hàng mới</strong>
@@ -557,10 +582,16 @@ const Homeadmin = () => {
           }
         );
         
+        // Phát âm thanh cho realtime return notification
         const currentSoundEnabled = localStorage.getItem("notificationSound");
         const soundEnabled = currentSoundEnabled === null ? true : currentSoundEnabled === "true";
         
-       
+        if (soundEnabled) {
+          // Sử dụng hàm playNotificationSound có sẵn với delay lớn hơn để tránh conflict
+          setTimeout(() => {
+            playNotificationSound('refund', data.message, 'realtime-pusher');
+          }, 500); // Tăng delay lên 500ms để tránh conflict với API notifications
+        }
       });
       
     } catch (error) {
