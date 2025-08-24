@@ -117,7 +117,14 @@ class CodController extends Controller
                     ->first();
 
                 if ($voucher && $total >= $voucher->min_order_value) {
-                    $discount = $voucher->discount_amount;
+                    if ($voucher->discount_type === 'percent') {
+                        // % giảm giá nhưng không vượt quá max_discount
+                        $discount = min(($total * $voucher->discount_amount) / 100, $voucher->max_discount);
+                    } else {
+                        // Loại giảm cố định
+                        $discount = $voucher->discount_amount;
+                    }
+
                     DB::table('vouchers')->where('voucher_id', $voucherId)->decrement('quantity');
                 } else {
                     $voucherId = null; // không hợp lệ
@@ -226,18 +233,19 @@ class CodController extends Controller
             ], 404);
         }
 
-        if ($totalAmount < $voucher->min_order_value) {
-            return response()->json([
-                'message' => 'Đơn hàng không đủ điều kiện sử dụng voucher.'
-            ], 422);
+        if ($voucher->discount_type === 'percent') {
+            $discount = min(($totalAmount * $voucher->discount_amount) / 100, $voucher->max_discount);
+        } else {
+            $discount = $voucher->discount_amount;
         }
 
         return response()->json([
             'message' => 'Áp dụng voucher thành công',
             'voucher_id' => $voucher->voucher_id,
-            'discount_amount' => $voucher->discount_amount,
+            'discount_type' => $voucher->discount_type,   // để client biết là loại nào
+            'discount_amount' => $discount,               // số tiền giảm thực tế
             'total_amount' => $totalAmount,
-            'new_total' => $totalAmount - $voucher->discount_amount
+            'new_total' => max($totalAmount - $discount, 0)
         ]);
     }
 }
