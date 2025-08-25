@@ -263,7 +263,7 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
                     orderData?.delivered_at ||
                     orderData?.order_date
                   }
-                  seconds={180}
+                  seconds={300}
                 />
                 {hasReviewableProduct && (
                   <TooltipIcon
