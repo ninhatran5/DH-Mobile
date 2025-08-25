@@ -87,7 +87,7 @@
   "chatBot": {
     "chat": "Trò chuyện",
     "message": "Gõ tin nhắn của bạn...",
-    "chatWithAdmin": "Chat với Admin",
+    "chatWithAdmin": "Chat với Shop",
     "chatWithBot": "Chat với Bot",
     "selectMode": "Chọn loại chat",
     "whoToChat": "Bạn muốn chat với ai?",
@@ -108,7 +108,7 @@
     "sent": "Đã gửi",
     "seen": "Đã xem",
     "closeModal": "Đóng",
-    "tokenMessage": "Vui lòng đăng nhập để sử dụng tính năng Chat Bot và Chat với Admin"
+    "tokenMessage": "Vui lòng đăng nhập để sử dụng tính năng Chat Bot và Chat với Shop"
   },
   "breadcrumbProductDetail": {
     "breadcrumbHeader": "Chi Tiết Sản Phẩm",

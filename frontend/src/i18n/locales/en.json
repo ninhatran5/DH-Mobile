@@ -87,7 +87,7 @@
   "chatBot": {
     "chat": "Chat",
     "message": "Type your message...",
-    "chatWithAdmin": "Chat with Admin",
+    "chatWithAdmin": "Chat with Shop",
     "chatWithBot": "Chat with Bot",
     "selectMode": "Select chat mode",
     "whoToChat": "Who would you like to chat with?",
@@ -108,7 +108,7 @@
     "sent": "Sent",
     "seen": "Seen",
     "closeModal": "Close",
-    "tokenMessage": "Please log in to use the Chat Bot and Chat with Admin features"
+    "tokenMessage": "Please log in to use the Chat Bot and Chat with Shop features"
   },
   "breadcrumbProductDetail": {
     "breadcrumbHeader": "Product Details",
