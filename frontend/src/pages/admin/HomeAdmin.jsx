@@ -53,7 +53,6 @@ const Homeadmin = () => {
   const sidebarOpenRef = useRef(null);
   const dispatch = useDispatch();
   const { notifications } = useSelector((state) => state.adminNotification);
-  
   // Audio và tracking refs
   const audioRef = useRef(null);
   const hoanHangAudioRef = useRef(null);
@@ -61,20 +60,22 @@ const Homeadmin = () => {
   const lastNotificationCount = useRef(0); // Track số lượng thông báo cuối cùng
   const globalNotificationLock = useRef(false); // Global lock cho tất cả notification processing
   const soundPlayTimeout = useRef(null); // Timeout để debounce sound
-  
+
   // Realtime return notification states
   const [returnNotifications, setReturnNotifications] = useState([]);
   const [isRealtimeConnected, setIsRealtimeConnected] = useState(false);
   const pusherRef = useRef(null);
   const channelRef = useRef(null);
-  const [connectionStatus, setConnectionStatus] = useState('disconnected');
+  const [connectionStatus, setConnectionStatus] = useState("disconnected");
   const speechQueue = useRef([]);
   const isSpeaking = useRef(false);
 
   // Số lượng thông báo chưa đọc - bao gồm cả thông báo hoàn hàng realtime
   const unreadCount = useMemo(() => {
     const regularUnread = notifications.filter((n) => n.is_read === 0).length;
-    const returnUnread = returnNotifications.filter((n) => n.is_read === 0).length;
+    const returnUnread = returnNotifications.filter(
+      (n) => n.is_read === 0
+    ).length;
     return regularUnread + returnUnread;
   }, [notifications, returnNotifications]);
 
@@ -139,7 +140,6 @@ const Homeadmin = () => {
       setSoundEnabled(savedSoundPreference === "true");
     }
 
-
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = (e) => {
       setIsDarkMode(e.matches);
@@ -153,137 +153,144 @@ const Homeadmin = () => {
     // Initial fetch
     dispatch(fetchNotifications());
     dispatch(fetchRefundNotifications());
-    
+
     // Set up interval for periodic fetch
     const interval = setInterval(() => {
       dispatch(fetchNotifications());
       dispatch(fetchRefundNotifications());
     }, 10000); // Tăng thời gian từ 2s lên 10s
-    
+
     return () => clearInterval(interval);
   }, [dispatch]);
 
   // Singleton notification handler - chỉ cho phép 1 notification được xử lý tại một thời điểm
-  const playNotificationSound = useCallback((type, message = '', source = 'unknown') => {
-    // Kiểm tra nếu âm thanh bị tắt
-    if (!isSoundEnabled) {
-      return;
-    }
-
-    // Kiểm tra nếu đang có lock - TUYỆT ĐỐI KHÔNG CHO PHÉP
-    if (globalNotificationLock.current) {
-      return;
-    }
-
-    // Đặt lock NGAY LẬP TỨC
-    globalNotificationLock.current = true;
-    
-    // Cancel timeout cũ nếu có
-    if (soundPlayTimeout.current) {
-      clearTimeout(soundPlayTimeout.current);
-      soundPlayTimeout.current = null;
-    }
-
-    // FORCE CANCEL tất cả speech đang phát
-    try {
-      if (window.speechSynthesis.speaking) {
-        window.speechSynthesis.cancel();
-        // Đợi 200ms để đảm bảo cancel hoàn toàn
-        setTimeout(() => {
-          window.speechSynthesis.cancel();
-        }, 200);
+  const playNotificationSound = useCallback(
+    (type, message = "", source = "unknown") => {
+      // Kiểm tra nếu âm thanh bị tắt
+      if (!isSoundEnabled) {
+        return;
       }
-    } catch (e) {
-      // Speech cancel error - silent fail
-    }
 
-    // Hàm thực hiện notification
-    const executeNotification = () => {
+      // Kiểm tra nếu đang có lock - TUYỆT ĐỐI KHÔNG CHO PHÉP
+      if (globalNotificationLock.current) {
+        return;
+      }
+
+      // Đặt lock NGAY LẬP TỨC
+      globalNotificationLock.current = true;
+
+      // Cancel timeout cũ nếu có
+      if (soundPlayTimeout.current) {
+        clearTimeout(soundPlayTimeout.current);
+        soundPlayTimeout.current = null;
+      }
+
+      // FORCE CANCEL tất cả speech đang phát
       try {
-        if (type === 'order') {
-          // Phát MP3 cho đơn hàng
-          if (audioRef.current) {
-            audioRef.current.currentTime = 0;
-            audioRef.current.play().catch((error) => {
-              // MP3 play error - silent fail
-            });
-          }
-          
-          // Giải phóng lock sau khi MP3 đã phát (delay ngắn)
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          // Đợi 200ms để đảm bảo cancel hoàn toàn
           setTimeout(() => {
-            globalNotificationLock.current = false;
-          }, 1000); // 1 giây để MP3 phát xong
-          
-        } else if (type === 'refund') {
-          // Chỉ dùng Speech Synthesis cho hoàn hàng (không MP3)
-          try {
-            // Kiểm tra xem speechSynthesis có khả dụng không
-            if (!window.speechSynthesis) {
-              globalNotificationLock.current = false;
-              return;
+            window.speechSynthesis.cancel();
+          }, 200);
+        }
+      } catch (e) {
+        // Speech cancel error - silent fail
+      }
+
+      // Hàm thực hiện notification
+      const executeNotification = () => {
+        try {
+          if (type === "order") {
+            // Phát MP3 cho đơn hàng
+            if (audioRef.current) {
+              audioRef.current.currentTime = 0;
+              audioRef.current.play().catch((error) => {
+                // MP3 play error - silent fail
+              });
             }
-            
-            const speechText = message || "Có yêu cầu hoàn hàng mới";
-            const utterance = new SpeechSynthesisUtterance(speechText);
-            utterance.lang = "vi-VN";
-            utterance.rate = 1.5;
-            utterance.volume = 0.8;
-            
-            utterance.onstart = () => {
-              // Speech started - no logging
-            };
-            
-            utterance.onend = () => {
+
+            // Giải phóng lock sau khi MP3 đã phát (delay ngắn)
+            setTimeout(() => {
               globalNotificationLock.current = false;
-            };
-            
-            utterance.onerror = (event) => {
-              // GIỮU LOCK ÍT NHẤT 2 GIÂY ĐỂ TRÁNH OVERLAP
+            }, 1000); // 1 giây để MP3 phát xong
+          } else if (type === "refund") {
+            // Chỉ dùng Speech Synthesis cho hoàn hàng (không MP3)
+            try {
+              // Kiểm tra xem speechSynthesis có khả dụng không
+              if (!window.speechSynthesis) {
+                globalNotificationLock.current = false;
+                return;
+              }
+
+              const speechText = message || "Có yêu cầu hoàn hàng mới";
+              const utterance = new SpeechSynthesisUtterance(speechText);
+              utterance.lang = "vi-VN";
+              utterance.rate = 1.5;
+              utterance.volume = 0.8;
+
+              utterance.onstart = () => {
+                // Speech started - no logging
+              };
+
+              utterance.onend = () => {
+                globalNotificationLock.current = false;
+              };
+
+              utterance.onerror = (event) => {
+                // GIỮU LOCK ÍT NHẤT 2 GIÂY ĐỂ TRÁNH OVERLAP
+                setTimeout(() => {
+                  if (globalNotificationLock.current) {
+                    globalNotificationLock.current = false;
+                  }
+                }, 2000); // Giữ lock 2 giây sau khi error
+              };
+
+              // Phát speech ngay lập tức
+              window.speechSynthesis.speak(utterance);
+
+              // Fallback: Nếu speech không phát trong 3 giây, giải phóng lock
               setTimeout(() => {
-                if (globalNotificationLock.current) {
+                if (
+                  globalNotificationLock.current &&
+                  window.speechSynthesis.speaking === false
+                ) {
                   globalNotificationLock.current = false;
                 }
-              }, 2000); // Giữ lock 2 giây sau khi error
-            };
-            
-            // Phát speech ngay lập tức
-            window.speechSynthesis.speak(utterance);
-            
-            // Fallback: Nếu speech không phát trong 3 giây, giải phóng lock
-            setTimeout(() => {
-              if (globalNotificationLock.current && window.speechSynthesis.speaking === false) {
-                globalNotificationLock.current = false;
-              }
-            }, 3000);
-            
-          } catch (speechError) {
-            globalNotificationLock.current = false;
+              }, 3000);
+            } catch (speechError) {
+              globalNotificationLock.current = false;
+            }
           }
+
+          // Emergency timeout to release lock (10 seconds)
+          setTimeout(() => {
+            if (globalNotificationLock.current) {
+              globalNotificationLock.current = false;
+            }
+          }, 10000);
+        } catch (error) {
+          globalNotificationLock.current = false;
         }
+      };
 
-        // Emergency timeout to release lock (10 seconds)
-        setTimeout(() => {
-          if (globalNotificationLock.current) {
-            globalNotificationLock.current = false;
-          }
-        }, 10000);
-        
-      } catch (error) {
-        globalNotificationLock.current = false;
-      }
-    };
-
-    // Execute với delay 100ms để đảm bảo cancel hoàn tất
-    setTimeout(executeNotification, 100);
-  }, [isSoundEnabled]);
+      // Execute với delay 100ms để đảm bảo cancel hoàn tất
+      setTimeout(executeNotification, 100);
+    },
+    [isSoundEnabled]
+  );
 
   // Xử lý thông báo từ API (không bao gồm realtime)
   useEffect(() => {
-    const currentUnreadCount = notifications.filter(n => n.is_read === 0).length;
-    const totalUnreadCount = currentUnreadCount + returnNotifications.filter(n => n.is_read === 0).length;
-    
+    const currentUnreadCount = notifications.filter(
+      (n) => n.is_read === 0
+    ).length;
+    const totalUnreadCount =
+      currentUnreadCount +
+      returnNotifications.filter((n) => n.is_read === 0).length;
+
     setShowNotificationDot(totalUnreadCount > 0);
-    
+
     // Chỉ xử lý khi có thông báo mới (tăng số lượng)
     if (currentUnreadCount > lastNotificationCount.current) {
       // Hiển thị toast
@@ -291,44 +298,61 @@ const Homeadmin = () => {
         position: "top-right",
         autoClose: 4000,
       });
-      
+
       // Lấy thông báo mới chưa được xử lý
-      const unreadNotifications = notifications.filter(n => n.is_read === 0);
-      const newNotifications = unreadNotifications.filter(notification => {
-        const notificationId = notification.return_notification_id || notification.notification_id;
-        return notificationId && !processedNotifications.current.has(notificationId);
+      const unreadNotifications = notifications.filter((n) => n.is_read === 0);
+      const newNotifications = unreadNotifications.filter((notification) => {
+        const notificationId =
+          notification.return_notification_id || notification.notification_id;
+        return (
+          notificationId && !processedNotifications.current.has(notificationId)
+        );
       });
-      
+
       if (newNotifications.length > 0) {
         // Đánh dấu đã xử lý ngay lập tức
-        newNotifications.forEach(notification => {
-          const notificationId = notification.return_notification_id || notification.notification_id;
+        newNotifications.forEach((notification) => {
+          const notificationId =
+            notification.return_notification_id || notification.notification_id;
           if (notificationId) {
             processedNotifications.current.add(notificationId);
           }
         });
-        
+
         // Phân loại và phát âm thanh
-        const hasRegularOrder = newNotifications.some(n => 
-          !(n.type === 'refund' || n.return_notification_id || n.return_request)
+        const hasRegularOrder = newNotifications.some(
+          (n) =>
+            !(
+              n.type === "refund" ||
+              n.return_notification_id ||
+              n.return_request
+            )
         );
-        const hasRefundOrder = newNotifications.some(n => 
-          n.type === 'refund' || n.return_notification_id || n.return_request
+        const hasRefundOrder = newNotifications.some(
+          (n) =>
+            n.type === "refund" || n.return_notification_id || n.return_request
         );
-        
+
         if (hasRegularOrder && !hasRefundOrder) {
           // Chỉ có đơn hàng thường
-          playNotificationSound('order', '', 'API-useEffect');
+          playNotificationSound("order", "", "API-useEffect");
         } else if (hasRefundOrder) {
           // Có hoàn hàng (ưu tiên hoàn hàng)
-          const firstRefundNotification = newNotifications.find(n => 
-            n.type === 'refund' || n.return_notification_id || n.return_request
+          const firstRefundNotification = newNotifications.find(
+            (n) =>
+              n.type === "refund" ||
+              n.return_notification_id ||
+              n.return_request
           );
-          playNotificationSound('refund', firstRefundNotification?.message, 'API-useEffect');
+          playNotificationSound(
+            "refund",
+            firstRefundNotification?.message,
+            "API-useEffect"
+          );
         }
       }
     }
-    
+
     lastNotificationCount.current = currentUnreadCount;
   }, [notifications, returnNotifications, playNotificationSound]);
 
@@ -427,33 +451,35 @@ const Homeadmin = () => {
     try {
       // Đánh dấu tất cả thông báo thường đã đọc
       await dispatch(markNotificationsRead()).unwrap();
-      
+
       // Lấy tất cả thông báo hoàn hàng chưa đọc
       const unreadRefundNotifications = notifications.filter(
-        (n) => n.type === 'refund' && n.is_read === 0
+        (n) => n.type === "refund" && n.is_read === 0
       );
-      
+
       // Đánh dấu từng thông báo hoàn hàng đã đọc
       const refundPromises = unreadRefundNotifications.map((notification) => {
         if (notification.return_notification_id) {
-          return dispatch(markRefundNotificationRead(notification.return_notification_id));
+          return dispatch(
+            markRefundNotificationRead(notification.return_notification_id)
+          );
         }
         return Promise.resolve();
       });
-      
+
       // Chờ tất cả thông báo hoàn hàng được đánh dấu đã đọc
       await Promise.all(refundPromises);
-      
+
       setShowNotificationDot(false);
     } catch (error) {
-      console.error('Lỗi khi đánh dấu thông báo đã đọc:', error);
+      console.error("Lỗi khi đánh dấu thông báo đã đọc:", error);
     }
   };
 
   const handleNotificationItemClick = (noti) => {
     // Mark notification as read
     if (noti.is_read !== 1) {
-      if (noti.type === 'refund' && noti.return_notification_id) {
+      if (noti.type === "refund" && noti.return_notification_id) {
         // For refund notifications, use the return_notification_id to mark as read
         dispatch(markRefundNotificationRead(noti.return_notification_id));
       } else if (noti.notification_id) {
@@ -461,9 +487,9 @@ const Homeadmin = () => {
         dispatch(markNotificationRead(noti.notification_id));
       }
     }
-    
+
     // Navigate to appropriate detail page
-    if (noti.type === 'refund') {
+    if (noti.type === "refund") {
       // For refund notifications, navigate to return request detail using return_request.return_id
       if (noti.return_request && noti.return_request.return_id) {
         navigate(`/admin/detailorderreturn/${noti.return_request.return_id}`);
@@ -483,7 +509,6 @@ const Homeadmin = () => {
     localStorage.setItem("notificationSound", newSoundState);
   };
 
-
   const { adminProfile } = useSelector((state) => state.adminProfile);
 
   const checkRole = adminProfile?.user?.role;
@@ -498,60 +523,61 @@ const Homeadmin = () => {
     if (pusherRef.current) {
       if (channelRef.current) {
         channelRef.current.unbind_all();
-        pusherRef.current.unsubscribe('admin.notifications');
+        pusherRef.current.unsubscribe("admin.notifications");
       }
       pusherRef.current.disconnect();
     }
-    
-    setConnectionStatus('connecting');
-    
+
+    setConnectionStatus("connecting");
+
     try {
       // Khởi tạo kết nối Pusher
-      const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
+      const token =
+        localStorage.getItem("adminToken") || localStorage.getItem("token");
       if (!token) {
-        setConnectionStatus('failed');
+        setConnectionStatus("failed");
         return;
       }
-      
-      const pusher = new Pusher('dcc715adcba25f4b8d09', {
-        cluster: 'ap1',
+
+      const pusher = new Pusher("dcc715adcba25f4b8d09", {
+        cluster: "ap1",
         forceTLS: true,
         authEndpoint: `${import.meta.env.VITE_BASE_URL}broadcasting/auth`,
         auth: {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
+            "Content-Type": "application/json",
+            Accept: "application/json",
           },
         },
       });
-      
+
       pusherRef.current = pusher;
-      
+
       // Lắng nghe sự kiện kết nối
-      pusher.connection.bind('connected', () => {
-        setConnectionStatus('connected');
+      pusher.connection.bind("connected", () => {
+        setConnectionStatus("connected");
         setIsRealtimeConnected(true);
       });
-      
-      pusher.connection.bind('error', () => {
-        setConnectionStatus('failed');
+
+      pusher.connection.bind("error", () => {
+        setConnectionStatus("failed");
         setIsRealtimeConnected(false);
       });
-      
+
       // Lắng nghe thay đổi trạng thái kết nối
-      pusher.connection.bind('state_change', (states) => {
-        if (states.current === 'disconnected') {
+      pusher.connection.bind("state_change", (states) => {
+        if (states.current === "disconnected") {
           setIsRealtimeConnected(false);
-          setConnectionStatus('disconnected');
+          setConnectionStatus("disconnected");
         }
       });
-      
-      const channel = pusher.subscribe('admin.notifications');
+
+      const channel = pusher.subscribe("admin.notifications");
       channelRef.current = channel;
-      
-      channel.bind('ReturnNotificationCreated', (data) => {
-        setReturnNotifications(prevNotifications => [
+
+      channel.bind("ReturnNotificationCreated", (data) => {
+        setReturnNotifications((prevNotifications) => [
           {
             id: data.id,
             order_id: data.order_id,
@@ -559,12 +585,12 @@ const Homeadmin = () => {
             message: data.message,
             is_read: data.is_read,
             created_at: data.created_at,
-            type: 'refund',
-            return_notification_id: data.id
+            type: "refund",
+            return_notification_id: data.id,
           },
-          ...prevNotifications
+          ...prevNotifications,
         ]);
-        
+
         // Hiển thị toast cho realtime notification
         toast.info(
           <div>
@@ -581,33 +607,33 @@ const Homeadmin = () => {
             draggable: true,
           }
         );
-        
+
         // Phát âm thanh cho realtime return notification
         const currentSoundEnabled = localStorage.getItem("notificationSound");
-        const soundEnabled = currentSoundEnabled === null ? true : currentSoundEnabled === "true";
-        
+        const soundEnabled =
+          currentSoundEnabled === null ? true : currentSoundEnabled === "true";
+
         if (soundEnabled) {
           // Sử dụng hàm playNotificationSound có sẵn với delay lớn hơn để tránh conflict
           setTimeout(() => {
-            playNotificationSound('refund', data.message, 'realtime-pusher');
+            playNotificationSound("refund", data.message, "realtime-pusher");
           }, 500); // Tăng delay lên 500ms để tránh conflict với API notifications
         }
       });
-      
     } catch (error) {
-      setConnectionStatus('failed');
+      setConnectionStatus("failed");
     }
   }, []); // Loại bỏ dependency để tránh tạo lại kết nối
 
   useEffect(() => {
-    if (checkRole && checkRole !== 'sale') {
+    if (checkRole && checkRole !== "sale") {
       setupReturnNotificationsRealtime();
 
       return () => {
         if (pusherRef.current) {
           if (channelRef.current) {
             channelRef.current.unbind_all();
-            pusherRef.current.unsubscribe('admin.notifications');
+            pusherRef.current.unsubscribe("admin.notifications");
           }
           pusherRef.current.disconnect();
         }
@@ -616,42 +642,52 @@ const Homeadmin = () => {
   }, [setupReturnNotificationsRealtime, checkRole]);
 
   // Hàm xử lý để đánh dấu đã đọc thông báo hoàn hàng - sử dụng Redux
-  const markReturnNotificationAsRead = useCallback(async (notificationId) => {
-    try {
-      const result = await dispatch(markReturnNotificationRead(notificationId));
-      
-      if (markReturnNotificationRead.fulfilled.match(result)) {
-        // Cập nhật state local sau khi Redux thành công
-        setReturnNotifications(prevNotifications => 
-          prevNotifications.map(notification => 
-            notification.id === notificationId ? { ...notification, is_read: 1 } : notification
-          )
+  const markReturnNotificationAsRead = useCallback(
+    async (notificationId) => {
+      try {
+        const result = await dispatch(
+          markReturnNotificationRead(notificationId)
         );
-        return true;
-      } else {
-        console.error('Lỗi đánh dấu đã đọc thông báo:', result.payload);
+
+        if (markReturnNotificationRead.fulfilled.match(result)) {
+          // Cập nhật state local sau khi Redux thành công
+          setReturnNotifications((prevNotifications) =>
+            prevNotifications.map((notification) =>
+              notification.id === notificationId
+                ? { ...notification, is_read: 1 }
+                : notification
+            )
+          );
+          return true;
+        } else {
+          console.error("Lỗi đánh dấu đã đọc thông báo:", result.payload);
+          return false;
+        }
+      } catch (error) {
+        console.error("Lỗi đánh dấu đã đọc thông báo:", error);
         return false;
       }
-    } catch (error) {
-      console.error('Lỗi đánh dấu đã đọc thông báo:', error);
-      return false;
-    }
-  }, [dispatch]);
-  
+    },
+    [dispatch]
+  );
+
   // Xử lý khi click vào thông báo hoàn hàng
-  const handleReturnNotificationClick = useCallback(async (notification) => {
-    // Đánh dấu đã đọc nếu chưa đọc
-    if (notification.is_read === 0) {
-      await markReturnNotificationAsRead(notification.id);
-    }
-    
-    // Chuyển hướng đến trang chi tiết đơn hoàn hàng
-    if (notification.return_request_id) {
-      navigate(`/admin/detailorderreturn/${notification.return_request_id}`);
-    } else if (notification.order_id) {
-      navigate(`/admin/orderdetail/${notification.order_id}`);
-    }
-  }, [markReturnNotificationAsRead, navigate]);
+  const handleReturnNotificationClick = useCallback(
+    async (notification) => {
+      // Đánh dấu đã đọc nếu chưa đọc
+      if (notification.is_read === 0) {
+        await markReturnNotificationAsRead(notification.id);
+      }
+
+      // Chuyển hướng đến trang chi tiết đơn hoàn hàng
+      if (notification.return_request_id) {
+        navigate(`/admin/detailorderreturn/${notification.return_request_id}`);
+      } else if (notification.order_id) {
+        navigate(`/admin/orderdetail/${notification.order_id}`);
+      }
+    },
+    [markReturnNotificationAsRead, navigate]
+  );
 
   return (
     <>
@@ -1061,7 +1097,7 @@ const Homeadmin = () => {
                   </div>
                 </div>
 
-              <div
+                <div
                   className={
                     location.pathname === "/admin/chatbot" ? "active" : ""
                   }
@@ -1071,13 +1107,12 @@ const Homeadmin = () => {
                     className="admin_dh-nav-link"
                     data-title="Dashboard"
                   >
-                   <i className="bi bi-robot" style={{ color: "#197fe6" }}></i>
+                    <i className="bi bi-robot" style={{ color: "#197fe6" }}></i>
 
                     <span> Chat bot </span>
                   </Link>
                 </div>
 
-                
                 <div
                   className={
                     location.pathname === "/admin/chatlive" ? "active" : ""
@@ -1158,7 +1193,7 @@ const Homeadmin = () => {
                     <span>Bình Luận</span>
                   </Link>
                 </div>
-               
+
                 {checkRole !== "sale" && (
                   <div
                     className={
@@ -1265,7 +1300,6 @@ const Homeadmin = () => {
                       ></i>
                     </button>
 
-
                     <div className="admin_dh-notifications-nav">
                       <div className="dropdown">
                         <a
@@ -1307,7 +1341,8 @@ const Homeadmin = () => {
                               </button>
                             )}
                           </div>
-                          {(notifications.length === 0 && returnNotifications.length === 0) ? (
+                          {notifications.length === 0 &&
+                          returnNotifications.length === 0 ? (
                             <div className="dropdown-item text-muted">
                               Không có thông báo mới
                             </div>
@@ -1320,7 +1355,9 @@ const Homeadmin = () => {
                                   className={`dropdown-item admin_dh-notification-item d-flex align-items-start ${
                                     noti.is_read === 1 ? "" : "unread"
                                   }`}
-                                  onClick={() => handleReturnNotificationClick(noti)}
+                                  onClick={() =>
+                                    handleReturnNotificationClick(noti)
+                                  }
                                   style={{ cursor: "pointer" }}
                                 >
                                   <div className="admin_dh-notification-icon admin_dh-bg-warning-soft">
@@ -1328,8 +1365,12 @@ const Homeadmin = () => {
                                   </div>
                                   <div className="flex-grow-1 ms-3">
                                     <div className="d-flex align-items-center gap-2 mb-1">
-                                      <span className="badge bg-warning text-dark">Realtime</span>
-                                      <span className="text-primary fw-bold">Hoàn hàng</span>
+                                      <span className="badge bg-warning text-dark">
+                                        Realtime
+                                      </span>
+                                      <span className="text-primary fw-bold">
+                                        Hoàn hàng
+                                      </span>
                                     </div>
                                     <p className="mb-0" title={noti.message}>
                                       {noti.message}
@@ -1337,7 +1378,9 @@ const Homeadmin = () => {
                                     <small className="text-muted">
                                       <i className="bi bi-clock me-1"></i>
                                       {noti.created_at
-                                        ? new Date(noti.created_at).toLocaleDateString("vi-VN", {
+                                        ? new Date(
+                                            noti.created_at
+                                          ).toLocaleDateString("vi-VN", {
                                             year: "numeric",
                                             month: "2-digit",
                                             day: "2-digit",
@@ -1354,27 +1397,37 @@ const Homeadmin = () => {
                                   </div>
                                 </div>
                               ))}
-                              
+
                               {/* Hiển thị thông báo thường từ Redux */}
                               {notifications.map((noti, idx) => (
                                 <div
-                                  key={`${noti.type || 'default'}-${noti.type === 'refund' ? noti.return_notification_id : noti.notification_id || idx}-${idx}`}
+                                  key={`${noti.type || "default"}-${
+                                    noti.type === "refund"
+                                      ? noti.return_notification_id
+                                      : noti.notification_id || idx
+                                  }-${idx}`}
                                   className={`dropdown-item admin_dh-notification-item d-flex align-items-start ${
                                     noti.is_read === 1 ? "" : "unread"
                                   }`}
-                                  onClick={() => handleNotificationItemClick(noti)}
+                                  onClick={() =>
+                                    handleNotificationItemClick(noti)
+                                  }
                                   style={{ cursor: "pointer" }}
                                 >
-                                  <div className={`admin_dh-notification-icon ${
-                                    noti.type === 'refund' 
-                                      ? 'admin_dh-bg-warning-soft' 
-                                      : 'admin_dh-bg-primary-soft'
-                                  }`}>
-                                    <i className={`bi ${
-                                      noti.type === 'refund' 
-                                        ? 'bi-arrow-return-left' 
-                                        : 'bi-bell'
-                                    }`}></i>
+                                  <div
+                                    className={`admin_dh-notification-icon ${
+                                      noti.type === "refund"
+                                        ? "admin_dh-bg-warning-soft"
+                                        : "admin_dh-bg-primary-soft"
+                                    }`}
+                                  >
+                                    <i
+                                      className={`bi ${
+                                        noti.type === "refund"
+                                          ? "bi-arrow-return-left"
+                                          : "bi-bell"
+                                      }`}
+                                    ></i>
                                   </div>
                                   <div className="flex-grow-1 ms-3">
                                     <p className="mb-0" title={noti.message}>
@@ -1383,7 +1436,9 @@ const Homeadmin = () => {
                                     <small className="text-muted">
                                       <i className="bi bi-clock me-1"></i>
                                       {noti.created_at
-                                        ? new Date(noti.created_at).toLocaleDateString("vi-VN", {
+                                        ? new Date(
+                                            noti.created_at
+                                          ).toLocaleDateString("vi-VN", {
                                             year: "numeric",
                                             month: "2-digit",
                                             day: "2-digit",
@@ -1478,19 +1533,22 @@ const Homeadmin = () => {
         )}
       </div>
       {/* Audio cho thông báo đơn hàng */}
-      <audio
-        ref={audioRef}
-        src={Thongbao}
-        preload="auto"
-        style={{ display: "none" }}
-      />
-      {/* Audio cho thông báo hoàn hàng */}
-      <audio
-        ref={hoanHangAudioRef}
-        src={HoanHang}
-        preload="auto"
-        style={{ display: "none" }}
-      />
+      {checkRole !== "sale" && (
+        <>
+          <audio
+            ref={audioRef}
+            src={Thongbao}
+            preload="auto"
+            style={{ display: "none" }}
+          />
+          <audio
+            ref={hoanHangAudioRef}
+            src={HoanHang}
+            preload="auto"
+            style={{ display: "none" }}
+          />
+        </>
+      )}
     </>
   );
 };
