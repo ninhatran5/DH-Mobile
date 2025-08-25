@@ -23,6 +23,7 @@ const CommentsList = () => {
     useSelector((state) => state.adminComments);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const [ratingFilter, setRatingFilter] = useState(""); // State cho bộ lọc rating
   const [selectedComment, setSelectedComment] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [replyInput, setReplyInput] = useState("");
@@ -59,12 +60,22 @@ const CommentsList = () => {
     setSearchTerm(e.target.value);
   };
 
-  const filteredComments = comments?.filter(
-    (comment) =>
+  const handleRatingFilter = (e) => {
+    setRatingFilter(e.target.value);
+  };
+
+  const filteredComments = comments?.filter((comment) => {
+    // Lọc theo từ khóa tìm kiếm
+    const matchesSearch = 
       comment.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
       comment.user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      comment.product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      comment.product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // Lọc theo rating
+    const matchesRating = ratingFilter === "" || comment.rating === parseInt(ratingFilter);
+    
+    return matchesSearch && matchesRating;
+  });
 
   const handleToggleVisibility = (commentId, currentStatus) => {
     const actionText = currentStatus ? "ẩn" : "hiển thị";
@@ -178,6 +189,22 @@ const CommentsList = () => {
             onChange={handleSearch}
             className="admin-comments-search-input"
           />
+        </div>
+        
+        {/* Bộ lọc rating */}
+        <div className="admin-comments-rating-filter">
+          <select
+            value={ratingFilter}
+            onChange={handleRatingFilter}
+            className="admin-comments-rating-select"
+          >
+            <option value="">Tất cả đánh giá</option>
+            <option value="5">5 sao ★★★★★</option>
+            <option value="4">4 sao ★★★★☆</option>
+            <option value="3">3 sao ★★★☆☆</option>
+            <option value="2">2 sao ★★☆☆☆</option>
+            <option value="1">1 sao ★☆☆☆☆</option>
+          </select>
         </div>
       </div>
 
