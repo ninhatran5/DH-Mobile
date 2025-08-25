@@ -220,19 +220,20 @@ const AdminAddProduct = () => {
       }
       return { ...prev, attributes: newAttributes };
     });
+    
+    // Clear attribute validation error immediately when user selects
+    if (variantErrors.attributes) {
+      setVariantErrors(prev => ({ ...prev, attributes: null }));
+    }
   };
 
   const handleAddVariant = () => {
-    if (variants.length >= 3) {
-      toast.warning('Chỉ có thể thêm tối đa 3 biến thể.');
-      return;
-    }
     setShowVariantForm(true);
     // Reset variant errors khi mở form mới
     setVariantErrors({});
   };
 
-  const handleAddVariantSubmit = async (e) => {
+  const handleAddVariantSubmit = (e) => {
     e.preventDefault();
 
     const newVariantErrors = {};
@@ -282,8 +283,16 @@ const AdminAddProduct = () => {
       return;
     }
 
+    // Tạo deep copy của variant để tránh reference issues
+    const newVariant = {
+      ...variantFormData,
+      attributes: [...variantFormData.attributes]
+    };
+    
     // Thêm biến thể vào danh sách
-    setVariants([...variants, variantFormData]);
+    setVariants(prevVariants => [...prevVariants, newVariant]);
+    
+    // Reset form data
     setVariantFormData({
       sku: '', price: '', price_original: '', stock: 0, image_url: '', is_active: 1, attributes: []
     });
@@ -291,20 +300,22 @@ const AdminAddProduct = () => {
     // Reset image preview
     if (variantImagePreview) {
       URL.revokeObjectURL(variantImagePreview);
+      setVariantImagePreview(null);
     }
-    setVariantImagePreview(null);
     
-    // Reset errors
+    // Reset errors và đóng form
     setVariantErrors({});
     setShowVariantForm(false);
-    toast.success('Biến thể đã được thêm vào danh sách.');
+    
+    // Success toast with current count
+    toast.success(`Đã thêm biến thể ${variants.length + 1}`);
   };
 
   const cancelVariantForm = () => {
     if (variantImagePreview) {
       URL.revokeObjectURL(variantImagePreview);
+      setVariantImagePreview(null);
     }
-    setVariantImagePreview(null);
     setVariantFormData({
       sku: '', price: '', price_original: '', stock: 0, image_url: '', is_active: 1, attributes: []
     });
@@ -321,7 +332,21 @@ const AdminAddProduct = () => {
   };
 
   const handleDeleteVariant = (index) => {
-    setVariants((prev) => prev.filter((_, i) => i !== index));
+    const variantToDelete = variants[index];
+    
+    // Cleanup image URL if it's a blob
+    if (variantToDelete?.image_url instanceof File) {
+      // Create blob URL to revoke if needed (though this is mainly for current preview)
+      const imageUrl = URL.createObjectURL(variantToDelete.image_url);
+      URL.revokeObjectURL(imageUrl);
+    }
+    
+    setVariants(prev => prev.filter((_, i) => i !== index));
+    
+    // Update expanded states
+    setVariantExpanded(prev => prev.filter((_, i) => i !== index));
+    
+    toast.success('Đã xóa biến thể');
   };
 
   // ========== MAIN SUBMIT ==========
@@ -721,16 +746,41 @@ const AdminAddProduct = () => {
                   type="button" 
                   className="admin-add-variant-btn" 
                   onClick={handleAddVariant}
-                  disabled={variants.length >= 3}
                 >
                   <FaPlus />
-                  <span>Thêm biến thể ({variants.length}/3)</span>
+                  <span>Thêm biến thể ({variants.length})</span>
                 </button>
 
                 {/* Variant Form */}
                 {showVariantForm && (
                   <div className="admin-variant-form">
                     <h4 className="admin-variant-form-title">Thêm biến thể mới</h4>
+                    
+                    {/* Thuộc tính - Đưa lên đầu */}
+                    <div className="admin-form-group">
+                      <label className="admin-form-label">Thuộc tính</label>
+                      <div className="admin-attributes-grid">
+                        {attributes?.map(attribute => (
+                          <div key={attribute.attribute_id} className="admin-attribute-group">
+                            <label className="admin-attribute-label">{attribute.name}</label>
+                            <select
+                              className="admin-form-select"
+                              onChange={(e) => handleAttributeChange(attribute.attribute_id, e.target.value)}
+                              value={
+                                variantFormData.attributes?.find(a => a.attribute_id === attribute.attribute_id)?.value_id || ''
+                              }
+                            >
+                              <option value="">-- Chọn {attribute.name} --</option>
+                              {attributeValues[attribute.attribute_id]?.map(val => (
+                                <option key={val.value_id} value={val.value_id}>{val.value}</option>
+                              ))}
+                            </select>
+                          </div>
+                        ))}
+                      </div>
+                      {variantErrors.attributes && <div className="admin-error-message">{variantErrors.attributes}</div>}
+                    </div>
+
                     <div className="admin-variant-grid">
                       <div className="admin-variant-row">
                         <div className="admin-form-group">
@@ -758,20 +808,9 @@ const AdminAddProduct = () => {
                           {variantErrors.stock && <div className="admin-error-message">{variantErrors.stock}</div>}
                         </div>
                       </div>
+                      
+                      {/* Giá gốc và Giá bán cùng 1 hàng */}
                       <div className="admin-variant-row">
-                        <div className="admin-form-group">
-                          <label className="admin-form-label">Giá bán</label>
-                          <input 
-                            type="text"
-                            className={`admin-form-input admin-numeric-input ${variantErrors.price ? 'error' : ''}`}
-                            name="price" 
-                            value={formatNumber(variantFormData.price)}
-                            onChange={(e) => handleVariantNumericInput(e, 'price')}
-                            placeholder="0"
-                            inputMode="numeric"
-                          />
-                          {variantErrors.price && <div className="admin-error-message">{variantErrors.price}</div>}
-                        </div>
                         <div className="admin-form-group">
                           <label className="admin-form-label">Giá gốc</label>
                           <input 
@@ -784,6 +823,19 @@ const AdminAddProduct = () => {
                             inputMode="numeric"
                           />
                           {variantErrors.price_original && <div className="admin-error-message">{variantErrors.price_original}</div>}
+                        </div>
+                        <div className="admin-form-group">
+                          <label className="admin-form-label">Giá bán</label>
+                          <input 
+                            type="text"
+                            className={`admin-form-input admin-numeric-input ${variantErrors.price ? 'error' : ''}`}
+                            name="price" 
+                            value={formatNumber(variantFormData.price)}
+                            onChange={(e) => handleVariantNumericInput(e, 'price')}
+                            placeholder="0"
+                            inputMode="numeric"
+                          />
+                          {variantErrors.price && <div className="admin-error-message">{variantErrors.price}</div>}
                         </div>
                       </div>
                     </div>
@@ -819,30 +871,6 @@ const AdminAddProduct = () => {
                           </div>
                         )}
                       </div>
-                    </div>
-
-                    <div className="admin-form-group">
-                      <label className="admin-form-label">Thuộc tính</label>
-                      <div className="admin-attributes-grid">
-                        {attributes.map(attribute => (
-                          <div key={attribute.attribute_id} className="admin-attribute-group">
-                            <label className="admin-attribute-label">{attribute.name}</label>
-                            <select
-                              className="admin-form-select"
-                              onChange={(e) => handleAttributeChange(attribute.attribute_id, e.target.value)}
-                              value={
-                                variantFormData.attributes.find(a => a.attribute_id === attribute.attribute_id)?.value_id || ''
-                              }
-                            >
-                              <option value="">-- Chọn {attribute.name} --</option>
-                              {attributeValues[attribute.attribute_id]?.map(val => (
-                                <option key={val.value_id} value={val.value_id}>{val.value}</option>
-                              ))}
-                            </select>
-                          </div>
-                        ))}
-                      </div>
-                      {variantErrors.attributes && <div className="admin-error-message">{variantErrors.attributes}</div>}
                     </div>
 
                     <div className="admin-variant-form-actions">
