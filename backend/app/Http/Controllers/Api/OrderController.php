@@ -1847,20 +1847,33 @@ class OrderController extends Controller
             ], 404);
         }
 
-        // 2) Lấy đơn hàng liên quan
+        // 2) Lấy đơn hàng liên quan - Áp dụng cùng logic COALESCE như API danh sách
+        $orderData = DB::table('return_requests')
+            ->leftJoin('orders as original_orders', 'return_requests.order_id', '=', 'original_orders.order_id')
+            ->leftJoin('orders as return_orders', 'return_requests.return_order_id', '=', 'return_orders.order_id')
+            ->where('return_requests.return_id', $return_id)
+            ->select(
+                'return_requests.order_id',
+                'return_requests.return_order_id',
+                // Ưu tiên order_code từ đơn hoàn trả (nếu có), nếu không thì lấy từ đơn gốc
+                DB::raw('COALESCE(return_orders.order_code, original_orders.order_code) as order_code')
+            )
+            ->first();
+            
+        if (!$orderData) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Không tìm thấy đơn hàng',
+            ], 404);
+        }
+        
+        // Lấy thêm thông tin từ Eloquent cho relationships
         $order = Orders::with([
             'user',
             'paymentMethods',
             'orderItems.product',
             'orderItems.variant.variantAttributeValues.value.attribute',
         ])->where('order_id', $returnRequest->order_id)->first();
-
-        if (!$order) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Không tìm thấy đơn hàng',
-            ], 404);
-        }
 
         // 3) Chuẩn hóa danh sách sản phẩm trong đơn (để có thể fallback giá)
         //    (Giữ nguyên cấu trúc bạn đang dùng; nếu không cần trả ra có thể bỏ đoạn map này)
@@ -2041,7 +2054,8 @@ class OrderController extends Controller
 
         $formattedOrder = [
             'order_id'           => $order->order_id,
-            'order_code'         => $order->order_code,
+            'return_id'           => $returnRequest->return_id,
+            'order_code'         => $orderData->order_code, // ✅ Sử dụng order_code từ query trực tiếp
             'customer'           => $order->customer ?? optional($order->user)->name,
             'email'              => optional($order->user)->email,
             'order_status'       => $order->status,
