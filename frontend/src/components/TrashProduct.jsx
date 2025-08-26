@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -9,6 +9,7 @@ import {
   
 } from "../slices/adminproductsSlice";
 import {fetchAdminProductVariants} from "../slices/AdminProductVariants";
+import {fetchAdminOrders} from "../slices/adminOrderSlice";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import "../assets/admin/HomeAdmin.css";
@@ -22,6 +23,9 @@ const TrashList = () => {
   const { productVariants, loading: variantsLoading } = useSelector(
     (state) => state.adminProductVariants
   );
+  const { orders: adminOrders, loading: ordersLoading } = useSelector(
+    (state) => state.adminOrder
+  );
 
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -31,8 +35,8 @@ const TrashList = () => {
   useEffect(() => {
     dispatch(fetchTrashedAdminProducts());
     dispatch(fetchAdminProductVariants());
+    dispatch(fetchAdminOrders());
   }, [dispatch]);
-
   const handleSelectAll = (e) => {
     if (e.target.checked) {
       setSelectedProducts(trashedProducts.map((product) => product.product_id));
@@ -52,6 +56,56 @@ const TrashList = () => {
   // Kiểm tra sản phẩm có variant không
   const checkProductHasVariants = (productId) => {
     return productVariants.some(variant => variant.product_id === productId);
+  };
+
+  // Kiểm tra sản phẩm hoặc variants của nó có trong đơn hàng không
+  const checkProductInOrders = (productId) => {
+    if (!Array.isArray(adminOrders) || adminOrders.length === 0) {
+      return false;
+    }
+
+    // Lấy tất cả variant_ids của sản phẩm này
+    const productVariantIds = productVariants
+      .filter(variant => variant.product_id === productId)
+      .map(variant => variant.variant_id);
+
+    return adminOrders.some(order => {
+      // Tìm order items trong order (có thể có nhiều tên khác nhau)
+      const orderItems = order.order_items || order.products || order.orderDetails || order.order_details || order.items || [];
+      
+      if (!Array.isArray(orderItems)) return false;
+
+      return orderItems.some(item => {
+        // Kiểm tra trực tiếp product_id
+        if (item.product_id && parseInt(item.product_id, 10) === parseInt(productId, 10)) {
+          return true;
+        }
+        
+        // Kiểm tra variant_id nếu có
+        if (item.variant_id && productVariantIds.includes(parseInt(item.variant_id, 10))) {
+          return true;
+        }
+        
+        return false;
+      });
+    });
+  };
+
+  // Kiểm tra xem có thể xóa sản phẩm không (chỉ kiểm tra orders)
+  const canDeleteProduct = (productId) => {
+    const inOrders = checkProductInOrders(productId);
+    return !inOrders;
+  };
+
+  // Lấy lý do không thể xóa
+  const getDeletionBlockReason = (productId) => {
+    const inOrders = checkProductInOrders(productId);
+    
+    if (inOrders) {
+      return "Không thể xóa - sản phẩm hoặc biến thể đã có trong đơn hàng";
+    } else {
+      return "Xóa vĩnh viễn";
+    }
   };
 
   // Khôi phục một sản phẩm
@@ -85,9 +139,9 @@ const TrashList = () => {
 
   // Xóa vĩnh viễn một sản phẩm
   const handleDeletePermanently = async (productId) => {
-    // Kiểm tra sản phẩm có variant không
-    if (checkProductHasVariants(productId)) {
-      toast.error("Không thể xóa sản phẩm này vì còn tồn tại biến thể (variants). Vui lòng xóa tất cả biến thể trước!");
+    // Kiểm tra các ràng buộc
+    if (!canDeleteProduct(productId)) {
+      toast.error("Không thể xóa sản phẩm này vì sản phẩm hoặc biến thể đã có trong đơn hàng!");
       return;
     }
 
@@ -161,18 +215,19 @@ const TrashList = () => {
 
   // Xóa vĩnh viễn nhiều sản phẩm
   const handleDeleteSelectedPermanently = async () => {
-    // Kiểm tra từng sản phẩm đã chọn có variant không
-    const productsWithVariants = selectedProducts.filter(productId => 
-      checkProductHasVariants(productId)
+    // Kiểm tra từng sản phẩm đã chọn có ràng buộc không
+    const productsWithConstraints = selectedProducts.filter(productId => 
+      !canDeleteProduct(productId)
     );
 
-    if (productsWithVariants.length > 0) {
-      const productNames = productsWithVariants.map(productId => {
+    if (productsWithConstraints.length > 0) {
+      const constraintsList = productsWithConstraints.map(productId => {
         const product = trashedProducts.find(p => p.product_id === productId);
-        return product ? product.name : `ID: ${productId}`;
+        const productName = product ? product.name : `ID: ${productId}`;
+        return productName;
       }).join(", ");
       
-      toast.error(`Không thể xóa các sản phẩm sau vì còn tồn tại biến thể: ${productNames}. Vui lòng xóa tất cả biến thể trước!`);
+      toast.error(`Không thể xóa các sản phẩm sau vì đã có trong đơn hàng: ${constraintsList}`);
       return;
     }
 
@@ -286,7 +341,7 @@ const TrashList = () => {
 
       {/* Products Content */}
       <div className="TrashList1-content">
-        {(loading || variantsLoading) ? (
+        {(loading || variantsLoading || ordersLoading) ? (
           <div className="TrashList1-loading">
             <div className="TrashList1-spinner"></div>
             <p>Đang tải dữ liệu...</p>
@@ -376,16 +431,13 @@ const TrashList = () => {
                         </button>
                         <button
                           className={`TrashList1-action-btn TrashList1-delete-btn ${
-                            checkProductHasVariants(product.product_id) ? 'TrashList1-disabled' : ''
+                            !canDeleteProduct(product.product_id) ? 'TrashList1-disabled' : ''
                           }`}
-                          title={checkProductHasVariants(product.product_id) 
-                            ? "Không thể xóa - sản phẩm có biến thể" 
-                            : "Xóa vĩnh viễn"
-                          }
+                          title={getDeletionBlockReason(product.product_id)}
                           onClick={() => handleDeletePermanently(product.product_id)}
                         >
                           <i className="bi bi-trash"></i>
-                          {checkProductHasVariants(product.product_id) && (
+                          {!canDeleteProduct(product.product_id) && (
                             <i className="bi bi-exclamation-triangle" style={{marginLeft: '4px', fontSize: '12px'}}></i>
                           )}
                         </button>
