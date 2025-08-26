@@ -19,7 +19,7 @@ import {
   markReturnNotificationRead,
 } from "../../slices/NotificationSlice";
 import Thongbao from "../../assets/sound/thongbaomuahang.mp3";
-import HoanHang from "../../assets/sound/yeucauhoanhang.mp3";
+import HoanHang from "../../assets/sound/yeucauhoanhoangmoinhat.mp3";
 import { fetchProfileAdmin } from "../../slices/adminProfile";
 import Swal from "sweetalert2";
 import Pusher from "pusher-js";
@@ -184,19 +184,6 @@ const Homeadmin = () => {
       soundPlayTimeout.current = null;
     }
 
-    // FORCE CANCEL tất cả speech đang phát
-    try {
-      if (window.speechSynthesis.speaking) {
-        window.speechSynthesis.cancel();
-        // Đợi 200ms để đảm bảo cancel hoàn toàn
-        setTimeout(() => {
-          window.speechSynthesis.cancel();
-        }, 200);
-      }
-    } catch (e) {
-      // Speech cancel error - silent fail
-    }
-
     // Hàm thực hiện notification
     const executeNotification = () => {
       try {
@@ -215,50 +202,18 @@ const Homeadmin = () => {
           }, 1000); // 1 giây để MP3 phát xong
           
         } else if (type === 'refund') {
-          // Chỉ dùng Speech Synthesis cho hoàn hàng (không MP3)
-          try {
-            // Kiểm tra xem speechSynthesis có khả dụng không
-            if (!window.speechSynthesis) {
-              globalNotificationLock.current = false;
-              return;
-            }
-            
-            const speechText = message || "Có yêu cầu hoàn hàng mới";
-            const utterance = new SpeechSynthesisUtterance(speechText);
-            utterance.lang = "vi-VN";
-            utterance.rate = 1.5;
-            utterance.volume = 0.8;
-            
-            utterance.onstart = () => {
-              // Speech started - no logging
-            };
-            
-            utterance.onend = () => {
-              globalNotificationLock.current = false;
-            };
-            
-            utterance.onerror = (event) => {
-              // GIỮU LOCK ÍT NHẤT 2 GIÂY ĐỂ TRÁNH OVERLAP
-              setTimeout(() => {
-                if (globalNotificationLock.current) {
-                  globalNotificationLock.current = false;
-                }
-              }, 2000); // Giữ lock 2 giây sau khi error
-            };
-            
-            // Phát speech ngay lập tức
-            window.speechSynthesis.speak(utterance);
-            
-            // Fallback: Nếu speech không phát trong 3 giây, giải phóng lock
-            setTimeout(() => {
-              if (globalNotificationLock.current && window.speechSynthesis.speaking === false) {
-                globalNotificationLock.current = false;
-              }
-            }, 3000);
-            
-          } catch (speechError) {
-            globalNotificationLock.current = false;
+          // Phát MP3 cho hoàn hàng
+          if (hoanHangAudioRef.current) {
+            hoanHangAudioRef.current.currentTime = 0;
+            hoanHangAudioRef.current.play().catch((error) => {
+              // MP3 play error - silent fail
+            });
           }
+          
+          // Giải phóng lock sau khi MP3 đã phát (delay ngắn)
+          setTimeout(() => {
+            globalNotificationLock.current = false;
+          }, 1000); // 1 giây để MP3 phát xong
         }
 
         // Emergency timeout to release lock (10 seconds)
@@ -273,8 +228,8 @@ const Homeadmin = () => {
       }
     };
 
-    // Execute với delay 100ms để đảm bảo cancel hoàn tất
-    setTimeout(executeNotification, 100);
+    // Execute ngay lập tức
+    executeNotification();
   }, [isSoundEnabled]);
 
   // Xử lý thông báo từ API (không bao gồm realtime)

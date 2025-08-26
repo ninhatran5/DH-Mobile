@@ -566,6 +566,24 @@
   border-color: #bfdbfe;
 }
 
+/* Clickable row styling */
+.recent-orders-row-clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.recent-orders-row-clickable:hover {
+  background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%);
+  transform: translateX(2px);
+  box-shadow: 0 2px 8px rgba(3, 169, 244, 0.15);
+  border-left: 3px solid #03a9f4;
+}
+
+.recent-orders-row-clickable:active {
+  transform: translateX(1px);
+  box-shadow: 0 1px 4px rgba(3, 169, 244, 0.2);
+}
+
 .recent-orders-row:last-child {
   border-bottom: none;
   margin-bottom: 0;

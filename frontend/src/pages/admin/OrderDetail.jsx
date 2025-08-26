@@ -41,21 +41,12 @@ const usePusherConnection = (orderId, order, dispatch) => {
   
   const retryTimeoutRef = useRef(null);
   const connectionTimeoutRef = useRef(null);
-  const maxRetries = 2; // ⚡ Giảm số lần thử lại để kết nối nhanh hơn
+  const maxRetries = 2; 
 
   const getUserId = useCallback(() => {
+    // Only get user_id from the API order data
     if (order?.user_id) {
       return order.user_id.toString();
-    }
-    
-    const userIdFromStorage = localStorage.getItem("userID");
-    if (userIdFromStorage) {
-      return userIdFromStorage;
-    }
-    
-    const adminId = localStorage.getItem("adminId") || localStorage.getItem("admin_id");
-    if (adminId) {
-      return adminId;
     }
     
     return null;
@@ -137,7 +128,7 @@ const usePusherConnection = (orderId, order, dispatch) => {
       userId: userId,
       orderId: orderId,
       orderUserId: order?.user_id || 'N/A',
-      userIdSource: order?.user_id ? 'order_data' : (localStorage.getItem("userID") ? 'localStorage_userID' : 'localStorage_adminId')
+      userIdSource: 'api_order_data'
     };
   }, [getUserId, orderId, order]);
 
@@ -325,11 +316,11 @@ const usePusherConnection = (orderId, order, dispatch) => {
     const userId = getUserId();
     
     if (!userId || !orderId) {
-      setConnectionStatus('failed');
+      setConnectionStatus('waiting_for_order_data');
       setConnectionDetails(prev => ({ 
         ...prev, 
-        status: 'failed', 
-        lastError: 'Missing userId or orderId'
+        status: 'waiting_for_order_data', 
+        lastError: !userId ? 'Waiting for order data to get user_id' : 'Missing orderId'
       }));
       return;
     }
@@ -375,7 +366,7 @@ const usePusherConnection = (orderId, order, dispatch) => {
         VITE_PUSHER_CLUSTER: import.meta.env.VITE_PUSHER_CLUSTER ? '✅' : '❌ Missing',
         VITE_BASE_URL: import.meta.env.VITE_BASE_URL ? '✅' : '❌ Missing',
         adminToken: localStorage.getItem("adminToken") ? '✅' : '❌ Missing',
-        userId: userId ? '✅' : '❌ Missing',
+        userId: userId ? '✅' : '❌ Missing (from API order data)',
         orderId: orderId ? '✅' : '❌ Missing',
       },
       connection: {
@@ -389,11 +380,8 @@ const usePusherConnection = (orderId, order, dispatch) => {
       },
       userInfo: {
         userId: userId,
-        source: connectionDiagnostics.userIdSource,
-        orderUserId: order?.user_id || 'N/A',
-        availableStorageKeys: Object.keys(localStorage).filter(key => 
-          key.toLowerCase().includes('user') || key.toLowerCase().includes('admin')
-        )
+        source: 'api_order_data',
+        orderUserId: order?.user_id || 'N/A'
       },
       orderInfo: {
         hasOrderData: !!order,
@@ -402,7 +390,7 @@ const usePusherConnection = (orderId, order, dispatch) => {
         channelName: `orders.${userId}`
       }
     };
-  }, [getUserId, orderId, pusher, orderChannel, retryCount, maxRetries, connectionDetails, connectionDiagnostics, order, isInitializing]);
+  }, [getUserId, orderId, pusher, orderChannel, retryCount, maxRetries, connectionDetails, order, isInitializing]);
 
   return {
     connectionStatus,

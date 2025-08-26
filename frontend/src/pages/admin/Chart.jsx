@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import '../../assets/admin/Chart.css';
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { fetchUsers } from "../../slices/adminuserSlice";
 import { fetchAdminProducts } from "../../slices/adminproductsSlice";
 import { fetchAdminOrders } from "../../slices/adminOrderSlice";
@@ -23,6 +24,7 @@ import {
 
 const Chart = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { users } = useSelector((state) => state.adminuser);
   const { adminproducts } = useSelector((state) => state.adminproduct);
   const { orders } = useSelector((state) => state.adminOrder);
@@ -785,8 +787,22 @@ const Chart = () => {
   const getRecentOrders = (limit = 9) => {
     const filteredOrders = getFilteredOrders();
     
+    // Chỉ hiển thị các trạng thái được chỉ định
+    const validStatuses = [
+      "Chờ xác nhận",
+      "Đã xác nhận", 
+      "Đang vận chuyển",
+      "Đã giao hàng",
+      "Hoàn thành"
+    ];
+    
     return filteredOrders
-      .filter(order => order.created_at && order.customer && order.email)
+      .filter(order => 
+        order.created_at && 
+        order.customer && 
+        order.email && 
+        validStatuses.includes(order.status)
+      )
       .sort((a, b) => {
         const dateA = parseCreatedAt(a.created_at);
         const dateB = parseCreatedAt(b.created_at);
@@ -986,6 +1002,32 @@ const Chart = () => {
     }, 700);
   };
 
+  // **HÀM FORMAT TIỀN TỆ LINH HOẠT**
+  const formatCurrency = (amount) => {
+    if (amount === 0) return '0 VND';
+    
+    const absAmount = Math.abs(amount);
+    
+    if (absAmount >= 1000000000) {
+      // Tỉ VND (>=1 tỷ)
+      return `${(amount / 1000000000).toFixed(1)}Tỉ VND`;
+    } else if (absAmount >= 1000000) {
+      // Triệu VND (>=1 triệu)
+      const millions = amount / 1000000;
+      if (millions >= 100) {
+        return `${Math.round(millions)}Tr VND`;
+      } else {
+        return `${millions.toFixed(1)}Tr VND`;
+      }
+    } else if (absAmount >= 1000) {
+      // Nghìn VND (>=1 nghìn)
+      return `${(amount / 1000).toFixed(0)}K VND`;
+    } else {
+      // Dưới 1000 VND
+      return `${amount.toLocaleString()} VND`;
+    }
+  };
+
   // **TÍNH TOÁN DỮ LIỆU CHO HIỂN THỊ**
   const revenueStats = calculateRevenueStatistics();
   const todayRevenue = getTodayRevenue();
@@ -1110,10 +1152,7 @@ const Chart = () => {
           <div className="chart-admin-kpi-info">
             <div className="chart-admin-kpi-title">Tổng doanh thu</div>
             <div className="chart-admin-kpi-number">
-              {revenueStats.totalRevenue > 0 
-                ? `${(revenueStats.totalRevenue / 1000000000).toFixed(1)}Tỉ VND`
-                : '0 VND'
-              }
+              {formatCurrency(revenueStats.totalRevenue)}
             </div>
           </div>
         </div>
@@ -1141,7 +1180,7 @@ const Chart = () => {
               <div className="chart-admin-stat-label">
                 Doanh thu {dateFilter.isEnabled ? '(Đã lọc)' : currentMonthName}
               </div>
-              <div className="chart-admin-stat-value">{(monthlyStats.revenue / 1000000).toFixed(1)}Tr VND</div>
+              <div className="chart-admin-stat-value">{formatCurrency(monthlyStats.revenue)}</div>
             </div>
           </div>
           
@@ -1187,7 +1226,7 @@ const Chart = () => {
             {revenueStats.highest?.monthName || 'Chưa có dữ liệu'}
           </div>
           <div className="chart-admin-stat-amount chart-admin-positive">
-            {revenueStats.highest?.total?.toLocaleString() || '0'} VND
+            {revenueStats.highest?.total ? formatCurrency(revenueStats.highest.total) : '0 VND'}
           </div>
           <div className="chart-admin-stat-sublabel">
             {revenueStats.highest?.orderCount || 0} đơn hàng
@@ -1200,7 +1239,7 @@ const Chart = () => {
             {revenueStats.lowest?.monthName || 'Chưa có dữ liệu'}
           </div>
           <div className="chart-admin-stat-amount chart-admin-negative">
-            {revenueStats.lowest?.total?.toLocaleString() || '0'} VND
+            {revenueStats.lowest?.total ? formatCurrency(revenueStats.lowest.total) : '0 VND'}
           </div>
           <div className="chart-admin-stat-sublabel">
             {revenueStats.lowest?.orderCount || 0} đơn hàng
@@ -1210,10 +1249,10 @@ const Chart = () => {
         <div className="chart-admin-revenue-stat-card">
           <div className="chart-admin-stat-label">Doanh thu trung bình tháng/năm</div>
           <div className="chart-admin-stat-amount chart-admin-blue">
-            {yearlyAverageRevenue.toLocaleString()} VND
+            {formatCurrency(yearlyAverageRevenue)}
           </div>
           <div className="chart-admin-stat-sublabel">
-            {currentMonthName}: {(thisMonthRevenue / 1000000).toFixed(1)}M VND
+            {currentMonthName}: {formatCurrency(thisMonthRevenue)}
           </div>
         </div>
       </div>
@@ -1314,7 +1353,17 @@ const Chart = () => {
               <span>Giá trị</span>
             </div>
             {getRecentOrders(9).map((order, index) => (
-              <div key={`order-${order.id || order.order_id || index}`} className="recent-orders-row">
+              <div 
+                key={`order-${order.id || order.order_id || index}`} 
+                className="recent-orders-row recent-orders-row-clickable"
+                onClick={() => {
+                  const orderId = order.id || order.order_id;
+                  if (orderId) {
+                    navigate(`/admin/orderdetail/${orderId}`);
+                  }
+                }}
+                title="Click để xem chi tiết đơn hàng"
+              >
                 <span className="recent-orders-stt">{index + 1}</span>
                 <span className="recent-orders-customer">
                   {order.customer || 'N/A'}
@@ -1336,8 +1385,8 @@ const Chart = () => {
                 </span>
                 <span className="recent-orders-amount">
                   {order.total_amount 
-                    ? `${(parseFloat(order.total_amount) / 1000000).toFixed(1)}Tr VND` 
-                    : '0M VND'
+                    ? formatCurrency(parseFloat(order.total_amount))
+                    : '0 VND'
                   }
                 </span>
               </div>
@@ -1360,7 +1409,7 @@ const Chart = () => {
                   </div>
                 </div>
                 <div className="chart-admin-buyer-amount">
-                  {(buyer.totalSpent / 1000000).toFixed(1)}Tr VND
+                  {formatCurrency(buyer.totalSpent)}
                 </div>
               </div>
             ))}

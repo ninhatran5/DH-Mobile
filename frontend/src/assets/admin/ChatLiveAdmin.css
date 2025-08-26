@@ -533,36 +533,45 @@ html,
   display: inline-block;
 }
 .chat-live-admin-manage-message.left {
-  display:flex;
-  background: #f1f1f1;
-  align-self: flex-start;
-  color: #222;
-  border-radius: 18px 18px 18px 18px;
-  margin-bottom: 2px;
+  background: #e9ecef;
+  color: #333;
   font-size: 15px;
-  padding: 7px 14px 7px 14px;
-  transition: background 0.15s;
-  border: none;
+  padding: 10px 16px;
+  border-radius: 18px 18px 18px 4px;
+  margin-bottom: 4px;
+  word-break: break-word;
+  white-space: pre-line;
+  max-width: 100%;
+  display: inline-block;
+  line-height: 1.4;
+  align-self: flex-start;
+  transition: background 0.2s ease;
 }
 .chat-live-admin-manage-message-group {
   display: flex;
   align-items: flex-end;
-  gap: 6px;
+  gap: 8px;
+  margin-bottom: 4px;
 }
+
+/* Hover effect cho tin nhắn từ user */
+.chat-live-admin-manage-message.left:hover {
+  background: #dee2e6;
+}
+
 .chat-live-admin-manage-message-group .chat-live-admin-manage-message.left {
   border-radius: 18px 18px 4px 18px;
-  margin-bottom: 1px;
+  margin-bottom: 2px;
 }
-.chat-live-admin-manage-message-group
-  .chat-live-admin-manage-message.left:last-child {
-  border-radius: 18px 18px 18px 18px;
+.chat-live-admin-manage-message-group .chat-live-admin-manage-message.left:last-child {
+  border-radius: 18px 18px 18px 4px;
 }
 .chat-live-admin-manage-message.right {
   background: #0095f6;
   color: #fff;
   font-size: 15px;
-  padding: 7px 14px;
-  border-radius: 18px;
+  padding: 10px 16px;
+  border-radius: 18px 4px 18px 18px;
   margin-bottom: 4px;
   word-break: break-word;
   white-space: pre-line;
@@ -570,6 +579,12 @@ html,
   display: block;
   line-height: 1.4;
   align-self: flex-end;
+  transition: background 0.2s ease;
+}
+
+/* Hover effect cho tin nhắn từ admin */
+.chat-live-admin-manage-message.right:hover {
+  background: #0077c2;
 }
 
 .chat-live-admin-manage-chat-input {
