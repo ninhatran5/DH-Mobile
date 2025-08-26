@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAdminProducts,
   softdeleteAdminProduct,
-  fetchProductVariants,
   fetchTrashedAdminProducts,
 } from "../../slices/adminproductsSlice";
 import { fetchCategories } from "../../slices/adminCategories";
@@ -19,13 +18,9 @@ import Loading from "../../components/Loading";
 
 const ProductList = () => {
   const dispatch = useDispatch();
-  const { 
-    adminproducts, 
-    loading, 
-    error,
-    trashedProductsCount,
-    loadingTrashedCount 
-  } = useSelector((state) => state.adminproduct);
+  const { adminproducts, loading, error, trashedProductsCount } = useSelector(
+    (state) => state.adminproduct
+  );
   const { categories } = useSelector((state) => state.category);
   const { adminProfile } = useSelector((state) => state.adminProfile);
 
@@ -36,7 +31,7 @@ const ProductList = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  
+
   // Thêm state để lưu variants của tất cả sản phẩm
   const [productVariants, setProductVariants] = useState({});
 
@@ -54,8 +49,8 @@ const ProductList = () => {
     };
 
     checkDevice();
-    window.addEventListener('resize', checkDevice);
-    return () => window.removeEventListener('resize', checkDevice);
+    window.addEventListener("resize", checkDevice);
+    return () => window.removeEventListener("resize", checkDevice);
   }, []);
 
   useEffect(() => {
@@ -72,7 +67,9 @@ const ProductList = () => {
           const variantsMap = {};
           const results = await Promise.all(
             adminproducts.map(async (product) => {
-              const variants = await dispatch(fetchAdminProductVariants(product.product_id)).unwrap();
+              const variants = await dispatch(
+                fetchAdminProductVariants(product.product_id)
+              ).unwrap();
               variantsMap[product.product_id] = variants || [];
               return variants;
             })
@@ -108,37 +105,36 @@ const ProductList = () => {
   const performBulkDelete = async (productIds, skippedCount = 0) => {
     setIsDeleting(true);
     try {
-      const deletePromises = productIds.map(productId =>
+      const deletePromises = productIds.map((productId) =>
         dispatch(softdeleteAdminProduct(productId)).unwrap()
       );
-      
+
       await Promise.all(deletePromises);
-      
+
       await dispatch(fetchAdminProducts());
       await dispatch(fetchTrashedAdminProducts());
-      
+
       setSelectedProducts([]);
-      
+
       const successMessage = `Đã chuyển ${productIds.length} sản phẩm vào thùng rác thành công`;
-      
+
       toast.success(successMessage);
-      
+
       Swal.fire({
         title: "Đã xóa!",
         text: successMessage,
         icon: "success",
         timer: 3000,
-        showConfirmButton: false
+        showConfirmButton: false,
       });
-
     } catch (error) {
       console.error("Lỗi khi xóa sản phẩm:", error);
       toast.error("Có lỗi xảy ra khi xóa sản phẩm. Vui lòng thử lại.");
-      
+
       Swal.fire({
         title: "Lỗi!",
         text: "Không thể xóa sản phẩm. Vui lòng thử lại.",
-        icon: "error"
+        icon: "error",
       });
     } finally {
       setIsDeleting(false);
@@ -161,7 +157,7 @@ const ProductList = () => {
       cancelButtonColor: "#3085d6",
       confirmButtonText: "Có, chuyển vào thùng rác",
       cancelButtonText: "Hủy",
-      reverseButtons: true
+      reverseButtons: true,
     });
 
     if (result.isConfirmed) {
@@ -171,7 +167,7 @@ const ProductList = () => {
 
   // Hàm xóa một sản phẩm (đã sửa)
   const handleDeleteSingle = async (productId) => {
-    const product = adminproducts.find(p => p.product_id === productId);
+    const product = adminproducts.find((p) => p.product_id === productId);
     const productName = product?.name || "sản phẩm này";
 
     const result = await Swal.fire({
@@ -183,39 +179,40 @@ const ProductList = () => {
       cancelButtonColor: "#3085d6",
       confirmButtonText: "Có, chuyển vào thùng rác",
       cancelButtonText: "Hủy",
-      reverseButtons: true
+      reverseButtons: true,
     });
 
     if (result.isConfirmed) {
       setIsDeleting(true);
       try {
         await dispatch(softdeleteAdminProduct(productId)).unwrap();
-        
+
         await dispatch(fetchAdminProducts());
         await dispatch(fetchTrashedAdminProducts());
-        
+
         if (selectedProducts.includes(productId)) {
-          setSelectedProducts(selectedProducts.filter(id => id !== productId));
+          setSelectedProducts(
+            selectedProducts.filter((id) => id !== productId)
+          );
         }
-        
+
         toast.success(`Đã chuyển "${productName}" vào thùng rác thành công`);
-        
+
         Swal.fire({
           title: "Đã xóa!",
           text: `"${productName}" đã được chuyển vào thùng rác.`,
           icon: "success",
           timer: 2000,
-          showConfirmButton: false
+          showConfirmButton: false,
         });
-
       } catch (error) {
         console.error("Lỗi khi xóa sản phẩm:", error);
         toast.error("Có lỗi xảy ra khi xóa sản phẩm. Vui lòng thử lại.");
-        
+
         Swal.fire({
           title: "Lỗi!",
           text: "Không thể xóa sản phẩm. Vui lòng thử lại.",
-          icon: "error"
+          icon: "error",
         });
       } finally {
         setIsDeleting(false);
@@ -309,19 +306,30 @@ const ProductList = () => {
         <div className="ProductsList1-header-content">
           <div className="ProductsList1-title-section">
             <h1 className="ProductsList1-main-title">Quản lý sản phẩm</h1>
-            <p className="ProductsList1-subtitle">Quản lý danh sách sản phẩm của bạn</p>
+            <p className="ProductsList1-subtitle">
+              Quản lý danh sách sản phẩm của bạn
+            </p>
           </div>
           <div className="ProductsList1-action-buttons">
-            <Link to="/admin/trashproduct" className="ProductsList1-btn ProductsList1-btn-outline-danger">
-              <i className="bi bi-trash"></i>
-              <span className="ProductsList1-trash-text">
-                Thùng rác
-                <span className="ProductsList1-trash-count-badge">{trashedProductsCount || 0}</span>
-              </span>
-            </Link>
-
             {checkRole !== "sale" && (
-              <Link to="/admin/addproduct" className="ProductsList1-btn ProductsList1-btn-primary">
+              <Link
+                to="/admin/trashproduct"
+                className="ProductsList1-btn ProductsList1-btn-outline-danger"
+              >
+                <i className="bi bi-trash"></i>
+                <span className="ProductsList1-trash-text">
+                  Thùng rác
+                  <span className="ProductsList1-trash-count-badge">
+                    {trashedProductsCount || 0}
+                  </span>
+                </span>
+              </Link>
+            )}
+            {checkRole !== "sale" && (
+              <Link
+                to="/admin/addproduct"
+                className="ProductsList1-btn ProductsList1-btn-primary"
+              >
                 <i className="bi bi-plus-lg"></i>
                 <span>Thêm sản phẩm</span>
               </Link>
@@ -344,7 +352,9 @@ const ProductList = () => {
             />
           </div>
           <button
-            className={`ProductsList1-filter-toggle ${showFilters ? 'ProductsList1-active' : ''}`}
+            className={`ProductsList1-filter-toggle ${
+              showFilters ? "ProductsList1-active" : ""
+            }`}
             onClick={() => setShowFilters(!showFilters)}
           >
             <i className="bi bi-funnel"></i>
@@ -359,7 +369,9 @@ const ProductList = () => {
               <label className="ProductsList1-filter-label">Khoảng giá</label>
               <select
                 value={filters.priceRange}
-                onChange={(e) => handleFilterChange("priceRange", e.target.value)}
+                onChange={(e) =>
+                  handleFilterChange("priceRange", e.target.value)
+                }
                 className="ProductsList1-filter-select"
               >
                 <option value="all">Tất cả</option>
@@ -381,7 +393,10 @@ const ProductList = () => {
                 <option value="all">Tất cả danh mục</option>
                 {Array.isArray(categories) &&
                   categories.map((category) => (
-                    <option key={category.category_id} value={category.category_id}>
+                    <option
+                      key={category.category_id}
+                      value={category.category_id}
+                    >
                       {category.name}
                     </option>
                   ))}
@@ -395,7 +410,10 @@ const ProductList = () => {
       {selectedProducts.length > 0 && (
         <div className="ProductsList1-bulk-actions">
           <div className="ProductsList1-bulk-info">
-            <span className="ProductsList1-selected-count">{selectedProducts.length}</span> sản phẩm đã chọn
+            <span className="ProductsList1-selected-count">
+              {selectedProducts.length}
+            </span>{" "}
+            sản phẩm đã chọn
           </div>
           {checkRole !== "sale" && (
             <button
@@ -426,7 +444,10 @@ const ProductList = () => {
           // Mobile Card View
           <div className="ProductsList1-mobile">
             {paginatedProducts.map((product) => (
-              <div key={product.product_id} className="ProductsList1-card-mobile">
+              <div
+                key={product.product_id}
+                className="ProductsList1-card-mobile"
+              >
                 <div className="ProductsList1-card-header">
                   <input
                     type="checkbox"
@@ -438,37 +459,51 @@ const ProductList = () => {
                     <img
                       src={product.image_url || "/default-image.png"}
                       alt={product.name || "No Name"}
-                      onError={(e) => { e.target.src = "/default-image.png"; }}
+                      onError={(e) => {
+                        e.target.src = "/default-image.png";
+                      }}
                     />
                   </div>
                 </div>
-                
+
                 <div className="ProductsList1-card-content">
                   <h3 className="ProductsList1-name">
                     {product.name || "Không tên"}
                     {checkProductHasVariants(product.product_id) && (
-                      <span className="ProductsList1-variant-indicator" title="Sản phẩm có biến thể">
+                      <span
+                        className="ProductsList1-variant-indicator"
+                        title="Sản phẩm có biến thể"
+                      >
                         <i className="bi bi-layers text-info"></i>
                       </span>
                     )}
                   </h3>
                   <p className="ProductsList1-id">ID: {product.product_id}</p>
-                  <p className="ProductsList1-category">{product.category?.name || "Không có danh mục"}</p>
-                  
+                  <p className="ProductsList1-category">
+                    {product.category?.name || "Không có danh mục"}
+                  </p>
+
                   <div className="ProductsList1-price-section">
                     <div className="ProductsList1-price-current">
-                      {product.price ? `${formatPrice(product.price)} VNĐ` : "Chưa cập nhật"}
+                      {product.price
+                        ? `${formatPrice(product.price)} VNĐ`
+                        : "Chưa cập nhật"}
                     </div>
                     <div className="ProductsList1-price-original">
-                      {product.price_original ? `${formatPrice(product.price_original)} VNĐ` : ""}
+                      {product.price_original
+                        ? `${formatPrice(product.price_original)} VNĐ`
+                        : ""}
                     </div>
                   </div>
-                  
+
                   <div className="ProductsList1-update-date">
-                    Cập nhật: {product.updated_at ? new Date(product.updated_at).toLocaleDateString() : "N/A"}
+                    Cập nhật:{" "}
+                    {product.updated_at
+                      ? new Date(product.updated_at).toLocaleDateString()
+                      : "N/A"}
                   </div>
                 </div>
-                
+
                 <div className="ProductsList1-card-actions">
                   {checkRole !== "sale" && (
                     <Link
@@ -529,7 +564,11 @@ const ProductList = () => {
                 {paginatedProducts.map((product) => (
                   <tr
                     key={product.product_id}
-                    className={selectedProducts.includes(product.product_id) ? "ProductsList1-selected" : ""}
+                    className={
+                      selectedProducts.includes(product.product_id)
+                        ? "ProductsList1-selected"
+                        : ""
+                    }
                   >
                     <td>
                       <input
@@ -543,7 +582,9 @@ const ProductList = () => {
                         <img
                           src={product.image_url || "/default-image.png"}
                           alt={product.name || "No Name"}
-                          onError={(e) => { e.target.src = "/default-image.png"; }}
+                          onError={(e) => {
+                            e.target.src = "/default-image.png";
+                          }}
                         />
                       </div>
                     </td>
@@ -552,23 +593,34 @@ const ProductList = () => {
                         <div className="ProductsList1-name">
                           {product.name || "Không tên"}
                           {checkProductHasVariants(product.product_id) && (
-                            <span className="ProductsList1-variant-indicator" title="Sản phẩm có biến thể">
+                            <span
+                              className="ProductsList1-variant-indicator"
+                              title="Sản phẩm có biến thể"
+                            >
                               <i className="bi bi-layers text-info"></i>
                             </span>
                           )}
                         </div>
-                        <div className="ProductsList1-id">ID: {product.product_id}</div>
+                        <div className="ProductsList1-id">
+                          ID: {product.product_id}
+                        </div>
                       </div>
                     </td>
                     <td>{product.category?.name || "Không có danh mục"}</td>
                     <td className="ProductsList1-price">
-                      {product.price ? `${formatPrice(product.price)} VNĐ` : "Chưa cập nhật"}
+                      {product.price
+                        ? `${formatPrice(product.price)} VNĐ`
+                        : "Chưa cập nhật"}
                     </td>
                     <td className="ProductsList1-price">
-                      {product.price_original ? `${formatPrice(product.price_original)} VNĐ` : "Chưa cập nhật"}
+                      {product.price_original
+                        ? `${formatPrice(product.price_original)} VNĐ`
+                        : "Chưa cập nhật"}
                     </td>
                     <td>
-                      {product.updated_at ? new Date(product.updated_at).toLocaleDateString() : "N/A"}
+                      {product.updated_at
+                        ? new Date(product.updated_at).toLocaleDateString()
+                        : "N/A"}
                     </td>
                     <td>
                       <div className="ProductsList1-table-actions">
@@ -592,7 +644,9 @@ const ProductList = () => {
                           <button
                             className="ProductsList1-action-btn ProductsList1-delete-btn"
                             title="Chuyển vào thùng rác"
-                            onClick={() => handleDeleteSingle(product.product_id)}
+                            onClick={() =>
+                              handleDeleteSingle(product.product_id)
+                            }
                             disabled={isDeleting}
                           >
                             <i className="bi bi-trash"></i>
@@ -612,7 +666,9 @@ const ProductList = () => {
       {totalPages > 1 && (
         <div className="ProductsList1-pagination-container">
           <div className="ProductsList1-pagination-info">
-            Hiển thị {(currentPage - 1) * productsPerPage + 1} - {Math.min(currentPage * productsPerPage, filteredProducts.length)} của {filteredProducts.length} sản phẩm
+            Hiển thị {(currentPage - 1) * productsPerPage + 1} -{" "}
+            {Math.min(currentPage * productsPerPage, filteredProducts.length)}{" "}
+            của {filteredProducts.length} sản phẩm
           </div>
           <div className="ProductsList1-pagination-controls">
             <button
@@ -623,13 +679,13 @@ const ProductList = () => {
               <i className="bi bi-chevron-double-left"></i>
             </button>
             <button
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
               className="ProductsList1-pagination-btn"
             >
               <i className="bi bi-chevron-left"></i>
             </button>
-            
+
             <div className="ProductsList1-page-numbers">
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                 let pageNum;
@@ -642,21 +698,23 @@ const ProductList = () => {
                 } else {
                   pageNum = currentPage - 2 + i;
                 }
-                
+
                 return (
                   <button
                     key={pageNum}
                     onClick={() => setCurrentPage(pageNum)}
-                    className={`ProductsList1-page-number ${currentPage === pageNum ? 'ProductsList1-active' : ''}`}
+                    className={`ProductsList1-page-number ${
+                      currentPage === pageNum ? "ProductsList1-active" : ""
+                    }`}
                   >
                     {pageNum}
                   </button>
                 );
               })}
             </div>
-            
+
             <button
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
               className="ProductsList1-pagination-btn"
             >

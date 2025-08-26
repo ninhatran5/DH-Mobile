@@ -29,11 +29,13 @@ const CommentsList = () => {
   const [replyInput, setReplyInput] = useState("");
   const [replySubmitting, setReplySubmitting] = useState(false);
   const [activeReplyId, setActiveReplyId] = useState(null);
+  const { adminProfile } = useSelector((state) => state.adminProfile);
+  const checkRole = adminProfile?.user?.role;
 
   useEffect(() => {
     dispatch(fetchAdminComments());
   }, [dispatch]);
-  
+
   useEffect(() => {
     if (error) {
       MySwal.fire({
@@ -66,21 +68,22 @@ const CommentsList = () => {
 
   const filteredComments = comments?.filter((comment) => {
     // Lọc theo từ khóa tìm kiếm
-    const matchesSearch = 
+    const matchesSearch =
       comment.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
       comment.user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
       comment.product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     // Lọc theo rating
-    const matchesRating = ratingFilter === "" || comment.rating === parseInt(ratingFilter);
-    
+    const matchesRating =
+      ratingFilter === "" || comment.rating === parseInt(ratingFilter);
+
     return matchesSearch && matchesRating;
   });
 
   const handleToggleVisibility = (commentId, currentStatus) => {
     const actionText = currentStatus ? "ẩn" : "hiển thị";
-    const confirmText = currentStatus 
-      ? "Bạn có chắc muốn ẩn bình luận này?" 
+    const confirmText = currentStatus
+      ? "Bạn có chắc muốn ẩn bình luận này?"
       : "Bạn có chắc muốn hiển thị bình luận này?";
 
     Swal.fire({
@@ -190,7 +193,7 @@ const CommentsList = () => {
             className="admin-comments-search-input"
           />
         </div>
-        
+
         {/* Bộ lọc rating */}
         <div className="admin-comments-rating-filter">
           <select
@@ -430,34 +433,39 @@ const CommentsList = () => {
                           className="comment-actions"
                           style={{ display: "flex", gap: "6px" }}
                         >
-                          <button
-                            className="comment-delete-btn"
-                            onClick={() =>
-                              handleDeleteComment(comment.comment_id)
-                            }
-                            disabled={deleteLoading}
-                            title="Xoá bình luận"
-                            style={{
-                              padding: "4px",
-                              borderRadius: "4px",
-                              border: "none",
-                              backgroundColor: "#fff",
-                              color: "#dc3545",
-                              cursor: "pointer",
-                              fontSize: "0.9em",
-                              display: "flex",
-                              alignItems: "center",
-                            }}
-                          >
-                            <FiTrash2 size={14} />
-                          </button>
+                          {checkRole !== "sale" && (
+                            <button
+                              className="comment-delete-btn"
+                              onClick={() =>
+                                handleDeleteComment(comment.comment_id)
+                              }
+                              disabled={deleteLoading}
+                              title="Xoá bình luận"
+                              style={{
+                                padding: "4px",
+                                borderRadius: "4px",
+                                border: "none",
+                                backgroundColor: "#fff",
+                                color: "#dc3545",
+                                cursor: "pointer",
+                                fontSize: "0.9em",
+                                display: "flex",
+                                alignItems: "center",
+                              }}
+                            >
+                              <FiTrash2 size={14} />
+                            </button>
+                          )}
 
                           <button
                             className={`comment-toggle-btn ${
                               comment.is_visible ? "visible" : "hidden"
                             }`}
                             onClick={() =>
-                              handleToggleVisibility(comment.comment_id, comment.is_visible)
+                              handleToggleVisibility(
+                                comment.comment_id,
+                                comment.is_visible
+                              )
                             }
                             title={
                               comment.is_visible
@@ -470,21 +478,22 @@ const CommentsList = () => {
                               gap: "4px",
                               padding: "3px 6px",
                               fontSize: "0.75em",
-                              border: comment.is_visible 
-                                ? "1px solid #f5c6cb" 
+                              border: comment.is_visible
+                                ? "1px solid #f5c6cb"
                                 : "1px solid #cce5cc",
                               borderRadius: "4px",
-                              backgroundColor: comment.is_visible 
-                                ? "#f8d7da" 
+                              backgroundColor: comment.is_visible
+                                ? "#f8d7da"
                                 : "#e6f5e6",
-                              color: comment.is_visible 
-                                ? "#dc3545" 
-                                : "#28a745",
+                              color: comment.is_visible ? "#dc3545" : "#28a745",
                               cursor: "pointer",
                             }}
                           >
                             {comment.is_visible ? (
-                              <FiEyeOff size={13} style={{ color: "#dc3545" }} />
+                              <FiEyeOff
+                                size={13}
+                                style={{ color: "#dc3545" }}
+                              />
                             ) : (
                               <FiEye size={13} style={{ color: "#28a745" }} />
                             )}

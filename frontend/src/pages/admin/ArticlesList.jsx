@@ -11,6 +11,8 @@ import Swal from "sweetalert2";
 const ArticlesList = () => {
   const dispatch = useDispatch();
   const { newsList, loading, error } = useSelector((state) => state.adminNews);
+  const { adminProfile } = useSelector((state) => state.adminProfile);
+  const checkRole = adminProfile?.user?.role;
 
   useEffect(() => {
     dispatch(fetchNews());
@@ -89,45 +91,47 @@ const ArticlesList = () => {
             <h1 className="article-title">Bài viết</h1>
             <p className="article-count">{newsList?.length || 0} bài viết</p>
           </div>
-          
+
           <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
             {/* Button Thùng Rác */}
-            <button 
-              onClick={handleTrashCan} 
-              className="trash-btn"
-              style={{
-                background: "#ffebee",
-                color: "#d32f2f",
-                border: "1px solid #ffcdd2",
-                borderRadius: "8px",
-                padding: "10px 16px",
-                fontWeight: "500",
-                fontSize: "14px",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                cursor: "pointer",
-                transition: "all 0.2s ease",
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.background = "#ffcdd2";
-                e.currentTarget.style.borderColor = "#ef9a9a";
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.background = "#ffebee";
-                e.currentTarget.style.borderColor = "#ffcdd2";
-              }}
-            >
-              <svg
-                width="16"
-                height="16"
-                fill="currentColor"
-                viewBox="0 0 16 16"
+            {checkRole !== "sale" && (
+              <button
+                onClick={handleTrashCan}
+                className="trash-btn"
+                style={{
+                  background: "#ffebee",
+                  color: "#d32f2f",
+                  border: "1px solid #ffcdd2",
+                  borderRadius: "8px",
+                  padding: "10px 16px",
+                  fontWeight: "500",
+                  fontSize: "14px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.background = "#ffcdd2";
+                  e.currentTarget.style.borderColor = "#ef9a9a";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.background = "#ffebee";
+                  e.currentTarget.style.borderColor = "#ffcdd2";
+                }}
               >
-                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
-              </svg>
-              Thùng Rác
-            </button>
+                <svg
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
+                </svg>
+                Thùng Rác
+              </button>
+            )}
 
             {/* Button Thêm bài viết */}
             <button onClick={handleNextPageAdd} className="add-article-btn">

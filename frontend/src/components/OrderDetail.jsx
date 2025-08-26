@@ -543,7 +543,7 @@ const OrderDetail = () => {
                             orderDetail?.delivered_at ||
                             orderDetail?.order_date
                           }
-                          seconds={180}
+                          seconds={300}
                         >
                           <button
                             className="btn-return-order"
