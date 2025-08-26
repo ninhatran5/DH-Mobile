@@ -570,7 +570,8 @@
     "paymentError": "Payment failed, please try again",
     "maxOnlineAmount": "The maximum amount allowed for online payment is 200 million VND",
     "updateQuantityError": "Please update your full address before making the payment!",
-    "pending_update": "Pending update"
+    "pending_update": "Pending update",
+    "selectProductToDelete": "Please select products to remove from cart"
   },
   "order_status": {
     "pending": "Pending Confirmation",

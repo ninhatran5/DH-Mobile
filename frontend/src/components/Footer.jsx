@@ -48,7 +48,7 @@ export default function Footer() {
         { label: t("header.warrantyPolicy"), url: "/warranty-policy" },
         { label: t("header.returnPolicy"), url: "/return-policy" },
         { label: t("header.deliveryPolicy"), url: "/delivery-policy" },
-        { label: t("header.checkImei"), url: "/checkimei" },
+        { label: t("header.checkImei"), url: "/check-imei" },
       ],
     },
     {
@@ -113,6 +113,7 @@ export default function Footer() {
                     type="email"
                     placeholder={t("header.email_address")}
                     aria-label="Email Address"
+                    required
                   />
                   <button className="btn btn-dark rounded-end rounded-0">
                     {t("header.send")}
