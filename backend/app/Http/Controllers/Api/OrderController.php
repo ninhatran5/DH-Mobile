@@ -55,7 +55,7 @@ class OrderController extends Controller
         $formattedOrders = $orders->map(function ($order) use ($returnRequests) {
             $isFullReturnOrder = $order->is_return_order && in_array(
                 $order->status,
-                ['Yêu cầu hoàn hàng', 'Đã chấp thuận', 'Đang xử lý', 'Đã trả hàng']
+                ['Yêu cầu hoàn hàng', 'Đã chấp thuận', 'Đang xử lý', 'Đã trả hàng', 'Đã hoàn lại']
             );
 
             if ($isFullReturnOrder) {
@@ -150,7 +150,7 @@ class OrderController extends Controller
         }
 
         // Kiểm tra xem đây có phải là đơn hoàn trả 100% không
-        $isFullReturnOrder = $order->is_return_order && in_array($order->status, ['Yêu cầu hoàn hàng', 'Đã chấp thuận', 'Đang xử lý', 'Đã trả hàng']);
+        $isFullReturnOrder = $order->is_return_order && in_array($order->status, ['Yêu cầu hoàn hàng', 'Đã chấp thuận', 'Đang xử lý', 'Đã trả hàng', 'Đã hoàn lại']);
 
         if ($isFullReturnOrder) {
             // Trường hợp hoàn trả 100%: đơn gốc đã trở thành đơn hoàn trả
@@ -476,7 +476,7 @@ class OrderController extends Controller
             // Kiểm tra đơn hoàn trả 100%
             $isFullReturnOrder = $order->is_return_order && in_array(
                 $order->status,
-                ['Yêu cầu hoàn hàng', 'Đã chấp thuận', 'Đang xử lý', 'Đã trả hàng']
+                ['Yêu cầu hoàn hàng', 'Đã chấp thuận', 'Đang xử lý', 'Đã trả hàng', 'Đã hoàn lại']
             );
 
             if ($isFullReturnOrder) {
@@ -585,7 +585,7 @@ class OrderController extends Controller
 
         // ✅ Áp dụng cùng logic tính toán như bên client
         // Kiểm tra xem đây có phải là đơn hoàn trả 100% không
-        $isFullReturnOrder = $order->is_return_order && in_array($order->status, ['Yêu cầu hoàn hàng', 'Đã chấp thuận', 'Đang xử lý', 'Đã trả hàng']);
+        $isFullReturnOrder = $order->is_return_order && in_array($order->status, ['Yêu cầu hoàn hàng', 'Đã chấp thuận', 'Đang xử lý', 'Đã trả hàng', 'Đã hoàn lại']);
 
         if ($isFullReturnOrder) {
             // Trường hợp hoàn trả 100%: đơn gốc đã trở thành đơn hoàn trả
@@ -1631,7 +1631,8 @@ class OrderController extends Controller
 
             // ✅ Gọi sự kiện realtime theo return_id
             event(new ReturnRequestUpdated($returnRequest->return_id, [
-                'status' => $returnRequest->status,
+                'return_request_status' => $returnRequest->status, // Trạng thái return request
+                'order_status' => $order ? $order->status : null, // Trạng thái đơn hàng thực tế
                 'payment_status' => $order ? $order->payment_status : null,
                 'refund_amount' => $newStatus === 'Đã hoàn lại' ? $refundAmount : 0,
                 'updated_at' => now(),
