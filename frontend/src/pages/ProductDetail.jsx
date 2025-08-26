@@ -257,15 +257,19 @@ const ProductDetail = ({ productId, isQuickView, hideExtraInfo = false }) => {
       return;
     }
     if (checkLogin()) {
-      animateToCart();
-      const payload = {
-        product_id: productDetails.data?.product_id,
-        quantity,
-        variant_id: variantId,
-      };
-      await dispatch(fetchAddToCart(payload));
-      await dispatch(fetchCart());
-      toast.success(t("toast.addedToCart"));
+      try {
+        const payload = {
+          product_id: productDetails.data?.product_id,
+          quantity,
+          variant_id: variantId,
+        };
+        await dispatch(fetchAddToCart(payload)).unwrap();
+        animateToCart();
+        await dispatch(fetchCart());
+        toast.success(t("toast.addedToCart"));
+      } catch (error) {
+        toast.error(error || t("toast.error"));
+      }
     }
   };
 

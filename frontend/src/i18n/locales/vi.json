@@ -570,7 +570,8 @@
     "maxOnlineAmount": "Số tiền tối đa được phép thanh toán online là 200 triệu đồng",
     "updateQuantityError": "Sản phẩm đã vượt quá số lượng của kho hàng, vui lòng cập nhật lại số lượng",
     "missingAddress": "Vui lòng cập nhật đầy đủ địa chỉ trước khi thanh toán!",
-    "pending_update": "Chưa cập nhật"
+    "pending_update": "Chưa cập nhật",
+    "selectProductToDelete": "Vui lòng chọn sản phẩm để xóa"
   },
   "order_status": {
     "pending": "Chờ xác nhận",

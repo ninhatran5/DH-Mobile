@@ -6,7 +6,7 @@ const BASE_URL_BANK = import.meta.env.VITE_BASE_URL_BANK;
 
 export const axiosAdmin = axios.create({
   baseURL: BASE_URL,
-  timeout: 10000,
+  timeout: 40000,
 });
 
 axiosAdmin.interceptors.request.use((config) => {

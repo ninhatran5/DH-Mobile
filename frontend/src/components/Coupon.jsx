@@ -18,6 +18,7 @@ const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const checkQuantityVoucher = voucher?.quantity;
+  const token = localStorage.getItem("token");
   const handleCopyVoucher = () => {
     inputRef.current.select();
     inputRef.current.setSelectionRange(0, 99999);
@@ -87,15 +88,17 @@ const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
                   </span>
                 </div>
               ) : checkQuantityVoucher > 0 ? (
-                <div className="userVoucher-icon-wrapper">
-                  <HiSave
-                    onClick={handleSaveVoucher}
-                    className="userVoucher-icon"
-                  />
-                  <span className="userVoucher-tooltip">
-                    {t("voucher.iconSave")}
-                  </span>
-                </div>
+                token && (
+                  <div className="userVoucher-icon-wrapper">
+                    <HiSave
+                      onClick={handleSaveVoucher}
+                      className="userVoucher-icon"
+                    />
+                    <span className="userVoucher-tooltip">
+                      {t("voucher.iconSave")}
+                    </span>
+                  </div>
+                )
               ) : (
                 <div className="userVoucher-out-of-stock">
                   <span> {t("voucher.voucherSoldOut")}</span>
@@ -124,15 +127,16 @@ const Coupon = ({ voucher, isMyVoucher, item, showItemQuantity }) => {
 
           <h5 className="userVoucher-title">{voucher.title}</h5>
           <div className="userVoucher-date-right">
-            {t("voucher.expiry")}: {dayjs(voucher.end_date).format("DD/MM/YYYY")}
+            {t("voucher.expiry")}:{" "}
+            {dayjs(voucher.end_date).format("DD/MM/YYYY")}
           </div>
           <div>
             <p className="userVoucher-info-item">
-              {t("voucher.minOrder")}: {" "}
+              {t("voucher.minOrder")}:{" "}
               <span>{numberFormat(voucher.min_order_value)}</span>
             </p>
             <p className="userVoucher-info-item2">
-              {t("voucher.discountAmount")}: {" "}
+              {t("voucher.discountAmount")}:{" "}
               <span>{numberFormat(voucher.discount_amount)}</span>
             </p>
           </div>
