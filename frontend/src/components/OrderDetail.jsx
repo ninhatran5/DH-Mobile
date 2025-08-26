@@ -85,9 +85,10 @@ const OrderDetail = () => {
       if (returnData.data) {
         setOrderDetail((prev) => ({
           ...prev,
-          status: returnData.data.status,
+          // Sử dụng order_status thay vì status để tránh hiển thị trạng thái return request
+          status: returnData.data.order_status || prev.status,
           payment_status: returnData.data.payment_status,
-          return_status: returnData.data.return_status,
+          return_status: returnData.data.return_request_status,
         }));
       }
     },
