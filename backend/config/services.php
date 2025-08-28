@@ -36,7 +36,7 @@ return [
 
     'openrouter' => [
         'api_key' => env('OPENROUTER_API_KEY'),
-        'endpoint' => 'https://openrouter.ai/api/v1/chat/completions',
-        'model' => env('OPENROUTER_MODEL'),
+        'endpoint' => env('OPENROUTER_ENDPOINT', 'https://openrouter.ai/api/v1/chat/completions'),
+        'model' => env('OPENROUTER_MODEL', 'deepseek/deepseek-chat'),
     ],
 ];
