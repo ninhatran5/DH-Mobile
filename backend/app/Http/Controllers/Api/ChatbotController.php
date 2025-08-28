@@ -90,19 +90,31 @@ class ChatbotController extends Controller
             ]);
         }
 
-        $intent = $this->analyzeIntent($message);
+        $intent = $this->analyzeIntent($request->input('message')); // Sử dụng message gốc, không lowercase
+        
+        // Debug logging
+        Log::info('Chatbot Debug', [
+            'original_message' => $request->input('message'),
+            'lowercase_message' => $message,
+            'detected_intent' => $intent,
+            'user_id' => $userId
+        ]);
 
         try {
-            $response = $this->handleIntent($intent, $message, $userId);
+            $response = $this->handleIntent($intent, $request->input('message'), $userId); // Dùng message gốc
 
+            // Only log if user exists in database
             if ($userId) {
-                DB::table('chatbot_logs')->insert([
-                    'user_id' => $userId,
-                    'message' => $message,
-                    'response' => is_array($response) ? json_encode($response) : $response,
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
+                $userExists = DB::table('users')->where('user_id', $userId)->exists();
+                if ($userExists) {
+                    DB::table('chatbot_logs')->insert([
+                        'user_id' => $userId,
+                        'message' => $message,
+                        'response' => is_array($response) ? json_encode($response) : $response,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                }
             }
 
             // **BROADCAST RESPONSE VIA PUSHER**
@@ -130,44 +142,256 @@ class ChatbotController extends Controller
     }
     protected function analyzeIntent($message)
     {
-        $message = Str::lower($message);
+        $originalMessage = $message;
+        $message = Str::lower(trim($message));
 
-        // Mảng từ khóa và intent tương ứng
-        $intents = [
-            'product_query' => ['sản phẩm', 'điện thoại', 'máy', 'mua', 'model', 'tư vấn'],
-            'price_query' => ['giá', 'bao nhiêu', 'tiền', 'chi phí', 'trả góp', 'giá cả'],
-            'category_query' => ['danh mục', 'loại', 'category', 'phân loại', 'dòng máy'],
-            'voucher_query' => ['khuyến mãi', 'voucher', 'giảm giá', 'mã giảm', 'ưu đãi', 'quà tặng'],
-            'order_query' => ['đơn hàng', 'trạng thái', 'giao hàng', 'vận chuyển', 'thanh toán', 'đặt hàng'],
-            'spec_query' => ['thông số', 'kỹ thuật', 'spec', 'cấu hình', 'tính năng', 'đặc điểm'],
-            'support_query' => ['bảo hành', 'sửa chữa', 'hỗ trợ', 'đổi trả', 'lỗi', 'hư hỏng'],
-            'comparison_query' => ['so sánh', 'khác nhau', 'khác biệt', 'tốt hơn', 'đánh giá']
+        // 1. REGEX PATTERNS - Kiểm tra các patterns phức tạp trước
+        $patterns = [
+            'greeting' => '/^(xin chào|hello|hi|chào bạn|chào|hey|halo)/i',
+            'farewell' => '/(tạm biệt|bye|cảm ơn|thank you|kết thúc|hẹn gặp lại)/i',
+            'price_query' => '/(giá|bao nhiêu|tiền|chi phí|cost|price).*(iphone|samsung|oppo|vivo|điện thoại|máy|smartphone)/i',
+            'order_tracking' => '/(kiểm tra|xem|tra cứu|tìm).*(đơn hàng|order).*(DH\d+|\d{6,})/i',
+            'product_compare' => '/(so sánh|khác nhau|tốt hơn|nên chọn).*(với|và|hay)/i',
+            'voucher_personal' => '/(voucher|mã giảm).*(của tôi|cá nhân|tài khoản|có gì)/i',
+            'product_specific' => '/(iphone|samsung|oppo|vivo|xiaomi)\s*(\d+|pro|plus|max|mini)/i'
         ];
 
-        // Chấm điểm cho mỗi intent dựa trên số từ khóa match
+        // Kiểm tra patterns trước
+        foreach ($patterns as $intent => $pattern) {
+            if (preg_match($pattern, $originalMessage)) {
+                return $intent === 'product_specific' ? 'product_query' : $intent;
+            }
+        }
+
+        // 2. ENHANCED KEYWORD MATCHING với trọng số
+        $intents = [
+            'product_query' => [
+                'primary' => ['sản phẩm', 'điện thoại', 'smartphone', 'iphone', 'samsung', 'oppo', 'vivo', 'xiaomi'], // x3
+                'secondary' => ['máy', 'mua', 'model', 'tư vấn', 'gợi ý', 'chọn', 'nào tốt'], // x2
+                'tertiary' => ['mới', 'cũ', 'giá rẻ', 'cao cấp', 'phù hợp'] // x1
+            ],
+            'price_query' => [
+                'primary' => ['giá', 'bao nhiêu', 'tiền', 'cost'],
+                'secondary' => ['chi phí', 'trả góp', 'giá cả', 'price', 'đắt', 'rẻ'],
+                'tertiary' => ['phải chăng', 'budget', 'ngân sách']
+            ],
+            'voucher_query' => [
+                'primary' => ['voucher', 'mã giảm', 'khuyến mãi', 'discount'],
+                'secondary' => ['giảm giá', 'ưu đãi', 'sale', 'promotion'],
+                'tertiary' => ['quà tặng', 'miễn phí', 'bonus']
+            ],
+            'order_query' => [
+                'primary' => ['đơn hàng', 'order', 'đặt hàng', 'mua hàng'],
+                'secondary' => ['trạng thái', 'giao hàng', 'vận chuyển', 'thanh toán', 'kiểm tra'],
+                'tertiary' => ['ship', 'delivery', 'payment']
+            ],
+            'support_query' => [
+                'primary' => ['bảo hành', 'hỗ trợ', 'support', 'warranty'],
+                'secondary' => ['sửa chữa', 'đổi trả', 'lỗi', 'hư hỏng', 'repair'],
+                'tertiary' => ['khiếu nại', 'complaint', 'problem']
+            ],
+            'comparison_query' => [
+                'primary' => ['so sánh', 'compare', 'khác nhau', 'tốt hơn'],
+                'secondary' => ['khác biệt', 'đánh giá', 'review', 'nên chọn'],
+                'tertiary' => ['vs', 'versus', 'hay']
+            ],
+            'spec_query' => [
+                'primary' => ['thông số', 'cấu hình', 'spec', 'specification'],
+                'secondary' => ['kỹ thuật', 'tính năng', 'đặc điểm', 'feature'],
+                'tertiary' => ['camera', 'pin', 'ram', 'storage']
+            ]
+        ];
+
+        // 3. TÍNH ĐIỂM VỚI TRỌNG SỐ
         $scores = [];
-        foreach ($intents as $intent => $keywords) {
+        foreach ($intents as $intent => $categories) {
             $score = 0;
-            foreach ($keywords as $keyword) {
-                if (Str::contains($message, $keyword)) {
+            
+            // Primary keywords (trọng số 3)
+            foreach ($categories['primary'] as $keyword) {
+                if ($this->fuzzyMatch($message, [$keyword])) {
+                    $score += 3;
+                }
+            }
+            
+            // Secondary keywords (trọng số 2)
+            foreach ($categories['secondary'] as $keyword) {
+                if ($this->fuzzyMatch($message, [$keyword])) {
+                    $score += 2;
+                }
+            }
+            
+            // Tertiary keywords (trọng số 1)
+            foreach ($categories['tertiary'] as $keyword) {
+                if ($this->fuzzyMatch($message, [$keyword])) {
                     $score += 1;
                 }
             }
+            
             $scores[$intent] = $score;
         }
 
-        // Lấy intent có điểm cao nhất
+        // 4. CONTEXT BONUS
+        $this->addContextBonus($scores, $message, $originalMessage);
+
+        // 5. ENTITY EXTRACTION BONUS
+        $entities = $this->extractEntities($message);
+        if (!empty($entities['brands'])) {
+            $scores['product_query'] += 2;
+            if (!empty($entities['price_indicators'])) {
+                $scores['price_query'] += 2;
+            }
+        }
+
+        // 6. TÌMAKNG INTENT CÓ ĐIỂM CAO NHẤT
         $maxScore = max($scores);
-        if ($maxScore > 0) {
-            $intent = array_search($maxScore, $scores);
-            // Nếu là chào hỏi hoặc tạm biệt thì trả lời nhanh
-            if ($intent === 'greeting') {
-                return 'greeting';
+        if ($maxScore >= 2) { // Ngưỡng tối thiểu
+            $topIntents = array_keys($scores, $maxScore);
+            
+            // Nếu có nhiều intent cùng điểm, ưu tiên theo thứ tự
+            $priority = ['greeting', 'farewell', 'order_query', 'price_query', 
+                        'product_query', 'voucher_query', 'comparison_query', 'spec_query', 'support_query'];
+            
+            foreach ($priority as $priorityIntent) {
+                if (in_array($priorityIntent, $topIntents)) {
+                    return $priorityIntent;
+                }
             }
-            if ($intent === 'farewell') {
-                return 'farewell';
+            
+            return $topIntents[0];
+        }
+
+        // 7. FALLBACK TO AI nếu không chắc chắn
+        if ($maxScore === 1) {
+            return $this->analyzeIntentWithAI($originalMessage);
+        }
+
+        return 'general_query';
+    }
+
+    // Thêm các method hỗ trợ
+    protected function addContextBonus(&$scores, $message, $originalMessage)
+    {
+        // Bonus cho các từ kết hợp
+        if (Str::contains($message, 'giá') && preg_match('/(iphone|samsung|oppo|vivo)/', $message)) {
+            $scores['price_query'] += 3;
+        }
+        
+        if (Str::contains($message, 'so sánh') && preg_match('/(với|và|hay|vs)/', $message)) {
+            $scores['comparison_query'] += 3;
+        }
+
+        if (preg_match('/(mã|code).*?(DH\d+|\d{6,})/', $originalMessage)) {
+            $scores['order_query'] += 4;
+        }
+
+        // Bonus cho câu hỏi
+        if (Str::contains($message, '?') || Str::startsWith($message, ['tại sao', 'làm sao', 'như thế nào'])) {
+            foreach ($scores as $intent => $score) {
+                if ($score > 0) {
+                    $scores[$intent] += 1;
+                }
             }
-            return $intent;
+        }
+
+        // Penalty cho các từ phủ định
+        if (preg_match('/(không|chưa|chẳng|đừng)/', $message)) {
+            foreach ($scores as $intent => $score) {
+                $scores[$intent] = max(0, $score - 1);
+            }
+        }
+    }
+
+    protected function extractEntities($message)
+    {
+        $entities = [
+            'brands' => [],
+            'price_indicators' => [],
+            'numbers' => []
+        ];
+        
+        // Extract brands
+        $brandPatterns = [
+            'iphone' => '/(iphone|apple|ios)/i',
+            'samsung' => '/(samsung|galaxy)/i',
+            'oppo' => '/oppo/i',
+            'vivo' => '/vivo/i',
+            'xiaomi' => '/(xiaomi|redmi|mi)/i'
+        ];
+        
+        foreach ($brandPatterns as $brand => $pattern) {
+            if (preg_match($pattern, $message)) {
+                $entities['brands'][] = $brand;
+            }
+        }
+        
+        // Extract price indicators
+        if (preg_match_all('/(\d+)\s*(?:triệu|tr|million|k|nghìn)/', $message, $matches)) {
+            $entities['price_indicators'] = $matches[1];
+        }
+        
+        // Extract numbers
+        if (preg_match_all('/\d+/', $message, $matches)) {
+            $entities['numbers'] = $matches[0];
+        }
+        
+        return $entities;
+    }
+
+    protected function fuzzyMatch($input, $keywords, $threshold = 0.8)
+    {
+        foreach ($keywords as $keyword) {
+            // Exact match
+            if (Str::contains($input, $keyword)) {
+                return true;
+            }
+            
+            // Fuzzy match for typos
+            $words = explode(' ', $input);
+            foreach ($words as $word) {
+                if (strlen($word) > 2) {
+                    $distance = levenshtein(strtolower($word), strtolower($keyword));
+                    $similarity = 1 - ($distance / max(strlen($word), strlen($keyword)));
+                    
+                    if ($similarity >= $threshold) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    // AI-based intent detection as fallback
+    protected function analyzeIntentWithAI($message)
+    {
+        $prompt = "Phân tích intent của câu hỏi sau và trả về CHÍNH XÁC một trong các intent:
+        - product_query: Hỏi về sản phẩm, điện thoại
+        - price_query: Hỏi về giá cả, chi phí
+        - order_query: Hỏi về đơn hàng, trạng thái
+        - voucher_query: Hỏi về khuyến mãi, voucher
+        - support_query: Hỏi về hỗ trợ, bảo hành
+        - comparison_query: So sánh sản phẩm
+        - spec_query: Hỏi về thông số kỹ thuật
+        - greeting: Chào hỏi
+        - farewell: Tạm biệt
+        - general_query: Câu hỏi chung
+
+        Câu hỏi: '$message'
+        
+        Chỉ trả về tên intent:";
+
+        try {
+            $result = $this->callOpenRouterAIWithCustomPrompt($prompt);
+            $validIntents = ['product_query', 'price_query', 'order_query', 'voucher_query', 
+                            'support_query', 'comparison_query', 'spec_query', 'greeting', 'farewell', 'general_query'];
+            
+            $cleanResult = trim(strtolower($result));
+            if (in_array($cleanResult, $validIntents)) {
+                return $cleanResult;
+            }
+        } catch (\Exception $e) {
+            Log::error('AI Intent Analysis failed: ' . $e->getMessage());
         }
 
         return 'general_query';
@@ -175,6 +399,15 @@ class ChatbotController extends Controller
 
     protected function handleIntent($intent, $message, $userId = null)
     {
+        // Handle greeting and farewell first
+        if ($intent === 'greeting') {
+            return 'Xin chào! 😊 Em là **DHMobile** - trợ lý tư vấn của anh/chị. Em có thể giúp anh/chị:\n\n📱 Tư vấn sản phẩm điện thoại\n💰 Kiểm tra giá cả và khuyến mãi\n📦 Theo dõi đơn hàng\n🎁 Xem voucher ưu đãi\n\nAnh/chị cần hỗ trợ gì ạ?';
+        }
+        
+        if ($intent === 'farewell') {
+            return 'Cảm ơn anh/chị đã tin tưởng **DHMobile**! 😊\n\nNếu cần hỗ trợ thêm, anh/chị cứ nhắn tin cho em bất cứ lúc nào nhé! Chúc anh/chị một ngày tốt lành! 🌸✨';
+        }
+        
         // Nếu là hỏi về đơn hàng hoặc giỏ hàng mà chưa đăng nhập, yêu cầu đăng nhập/đăng ký
         if ((in_array($intent, ['order_query', 'cart_query', 'voucher_query']) ||
                 preg_match('/(giỏ hàng|đơn hàng|voucher|mã giảm|mã khuyến mãi|lịch sử mua|mua hàng|đặt hàng|của tôi|cá nhân|tài khoản)/iu', $message))
@@ -335,7 +568,17 @@ class ChatbotController extends Controller
         $apiKey = config('services.openrouter.api_key');
         $endpoint = config('services.openrouter.endpoint');
         $model = config('services.openrouter.model');
+        
+        // Debug logging
+        Log::info('OpenRouter API Config', [
+            'api_key_present' => !empty($apiKey),
+            'endpoint' => $endpoint,
+            'model' => $model,
+            'prompt_length' => strlen($prompt)
+        ]);
+        
         if (!$apiKey) {
+            Log::error('OpenRouter API key not found');
             return 'Hệ thống hiện đang được bảo trì. Xin Quý Khách vui lòng quay lại sau khi bảo trì hoàn tất!';
         }
         $systemPrompt = 'Bạn là một trợ lý AI thân thiện, nói chuyện tự nhiên như con người, luôn trả lời ngắn gọn, dễ hiểu, tránh liệt kê máy móc, ưu tiên hội thoại gần gũi, có thể dùng emoji, markdown. Nếu không chắc chắn, hãy trả lời khéo léo và gợi mở thay vì trả lời cứng nhắc.';
@@ -365,13 +608,55 @@ class ChatbotController extends Controller
         $err = curl_error($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        if ($err || $httpCode >= 500 || !$result) {
+        
+        // Debug logging
+        Log::info('OpenRouter AI Response', [
+            'http_code' => $httpCode,
+            'curl_error' => $err,
+            'response_length' => strlen($result ?? ''),
+            'raw_response' => substr($result ?? '', 0, 500) // First 500 chars
+        ]);
+        
+        if ($err) {
+            Log::error('cURL Error in OpenRouter AI', ['error' => $err]);
             return 'Xin lỗi, hiện tại mình chưa thể trả lời câu hỏi này. Bạn có thể hỏi lại theo cách khác hoặc liên hệ nhân viên để được hỗ trợ nhanh nhất nhé! 😊';
         }
+        
+        if ($httpCode >= 400) {
+            Log::error('OpenRouter API HTTP Error', [
+                'status_code' => $httpCode,
+                'response' => $result
+            ]);
+            return 'Xin lỗi, hiện tại mình chưa thể trả lời câu hỏi này. Bạn có thể hỏi lại theo cách khác hoặc liên hệ nhân viên để được hỗ trợ nhanh nhất nhé! 😊';
+        }
+        
+        if (!$result) {
+            Log::error('OpenRouter API Empty Response');
+            return 'Xin lỗi, hiện tại mình chưa thể trả lời câu hỏi này. Bạn có thể hỏi lại theo cách khác hoặc liên hệ nhân viên để được hỗ trợ nhanh nhất nhé! 😊';
+        }
+        
         $json = json_decode($result, true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            Log::error('OpenRouter API JSON Decode Error', [
+                'json_error' => json_last_error_msg(),
+                'raw_response' => $result
+            ]);
+            return 'Xin lỗi, hiện tại mình chưa thể trả lời câu hỏi này. Bạn có thể hỏi lại theo cách khác hoặc liên hệ nhân viên để được hỗ trợ nhanh nhất nhé! 😊';
+        }
+        
+        Log::info('OpenRouter API Parsed Response', [
+            'has_choices' => isset($json['choices']),
+            'choices_count' => isset($json['choices']) ? count($json['choices']) : 0,
+            'has_content' => isset($json['choices'][0]['message']['content']),
+            'full_response' => $json
+        ]);
+        
         if (isset($json['choices'][0]['message']['content']) && trim($json['choices'][0]['message']['content']) !== '') {
             return $json['choices'][0]['message']['content'];
         }
+        
+        Log::warning('OpenRouter API No Valid Content', ['parsed_json' => $json]);
         return 'Xin lỗi, mình chưa có thông tin phù hợp cho câu hỏi này. Bạn có thể hỏi lại chi tiết hơn hoặc liên hệ nhân viên để được hỗ trợ nhé! 😊';
     }
 
@@ -379,7 +664,7 @@ class ChatbotController extends Controller
     {
         $apiKey = config('services.openrouter.api_key');
         $endpoint = config('services.openrouter.endpoint');
-        $model = config('services.openrouter.model',);
+        $model = config('services.openrouter.model');
         if (!$apiKey) {
             return 'Hệ thống hiện đang được bảo trì. Xin Quý Khách vui lòng quay lại sau khi bảo trì hoàn tất!';
         }
