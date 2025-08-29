@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import {
   FaQrcode,
@@ -20,7 +21,6 @@ import { toast, ToastContainer } from "react-toastify";
 import InvoiceUploadModal from "../../components/InvoiceUploadModal";
 import Swal from "sweetalert2";
 import { BsBank2 } from "react-icons/bs";
-
 
 const WithdrawMoney = () => {
   const [showModal, setShowModal] = useState(false);
@@ -45,23 +45,23 @@ const WithdrawMoney = () => {
 
   function removeVietnameseTones(str) {
     return str
-      .normalize('NFD')
-      .replace(/\p{Diacritic}/gu, '')
-      .replace(/đ/g, 'd')
-      .replace(/Đ/g, 'D');
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D");
   }
 
   if (searchTerm) {
     const search = removeVietnameseTones(searchTerm.toLowerCase());
     withdrawList = withdrawList.filter((item) => {
-      const name = removeVietnameseTones(item.user?.full_name?.toLowerCase() || '');
+      const name = removeVietnameseTones(
+        item.user?.full_name?.toLowerCase() || ""
+      );
       return name.includes(search);
     });
   }
   if (statusFilter) {
-    withdrawList = withdrawList.filter((item) =>
-      item.status === statusFilter
-    );
+    withdrawList = withdrawList.filter((item) => item.status === statusFilter);
   }
 
   const totalPages = Math.ceil(withdrawList.length / itemsPerPage);
@@ -110,7 +110,7 @@ const WithdrawMoney = () => {
     }
   };
 
-  const handleDownloadQr = () => {
+  const handleDownloadQr = async () => {
     if (!selectedQrImage) {
       toast.error("Không có QR code để tải xuống", {
         position: "top-right",
@@ -119,24 +119,42 @@ const WithdrawMoney = () => {
       return;
     }
     try {
-      const link = document.createElement("a");
-      link.href = selectedQrImage;
-      link.download = `qr-code-${
-        selectedWithdraw?.withdraw_id || "unknown"
-      }.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      if (selectedQrImage.startsWith("data:image")) {
+        // Base64
+        const link = document.createElement("a");
+        link.href = selectedQrImage;
+        link.download = `qr-code-${
+          selectedWithdraw?.withdraw_id || "unknown"
+        }.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        const response = await fetch(selectedQrImage, { mode: "cors" });
+        if (!response.ok) throw new Error("Không thể tải ảnh");
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `qr-code-${
+          selectedWithdraw?.withdraw_id || "unknown"
+        }.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }
+      toast.success("Tải xuống thành công", {
+        position: "top-right",
+        autoClose: 1500,
+      });
     } catch (err) {
-      console.error("Download failed", err);
       toast.error("Tải xuống thất bại", {
         position: "top-right",
         autoClose: 1500,
       });
     }
   };
-
- 
 
   const renderPagination = () => {
     const pages = [];
@@ -233,9 +251,9 @@ const WithdrawMoney = () => {
       setUploading(false);
     }
   };
-    const statusClasses = {
-    'Chờ xử lý': 'status-pending',
-    'Đã hoàn tất': 'status-completed',
+  const statusClasses = {
+    "Chờ xử lý": "status-pending",
+    "Đã hoàn tất": "status-completed",
   };
 
   useEffect(() => {
@@ -257,12 +275,12 @@ const WithdrawMoney = () => {
               type="text"
               placeholder="Tìm kiếm theo tên người dùng..."
               value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="search-input"
             />
             <select
               value={statusFilter}
-              onChange={e => setStatusFilter(e.target.value)}
+              onChange={(e) => setStatusFilter(e.target.value)}
               className="status-select"
             >
               <option value="">Tất cả trạng thái</option>
@@ -291,14 +309,18 @@ const WithdrawMoney = () => {
                   <div className="desktop-row">
                     <div className="user-info">
                       <div className="user-avatar-widthdraw">
-                        <img style={{borderRadius: "50%"}} src={withdraw?.user?.image_url} alt="" />
+                        <img
+                          style={{ borderRadius: "50%" }}
+                          src={withdraw?.user?.image_url}
+                          alt=""
+                        />
                       </div>
                       <div className="user-details">
                         <h6>{withdraw.user.full_name}</h6>
                         <div className="email">{withdraw.user.email}</div>
                       </div>
                     </div>
-      
+
                     <div className="amount-info">
                       <div
                         className={`amount-display ${
@@ -332,7 +354,7 @@ const WithdrawMoney = () => {
                     <div className="status-cell ">
                       <span
                         className={`status-badge ${
-                          statusClasses[withdraw.status] 
+                          statusClasses[withdraw.status]
                         }`}
                       >
                         <span className="status-text">{withdraw.status}</span>
@@ -374,8 +396,10 @@ const WithdrawMoney = () => {
                         {withdraw?.status === "Chờ xử lý" && (
                           <button
                             className="action-btn dropdown-btn"
-                            style={{marginLeft: 8}}
-                            onClick={() => handleConfirmWithdrawal(withdraw.withdraw_id)}
+                            style={{ marginLeft: 8 }}
+                            onClick={() =>
+                              handleConfirmWithdrawal(withdraw.withdraw_id)
+                            }
                           >
                             <span className="dropdown-text">Hoàn thành</span>
                           </button>
@@ -387,7 +411,15 @@ const WithdrawMoney = () => {
                       <div className="card-row">
                         <div className="card-item">
                           <span className="card-label">Số tiền</span>
-                          <span className={`card-value amount ${withdraw.status === "Chờ xử lý" ? "amount-pending" : withdraw.status === "Đã hoàn tất" ? "amount-success" : ""}`}>
+                          <span
+                            className={`card-value amount ${
+                              withdraw.status === "Chờ xử lý"
+                                ? "amount-pending"
+                                : withdraw.status === "Đã hoàn tất"
+                                ? "amount-success"
+                                : ""
+                            }`}
+                          >
                             {numberFomat(withdraw.amount)}
                           </span>
                         </div>
@@ -425,7 +457,11 @@ const WithdrawMoney = () => {
                         </div>
                         <div className="card-item">
                           <span className="card-label">Trạng thái</span>
-                          <span className={`status-badge mobile ${statusClasses[withdraw.status]}`}>
+                          <span
+                            className={`status-badge mobile ${
+                              statusClasses[withdraw.status]
+                            }`}
+                          >
                             <span className="status-text">
                               {withdraw.status}
                             </span>
@@ -439,7 +475,9 @@ const WithdrawMoney = () => {
             })}
             {currentData.length === 0 && !loading && (
               <>
-                <div className="icon-no-data"><BsBank2 /></div>
+                <div className="icon-no-data">
+                  <BsBank2 />
+                </div>
                 <div className="no-data">
                   {searchTerm || statusFilter
                     ? "Không tìm thấy kết quả phù hợp."
