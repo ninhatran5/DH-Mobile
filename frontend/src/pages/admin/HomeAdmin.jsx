@@ -179,50 +179,44 @@ const Homeadmin = () => {
       // Đặt lock NGAY LẬP TỨC
       globalNotificationLock.current = true;
 
-
-    // Hàm thực hiện notification
-    const executeNotification = () => {
-
       try {
-        if (window.speechSynthesis.speaking) {
-          window.speechSynthesis.cancel();
-          // Đợi 200ms để đảm bảo cancel hoàn toàn
-          setTimeout(() => {
-
-            globalNotificationLock.current = false;
-          }, 1000); // 1 giây để MP3 phát xong
-          
-        } else if (type === 'refund') {
+        if (type === 'refund') {
           // Phát MP3 cho hoàn hàng
           if (hoanHangAudioRef.current) {
             hoanHangAudioRef.current.currentTime = 0;
             hoanHangAudioRef.current.play().catch((error) => {
-              // MP3 play error - silent fail
+              console.warn('Không thể phát âm thanh hoàn hàng:', error);
             });
           }
-          
-          // Giải phóng lock sau khi MP3 đã phát (delay ngắn)
-          setTimeout(() => {
-            globalNotificationLock.current = false;
-          }, 1000); // 1 giây để MP3 phát xong
+        } else {
+          // Phát MP3 cho đơn hàng thường
+          if (audioRef.current) {
+            audioRef.current.currentTime = 0;
+            audioRef.current.play().catch((error) => {
+              console.warn('Không thể phát âm thanh đơn hàng:', error);
+            });
+          }
         }
+        
+        // Giải phóng lock sau khi âm thanh phát (delay 2 giây để đảm bảo)
+        setTimeout(() => {
+          globalNotificationLock.current = false;
+        }, 2000);
+        
+      } catch (error) {
+        console.error('Lỗi phát âm thanh:', error);
+        globalNotificationLock.current = false;
+      }
 
-
-          // Emergency timeout to release lock (10 seconds)
-          setTimeout(() => {
-            if (globalNotificationLock.current) {
-              globalNotificationLock.current = false;
-            }
-          }, 10000);
-        } catch (error) {
+      // Emergency timeout để giải phóng lock (10 giây)
+      setTimeout(() => {
+        if (globalNotificationLock.current) {
           globalNotificationLock.current = false;
         }
-      };
-
-
-    // Execute ngay lập tức
-    executeNotification();
-  }, [isSoundEnabled]);
+      }, 10000);
+    }, 
+    [isSoundEnabled]
+  );
 
 
   // Xử lý thông báo từ API (không bao gồm realtime)
