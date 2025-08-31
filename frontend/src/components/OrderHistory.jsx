@@ -66,17 +66,18 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
   });
 
   useEffect(() => {
-    const reviewedVariants = JSON.parse(
-      localStorage.getItem("reviewedVariants") || "[]"
+    const reviewedItems = JSON.parse(
+      localStorage.getItem("reviewedOrderItems") || "[]"
     );
 
     dispatch(fetchOrderDetail(orderData.order_id))
       .unwrap()
       .then((data) => {
         const products = data.products || [];
-        const hasReviewables = products.some(
-          (p) => !reviewedVariants.includes(p.variant_id)
-        );
+        const hasReviewables = products.some((p) => {
+          const reviewKey = `${orderData.order_id}-${p.variant_id}`;
+          return !reviewedItems.includes(reviewKey);
+        });
         setHasReviewableProduct(hasReviewables);
       })
       .catch(() => {
@@ -304,14 +305,15 @@ const OrderHistory = ({ order, handleCancelOrder }) => {
           handleClose={() => setShowReviewModal(false)}
           orderId={selectedOrderId}
           onSuccess={(variantId) => {
-            const reviewed = JSON.parse(
-              localStorage.getItem("reviewedVariants") || "[]"
+            const reviewKey = `${selectedOrderId}-${variantId}`;
+            const reviewedItems = JSON.parse(
+              localStorage.getItem("reviewedOrderItems") || "[]"
             );
-            if (!reviewed.includes(variantId)) {
-              reviewed.push(variantId);
+            if (!reviewedItems.includes(reviewKey)) {
+              reviewedItems.push(reviewKey);
               localStorage.setItem(
-                "reviewedVariants",
-                JSON.stringify(reviewed)
+                "reviewedOrderItems",
+                JSON.stringify(reviewedItems)
               );
             }
             setShowReviewModal(false);
