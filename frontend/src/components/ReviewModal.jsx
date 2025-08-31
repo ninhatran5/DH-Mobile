@@ -127,12 +127,13 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
           timer: 1500,
         });
 
-        const reviewed = JSON.parse(
-          localStorage.getItem("reviewedVariants") || "[]"
+        const reviewKey = `${orderId}-${selectedVariantId}`;
+        const reviewedItems = JSON.parse(
+          localStorage.getItem("reviewedOrderItems") || "[]"
         );
-        if (!reviewed.includes(selectedVariantId)) {
-          reviewed.push(selectedVariantId);
-          localStorage.setItem("reviewedVariants", JSON.stringify(reviewed));
+        if (!reviewedItems.includes(reviewKey)) {
+          reviewedItems.push(reviewKey);
+          localStorage.setItem("reviewedOrderItems", JSON.stringify(reviewedItems));
         }
 
         const updated = reviewableProducts.filter(
@@ -167,11 +168,14 @@ const ReviewModal = ({ show, handleClose, orderId, onSuccess }) => {
     if (!orderId) return;
 
     dispatch(fetchOrderDetail(orderId)).then((action) => {
-      const reviewed = JSON.parse(
-        localStorage.getItem("reviewedVariants") || "[]"
+      const reviewedItems = JSON.parse(
+        localStorage.getItem("reviewedOrderItems") || "[]"
       );
       const products = action.payload?.products || [];
-      const filtered = products.filter((p) => !reviewed.includes(p.variant_id));
+      const filtered = products.filter((p) => {
+        const reviewKey = `${orderId}-${p.variant_id}`;
+        return !reviewedItems.includes(reviewKey);
+      });
 
       setReviewableProducts(filtered);
 
