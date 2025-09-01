@@ -53,6 +53,9 @@ const Homeadmin = () => {
   const sidebarOpenRef = useRef(null);
   const dispatch = useDispatch();
   const { notifications } = useSelector((state) => state.adminNotification);
+  const { adminProfile } = useSelector((state) => state.adminProfile);
+  const checkRole = adminProfile?.user?.role;
+
   // Audio và tracking refs
   const audioRef = useRef(null);
   const hoanHangAudioRef = useRef(null);
@@ -72,11 +75,18 @@ const Homeadmin = () => {
 
   // Số lượng thông báo chưa đọc - bao gồm cả thông báo hoàn hàng realtime
   const unreadCount = useMemo(() => {
-    const regularUnread = notifications.filter((n) => n.is_read === 0).length;
-    const returnUnread = returnNotifications.filter(
+    // Thông báo thường (không bao gồm refund từ API)
+    const regularUnread = notifications.filter((n) => n.is_read === 0 && n.type !== 'refund').length;
+    
+    // Thông báo hoàn hàng từ API (chỉ lấy lần đầu)
+    const apiRefundUnread = notifications.filter((n) => n.is_read === 0 && n.type === 'refund').length;
+    
+    // Thông báo hoàn hàng realtime
+    const realtimeReturnUnread = returnNotifications.filter(
       (n) => n.is_read === 0
     ).length;
-    return regularUnread + returnUnread;
+    
+    return regularUnread + apiRefundUnread + realtimeReturnUnread;
   }, [notifications, returnNotifications]);
 
   useEffect(() => {
@@ -150,18 +160,22 @@ const Homeadmin = () => {
   }, []);
 
   useEffect(() => {
-    // Initial fetch
+    // Initial fetch - CHỈ LẤY THÔNG BÁO THƯỜNG
     dispatch(fetchNotifications());
-    dispatch(fetchRefundNotifications());
+    
+    // Chỉ fetch thông báo hoàn hàng ban đầu nếu không phải role sale
+    if (checkRole && checkRole !== "sale") {
+      dispatch(fetchRefundNotifications());
+    }
 
-    // Set up interval for periodic fetch
+    // Set up interval for periodic fetch - CHỈ CHO THÔNG BÁO THƯỜNG
     const interval = setInterval(() => {
       dispatch(fetchNotifications());
-      dispatch(fetchRefundNotifications());
+      // KHÔNG GỌI fetchRefundNotifications() - chỉ dùng realtime
     }, 10000); // Tăng thời gian từ 2s lên 10s
 
     return () => clearInterval(interval);
-  }, [dispatch]);
+  }, [dispatch, checkRole]);
 
   // Singleton notification handler - chỉ cho phép 1 notification được xử lý tại một thời điểm
   const playNotificationSound = useCallback(
@@ -219,18 +233,28 @@ const Homeadmin = () => {
   );
 
 
-  // Xử lý thông báo từ API (không bao gồm realtime)
+  // Debug logging cho thông báo
   useEffect(() => {
+    console.log('🔍 DEBUG - Notifications states:', {
+      reduxNotifications: notifications.length,
+      reduxRefundNotifications: notifications.filter(n => n.type === 'refund').length,
+      realtimeReturnNotifications: returnNotifications.length,
+      totalUnreadCount: unreadCount
+    });
+  }, [notifications, returnNotifications, unreadCount]);
+
+  // Xử lý thông báo từ API (không bao gồm realtime) - CHỈ CHO THÔNG BÁO THƯỜNG
+  useEffect(() => {
+    // Chỉ đếm thông báo thường (không phải refund)
     const currentUnreadCount = notifications.filter(
-      (n) => n.is_read === 0
+      (n) => n.is_read === 0 && n.type !== 'refund'
     ).length;
-    const totalUnreadCount =
-      currentUnreadCount +
-      returnNotifications.filter((n) => n.is_read === 0).length;
+    
+    const totalUnreadCount = unreadCount; // Sử dụng unreadCount đã tính toán
 
     setShowNotificationDot(totalUnreadCount > 0);
 
-    // Chỉ xử lý khi có thông báo mới (tăng số lượng)
+    // Chỉ xử lý khi có thông báo THƯỜNG mới (tăng số lượng)
     if (currentUnreadCount > lastNotificationCount.current) {
       // Hiển thị toast
       toast.info("Bạn có thông báo mới!", {
@@ -238,11 +262,10 @@ const Homeadmin = () => {
         autoClose: 4000,
       });
 
-      // Lấy thông báo mới chưa được xử lý
-      const unreadNotifications = notifications.filter((n) => n.is_read === 0);
+      // Lấy thông báo THƯỜNG mới chưa được xử lý
+      const unreadNotifications = notifications.filter((n) => n.is_read === 0 && n.type !== 'refund');
       const newNotifications = unreadNotifications.filter((notification) => {
-        const notificationId =
-          notification.return_notification_id || notification.notification_id;
+        const notificationId = notification.notification_id;
         return (
           notificationId && !processedNotifications.current.has(notificationId)
         );
@@ -251,49 +274,19 @@ const Homeadmin = () => {
       if (newNotifications.length > 0) {
         // Đánh dấu đã xử lý ngay lập tức
         newNotifications.forEach((notification) => {
-          const notificationId =
-            notification.return_notification_id || notification.notification_id;
+          const notificationId = notification.notification_id;
           if (notificationId) {
             processedNotifications.current.add(notificationId);
           }
         });
 
-        // Phân loại và phát âm thanh
-        const hasRegularOrder = newNotifications.some(
-          (n) =>
-            !(
-              n.type === "refund" ||
-              n.return_notification_id ||
-              n.return_request
-            )
-        );
-        const hasRefundOrder = newNotifications.some(
-          (n) =>
-            n.type === "refund" || n.return_notification_id || n.return_request
-        );
-
-        if (hasRegularOrder && !hasRefundOrder) {
-          // Chỉ có đơn hàng thường
-          playNotificationSound("order", "", "API-useEffect");
-        } else if (hasRefundOrder) {
-          // Có hoàn hàng (ưu tiên hoàn hàng)
-          const firstRefundNotification = newNotifications.find(
-            (n) =>
-              n.type === "refund" ||
-              n.return_notification_id ||
-              n.return_request
-          );
-          playNotificationSound(
-            "refund",
-            firstRefundNotification?.message,
-            "API-useEffect"
-          );
-        }
+        // Chỉ phát âm thanh cho đơn hàng thường
+        playNotificationSound("order", "", "API-useEffect");
       }
     }
 
     lastNotificationCount.current = currentUnreadCount;
-  }, [notifications, returnNotifications, playNotificationSound]);
+  }, [notifications, unreadCount, playNotificationSound]);
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -391,12 +384,12 @@ const Homeadmin = () => {
       // Đánh dấu tất cả thông báo thường đã đọc
       await dispatch(markNotificationsRead()).unwrap();
 
-      // Lấy tất cả thông báo hoàn hàng chưa đọc
+      // Lấy tất cả thông báo hoàn hàng từ API chưa đọc
       const unreadRefundNotifications = notifications.filter(
         (n) => n.type === "refund" && n.is_read === 0
       );
 
-      // Đánh dấu từng thông báo hoàn hàng đã đọc
+      // Đánh dấu từng thông báo hoàn hàng từ API đã đọc
       const refundPromises = unreadRefundNotifications.map((notification) => {
         if (notification.return_notification_id) {
           return dispatch(
@@ -406,8 +399,13 @@ const Homeadmin = () => {
         return Promise.resolve();
       });
 
-      // Chờ tất cả thông báo hoàn hàng được đánh dấu đã đọc
-      await Promise.all(refundPromises);
+      // Đánh dấu tất cả thông báo hoàn hàng realtime đã đọc
+      const realtimeRefundPromises = returnNotifications
+        .filter(n => n.is_read === 0)
+        .map(notification => markReturnNotificationAsRead(notification.id));
+
+      // Chờ tất cả thông báo được đánh dấu đã đọc
+      await Promise.all([...refundPromises, ...realtimeRefundPromises]);
 
       setShowNotificationDot(false);
     } catch (error) {
@@ -447,10 +445,6 @@ const Homeadmin = () => {
     setSoundEnabled(newSoundState);
     localStorage.setItem("notificationSound", newSoundState);
   };
-
-  const { adminProfile } = useSelector((state) => state.adminProfile);
-
-  const checkRole = adminProfile?.user?.role;
 
   useEffect(() => {
     dispatch(fetchProfileAdmin());
@@ -1270,7 +1264,7 @@ const Homeadmin = () => {
                             >
                               Thông báo
                             </h5>
-                            {notifications.length > 0 && (
+                            {(notifications.length > 0 || returnNotifications.length > 0) && (
                               <button
                                 className=" text-decoration-none admin-dh-custom-mark-read-btn"
                                 onClick={handleMarkAsRead}
