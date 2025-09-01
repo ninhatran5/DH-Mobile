@@ -433,29 +433,7 @@ const CommentsList = () => {
                           className="comment-actions"
                           style={{ display: "flex", gap: "6px" }}
                         >
-                          {checkRole !== "sale" && (
-                            <button
-                              className="comment-delete-btn"
-                              onClick={() =>
-                                handleDeleteComment(comment.comment_id)
-                              }
-                              disabled={deleteLoading}
-                              title="Xoá bình luận"
-                              style={{
-                                padding: "4px",
-                                borderRadius: "4px",
-                                border: "none",
-                                backgroundColor: "#fff",
-                                color: "#dc3545",
-                                cursor: "pointer",
-                                fontSize: "0.9em",
-                                display: "flex",
-                                alignItems: "center",
-                              }}
-                            >
-                              <FiTrash2 size={14} />
-                            </button>
-                          )}
+                         
 
                           <button
                             className={`comment-toggle-btn ${

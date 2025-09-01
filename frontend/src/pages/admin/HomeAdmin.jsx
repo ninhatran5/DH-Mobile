@@ -1303,14 +1303,7 @@ const Homeadmin = () => {
                                     <i className="bi bi-arrow-return-left"></i>
                                   </div>
                                   <div className="flex-grow-1 ms-3">
-                                    <div className="d-flex align-items-center gap-2 mb-1">
-                                      <span className="badge bg-warning text-dark">
-                                        Realtime
-                                      </span>
-                                      <span className="text-primary fw-bold">
-                                        Hoàn hàng
-                                      </span>
-                                    </div>
+                                   
                                     <p className="mb-0" title={noti.message}>
                                       {noti.message}
                                     </p>
