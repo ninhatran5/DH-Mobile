@@ -152,7 +152,14 @@ const notificationSlice = createSlice({
       })
       .addCase(fetchNotifications.fulfilled, (state, action) => {
         state.loading = false;
-        state.notifications = Array.isArray(action.payload) ? action.payload : [];
+        const newRegularNotifications = Array.isArray(action.payload) ? action.payload : [];
+        
+        // Giữ lại các thông báo hoàn hàng từ API (type = 'refund') - KHÔNG GHI ĐÈ
+        const existingRefundNotifications = state.notifications.filter(n => n.type === 'refund');
+        
+        // Gộp thông báo thường mới với thông báo hoàn hàng cũ
+        state.notifications = [...newRegularNotifications, ...existingRefundNotifications]
+          .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
       })
       .addCase(fetchNotifications.rejected, (state, action) => {
         state.loading = false;
@@ -183,12 +190,15 @@ const notificationSlice = createSlice({
         state.loading = false;
         const refundNotifications = Array.isArray(action.payload) ? action.payload : [];
 
-        // Xóa các thông báo refund cũ để tránh trùng lặp
-        const regularNotifications = state.notifications.filter(n => n.type !== 'refund');
+        // Chỉ cập nhật thông báo hoàn hàng từ API lần đầu - KHÔNG GỌI LẠI
+        if (refundNotifications.length > 0) {
+          // Xóa các thông báo refund cũ từ API để tránh trùng lặp
+          const regularNotifications = state.notifications.filter(n => n.type !== 'refund');
 
-        // Gộp và sort theo created_at desc
-        state.notifications = [...regularNotifications, ...refundNotifications]
-          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+          // Gộp và sort theo created_at desc
+          state.notifications = [...regularNotifications, ...refundNotifications]
+            .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+        }
       })
       .addCase(fetchRefundNotifications.rejected, (state, action) => {
         state.loading = false;
