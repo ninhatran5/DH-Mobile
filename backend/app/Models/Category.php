@@ -20,8 +20,9 @@ class Category extends Model
         'updated_at',
         'deleted_at',
     ];
-    public function products(): HasMany
-    {
-        return $this->hasMany(Product::class);
-    }
+   public function products(): HasMany
+{
+    return $this->hasMany(Product::class, 'category_id', 'category_id');
+}
+
 }
