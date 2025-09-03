@@ -168,10 +168,10 @@ const Homeadmin = () => {
       dispatch(fetchRefundNotifications());
     }
 
-    // Set up interval for periodic fetch - CHỈ CHO THÔNG BÁO THƯỜNG
+    // API polling for regular notifications
     const interval = setInterval(() => {
       dispatch(fetchNotifications());
-      // KHÔNG GỌI fetchRefundNotifications() - chỉ dùng realtime
+      // KHÔNG GỊI fetchRefundNotifications() - chỉ dùng realtime
     }, 10000); // Tăng thời gian từ 2s lên 10s
 
     return () => clearInterval(interval);
@@ -233,15 +233,6 @@ const Homeadmin = () => {
   );
 
 
-  // Debug logging cho thông báo
-  useEffect(() => {
-    console.log('🔍 DEBUG - Notifications states:', {
-      reduxNotifications: notifications.length,
-      reduxRefundNotifications: notifications.filter(n => n.type === 'refund').length,
-      realtimeReturnNotifications: returnNotifications.length,
-      totalUnreadCount: unreadCount
-    });
-  }, [notifications, returnNotifications, unreadCount]);
 
   // Xử lý thông báo từ API (không bao gồm realtime) - CHỈ CHO THÔNG BÁO THƯỜNG
   useEffect(() => {
@@ -409,7 +400,7 @@ const Homeadmin = () => {
 
       setShowNotificationDot(false);
     } catch (error) {
-      console.error("Lỗi khi đánh dấu thông báo đã đọc:", error);
+      // Error marking notifications as read
     }
   };
 
@@ -450,81 +441,119 @@ const Homeadmin = () => {
     dispatch(fetchProfileAdmin());
   }, [dispatch]);
 
-  // Xử lý thông báo hoàn hàng realtime
   const setupReturnNotificationsRealtime = useCallback(() => {
-    // Nếu đã có kết nối trước đó, dọn dẹp
+    // Cleanup existing connection safely
     if (pusherRef.current) {
-      if (channelRef.current) {
-        channelRef.current.unbind_all();
-        pusherRef.current.unsubscribe("admin.notifications");
+      try {
+        if (channelRef.current) {
+          channelRef.current.unbind_all();
+          channelRef.current = null;
+        }
+        
+        // Only unsubscribe if connection is still active
+        if (pusherRef.current.connection.state === 'connected') {
+          pusherRef.current.unsubscribe("private-admin.notifications");
+        }
+        
+        pusherRef.current.disconnect();
+        pusherRef.current = null;
+      } catch (error) {
+        pusherRef.current = null;
+        channelRef.current = null;
       }
-      pusherRef.current.disconnect();
     }
 
     setConnectionStatus("connecting");
 
     try {
-      // Khởi tạo kết nối Pusher
-      const token =
-        localStorage.getItem("adminToken") || localStorage.getItem("token");
-      if (!token) {
-        setConnectionStatus("failed");
-        return;
-      }
-
-      const pusher = new Pusher("dcc715adcba25f4b8d09", {
-        cluster: "ap1",
+      // Initialize Pusher with proper config
+      const pusher = new Pusher(import.meta.env.VITE_PUSHER_KEY, {
+        cluster: import.meta.env.VITE_PUSHER_CLUSTER,
         forceTLS: true,
-        authEndpoint: `${import.meta.env.VITE_BASE_URL}broadcasting/auth`,
+        enabledTransports: ['ws', 'wss'],
+        authEndpoint: `${import.meta.env.VITE_BASE_URL_REAL_TIME}/broadcasting/auth`,
         auth: {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        },
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+    Accept: "application/json",
+  },
+}
+
       });
 
       pusherRef.current = pusher;
 
-      // Lắng nghe sự kiện kết nối
+      // Connection event handlers
+      pusher.connection.bind("connecting", () => {
+        setConnectionStatus("connecting");
+      });
+
       pusher.connection.bind("connected", () => {
         setConnectionStatus("connected");
         setIsRealtimeConnected(true);
       });
 
-      pusher.connection.bind("error", () => {
+      pusher.connection.bind("disconnected", () => {
+        setConnectionStatus("disconnected");
+        setIsRealtimeConnected(false);
+      });
+
+      pusher.connection.bind("error", (error) => {
         setConnectionStatus("failed");
         setIsRealtimeConnected(false);
       });
 
-      // Lắng nghe thay đổi trạng thái kết nối
       pusher.connection.bind("state_change", (states) => {
-        if (states.current === "disconnected") {
-          setIsRealtimeConnected(false);
-          setConnectionStatus("disconnected");
-        }
+        // State change tracking without logging
       });
 
-      const channel = pusher.subscribe("admin.notifications");
+      // Subscribe to private channel
+      const channel = pusher.subscribe("private-admin.notifications");
       channelRef.current = channel;
 
-      channel.bind("ReturnNotificationCreated", (data) => {
-        setReturnNotifications((prevNotifications) => [
-          {
-            id: data.id,
-            order_id: data.order_id,
-            return_request_id: data.return_request_id,
-            message: data.message,
-            is_read: data.is_read,
-            created_at: data.created_at,
-            type: "refund",
-            return_notification_id: data.id,
-          },
-          ...prevNotifications,
-        ]);
+      // Channel subscription handlers
+      channel.bind('pusher:subscription_succeeded', () => {
+        // Successfully subscribed
+      });
 
-        // Hiển thị toast cho realtime notification
+      channel.bind('pusher:subscription_error', (error) => {
+        // Channel subscription error
+      });
+
+      // Listen for ReturnNotificationCreated events - use full event name
+      channel.bind('App\\Events\\ReturnNotificationCreated', (eventData) => {
+        // Extract the actual data from the event structure
+        const data = eventData.data || eventData;
+        
+        // Validate required fields
+        if (!data || !data.id || !data.message) {
+          return;
+        }
+        
+        const newNotification = {
+          id: data.id,
+          order_id: data.order_id,
+          return_request_id: data.return_request_id,
+          message: data.message,
+          is_read: data.is_read || 0,
+          created_at: data.created_at,
+          type: "refund",
+          return_notification_id: data.id,
+        };
+
+        // Add to realtime notifications with force update
+        setReturnNotifications((prevNotifications) => {
+          // Check for duplicates
+          const exists = prevNotifications.some(n => n.id === newNotification.id);
+          if (exists) {
+            return prevNotifications;
+          }
+          
+          const updatedNotifications = [newNotification, ...prevNotifications];
+          return updatedNotifications;
+        });
+
+        // Show toast notification
         toast.info(
           <div>
             <strong>Thông báo hoàn hàng mới</strong>
@@ -541,38 +570,65 @@ const Homeadmin = () => {
           }
         );
 
-        // Phát âm thanh cho realtime return notification
-        const currentSoundEnabled = localStorage.getItem("notificationSound");
-        const soundEnabled =
-          currentSoundEnabled === null ? true : currentSoundEnabled === "true";
-
-        if (soundEnabled) {
-          // Sử dụng hàm playNotificationSound có sẵn với delay lớn hơn để tránh conflict
+        // Play sound if enabled
+        if (isSoundEnabled) {
           setTimeout(() => {
             playNotificationSound("refund", data.message, "realtime-pusher");
-          }, 500); // Tăng delay lên 500ms để tránh conflict với API notifications
+          }, 300);
         }
       });
+
+      // Listen to all channel events for debugging if needed
+      channel.bind_global((event, data) => {
+        // Global event listener
+      });
+
     } catch (error) {
       setConnectionStatus("failed");
     }
-  }, []); // Loại bỏ dependency để tránh tạo lại kết nối
+  }, [isSoundEnabled, playNotificationSound]);
 
+  // Setup realtime connection when admin profile is ready
   useEffect(() => {
-    if (checkRole && checkRole !== "sale") {
-      setupReturnNotificationsRealtime();
+    let isActive = true; // Flag to prevent setup after cleanup
+    
+    if (checkRole && checkRole !== "sale" && adminProfile?.user?.id) {
+      // Small delay to ensure component is fully mounted
+      const timeoutId = setTimeout(() => {
+        if (isActive) { // Only setup if still active
+          setupReturnNotificationsRealtime();
+        }
+      }, 2000); // Increase delay to 2 seconds
 
       return () => {
-        if (pusherRef.current) {
-          if (channelRef.current) {
-            channelRef.current.unbind_all();
-            pusherRef.current.unsubscribe("admin.notifications");
+        isActive = false; // Mark as inactive
+        clearTimeout(timeoutId);
+        
+        // Add delay to cleanup to avoid race conditions
+        setTimeout(() => {
+          if (pusherRef.current) {
+            try {
+              if (channelRef.current) {
+                channelRef.current.unbind_all();
+                channelRef.current = null;
+              }
+              
+              // Only unsubscribe if connection is still active
+              if (pusherRef.current.connection.state === 'connected') {
+                pusherRef.current.unsubscribe("private-admin.notifications");
+              }
+              
+              pusherRef.current.disconnect();
+              pusherRef.current = null;
+            } catch (error) {
+              pusherRef.current = null;
+              channelRef.current = null;
+            }
           }
-          pusherRef.current.disconnect();
-        }
+        }, 100);
       };
     }
-  }, [setupReturnNotificationsRealtime, checkRole]);
+  }, [setupReturnNotificationsRealtime, checkRole, adminProfile?.user?.id]);
 
   // Hàm xử lý để đánh dấu đã đọc thông báo hoàn hàng - sử dụng Redux
   const markReturnNotificationAsRead = useCallback(
@@ -593,11 +649,9 @@ const Homeadmin = () => {
           );
           return true;
         } else {
-          console.error("Lỗi đánh dấu đã đọc thông báo:", result.payload);
           return false;
         }
       } catch (error) {
-        console.error("Lỗi đánh dấu đã đọc thông báo:", error);
         return false;
       }
     },
