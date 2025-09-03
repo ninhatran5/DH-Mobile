@@ -114,7 +114,7 @@ export const markReturnNotificationRead = createAsyncThunk(
   async (notificationId, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
-      const response = await axiosAdmin.patch(`/admin/return-notifications/${notificationId}/read`, {}, {
+      const response = await axiosAdmin.put(`/return-notifications/read/${notificationId}`, {}, {
         headers: { 
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -166,7 +166,10 @@ const notificationSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(markNotificationsRead.fulfilled, (state) => {
-        state.notifications = state.notifications.map(n => ({ ...n, is_read: 1 }));
+        // Chỉ đánh dấu thông báo thường (không phải refund) đã đọc
+        state.notifications = state.notifications.map(n => 
+          n.type !== 'refund' ? { ...n, is_read: 1 } : n
+        );
       })
       .addCase(markNotificationRead.fulfilled, (state, action) => {
         state.loading = false;
