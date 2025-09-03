@@ -12,6 +12,15 @@ Broadcast::channel('chat.admin', function ($user) {
 });
 
 
+
+Broadcast::channel('admin.notifications', function ($user) {
+    // Chỉ cho phép admin join
+    // return $user && $user->is_admin === 1; 
+    return in_array($user->role, ['admin']);
+});
+
+
+
 // Broadcast::channel('chatbot.{userId}', function ($user, $userId) {
 //     return (int)$user->id === (int)$userId; // chỉ cho user đúng subscribe
 // });
