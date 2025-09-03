@@ -251,6 +251,11 @@ const Homeadmin = () => {
       toast.info("Bạn có thông báo mới!", {
         position: "top-right",
         autoClose: 4000,
+        closeButton: false,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
       });
 
       // Lấy thông báo THƯỜNG mới chưa được xử lý
@@ -400,7 +405,9 @@ const Homeadmin = () => {
 
       setShowNotificationDot(false);
     } catch (error) {
-      // Error marking notifications as read
+      console.error('Lỗi khi đánh dấu thông báo đã đọc:', error);
+      // Vẫn ẩn dot ngay cả khi có lỗi để tránh trạng thái không nhất quán
+      setShowNotificationDot(false);
     }
   };
 
@@ -633,25 +640,33 @@ const Homeadmin = () => {
   // Hàm xử lý để đánh dấu đã đọc thông báo hoàn hàng - sử dụng Redux
   const markReturnNotificationAsRead = useCallback(
     async (notificationId) => {
+      console.log('🔔 [DEBUG] Bắt đầu đánh dấu thông báo ID:', notificationId);
       try {
         const result = await dispatch(
           markReturnNotificationRead(notificationId)
         );
 
+        console.log('🔔 [DEBUG] Kết quả từ Redux:', result);
+
         if (markReturnNotificationRead.fulfilled.match(result)) {
+          console.log('🔔 [DEBUG] Thành công! Cập nhật local state...');
           // Cập nhật state local sau khi Redux thành công
-          setReturnNotifications((prevNotifications) =>
-            prevNotifications.map((notification) =>
+          setReturnNotifications((prevNotifications) => {
+            const updated = prevNotifications.map((notification) =>
               notification.id === notificationId
                 ? { ...notification, is_read: 1 }
                 : notification
-            )
-          );
+            );
+            console.log('🔔 [DEBUG] State đã cập nhật:', updated);
+            return updated;
+          });
           return true;
         } else {
+          console.log('🗿 [DEBUG] Lỗi: Redux trả về rejected');
           return false;
         }
       } catch (error) {
+        console.error('🗿 [DEBUG] Lỗi khi đánh dấu đã đọc:', error);
         return false;
       }
     },
@@ -661,9 +676,29 @@ const Homeadmin = () => {
   // Xử lý khi click vào thông báo hoàn hàng
   const handleReturnNotificationClick = useCallback(
     async (notification) => {
-      // Đánh dấu đã đọc nếu chưa đọc
+      console.log('🔔 [DEBUG] Click vào thông báo:', notification);
+      
+      // Đánh dấu đã đọc nếu chưa đọc (Optimistic update)
       if (notification.is_read === 0) {
-        await markReturnNotificationAsRead(notification.id);
+        console.log('🔔 [DEBUG] Thông báo chưa đọc, đánh dấu ngay...');
+        
+        // Cập nhật UI ngay lập tức (optimistic)
+        setReturnNotifications(prevNotifications =>
+          prevNotifications.map(n =>
+            n.id === notification.id ? { ...n, is_read: 1 } : n
+          )
+        );
+        
+        // Gọi API trong background
+        markReturnNotificationAsRead(notification.id).catch(() => {
+          // Nếu API lỗi, hoàn nguyên lại
+          console.error('🗿 [DEBUG] API lỗi, hoàn nguyên lại UI');
+          setReturnNotifications(prevNotifications =>
+            prevNotifications.map(n =>
+              n.id === notification.id ? { ...n, is_read: 0 } : n
+            )
+          );
+        });
       }
 
       // Chuyển hướng đến trang chi tiết đơn hoàn hàng
