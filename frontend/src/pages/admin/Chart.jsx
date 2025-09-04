@@ -784,8 +784,11 @@ const Chart = () => {
       .slice(0, topN);
   };
 
-  const getRecentOrders = (limit = 9) => {
+  const getRecentOrders = (limit = null) => {
     const filteredOrders = getFilteredOrders();
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
     
     // Chỉ hiển thị các trạng thái được chỉ định
     const validStatuses = [
@@ -796,19 +799,31 @@ const Chart = () => {
       "Hoàn thành"
     ];
     
-    return filteredOrders
-      .filter(order => 
-        order.created_at && 
-        order.customer && 
-        order.email && 
-        validStatuses.includes(order.status)
-      )
+    const recentOrders = filteredOrders
+      .filter(order => {
+        if (!order.created_at || !order.customer || !order.email || !validStatuses.includes(order.status)) {
+          return false;
+        }
+        
+        // Nếu có bộ lọc ngày được bật, sử dụng dữ liệu đã lọc
+        if (dateFilter.isEnabled) {
+          return true;
+        }
+        
+        // Nếu không có bộ lọc, chỉ lấy đơn hàng trong tháng hiện tại
+        const orderDate = parseCreatedAt(order.created_at);
+        if (!orderDate) return false;
+        
+        return orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentYear;
+      })
       .sort((a, b) => {
         const dateA = parseCreatedAt(a.created_at);
         const dateB = parseCreatedAt(b.created_at);
         return dateB - dateA; // Sắp xếp từ mới nhất đến cũ nhất
-      })
-      .slice(0, limit);
+      });
+    
+    // Nếu có limit thì áp dụng, nếu không thì trả về tất cả
+    return limit ? recentOrders.slice(0, limit) : recentOrders;
   };
 
   const formatOrderDate = (dateString) => {
@@ -1180,7 +1195,7 @@ const Chart = () => {
               <div className="chart-admin-stat-label">
                 Doanh thu {dateFilter.isEnabled ? '(Đã lọc)' : currentMonthName}
               </div>
-              <div className="chart-admin-stat-value">{formatCurrency(monthlyStats.revenue)}</div>
+              <div className="chart-admin-stat-value">{monthlyStats.revenue.toLocaleString('vi-VN')} VND</div>
             </div>
           </div>
           
@@ -1226,7 +1241,7 @@ const Chart = () => {
             {revenueStats.highest?.monthName || 'Chưa có dữ liệu'}
           </div>
           <div className="chart-admin-stat-amount chart-admin-positive">
-            {revenueStats.highest?.total ? formatCurrency(revenueStats.highest.total) : '0 VND'}
+            {revenueStats.highest?.total ? revenueStats.highest.total.toLocaleString('vi-VN') + ' VND' : '0 VND'}
           </div>
           <div className="chart-admin-stat-sublabel">
             {revenueStats.highest?.orderCount || 0} đơn hàng
@@ -1239,7 +1254,7 @@ const Chart = () => {
             {revenueStats.lowest?.monthName || 'Chưa có dữ liệu'}
           </div>
           <div className="chart-admin-stat-amount chart-admin-negative">
-            {revenueStats.lowest?.total ? formatCurrency(revenueStats.lowest.total) : '0 VND'}
+            {revenueStats.lowest?.total ? revenueStats.lowest.total.toLocaleString('vi-VN') + ' VND' : '0 VND'}
           </div>
           <div className="chart-admin-stat-sublabel">
             {revenueStats.lowest?.orderCount || 0} đơn hàng
@@ -1249,10 +1264,10 @@ const Chart = () => {
         <div className="chart-admin-revenue-stat-card">
           <div className="chart-admin-stat-label">Doanh thu trung bình tháng/năm</div>
           <div className="chart-admin-stat-amount chart-admin-blue">
-            {formatCurrency(yearlyAverageRevenue)}
+            {revenueStats.average.toLocaleString('vi-VN')} VND
           </div>
           <div className="chart-admin-stat-sublabel">
-            {currentMonthName}: {formatCurrency(thisMonthRevenue)}
+            {currentMonthName}: {thisMonthRevenue.toLocaleString('vi-VN')} VND
           </div>
         </div>
       </div>
@@ -1352,7 +1367,7 @@ const Chart = () => {
               <span>Thời gian</span>
               <span>Giá trị</span>
             </div>
-            {getRecentOrders(9).map((order, index) => (
+            {getRecentOrders().map((order, index) => (
               <div 
                 key={`order-${order.id || order.order_id || index}`} 
                 className="recent-orders-row recent-orders-row-clickable"
