@@ -1,0 +1,410 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Models\User;
+use Cloudinary\Cloudinary;
+use App\Models\SupportChat;
+use Illuminate\Http\Request;
+use App\Events\SupportChatSent;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Models\SupportChatAttachment;
+use App\Models\SupportChatNotification;
+use Illuminate\Support\Facades\Validator;
+
+
+class ChatLiveController extends Controller
+{
+    //  user gửi tin nhắn (1 chiều)
+    public function sendMessage(Request $request)
+    {
+        $user = Auth::user();
+
+        if ($user->role !== 'customer') {
+            return response()->json(['message' => 'Bạn không có quyền gửi tin nhắn.'], 403);
+        }
+
+        // Validate: Cho phép gửi message, ảnh, hoặc cả hai. Nếu cả hai đều rỗng thì báo lỗi.
+        $request->validate([
+            'message' => 'nullable|string',
+            'attachments' => 'nullable',
+            'attachments.*' => 'file|mimes:jpg,jpeg,png,gif,svg,pdf,docx,txt|max:4096'
+        ]);
+
+        if (
+            (empty($request->message) || trim($request->message) === '')
+            && !$request->hasFile('attachments')
+        ) {
+            return response()->json(['message' => 'Tin nhắn hoặc ảnh không được để trống.'], 422);
+        }
+
+        $chat = SupportChat::create([
+            'customer_id' => $user->user_id,
+            'sender' => 'customer',
+            'message' => $request->message,
+            'sent_at' => now(),
+            'is_read' => false,
+        ]);
+
+        if ($request->hasFile('attachments')) {
+            $cloudinary = app(Cloudinary::class);
+            $files = $request->file('attachments');
+            if (!is_array($files)) {
+                $files = [$files];
+            }
+            foreach ($files as $file) {
+                try {
+                    $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
+                        'folder' => 'chat_attachments'
+                    ]);
+                    if (isset($result['secure_url'])) {
+                        SupportChatAttachment::create([
+                            'chat_id' => $chat->chat_id,
+                            'file_url' => $result['secure_url'],
+                            'file_type' => $file->getClientMimeType(),
+                        ]);
+                    } else {
+                        return response()->json(['message' => 'Upload file thất bại!'], 500);
+                    }
+                } catch (\Exception $e) {
+                    return response()->json(['message' => 'Upload file thất bại!', 'error' => $e->getMessage()], 500);
+                }
+            }
+        }
+
+        $staffList = User::whereIn('role', ['admin', 'sale'])->pluck('user_id');
+        foreach ($staffList as $staffId) {
+            SupportChatNotification::create([
+                'chat_id' => $chat->chat_id,
+                'user_id' => $staffId,
+                'is_read' => false,
+            ]);
+        }
+
+        broadcast(new SupportChatSent($chat->load('attachments')))->toOthers();
+
+        return response()->json([
+            'success' => true,
+            'chat' => $chat->load('attachments')
+        ]);
+    }
+
+
+    //  (admin/sale) trả lời theo customer_id
+    public function replyToCustomer(Request $request)
+    {
+        $staff = Auth::user();
+        if (!in_array($staff->role, ['admin', 'sale'])) {
+            return response()->json(['message' => 'Bạn không có quyền trả lời.'], 403);
+        }
+
+        $request->validate([
+            'customer_id' => 'required|exists:users,user_id',
+            'message' => 'nullable|string',
+            // Cho phép gửi 1 file hoặc nhiều file
+            'attachments' => 'nullable',
+            'attachments.*' => 'file|mimes:jpg,jpeg,png,gif,svg,pdf,docx,txt|max:4096',
+        ]);
+
+        if (
+            (empty($request->message) || trim($request->message) === '')
+            && !$request->hasFile('attachments')
+        ) {
+            return response()->json(['message' => 'Tin nhắn hoặc ảnh không được để trống.'], 422);
+        }
+
+        $chat = SupportChat::create([
+            'customer_id' => $request->customer_id,
+            'staff_id' => $staff->user_id,
+            'sender' => $staff->role,
+            'message' => $request->message,
+            'sent_at' => now(),
+            'is_read' => false,
+        ]);
+
+        if ($request->hasFile('attachments')) {
+            $cloudinary = app(Cloudinary::class);
+            $files = $request->file('attachments');
+            if (!is_array($files)) {
+                $files = [$files];
+            }
+            foreach ($files as $file) {
+                // Validate từng file nếu cần
+                $validator = Validator::make(['file' => $file], [
+                    'file' => 'file|mimes:jpg,jpeg,png,gif,svg,pdf,docx,txt|max:4096'
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(['message' => 'File không hợp lệ!'], 422);
+                }
+                try {
+                    $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
+                        'folder' => 'chat_attachments'
+                    ]);
+                    if (isset($result['secure_url'])) {
+                        SupportChatAttachment::create([
+                            'chat_id' => $chat->chat_id,
+                            'file_url' => $result['secure_url'],
+                            'file_type' => $file->getClientMimeType(),
+                        ]);
+                    } else {
+                        return response()->json(['message' => 'Upload file thất bại!'], 500);
+                    }
+                } catch (\Exception $e) {
+                    return response()->json(['message' => 'Upload file thất bại!', 'error' => $e->getMessage()], 500);
+                }
+            }
+        }
+
+        SupportChatNotification::create([
+            'chat_id' => $chat->chat_id,
+            'user_id' => $request->customer_id,
+            'is_read' => false,
+        ]);
+
+        broadcast(new SupportChatSent($chat->load('attachments')))->toOthers();
+
+        return response()->json([
+            'success' => true,
+            'chat' => $chat->load('attachments'),
+        ]);
+    }
+
+    // Lấy lịch sử giữa customer và staff (2 chiều)
+    public function getChatHistory($customerId)
+    {
+        $user = Auth::user();
+
+        //  Chỉ customer chính chủ hoặc nhân viên mới được xem
+        if ($user->role === 'customer' && $user->user_id != $customerId) {
+            return response()->json(['message' => 'Không được phép truy cập lịch sử này.'], 403);
+        }
+
+        //  Lấy toàn bộ tin nhắn liên quan đến customer này
+        $chats = SupportChat::with('attachments')
+            ->where('customer_id', $customerId)
+            ->orderBy('sent_at', 'asc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'chats' => $chats
+        ]);
+    }
+
+    //  Đếm số tin nhắn chưa đọc
+    public function getUnreadCount()
+    {
+        $userId = Auth::id();
+
+        $count = SupportChatNotification::where('user_id', $userId)
+            ->where('is_read', false)
+            ->count();
+
+        return response()->json([
+            'success' => true,
+            'unread_count' => $count
+        ]);
+    }
+
+    //  Đánh dấu một tin nhắn là đã đọc
+    public function markAsRead($userId)
+    {
+        // Xác định người này là staff hay customer
+        $isCustomer = Auth::user()->role === 'customer'; // Hoặc cách xác định khác tùy hệ thống của bạn
+
+        SupportChat::where($isCustomer ? 'customer_id' : 'staff_id', $userId)
+            ->where('sender', '!=', $userId) // Chỉ đánh dấu những tin nhắn không phải do chính người đó gửi
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        return response()->json(['success' => true]);
+    }
+
+
+    public function adminMarkAsRead($chatId)
+    {
+        $authUser = Auth::user();
+        $chat = SupportChat::findOrFail($chatId);
+
+        // Đảm bảo đây là cuộc chat của admin
+        if ($authUser->id != $chat->staff_id) {
+            return response()->json(['error' => 'Bạn không có quyền !!!'], 403);
+        }
+
+        // Chỉ đánh dấu tin của user là đã đọc
+        SupportChat::where('customer_id', $chat->customer_id)
+            ->where('sender', 'customer')
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        return response()->json(['success' => true]);
+    }
+
+    // Đánh dấu tất cả chat của customer là đã đọc
+    public function markAsReadUser($customerId)
+    {
+        $staff = Auth::user();
+
+        // Chỉ admin hoặc sale mới được thao tác
+        if (!in_array($staff->role, ['admin', 'sale'])) {
+            return response()->json([
+                'message' => 'Bạn không có quyền thực hiện hành động này.'
+            ], 403);
+        }
+
+        // Cập nhật tất cả thông báo chưa đọc của staff với customer này
+        SupportChatNotification::where('user_id', $staff->user_id)
+            ->whereIn('chat_id', function ($q) use ($customerId) {
+                $q->select('chat_id')
+                    ->from('support_chats')
+                    ->where('customer_id', $customerId);
+            })
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        // Lấy lại số lượng chưa đọc sau khi update (chắc chắn = 0)
+        $unreadCount = SupportChatNotification::where('user_id', $staff->user_id)
+            ->whereIn('chat_id', function ($q) use ($customerId) {
+                $q->select('chat_id')
+                    ->from('support_chats')
+                    ->where('customer_id', $customerId);
+            })
+            ->where('is_read', false)
+            ->count();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã đánh dấu là đã đọc',
+            'customer_id' => $customerId,
+            'unread_count' => $unreadCount,
+        ]);
+    }
+
+
+
+
+    // danh sách user nhắn tin cho admin và sale
+    public function getCustomersChatList()
+    {
+        $staff = Auth::user();
+
+        // Chỉ admin hoặc sale mới được xem
+        if (!in_array($staff->role, ['admin', 'sale'])) {
+            return response()->json(['message' => 'Bạn không có quyền truy cập danh sách này.'], 403);
+        }
+
+        // Lấy danh sách ID customer đã từng nhắn tin
+        $customerIds = SupportChat::where('sender', 'customer')
+            ->select('customer_id')
+            ->distinct()
+            ->pluck('customer_id');
+
+        // Lấy thông tin chi tiết và last chat
+        $customers = User::whereIn('user_id', $customerIds)
+            ->get()
+            ->map(function ($customer) use ($staff) {
+                // Load last chat kèm attachments
+                $lastChat = SupportChat::with('attachments')
+                    ->where('customer_id', $customer->user_id)
+                    ->orderBy('sent_at', 'desc')
+                    ->first();
+
+                // Lấy số lượng chưa đọc bằng whereIn subquery
+                $unreadCount = SupportChat::where('customer_id', $customer->user_id)
+                    ->where('sender', 'customer')
+                    ->whereDoesntHave('notifications', function ($q) {
+                        $q->where('is_read', true);
+                    })
+                    ->count();
+
+
+                // Xử lý last message
+                $lastMessage = '';
+                $lastImageUrl = null;
+                if ($lastChat) {
+                    if (!empty($lastChat->message)) {
+                        $lastMessage = ($lastChat->sender !== 'customer') ? 'Bạn: ' . $lastChat->message : $lastChat->message;
+                    } elseif ($lastChat->attachments->isNotEmpty()) {
+                        $lastMessage = 'Đã gửi một hình ảnh';
+                        $lastImageUrl = $lastChat->attachments->first()->file_url;
+                    }
+                }
+
+                return [
+                    'customer_id' => $customer->user_id,
+                    'role' => $customer->role,
+                    'customer_name' => $customer->username,
+                    'customer_full_name' => $customer->full_name,
+                    'avatar_url' => $customer->image_url,
+                    'last_message' => $lastMessage,
+                    'last_message_image' => $lastImageUrl,
+                    'last_message_time' => $lastChat->sent_at ?? null,
+                    'unread_count' => $unreadCount,
+                ];
+            })
+            ->sortByDesc('last_message_time')
+            ->values();
+
+        return response()->json([
+            'success' => true,
+            'customers' => $customers,
+        ]);
+    }
+
+
+    // đếm số tin nhắn chưa đọc theo từng id 
+    public function getUnreadCountByCustomerId($customerId)
+    {
+        $staff = Auth::user();
+
+        // Chỉ cho admin hoặc sale dùng
+        if (!in_array($staff->role, ['admin', 'sale'])) {
+            return response()->json(['message' => 'Bạn không có quyền truy cập.'], 403);
+        }
+
+        // Kiểm tra customer tồn tại
+        $customer = User::where('user_id', $customerId)->where('role', 'customer')->first();
+        if (!$customer) {
+            return response()->json(['message' => 'Customer không tồn tại.'], 404);
+        }
+
+        // Đếm số tin nhắn chưa đọc từ customer này gửi đến staff hiện tại
+        $unreadCount = SupportChatNotification::where('user_id', $staff->user_id)
+            ->where('is_read', false)
+            ->whereHas('chat', function ($query) use ($customerId) {
+                $query->where('customer_id', $customerId);
+            })
+            ->count();
+
+        return response()->json([
+            'success' => true,
+            'customer_id' => $customerId,
+            'unread_count' => $unreadCount
+        ]);
+    }
+
+    /**
+     * Lấy public_id từ URL Cloudinary
+     *
+     * @param string $url URL của ảnh Cloudinary
+     * @return string|null public_id hoặc null nếu không tìm thấy
+     */
+    private function getPublicIdFromUrl($url)
+    {
+        // URL Cloudinary có dạng: https://res.cloudinary.com/cloud_name/image/upload/v1234567890/folder/filename.jpg
+        if (empty($url)) {
+            return null;
+        }
+
+        // Tìm phần upload/ trong URL
+        $pattern = '/\/upload\/(?:v\d+\/)?(.+)$/';
+        if (preg_match($pattern, $url, $matches)) {
+            // Loại bỏ phần mở rộng của file
+            $publicId = preg_replace('/\.[^.]+$/', '', $matches[1]);
+            return $publicId;
+        }
+
+        return null;
+    }
+}

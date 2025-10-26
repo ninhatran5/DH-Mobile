@@ -1,0 +1,398 @@
+#progressbar li.return-order-step::before {
+  content: "\f0e2";
+  font-family: FontAwesome;
+  background-color: #ff7248 !important;
+  color: white;
+}
+
+#progressbar li.return-order-step.active::after {
+  background-color: #ff7248 !important;
+}
+
+#progressbar li.return-order-step .step-label {
+  color: #ff7248;
+  font-weight: 500;
+}
+body {
+  color: #000;
+  overflow-x: hidden;
+  height: 100%;
+  background-color: #8c9eff;
+  background-repeat: no-repeat;
+}
+
+.card_order_detail {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05) !important;
+}
+.payment-paid {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.payment-unpaid {
+  color: #dc3545;
+  font-weight: bold;
+}
+.top {
+  padding-top: 40px;
+  padding-left: 13% !important;
+  padding-right: 13% !important;
+}
+.total_before_discount {
+  font-size: 13px;
+  text-decoration: line-through;
+  margin-top: 1px;
+}
+/*Icon progressbar*/
+#progressbar {
+  margin: 30px 0;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+  flex-wrap: wrap;
+  counter-reset: step;
+  position: relative;
+  color: #455a64;
+}
+
+#progressbar li {
+  flex: 1 1 auto;
+  position: relative;
+  min-width: 120px;
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+#progressbar li::before {
+  content: "\f10c";
+  font-family: FontAwesome;
+  display: inline-block;
+  width: 42px;
+  height: 42px;
+  line-height: 42px;
+  font-size: 20px;
+  background-color: #c5cae9;
+  color: white;
+  border-radius: 50%;
+  z-index: 2;
+  position: relative;
+}
+
+#progressbar li::after {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  width: 100%;
+  height: 6px;
+  background-color: #c5cae9;
+  z-index: 1;
+}
+
+#progressbar li:last-child::after {
+  display: none;
+}
+
+/* Active bước */
+#progressbar li.active::before {
+  content: "\f00c";
+  background-color: #651fff;
+}
+
+#progressbar li.active::after {
+  background-color: #651fff;
+}
+
+/* Label tên bước */
+#progressbar li .step-label {
+  margin-top: 8px;
+  display: block;
+  font-size: 13px;
+  text-align: center;
+  color: #333;
+  position: static;
+  width: auto;
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 0;
+  align-self: center;
+}
+
+/* Responsive chỉnh sửa */
+@media (max-width: 768px) {
+  .top {
+    padding-left: 5% !important;
+    padding-right: 5% !important;
+  }
+
+  #progressbar {
+    padding: 0 10px;
+  }
+
+  #progressbar li {
+    flex: 0 0 33.333%;
+    margin-bottom: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  #progressbar li::after {
+    width: calc(100% - 21px);
+    left: calc(50% + 21px);
+  }
+
+  #progressbar li:nth-child(3n)::after {
+    display: none;
+  }
+
+  #progressbar li .step-label {
+    font-size: 12px;
+    padding: 0 5px;
+    text-align: center;
+    position: static;
+    width: auto;
+    left: 0;
+    margin-left: 0;
+    margin-right: 0;
+    align-self: center;
+  }
+
+  .card {
+    margin: 0 10px 90px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  #progressbar li {
+    flex: 0 0 50%;
+  }
+
+  #progressbar li:nth-child(3n)::after {
+    display: block;
+  }
+
+  #progressbar li:nth-child(2n)::after {
+    display: none;
+  }
+}
+.icon {
+  width: 60px;
+  height: 60px;
+  margin-right: 15px;
+}
+
+.icon-content {
+  padding-bottom: 20px;
+}
+
+@media screen and (max-width: 992px) {
+  .icon-content {
+    width: 50%;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(80, 0, 255, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(80, 0, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(80, 0, 255, 0);
+  }
+}
+
+.step0.current::before {
+  animation: pulse 1.2s infinite;
+}
+
+#progressbar li.canceled::before {
+  content: "\f00d";
+  font-family: FontAwesome;
+  background-color: #f44336 !important;
+  color: white;
+}
+
+#progressbar li.canceled.active::after {
+  background-color: #f44336 !important;
+}
+
+#progressbar li.canceled .step-label {
+  color: #f44336;
+  font-weight: 500;
+}
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  background: orange;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-weight: bold;
+  font-size: 15px;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px #1677ff22;
+  text-decoration: none;
+  margin-right: 12px;
+  gap: 8px;
+}
+
+.btn-back:hover,
+.btn-back:focus {
+  background: rgb(235, 152, 0);
+  color: white;
+  text-decoration: none;
+  outline: none;
+}
+
+.btn-back svg {
+  font-size: 1.2em;
+  margin-right: -5px;
+}
+.btn-cancel-order {
+  background: #ff4d4f;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 28px;
+  font-weight: 600;
+  font-size: 15px;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px #ff4d4f22;
+  margin-left: 12px;
+}
+
+.btn-cancel-order:hover,
+.btn-cancel-order:focus {
+  background: #d9363e;
+  color: #fff;
+  outline: none;
+}
+
+.btn-return-order {
+  background: #0075cf;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 28px;
+  font-weight: 600;
+  font-size: 15px;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px #ff4d4f22;
+  margin-left: 12px;
+}
+
+.btn-return-order:hover,
+.btn-return-order:focus {
+  background: #045ea2;
+  color: #fff;
+  outline: none;
+}
+
+.btn-review-order {
+  background: #00cf19;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 28px;
+  font-weight: 600;
+  font-size: 15px;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px #ff4d4f22;
+  margin-left: 12px;
+}
+
+.btn-review-order:hover,
+.btn-review-order:focus {
+  background: #00a313;
+  color: #fff;
+  outline: none;
+}
+
+/* Realtime update animations */
+@keyframes realtimeUpdate {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(255, 136, 0, 0);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 136, 0, 0.6);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(255, 136, 0, 0);
+  }
+}
+
+@keyframes statusHighlight {
+  0% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: rgba(255, 136, 0, 0.1);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.order-status-pending,
+.order-status-confirmed,
+.order-status-shipping,
+.order-status-shipped,
+.order-status-delivered {
+  transition: all 0.3s ease;
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+
+.realtime-update-received {
+  animation: realtimeUpdate 1s ease-in-out;
+}
+
+.status-updated {
+  animation: statusHighlight 2s ease-in-out;
+}
+
+/* Progress bar animation for realtime updates */
+#progressbar li.realtime-updated {
+  animation: realtimeUpdate 1.5s ease-in-out;
+}
+
+#progressbar li.realtime-updated:before {
+  animation: statusHighlight 2s ease-in-out;
+}
+
+/* Notification styles */
+.realtime-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #ff8800, #ffaa44);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(255, 136, 0, 0.3);
+  z-index: 9999;
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

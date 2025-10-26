@@ -1,0 +1,547 @@
+import { useRoutes } from "react-router-dom";
+import "../src/assets/css/style.css";
+import Home from "./pages/Home";
+import Layout from "./layouts/Client";
+import Product from "./pages/Product";
+import Blog from "./pages/Blog";
+import Introduce from "./pages/Introduce";
+import ErrorPage from "./pages/Error";
+import BlogDetail from "./pages/BlogDetail";
+import ShoppingCart from "./pages/ShoppingCart";
+import Guarantee from "./pages/Guarantee";
+import ReturnPolicy from "./pages/ReturnPolicy";
+import DeliveryPolicy from "./pages/DeliveryPolicy";
+import CheckOut from "./pages/CheckOut";
+import ThanksYou from "./pages/ThanksYou";
+import Voucher from "./pages/Voucher";
+import CheckImei from "./pages/CheckImei";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ChangePassword from "./pages/ChangePassword";
+import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
+import ProductDetail from "./pages/ProductDetail";
+import HomeAdmin from "./pages/admin/HomeAdmin";
+import Chart from "./pages/admin/Chart";
+import AddProduct from "./pages/admin/AddProduct";
+import ProductList from "./pages/admin/ProductList";
+import Categories from "./pages/admin/Categories";
+import AddCategories from "./pages/admin/AddCategory";
+import ChatBotAdmin from "./pages/admin/Chatbot";
+import AcccountList from "./pages/admin/AccountsList";
+import FavoriteProducts from "./pages/FavoriteProducts";
+import OrderTable from "./components/OrderTable";
+import OrderDetail from "./components/OrderDetail";
+import AddAccount from "./pages/admin/AddAccount";
+import OrdersList from "./pages/admin/OrdersList";
+import OrdersCompleted from "./pages/admin/OrdersCompleted";
+import OrdersCancelled from "./pages/admin/OrdersCancelled";
+import VoucherList from "./pages/admin/VoucherList";
+import AddVoucher from "./pages/admin/AddVoucher";
+import ListBanner from "./pages/admin/ListBanner";
+import ArticlesList from "./pages/admin/ArticlesList";
+import ShowProduct from "./pages/admin/ShowProduct";
+import ScrollToTop from "../utils/ScrollToTop";
+import RequireAuth from "./components/RequireAuth";
+import ProtectedRoute from "./pages/admin/ProtectedRoute";
+import AdminLogin from "./pages/admin/AdminLogin";
+import PublicRouteAdmin from "./components/PublicRouteAdmin";
+import EditBanner from "./pages/admin/EditBanner";
+import EditCategory from "./pages/admin/EditCategories";
+import Attributes from "./pages/admin/Attribute";
+import Addattribute from "./pages/admin/AddAttributes";
+import EditAttribute from "./pages/admin/EditAttributes";
+import AddAttributevalues from "./pages/admin/AddAttributevalues";
+import EditAttributevalues from "./pages/admin/EditAttributevalues";
+import MyDiscountCode from "./pages/MyDiscountCode";
+import EditProduct from "./pages/admin/EditProducts";
+import DetailAccount from "./pages/admin/DetailAcccount";
+import AddVariant from "./pages/admin/AddVariant";
+import EditVoucher from "./pages/admin/EditVoucher";
+import EditVariant from "./pages/admin/UpdateVariant";
+import PaymentFailed from "./pages/PaymentFailed";
+import WaitingForPayment from "./pages/WaitingForPayment";
+import AdminOrderDetail from "./pages/admin/OrderDetail";
+import ChatLiveAdmin from "./pages/admin/ChatLive";
+import CommentsList from "./pages/admin/CommentsList";
+import AddBlog from "./pages/admin/AddBlog";
+import RequireNotSaleRole from "./components/RequireNotSaleRole";
+import AdminRouteRedirector from "./components/AdminRouteRedirector";
+import Membership from "./pages/admin/AdminMembership";
+import MemberRank from "./pages/MemberRank";
+import UpdateBlog from "./pages/admin/UpdateBlog";
+import BlogDetailAdmin from "./pages/admin/BlogDetail";
+import TrashCan from "./pages/admin/TrashCan";
+import AdminDetailAcccount from "./pages/admin/AdminDetailAcccount.jsx";
+import DetailOrderReturn from "./pages/admin/DetailOrderReturn.jsx";
+import TrashProduct from "./components/TrashProduct.jsx";
+import WithdrawMoney from "./pages/admin/WithdrawMoney.jsx";
+import TrashCategories from "./components/TrashCategories.jsx";
+import AddVoucherPercentPage from "./components/Adminvoucher.jsx";
+import EditAccount from "./components/EditAcccount.jsx";
+import TrashVoucherList from "./components/TrashVoucherList.jsx";
+import BannerPopup from "./pages/BannerPopup.jsx";
+const withLayoutClient = (Component, requireAuth = false) => {
+  const wrappedComponent = (
+    <Layout>
+      <Component />
+    </Layout>
+  );
+
+  return requireAuth ? (
+    <RequireAuth>{wrappedComponent}</RequireAuth>
+  ) : (
+    wrappedComponent
+  );
+};
+
+const routerConfig = [
+  {
+    path: "/",
+    element: withLayoutClient(Home),
+  },
+  {
+    path: "/products",
+    element: withLayoutClient(Product),
+  },
+  {
+    path: "/blogs",
+    element: withLayoutClient(Blog),
+  },
+  {
+    path: "/introduce",
+    element: withLayoutClient(Introduce),
+  },
+  {
+    path: "/blog-detail/:id",
+    element: withLayoutClient(BlogDetail),
+  },
+  {
+    path: "/shopping-cart",
+    element: withLayoutClient(ShoppingCart, true),
+  },
+  {
+    path: "/checkout",
+    element: withLayoutClient(CheckOut, true),
+  },
+  {
+    path: "/thank-you",
+    element: withLayoutClient(ThanksYou, true),
+  },
+  {
+    path: "/payment-failed",
+    element: withLayoutClient(PaymentFailed, true),
+  },
+  {
+    path: "/vouchers",
+    element: withLayoutClient(Voucher),
+  },
+  {
+    path: "/my-discount-code",
+    element: withLayoutClient(MyDiscountCode, true),
+  },
+  {
+    path: "/check-imei",
+    element: withLayoutClient(CheckImei),
+  },
+  {
+    path: "/warranty-policy",
+    element: withLayoutClient(Guarantee),
+  },
+  {
+    path: "/return-policy",
+    element: withLayoutClient(ReturnPolicy),
+  },
+  {
+    path: "/delivery-policy",
+    element: withLayoutClient(DeliveryPolicy),
+  },
+  {
+    path: "/waiting-for-payment",
+    element: withLayoutClient(WaitingForPayment),
+  },
+  {
+    path: "/profile/:id",
+    element: withLayoutClient(Profile, true),
+  },
+  {
+    path: "/edit-profile/:id",
+    element: withLayoutClient(EditProfile, true),
+  },
+  {
+    path: "/product-detail/:id",
+    element: withLayoutClient(ProductDetail),
+  },
+  {
+    path: "/favorite-products",
+    element: withLayoutClient(FavoriteProducts, true),
+  },
+  {
+    path: "/order-history",
+    element: withLayoutClient(OrderTable, true),
+  },
+  {
+    path: "/order-detail/:id",
+    element: withLayoutClient(OrderDetail, true),
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
+  },
+  {
+    path: "/change-password",
+    element: <ChangePassword />,
+  },
+  {
+    path: "/member-rank",
+    element: withLayoutClient(MemberRank, true),
+  },
+
+  {
+    path: "/admin",
+    element: (
+      <ProtectedRoute>
+        <HomeAdmin />
+      </ProtectedRoute>
+    ),
+
+    children: [
+      {
+        path: "",
+        element: <AdminRouteRedirector />,
+      },
+      {
+        path: "product",
+        element: <ProductList />,
+      },
+      {
+        path: "chart",
+        element: (
+          <RequireNotSaleRole>
+            <Chart />
+          </RequireNotSaleRole>
+        ),
+      },
+      
+      {
+        path: "product/:id",
+        element: <ShowProduct />,
+      },
+      {
+        path: "addproduct",
+        element: (
+          <RequireNotSaleRole>
+            <AddProduct />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "categories",
+        element: (
+          <RequireNotSaleRole>
+            <Categories />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "trashcategories",
+        element: (
+          <RequireNotSaleRole>
+            <TrashCategories />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "Addcategories",
+        element: (
+          <RequireNotSaleRole>
+            <AddCategories />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "chatbot",
+        element: (
+            <ChatBotAdmin />
+        ),
+      },
+      {
+        path: "chatlive",
+        element: <ChatLiveAdmin />,
+      },
+      {
+        path: "trashproduct",
+        element: <TrashProduct />,
+      },
+      {
+        path: "accounts",
+        element: (
+          <RequireNotSaleRole>
+            <AcccountList />
+          </RequireNotSaleRole>
+        ),
+      },
+ {
+        path: "Editaccounts/:id",
+        element: (
+            <EditAccount/>
+        ),
+      },
+      {
+        path: "addaccount",
+        element: (
+          <RequireNotSaleRole>
+            <AddAccount />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "orders",
+        element: (
+          <RequireNotSaleRole>
+            <OrdersList />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "orders-completed",
+        element: (
+          <RequireNotSaleRole>
+            <OrdersCompleted />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "orders-cancelled",
+        element: (
+          <RequireNotSaleRole>
+            <OrdersCancelled />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "vouchers",
+        element: (
+          <RequireNotSaleRole>
+            <VoucherList />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "trashvouchers",
+        element: (
+          <RequireNotSaleRole>
+            <TrashVoucherList/>
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "detailorderreturn/:returnId",
+        element: <DetailOrderReturn />,
+      },
+
+      {
+        path: "addvoucher",
+        element: (
+          <RequireNotSaleRole>
+            <AddVoucher />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "addvoucherpercent",
+        element: (
+          <RequireNotSaleRole>
+            <AddVoucherPercentPage/>
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "banners",
+        element: <ListBanner />,
+      },
+      {
+        path: "editbanner/:id",
+        element: <EditBanner />,
+      },
+      {
+        path: "articles",
+        element: <ArticlesList />,
+      },
+      {
+        path: "comments",
+        element: <CommentsList />,
+      },
+      {
+        path: "EditCategories/:id",
+        element: (
+          <RequireNotSaleRole>
+            <EditCategory />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "attribute",
+        element: (
+          <RequireNotSaleRole>
+            <Attributes />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "Addattribute",
+        element: (
+          <RequireNotSaleRole>
+            <Addattribute />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "blog/add-blog",
+        element: <AddBlog />,
+      },
+      {
+        path: "blog/update-blog/:id",
+        element: <UpdateBlog />,
+      },
+      {
+        path: "blog/blog-detail-admin/:id",
+        element: <BlogDetailAdmin />,
+      },
+      {
+        path: "Editattribute/:id",
+        element: (
+          <RequireNotSaleRole>
+            <EditAttribute />,
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "AddAttributevalues/:attribute_id",
+        element: (
+          <RequireNotSaleRole>
+            <AddAttributevalues />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "EditAttributevalues/:value_id",
+        element: (
+          <RequireNotSaleRole>
+            <EditAttributevalues />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "EditProduct/:id",
+        element: (
+          <RequireNotSaleRole>
+            <EditProduct />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "detailaccount/:id",
+        element: (
+          <RequireNotSaleRole>
+            <DetailAccount />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "addvariant/:product_id",
+        element: (
+          <RequireNotSaleRole>
+            <AddVariant />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "EditVoucher/:id",
+        element: (
+          <RequireNotSaleRole>
+            <EditVoucher />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "variants/update/:variant_id",
+        element: (
+          <RequireNotSaleRole>
+            <EditVariant />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "orderdetail/:orderId",
+        element: (
+          <RequireNotSaleRole>
+            <AdminOrderDetail />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "detailacccount/:id",
+        element: (
+            <AdminDetailAcccount />
+        ),
+      },
+      {
+        path: "membership",
+        element: (
+            <Membership />
+        ),
+      },
+      {
+        path: "trash-can",
+        element: (
+          <RequireNotSaleRole>
+            <TrashCan />
+          </RequireNotSaleRole>
+        ),
+      },
+      {
+        path: "withdraw-money",
+        element: (
+          <RequireNotSaleRole>
+            <WithdrawMoney />
+          </RequireNotSaleRole>
+        ),
+      },
+    ],
+  },
+  {
+    path: "/AdminLogin",
+    element: (
+      <PublicRouteAdmin>
+        <AdminLogin />
+      </PublicRouteAdmin>
+    ),
+  },
+  {
+    path: "*",
+    element: <ErrorPage />,
+  },
+];
+
+function App() {
+  const routers = useRoutes(routerConfig);
+  return (
+    <>
+      <ScrollToTop />
+      {routers}
+      <BannerPopup />
+    </>
+  );
+}
+
+export default App;

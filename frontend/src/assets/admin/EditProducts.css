@@ -1,0 +1,993 @@
+.admineditproduct-container {
+  padding: 20px;
+}
+
+.admineditproduct-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.admineditproduct-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.admineditproduct-back-link {
+  display: flex;
+  align-items: center;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.admineditproduct-back-link i {
+  margin-right: 5px;
+}
+
+.admineditproduct-content {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.admineditproduct-form,
+.specification {
+  flex: 1;
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admineditproduct-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admineditproduct-form-group label {
+  font-weight: 500;
+}
+
+.admineditproduct-form-group input[type="text"],
+.admineditproduct-form-group input[type="number"],
+.admineditproduct-form-group select,
+.admineditproduct-form-group textarea {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.admineditproduct-form-group textarea {
+  resize: vertical;
+}
+
+.admineditproduct-file-input {
+  padding: 8px;
+}
+
+.admineditproduct-image-preview {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.admineditproduct-image-preview img {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.specification h4 {
+  margin: 0 0 8px;
+}
+
+/* --- Bảng thông số kỹ thuật & biến thể nhỏ gọn --- */
+.specification-row {
+  display: flex;
+  gap: 6px;          /* giảm khoảng cách */
+  flex-wrap: wrap;   /* cho phép xuống dòng khi cần */
+}
+
+.spec-input {
+  flex: 1 1 120px;   /* min-width 120px, có thể co giãn */
+  padding: 4px 6px;  /* padding nhỏ gọn */
+  font-size: 14px;   /* font size nhỏ */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-width: 80px;
+  box-sizing: border-box;
+}
+
+.specification button {
+  align-self: flex-start;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-primary1 {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  color: red;
+}
+/* Container bao quanh danh sách biến thể */
+.variant-list-container {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #ccc;
+}
+
+/* Khung danh sách dạng scroll ngang */
+.variant-list {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  padding: 10px 0;
+}
+
+/* Card từng biến thể */
+.variant-card {
+  min-width: 300px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  background-color: #f9f9f9;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+/* Ảnh thumbnail biến thể */
+.variant-card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-top: 8px;
+}
+
+/* Khung chứa nút sửa/xoá */
+.variant-card-buttons {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+/* Nút sửa */
+.variant-card-buttons button.edit-btn {
+  flex: 1;
+  background-color: #f0ad4e;
+  border: none;
+  padding: 6px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Nút xoá */
+.variant-card-buttons button.delete-btn {
+  flex: 1;
+  background-color: #d9534f;
+  border: none;
+  padding: 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+}
+
+/* Scroll bar đẹp hơn (tuỳ chọn) */
+.variant-list::-webkit-scrollbar {
+  height: 8px;
+}
+
+.variant-list::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+
+.variant-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+/* ===== ENHANCED FILE UPLOAD STYLES ===== */
+.image-upload-section {
+  margin: 20px 0;
+}
+
+.upload-area {
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  background-color: #f9fafb;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-area:hover {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+  transform: scale(1.01);
+}
+
+.upload-area.drag-active {
+  border-color: #3b82f6;
+  background-color: #dbeafe;
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.upload-area.has-image {
+  padding: 0;
+  border: none;
+  background: transparent;
+  min-height: auto;
+}
+
+/* Image Preview */
+.image-preview-container {
+  position: relative;
+  max-width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.image-preview-container:hover .image-overlay {
+  opacity: 1;
+}
+
+.btn-change-image:hover {
+  background-color: #2563eb !important;
+  transform: translateY(-1px);
+}
+
+.btn-remove-image:hover {
+  background-color: #dc2626 !important;
+  transform: translateY(-1px);
+}
+
+.btn-select-file:hover {
+  background-color: #2563eb !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* ===== CKEDITOR STYLES ===== */
+.ckeditor-wrapper {
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.ckeditor-wrapper:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.ck-editor__editable {
+  min-height: 200px !important;
+  padding: 16px !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+
+.ck-toolbar {
+  border-bottom: 1px solid #e5e7eb !important;
+  background-color: #f9fafb !important;
+}
+
+.ck-button {
+  padding: 8px !important;
+}
+
+.ck-button:hover {
+  background-color: #eff6ff !important;
+}
+
+.ck-button.ck-on {
+  background-color: #dbeafe !important;
+  color: #1e40af !important;
+}
+
+/* ===== FORM INPUT IMPROVEMENTS ===== */
+.admineditproduct-form input[type="text"]:focus,
+.admineditproduct-form input[type="number"]:focus,
+.admineditproduct-form select:focus {
+  outline: none !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+.admineditproduct-form label {
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* ===== RESPONSIVE IMPROVEMENTS ===== */
+@media (max-width: 768px) {
+  .upload-area {
+    padding: 30px 15px;
+    min-height: 150px;
+  }
+  
+  .image-overlay .d-flex {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  
+  .btn-change-image,
+  .btn-remove-image {
+    justify-content: center;
+    width: 120px;
+  }
+  
+  .ck-editor__editable {
+    min-height: 150px !important;
+    padding: 12px !important;
+  }
+}
+
+/* ===== BUTTON ENHANCEMENTS ===== */
+.btn {
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-success1 {
+  background:#0804e3;
+  border: none;
+}
+
+
+.btn-warning {
+  background: linear-gradient(45deg, #f59e0b, #d97706);
+  border: none;
+}
+
+/* ===== LOADING STATES ===== */
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ===== ANIMATION IMPROVEMENTS ===== */
+.card {
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.variant-item:hover {
+  background-color: #f8fafc !important;
+}
+/* ===== RESPONSIVE VARIANTS SECTION ===== */
+.variants-list {
+  border: 1px solid #e1e1e1;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.variant-display {
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.variant-display:hover {
+  background-color: #f8fafc;
+}
+
+.variant-item {
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.3s ease;
+}
+
+.variant-item:last-child {
+  border-bottom: none;
+}
+
+.variant-item:hover {
+  background-color: #f8fafc;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Variant Layout */
+.variant-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  flex-wrap: wrap;
+}
+
+.variant-image {
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: linear-gradient(45deg, #f8fafc, #e2e8f0);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.variant-image:hover {
+  transform: scale(1.05);
+}
+
+.variant-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.variant-info {
+  flex: 1;
+  min-width: 200px;
+}
+
+.variant-sku {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.variant-sku::before {
+  content: "🏷️";
+  font-size: 14px;
+}
+
+.variant-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.variant-price {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.price1-current1 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #059669;
+}
+
+.price-original {
+  font-size: 14px;
+  color: #64748b;
+  text-decoration: line-through;
+}
+
+.variant-stock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.variant-stock::before {
+  content: "📦";
+  font-size: 12px;
+}
+
+.variant-attributes {
+  margin-top: 12px;
+}
+
+.attributes-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.attribute-tag {
+  padding: 6px 12px;
+  background: linear-gradient(45deg, #e0f2fe, #b3e5fc);
+  border: 1px solid #81d4fa;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #0277bd;
+  transition: all 0.3s ease;
+}
+
+.attribute-tag:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(2, 119, 189, 0.2);
+}
+
+.variant-status {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-warning {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fbbf24;
+}
+
+.status-error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #f87171;
+}
+
+.status-loading {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #3b82f6;
+}
+
+.variant-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.action-btn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.btn-edit {
+  background: linear-gradient(45deg, #fbbf24, #f59e0b);
+  color: #92400e;
+  border-color: #fbbf24;
+}
+
+.btn-delete {
+  background: linear-gradient(45deg, #ef4444, #dc2626);
+  color: white;
+  border-color: #ef4444;
+}
+
+.btn-delete:disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  border-color: #d1d5db;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===== ENHANCED DESCRIPTION SECTION ===== */
+.description-section {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 2px solid #f1f5f9;
+  transition: all 0.3s ease;
+  margin: 24px 0;
+}
+
+.description-section:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15);
+  transform: translateY(-2px);
+}
+
+.description-section label {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.description-section label::before {
+  content: "📝";
+  font-size: 20px;
+}
+
+.ckeditor-wrapper {
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  background: #ffffff;
+}
+
+.ckeditor-wrapper:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+  transform: scale(1.01);
+}
+
+/* Enhanced CKEditor Styling */
+.ck.ck-editor {
+  border: none !important;
+}
+
+.ck.ck-editor__main > .ck-editor__editable {
+  min-height: 300px !important;
+  padding: 20px !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  color: #374151 !important;
+  background: #ffffff !important;
+}
+
+.ck.ck-toolbar {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+  border: none !important;
+  border-bottom: 2px solid #e2e8f0 !important;
+  padding: 12px 16px !important;
+}
+
+.ck.ck-toolbar .ck-toolbar__items {
+  gap: 4px !important;
+}
+
+.ck.ck-button {
+  border-radius: 8px !important;
+  padding: 8px 10px !important;
+  transition: all 0.2s ease !important;
+}
+
+.ck.ck-button:hover {
+  background: #e0f2fe !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.ck.ck-button.ck-on {
+  background: linear-gradient(45deg, #3b82f6, #2563eb) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+}
+
+.ck.ck-dropdown__arrow {
+  color: #64748b !important;
+}
+
+.description-help-text {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #64748b;
+  font-style: italic;
+  text-align: center;
+  padding: 8px 16px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border-left: 4px solid #3b82f6;
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+
+/* Large Desktop */
+@media (min-width: 1200px) {
+  .variant-content {
+    gap: 24px;
+    padding: 24px;
+  }
+  
+  .variant-image {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .variant-details {
+    gap: 24px;
+  }
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  .variant-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .variant-image {
+    width: 80px;
+    height: 80px;
+    align-self: center;
+  }
+  
+  .variant-info {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .variant-details {
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .variant-actions {
+    width: 100%;
+    justify-content: center;
+    margin-left: 0;
+  }
+  
+  .action-btn {
+    flex: 1;
+    justify-content: center;
+    max-width: 140px;
+  }
+  
+  .attributes-container {
+    justify-content: center;
+  }
+  
+  .variant-status {
+    justify-content: center;
+  }
+  
+  /* Description responsive */
+  .description-section {
+    padding: 16px;
+    margin: 16px 0;
+  }
+  
+  .ck.ck-editor__main > .ck-editor__editable {
+    min-height: 200px !important;
+    padding: 16px !important;
+    font-size: 14px !important;
+  }
+  
+  .ck.ck-toolbar {
+    padding: 8px 12px !important;
+  }
+  
+  .ck.ck-button {
+    padding: 6px 8px !important;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .variant-content {
+    padding: 12px;
+  }
+  
+  .variant-image {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .variant-sku {
+    font-size: 14px;
+  }
+  
+  .price-current {
+    font-size: 16px;
+  }
+  
+  .variant-details {
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+  
+  .variant-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .action-btn {
+    max-width: none;
+    width: 100%;
+  }
+  
+  .attribute-tag {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+  
+  /* Description mobile */
+  .description-section {
+    padding: 12px;
+    border-radius: 12px;
+  }
+  
+  .description-section label {
+    font-size: 16px;
+  }
+  
+  .ck.ck-editor__main > .ck-editor__editable {
+    min-height: 150px !important;
+    padding: 12px !important;
+    font-size: 13px !important;
+  }
+  
+  .description-help-text {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+}
+
+/* ===== LOADING AND ANIMATION ENHANCEMENTS ===== */
+@keyframes shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+.loading-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 400% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+/* ===== ACCESSIBILITY IMPROVEMENTS ===== */
+.action-btn:focus {
+  outline: 3px solid rgba(59, 130, 246, 0.5);
+  outline-offset: 2px;
+}
+
+.variant-display:focus-within {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  border-radius: 8px;
+}
+
+/* ===== DARK MODE SUPPORT (Optional) ===== */
+@media (prefers-color-scheme: dark) {
+  .variant-display {
+    background-color: #1f2937;
+    color: #f9fafb;
+  }
+  
+  .variant-sku {
+    color: #e5e7eb;
+  }
+  
+  .description-section {
+    background: #1f2937;
+    border-color: #374151;
+  }
+  
+  .ck.ck-editor__main > .ck-editor__editable {
+    background: #1f2937 !important;
+    color: #f9fafb !important;
+  }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .variant-actions,
+  .description-help-text {
+    display: none !important;
+  }
+  
+  .variant-content {
+    break-inside: avoid;
+    padding: 8px;
+  }
+  
+  .description-section {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+}
+.updateproduct1{
+  background-color: #007bff;
+  color: white;
+  border-radius: 15px;
+}
+/* CSS hỗ trợ alignment */
+.ck-content .text-left {
+  text-align: left !important;
+}
+
+.ck-content .text-center {
+  text-align: center !important;
+}
+
+.ck-content .text-right {
+  text-align: right !important;
+}
+
+.ck-content .text-justify {
+  text-align: justify !important;
+}
+

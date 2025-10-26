@@ -1,0 +1,160 @@
+.icon-circle {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 20px;
+  height: 20px;
+  gap: 5px;
+  display: flex;
+  border-radius: 50%;
+  background-color: #f5f5f5;
+  color: #666;
+  cursor: pointer;
+  margin-right: 4px;
+  font-size: 9px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: background 0.18s, color 0.18s, border 0.18s, transform 0.13s;
+}
+
+.icon-circle:last-child {
+  margin-right: 0;
+}
+
+.icon-circle:hover {
+  background-color: #ffeaea;
+  color: #e40303;
+  border-color: #e40303;
+  transform: scale(1.08);
+}
+
+.icon-circle.icon-danger {
+  background-color: #ffeaea;
+  color: #e40303;
+  border-color: #ffd6d6;
+}
+.icon-circle.icon-danger:hover {
+  background-color: #fff0f0;
+  color: #b00020;
+  border-color: #e40303;
+}
+
+@media (max-width: 768px) {
+  .icon-circle {
+    width: 18px;
+    height: 18px;
+    font-size: 11px;
+    margin-right: 2px;
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Popup filter trạng thái đơn hàng - độc nhất */
+.order-table-filter-popup {
+  position: absolute;
+  right: 100px;
+  top: -170%;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 32px rgba(0, 0, 0, 0.13);
+  padding: 22px 28px 18px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  z-index: 100;
+  min-width: 260px;
+  border: 1px solid #eee;
+  animation: fadeIn 0.18s;
+  transition: opacity 0.18s;
+}
+
+.order-table-filter-title {
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #e40303;
+  font-size: 17px;
+}
+
+.order-table-filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.order-table-filter-btn {
+  padding: 7px 16px; /* Giảm padding */
+  border-radius: 6px; /* Giảm border-radius */
+  border: 1.5px solid #e40303;
+  background: #fff;
+  color: #e40303;
+  font-weight: 600;
+  font-size: 14px; /* Giảm font-size */
+  cursor: pointer;
+  transition: all 0.18s;
+  min-width: 80px; /* Giảm min-width */
+}
+.order-table-filter-btn.active {
+  background: #e40303;
+  color: #fff;
+}
+.order-status-pending {
+  color: #3300ff; /* cam */
+  font-weight: bold;
+}
+.order-status-confirmed {
+  color: #2196f3; /* xanh dương */
+  font-weight: bold;
+}
+.order-status-shipping {
+  color: #00bcd4; /* xanh cyan */
+  font-weight: bold;
+}
+.order-status-shipped {
+  color: #4caf50; /* xanh lá */
+  font-weight: bold;
+}
+.order-status-delivered {
+  color: #2e7d32; /* xanh đậm */
+  font-weight: bold;
+}
+.order-status-canceled {
+  color: #e40303; /* đỏ tươi */
+  font-weight: bold;
+}
+.order-status-default {
+  color: #757575;
+  font-weight: bold;
+}
+.order-status-return-requested {
+  color: #ff9800; /* cam nổi bật */
+  font-weight: bold;
+}
+.order-status-refunded {
+  color: #009688; /* xanh ngọc */
+  font-weight: bold;
+}
+.order-status-return-refund {
+  color: #ff5722; /* cam đậm hoặc chọn màu bạn thích */
+  font-weight: bold;
+}
+.order-status-return-approved {
+  color: #009688; /* xanh ngọc */
+  font-weight: bold;
+}
+.order-status-return-processing {
+  color: #9822ff; /* cam đậm hoặc chọn màu bạn thích */
+  font-weight: bold;
+}
+.order-status-return-rejected {
+  color: #d32f2f; /* đỏ đậm */
+  font-weight: bold;
+}

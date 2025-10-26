@@ -1,0 +1,50 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use \Illuminate\Database\Eloquent\SoftDeletes;
+
+class Product extends Model
+{
+    //
+    use SoftDeletes;
+    protected $table = 'products';
+    protected $primaryKey = 'product_id';
+    protected $fillable = [
+        'name',
+        'category_id',
+        'price',
+        'price_original',
+        'description',
+        'image_url',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id', 'category_id')->select(['category_id', 'name']);
+    }
+    public function productVariants()
+    {
+        return $this->hasMany(ProductVariant::class, 'product_id', 'product_id');
+    }
+    public function specifications()
+    {
+        return $this->hasMany(ProductSpecifications::class, 'product_id', 'product_id');
+    }
+    public function productsViews()
+    {
+        return $this->hasMany(ProductsViews::class, 'product_id', 'product_id');
+    }
+    public function productlikes()
+    {
+        return $this->hasMany(ProductLike::class, 'product_id', 'product_id');
+    }
+
+    public function isLikedBy($userId)
+{
+    return $this->likes()->where('user_id', $userId)->exists();
+}
+}

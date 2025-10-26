@@ -1,0 +1,461 @@
+/* === Layout Container === */
+.adminorder-container {
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #ffff;
+  color: #1c1c1e;
+  font-size: 13px;
+}
+
+/* === Header === */
+.adminorder-header {
+  margin-bottom: 20px;
+}
+
+.adminorder-title h1 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1c1c1e;
+  margin-bottom: 4px;
+}
+
+.adminorder-title p {
+  color: #6e6e73;
+  font-size: 13px;
+}
+
+/* === Search and Filter === */
+.adminorder-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.adminorder-search-box {
+  position: relative;
+  flex: 1;
+}
+
+.adminorder-search-icon {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: #007aff;
+  font-size: 16px;
+}
+
+.adminorder-search-input {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #fff;
+  font-size: 13px;
+  transition: border 0.2s;
+}
+
+.adminorder-search-input:focus {
+  border-color: #007aff;
+  outline: none;
+}
+
+.adminorder-filter-select {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  font-size: 13px;
+}
+
+.admin_order-search-box {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.admin_order-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.admin_order-search-input {
+  width: 100%;
+  padding-left: 36px;
+  border: none;
+  outline: none;
+  padding: 8px 12px;
+  font-size: 1rem;
+  background: #f9f9f9;
+  border-radius: 6px;
+}
+
+/* === Table === */
+.adminorder-scrollable {
+  overflow-x: auto;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.admin_order-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1000px;
+}
+
+.admin_order-table th,
+.admin_order-table td {
+  padding: 10px 10px; /* tăng padding */
+  font-size: 14px;    /* tăng font-size */
+}
+
+.admin_order-table th {
+  font-weight: 500;
+  color: #2c2c2e;
+}
+
+.admin_order-stt {
+  font-size: 14px;
+  font-weight: 600;
+  color: #007aff;
+  text-align: center;
+}
+
+.admin_order-avatar img {
+  width: 44px;   /* to hơn */
+  height: 44px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid #eee;
+}
+
+.admin_order-code {
+  font-size: 14px;
+  font-weight: 500;
+  color: #222;
+  margin-bottom: 2px;
+}
+
+.admin_order-customer {
+  font-size: 13px;
+  color: #666;
+}
+
+.admin_order-amount {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.admin_order-items {
+  font-size: 13px;
+  color: #888;
+}
+
+.admin_order-payment {
+  font-size: 14px;
+}
+
+.admin_order-status {
+  font-size: 14px;
+  padding: 4px 12px;
+  border-radius: 8px;
+  display: inline-block;
+  min-width: 90px;
+  text-align: center;
+}
+
+.adminorder-action-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  min-width: 54px;
+}
+
+.adminorder-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #007aff;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.adminorder-icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.adminorder-icon-btn:hover {
+  background: #e8f0fe;
+  color: #005fcc;
+  transform: scale(1.12);
+}
+
+.adminorder-icon-btn:active {
+  background: #d0e2ff;
+  color: #003e99;
+}
+
+.adminorder-icon-btn.edit:hover {
+  color: #007aff;
+  background: #e3f2fd;
+}
+
+.adminorder-icon-btn.view:hover {
+  color: #00bcd4;
+  background: #e0f7fa;
+}
+
+/* === Pagination === */
+.adminorder-pagination {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.adminorder-page-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #007aff;
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 13px;
+}
+
+.adminorder-page-btn:disabled {
+  background-color: #b0b0b5;
+  cursor: not-allowed;
+}
+
+.adminorder-page-info {
+  font-size: 13px;
+  color: #333;
+}
+
+/* === Modal === */
+.adminorder-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(28, 28, 30, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.adminorder-modal {
+  background-color: white;
+  padding: 20px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  font-size: 13px;
+}
+
+.adminorder-modal h2 {
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Modal Table */
+.adminorder-details-table td {
+  padding: 6px 4px;
+  font-size: 13px;
+}
+
+/* Status wrapper in modal */
+.adminorder-status-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.adminorder-current-status {
+  margin-bottom: 8px;
+}
+
+/* Status select styling */
+.adminorder-status-select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  width: 100%;
+  font-size: 14px;
+  appearance: auto;
+  background-color: #fff;
+}
+
+.adminorder-status-select:focus {
+  border-color: #007aff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
+}
+
+/* Colored status badges */
+.admin_order-status-cho-xac-nhan,
+.admin_order-status-pending {
+  background-color: #fff7e6;
+  color: #d46b08;
+}
+
+.admin_order-status-da-xac-nhan,
+.admin_order-status-approved {
+  background-color: #e6f4ff;
+  color: #0958d9;
+}
+
+.admin_order-status-cho-lay-hang {
+  background-color: #f0f7ff;
+  color: #1677ff;
+}
+
+.admin_order-status-dang-van-chuyen,
+.admin_order-status-processing {
+  background-color: #e6fffb;
+  color: #08979c;
+}
+
+.admin_order-status-dang-giao-hang {
+  background-color: #e6f7ff;
+  color: #096dd9;
+}
+
+.admin_order-status-da-giao-hang,
+.admin_order-status-refunded {
+  background-color: #f6ffed;
+  color: #389e0d;
+}
+
+.admin_order-status-hoan-thanh {
+  background-color: #e6fff2;
+  color: #10b981;
+  font-weight: 600;
+}
+
+.admin_order-status-rejected {
+  background-color: #fff1f0;
+  color: #cf1322;
+}
+
+.admin_order-status-cancelled {
+  background-color: #f0f0f0;
+  color: #595959;
+}
+
+.admin_order-status-default {
+  background-color: #f5f5f5;
+  color: #595959;
+}
+
+/* === User Info === */
+.adminorder-customer-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.adminorder-customer-avatar img {
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+}
+
+.adminorder-customer-info div {
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+/* === Loading / Empty / Error === */
+.adminorder-loading,
+.adminorder-error,
+.adminorder-empty {
+  text-align: center;
+  padding: 20px;
+  color: #6e6e73;
+  font-size: 13px;
+}
+
+/* === Optional Column Fix === */
+.adminorder-stt-col {
+  width: 50px;
+}
+
+.adminorder-status-col {
+  min-width: 140px;
+}
+
+/* Modal Buttons */
+.adminorder-modal-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.adminorder-btn-submit {
+  padding: 6px 12px;
+  background-color: #007aff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.adminorder-btn-cancel {
+  padding: 6px 12px;
+  background-color: #f0f0f5;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.adminorder-cancel-reason-textarea {
+  width: 550px;
+  max-width: 100%;
+  min-width: 320px;
+  margin-top: 6px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1.5px solid #ccc;
+  font-size: 15px;
+  min-height: 80px;
+  resize: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  background: #fafbfc;
+  color: #222;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.adminorder-cancel-reason-textarea:focus {
+  border-color: #007aff;
+  box-shadow: 0 0 0 2px rgba(0,122,255,0.08);
+  background: #fff;
+}
+

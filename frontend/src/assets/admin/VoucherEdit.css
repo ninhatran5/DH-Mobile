@@ -1,0 +1,241 @@
+.admineditvoucher-container {
+  margin: 0px auto;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.1),
+              0 4px 16px -4px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.admineditvoucher-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.admineditvoucher-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  padding: 0 20px;
+}
+
+.admineditvoucher-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Các trường full width */
+.admineditvoucher-group:nth-child(1),
+.admineditvoucher-group:nth-child(2) {
+  grid-column: span 2;
+}
+
+/* Checkbox group full width */
+.admineditvoucher-active-group {
+  grid-column: span 2;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Submit button full width */
+.admineditvoucher-submit {
+  grid-column: span 2;
+  margin-top: 16px;
+  padding: 14px 28px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(180deg, #fabc03 0%);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(52, 199, 89, 0.2);
+}
+
+.admineditvoucher-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admineditvoucher-input {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  font-size: 15px;
+  transition: all 0.2s ease;
+  background: #fff;
+  color: #333;
+  width: 100%;
+}
+
+.admineditvoucher-input:focus {
+  outline: none;
+  border-color: #ffd500;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+}
+
+.admineditvoucher-input:hover {
+  border-color: #b0b0b0;
+}
+
+.addVoucher-generate-btn {
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(180deg, #ffc800 );
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.addVoucher-generate-btn:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(180deg, #0084FF 0%, #006EE5 100%);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);
+}
+
+.addVoucher-generate-btn:active {
+  transform: translateY(0);
+  background: linear-gradient(180deg, #0063CC 0%, #004C99 100%);
+}
+
+.admineditvoucher-code {
+  flex: 1;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  letter-spacing: 0.5px;
+}
+
+.admineditvoucher-checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 2px solid #007AFF;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.admineditvoucher-checkbox:checked {
+  background-color: #007AFF;
+}
+
+.admineditvoucher-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.admineditvoucher-checkbox:hover {
+  border-color: #0084FF;
+}
+
+.admineditvoucher-submit:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(180deg, #0909d5 0%);
+  box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3);
+}
+
+.admineditvoucher-submit:active {
+  transform: translateY(0);
+  background: linear-gradient(180deg, #2AB04C 0%, #248C3F 100%);
+}
+
+.admineditvoucher-submit:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.addVoucher-error {
+  color: #FF3B30;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+/* Datetime input styling */
+input[type="datetime-local"] {
+  -webkit-appearance: none;
+  position: relative;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E") no-repeat 95% center;
+  cursor: pointer;
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Number input styling */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .admineditvoucher-container {
+    margin: 20px;
+    padding: 24px;
+  }
+
+  .admineditvoucher-title {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+
+  .admineditvoucher-form {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0;
+  }
+
+  /* Reset full width items on mobile */
+  .admineditvoucher-group:nth-child(1),
+  .admineditvoucher-group:nth-child(2),
+  .admineditvoucher-active-group,
+  .admineditvoucher-submit {
+    grid-column: span 1;
+  }
+
+  .admineditvoucher-input,
+  .addVoucher-generate-btn {
+    padding: 10px 14px;
+  }
+
+  .admineditvoucher-submit {
+    padding: 12px 24px;
+  }
+}

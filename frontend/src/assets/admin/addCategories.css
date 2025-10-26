@@ -1,0 +1,315 @@
+.addcategories-container {
+  background-color: #f8f8f8;
+  border-radius: 16px;
+  margin: 40px auto;
+  padding: 32px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+.addcategories-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #1c1c1e;
+  text-align: center;
+}
+
+.addcategories-form {
+  width: 100%;
+}
+
+.addcategories-group {
+  margin-bottom: 20px;
+  position: relative;
+  
+}
+
+.addcategories-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #3a3a3c;
+}
+
+.required1 {
+  color: #ff4d4f;
+}
+
+.validation-message {
+  color: #ff4d4f;
+  font-size: 13px;
+  margin-top: 4px;
+  display: block;
+}
+
+.addcategories-group input[type="text"],
+.addcategories-group textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d1d1d6;
+  border-radius: 10px;
+  font-size: 15px;
+  background-color: #ffffff;
+  color: #1c1c1e;
+  transition: all 0.2s;
+}
+
+.addcategories-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.addcategories-group input[type="text"]:focus,
+.addcategories-group textarea:focus {
+  border-color: #007aff;
+  outline: none;
+}
+
+/* Placeholder styles */
+.addcategories-group input[type="text"]::placeholder,
+.addcategories-group textarea::placeholder {
+  color: #a0a0a0;
+  font-size: 14px;
+}
+
+/* Validation styles */
+.addcategories-group input[type="text"]:invalid,
+.addcategories-group textarea:invalid {
+  border-bottom: 2px solid #ff4d4f;
+}
+
+.addcategories-group input[type="file"] {
+  font-size: 14px;
+  color: #1c1c1e;
+  width: 100%;
+  padding: 8px 0;
+}
+
+.addcategories-group input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.addcategories-submit-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  font-weight: 600;
+  background-color: #007aff;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.addcategories-submit-btn:hover {
+  background-color: #005ecb;
+}
+
+.addcategories-image-preview {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.addcategories-image-preview img {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom File Upload Styles for Admin */
+.image-upload-container {
+  margin-top: 10px;
+}
+
+.custom-file-upload {
+  display: block;
+  cursor: pointer;
+}
+
+.upload-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 20px;
+  border: 2px dashed #007aff;
+  border-radius: 12px;
+  background-color: #f8f9ff;
+  color: #007aff;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  min-height: 70px;
+}
+
+.upload-button:hover {
+  border-color: #005ecb;
+  background-color: #f0f4ff;
+  color: #005ecb;
+  transform: translateY(-1px);
+}
+
+.upload-button svg {
+  transition: transform 0.3s ease;
+}
+
+.upload-button:hover svg {
+  transform: translateY(-2px);
+}
+
+.image-preview-single {
+  position: relative;
+  margin-top: 15px;
+  display: inline-block;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 3px solid #e8e8e8;
+  background-color: #f9f9f9;
+  max-width: 200px;
+}
+
+.image-preview-single img {
+  width: 100%;
+  height: auto;
+  max-height: 150px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.image-preview-single:hover img {
+  transform: scale(1.05);
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #ff4757;
+  color: white;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.remove-image-btn:hover {
+  background-color: #ff3838;
+  transform: scale(1.1);
+}
+
+.upload-hint {
+  font-size: 12px;
+  color: #8e8e93;
+  margin-top: 8px;
+  margin-bottom: 0;
+  text-align: center;
+  font-style: italic;
+}
+
+/* Animation for image preview */
+.image-preview-single {
+  animation: fadeInScale 0.3s ease-out;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Focus styles for accessibility */
+.custom-file-upload:focus-within .upload-button {
+  outline: 2px solid #007aff;
+  outline-offset: 2px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .upload-button {
+    padding: 12px 16px;
+    font-size: 13px;
+    min-height: 60px;
+  }
+  
+  .image-preview-single {
+    max-width: 150px;
+  }
+  
+  .remove-image-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+  }
+}
+.required1 {
+  color: #e74c3c;
+  font-weight: bold;
+  margin-left: 4px;
+  font-size: 16px;
+  
+}
+
+/* Style cho validation message */
+.validation-message {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+  font-weight: 500;
+}
+
+/* Style cho label có trường bắt buộc */
+.addcategories-group label {
+  align-items: center;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+  font-size: 14px;
+}
+
+/* Cải thiện style cho form group */
+.addcategories-group {
+  margin-bottom: 20px;
+}
+
+/* Style cho input khi có lỗi */
+.addcategories-group input.error,
+.addcategories-group textarea.error {
+  border-color: #e74c3c;
+  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2);
+}
+
+/* Style cho container upload image khi có lỗi */
+.image-upload-container.error {
+  border: 2px dashed #e74c3c;
+  background-color: rgba(231, 76, 60, 0.05);
+}
+
+
+.required1:hover {
+  color: #c0392b;
+}
+
+
+.custom-file-upload .required {
+  color: #e74c3c;
+  font-size: 14px;
+  margin-left: 2px;
+}

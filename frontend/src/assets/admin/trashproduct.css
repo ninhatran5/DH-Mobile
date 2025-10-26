@@ -1,0 +1,553 @@
+/* TrashList1 Component Styles */
+.TrashList1-container {
+  padding: 24px;
+  margin: 0 auto;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+/* Header Styles */
+.TrashList1-header {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 24px;
+  color: white;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.TrashList1-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.TrashList1-title-section {
+  flex: 1;
+}
+
+.TrashList1-main-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #fff;
+}
+
+.TrashList1-main-title i {
+  font-size: 1.8rem;
+  color: #ef4444;
+}
+
+.TrashList1-subtitle {
+  font-size: 1rem;
+  margin: 0;
+  opacity: 0.9;
+  color: #cbd5e1;
+}
+
+.TrashList1-action-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Button Styles */
+.TrashList1-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.TrashList1-btn-outline {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.TrashList1-btn-outline:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.TrashList1-btn-success {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.TrashList1-btn-success:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: translateY(-1px);
+}
+
+.TrashList1-btn-danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+.TrashList1-btn-danger:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-1px);
+}
+
+/* Search Section */
+.TrashList1-search-section {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
+}
+
+.TrashList1-search-box {
+  position: relative;
+  max-width: 400px;
+}
+
+.TrashList1-search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  font-size: 16px;
+}
+
+.TrashList1-search-input {
+  width: 100%;
+  padding: 12px 16px 12px 48px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.TrashList1-search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Bulk Actions */
+.TrashList1-bulk-actions {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 1px solid #f59e0b;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.TrashList1-bulk-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: #92400e;
+}
+
+.TrashList1-selected-count {
+  background: #f59e0b;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.TrashList1-bulk-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Content Area */
+.TrashList1-content {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
+}
+
+/* Loading State */
+.TrashList1-loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280;
+}
+
+.TrashList1-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error State */
+.TrashList1-error {
+  text-align: center;
+  padding: 60px 20px;
+  color: #ef4444;
+}
+
+.TrashList1-error i {
+  font-size: 48px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+/* Empty State */
+.TrashList1-empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: #6b7280;
+}
+
+.TrashList1-empty-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  opacity: 0.5;
+  color: #ef4444;
+}
+
+.TrashList1-empty-state h3 {
+  font-size: 1.5rem;
+  margin: 0 0 8px 0;
+  color: #374151;
+}
+
+.TrashList1-empty-state p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Table Styles */
+.TrashList1-table-container {
+  overflow-x: auto;
+}
+
+.TrashList1-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.TrashList1-table th {
+  background: #f8fafc;
+  padding: 16px 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 2px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.TrashList1-table td {
+  padding: 16px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.TrashList1-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.TrashList1-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.TrashList1-table tbody tr.TrashList1-selected {
+  background-color: #fef3c7;
+}
+
+/* Column Widths */
+.TrashList1-checkbox-col {
+  width: 50px;
+}
+
+.TrashList1-image-col {
+  width: 80px;
+}
+
+.TrashList1-name-col {
+  min-width: 200px;
+}
+
+.TrashList1-category-col {
+  width: 150px;
+}
+
+.TrashList1-price-col {
+  width: 120px;
+}
+
+.TrashList1-date-col {
+  width: 120px;
+}
+
+.TrashList1-actions-col {
+  width: 120px;
+}
+
+/* Product Image */
+.TrashList1-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 0 auto;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.TrashList1-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Product Info */
+.TrashList1-info {
+  min-width: 0;
+}
+
+.TrashList1-name {
+  font-weight: 500;
+  color: #1f2937;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.TrashList1-id {
+  font-size: 12px;
+  color: #6b7280;
+  font-family: 'Courier New', monospace;
+}
+
+/* Price */
+.TrashList1-price {
+  font-weight: 500;
+  color: #059669;
+  white-space: nowrap;
+}
+
+/* Action Buttons */
+.TrashList1-table-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.TrashList1-action-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.TrashList1-restore-btn {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.TrashList1-restore-btn:hover {
+  background: #16a34a;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.TrashList1-delete-btn {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.TrashList1-delete-btn:hover {
+  background: #dc2626;
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* Disabled state for delete button */
+.TrashList1-delete-btn.TrashList1-disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.TrashList1-delete-btn.TrashList1-disabled:hover {
+  background: #f3f4f6;
+  color: #9ca3af;
+  transform: none;
+}
+
+.TrashList1-delete-btn.TrashList1-disabled i.bi-exclamation-triangle {
+  color: #f59e0b;
+}
+
+/* Pagination */
+.TrashList1-pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.TrashList1-pagination-info {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.TrashList1-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.TrashList1-pagination-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6b7280;
+}
+
+.TrashList1-pagination-btn:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.TrashList1-pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.TrashList1-page-numbers {
+  display: flex;
+  gap: 4px;
+  margin: 0 8px;
+}
+
+.TrashList1-page-number {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.TrashList1-page-number:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.TrashList1-page-number.TrashList1-active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .TrashList1-container {
+    padding: 16px;
+  }
+
+  .TrashList1-header {
+    padding: 20px;
+  }
+
+  .TrashList1-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .TrashList1-main-title {
+    font-size: 1.5rem;
+  }
+
+  .TrashList1-table-container {
+    overflow-x: scroll;
+  }
+
+  .TrashList1-table {
+    min-width: 800px;
+  }
+
+  .TrashList1-bulk-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .TrashList1-bulk-buttons {
+    justify-content: center;
+  }
+
+  .TrashList1-pagination-container {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .TrashList1-action-buttons {
+    width: 100%;
+  }
+
+  .TrashList1-btn {
+    flex: 1;
+    justify-content: center;
+  }
+}

@@ -1,0 +1,548 @@
+import { useTranslation } from "react-i18next";
+import "../assets/css/wallet-modal.css";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState, useMemo } from "react";
+import { fetchBalanceFluctuation, fetchWallet } from "../slices/walletSlice";
+import numberFormat from "../../utils/numberFormat";
+import Loading from "./Loading";
+import dayjs from "dayjs";
+import { RiBillLine } from "react-icons/ri";
+
+const WalletHistoryModal = ({ show, onClose }) => {
+  const [closing, setClosing] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedType, setSelectedType] = useState("");
+  const [billModal, setBillModal] = useState({ show: false, imgUrl: "" });
+
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const { wallets, balanceFluctuation, loading } = useSelector(
+    (state) => state.wallet
+  );
+
+  useEffect(() => {
+    if (show) {
+      if (!wallets?.wallet_id) {
+        dispatch(fetchWallet());
+      } else {
+        dispatch(fetchBalanceFluctuation(wallets.wallet_id));
+      }
+    }
+  }, [dispatch, wallets?.wallet_id, show]);
+
+  useEffect(() => {
+    if (show) {
+      setCurrentPage(1);
+      setSearchTerm("");
+      setSelectedType("");
+    }
+  }, [show]);
+
+  const transactionTypes = useMemo(() => {
+    const types = [...new Set(balanceFluctuation.map((item) => item.type))];
+    return types.filter((type) => type);
+  }, [balanceFluctuation]);
+
+  const filteredData = useMemo(() => {
+    let filtered = balanceFluctuation;
+
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase().trim();
+      filtered = filtered.filter(
+        (item) =>
+          item.type?.toLowerCase().includes(searchLower) ||
+          item.note?.toLowerCase().includes(searchLower) ||
+          item.amount?.toString().includes(searchTerm)
+      );
+    }
+
+    if (selectedType) {
+      filtered = filtered.filter((item) => item.type === selectedType);
+    }
+
+    return filtered;
+  }, [balanceFluctuation, searchTerm, selectedType]);
+
+  const handleClose = () => {
+    setClosing(true);
+    setTimeout(() => {
+      setClosing(false);
+      onClose();
+    }, 300);
+  };
+
+  const handleOpenBillModal = (transaction) => {
+    const imgUrl = transaction?.withdraw_request?.img_bill;
+    if (imgUrl) {
+      setBillModal({ show: true, imgUrl });
+    }
+  };
+
+  const handleCloseBillModal = () => {
+    setBillModal({ show: false, imgUrl: "" });
+  };
+
+  const hasWithdrawBill = (transaction) => {
+    return (
+      transaction?.note?.toLowerCase().includes("rút tiền thành công") &&
+      transaction?.withdraw_request?.img_bill
+    );
+  };
+
+  const totalItems = filteredData.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentItems = filteredData.slice(startIndex, endIndex);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedType]);
+
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      let startPage = Math.max(1, currentPage - 2);
+      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+      if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+    }
+
+    return pages;
+  };
+
+  if (!show && !closing) return null;
+
+  const getSignByType = (type) => {
+    const normalized = type?.toLowerCase();
+    if (normalized === "hoàn tiền") return "+ ";
+    if (normalized === "rút tiền" || normalized === "tiêu tiền") return "- ";
+    return "";
+  };
+
+  const getColorByType = (type) => {
+    const normalized = type?.toLowerCase();
+    return normalized === "trả tiền" ||
+      normalized === "rút tiền" ||
+      normalized === "tiêu tiền"
+      ? "#dc2626"
+      : "#16a34a";
+  };
+
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setSelectedType("");
+  };
+
+  const typeLabelMap = {
+    "rút tiền": "Rút tiền",
+    "tiêu tiền": "Tiêu tiền",
+    "hoàn tiền": "Hoàn tiền",
+  };
+
+  const getTypeLabel = (type) => {
+    if (!type) return "-";
+    const key = type.toLowerCase();
+    return typeLabelMap[key] ?? type;
+  };
+
+  const getNoteStyle = (note) => {
+    if (note && note.toLowerCase().includes("rút tiền thành công")) {
+      return { color: "#d32f2f", fontWeight: 600 };
+    }
+    if (
+      note &&
+      note.toLowerCase().includes("yêu cầu rút tiền đang chờ xử lý")
+    ) {
+      return { color: "#e0a514", fontWeight: 500 };
+    }
+    return {};
+  };
+
+  return (
+    <>
+      {loading && <Loading />}
+      <div className="wallet-modal-overlay">
+        <div
+          className={`wallet-modal-content${
+            closing ? " wallet-modal-closing" : ""
+          }`}
+        >
+          <div className="wallet-modal-header">
+            <h4>{t("walletHistory.title")}</h4>
+            <button className="wallet-modal-close" onClick={handleClose}>
+              &times;
+            </button>
+          </div>
+
+          <div className="wallet-modal-filters">
+            <div className="wallet-filter-row">
+              <div className="wallet-search-box">
+                <input
+                  type="text"
+                  placeholder={t("walletHistory.search.placeholder")}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="wallet-search-input"
+                />
+                <svg
+                  className="wallet-search-icon"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
+              </div>
+
+              <div className="wallet-type-filter">
+                <select
+                  value={selectedType}
+                  onChange={(e) => setSelectedType(e.target.value)}
+                  className="wallet-type-select"
+                >
+                  <option value="">{t("walletHistory.filter.allTypes")}</option>
+                  {transactionTypes.map((type, index) => (
+                    <option key={index} value={type}>
+                      {getTypeLabel(type)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {(searchTerm || selectedType) && (
+                <button
+                  onClick={handleClearFilters}
+                  className="wallet-clear-filters-btn"
+                  title={t("walletHistory.filter.clear") || "Xóa bộ lọc"}
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              )}
+            </div>
+
+            {(searchTerm || selectedType) && (
+              <div className="wallet-filter-results">
+                {t("walletHistory.filter.results", { count: totalItems })}
+              </div>
+            )}
+          </div>
+
+          <div className="wallet-modal-body">
+            {filteredData.length === 0 ? (
+              <div className="wallet-modal-empty">
+                {searchTerm || selectedType
+                  ? t("walletHistory.noResults") ||
+                    "Không tìm thấy giao dịch nào phù hợp"
+                  : t("walletHistory.emptyTransaction") ||
+                    "Chưa có giao dịch nào"}
+              </div>
+            ) : (
+              <>
+                <table className="wallet-modal-table">
+                  <thead>
+                    <tr>
+                      <th>{t("walletHistory.time")}</th>
+                      <th>{t("walletHistory.type")}</th>
+                      <th>{t("walletHistory.amount")}</th>
+                      <th>{t("walletHistory.note")}</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {currentItems.map((transaction, idx) => {
+                      const sign = getSignByType(transaction?.type);
+                      const color = getColorByType(transaction?.type);
+                      const amount = numberFormat(
+                        Math.abs(Number(transaction?.amount))
+                      );
+
+                      return (
+                        <tr key={idx}>
+                          <td>
+                            {dayjs(transaction?.created_at).format(
+                              "HH:mm - DD/MM/YYYY"
+                            )}
+                          </td>
+                          <td>{getTypeLabel(transaction?.type)}</td>
+                          <td style={{ color, fontWeight: 600 }}>
+                            {sign}
+                            {amount}
+                          </td>
+                          <td
+                            style={getNoteStyle(transaction?.note)}
+                            className="d-flex align-items-center, gap-2"
+                          >
+                            {transaction?.note || "-"}
+                          </td>
+                          {hasWithdrawBill(transaction) ? (
+                            <td
+                              style={{
+                                cursor: "pointer",
+                                color: "#1860e1",
+                                fontWeight: 600,
+                                fontSize: "14px",
+                              }}
+                              onClick={() => handleOpenBillModal(transaction)}
+                            >
+                              {t("walletHistory.seeBill")}
+                            </td>
+                          ) : (
+                            <td></td>
+                          )}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+
+                {totalPages > 1 && (
+                  <div className="wallet-pagination">
+                    <div className="wallet-pagination-info">
+                      {t("walletHistory.pagination.showing", {
+                        start: startIndex + 1,
+                        end: Math.min(endIndex, totalItems),
+                        total: totalItems,
+                      })}
+                    </div>
+                    <div className="wallet-pagination-controls">
+                      <button
+                        className="wallet-pagination-btn wallet-pagination-prev"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        title={t("walletHistory.pagination.previous")}
+                      >
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <polyline points="15,18 9,12 15,6"></polyline>
+                        </svg>
+                      </button>
+
+                      {getPageNumbers()[0] > 1 && (
+                        <>
+                          <button
+                            className="wallet-pagination-btn"
+                            onClick={() => handlePageChange(1)}
+                          >
+                            1
+                          </button>
+                          {getPageNumbers()[0] > 2 && (
+                            <span className="wallet-pagination-dots">...</span>
+                          )}
+                        </>
+                      )}
+
+                      {getPageNumbers().map((page) => (
+                        <button
+                          key={page}
+                          className={`wallet-pagination-btn ${
+                            page === currentPage ? "active" : ""
+                          }`}
+                          onClick={() => handlePageChange(page)}
+                        >
+                          {page}
+                        </button>
+                      ))}
+
+                      {getPageNumbers()[getPageNumbers().length - 1] <
+                        totalPages && (
+                        <>
+                          {getPageNumbers()[getPageNumbers().length - 1] <
+                            totalPages - 1 && (
+                            <span className="wallet-pagination-dots">...</span>
+                          )}
+                          <button
+                            className="wallet-pagination-btn"
+                            onClick={() => handlePageChange(totalPages)}
+                          >
+                            {totalPages}
+                          </button>
+                        </>
+                      )}
+
+                      <button
+                        className="wallet-pagination-btn wallet-pagination-next"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        title={t("walletHistory.pagination.next")}
+                      >
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <polyline points="9,18 15,12 9,6"></polyline>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {billModal.show && (
+        <div
+          className="bill-modal-overlay"
+          onClick={handleCloseBillModal}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 10000,
+            animation: "fadeIn 0.3s ease",
+          }}
+        >
+          <div
+            className="bill-modal-content"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: "white",
+              borderRadius: "12px",
+              padding: "20px",
+              maxWidth: "90vw",
+              maxHeight: "90vh",
+              overflow: "auto",
+              position: "relative",
+              animation: "slideIn 0.3s ease",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "15px",
+                borderBottom: "1px solid #eee",
+                paddingBottom: "10px",
+              }}
+            >
+              <h3
+                style={{
+                  margin: 0,
+                  fontSize: "18px",
+                  fontWeight: 600,
+                  color: "#1f2937",
+                }}
+              >
+                {t("walletHistory.withdrawalReceipt")}
+              </h3>
+              <button
+                onClick={handleCloseBillModal}
+                style={{
+                  background: "none",
+                  border: "none",
+                  fontSize: "24px",
+                  cursor: "pointer",
+                  color: "#6b7280",
+                  padding: "0",
+                  width: "30px",
+                  height: "30px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "50%",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = "#f3f4f6";
+                  e.target.style.color = "#374151";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = "transparent";
+                  e.target.style.color = "#6b7280";
+                }}
+              >
+                &times;
+              </button>
+            </div>
+            <div style={{ textAlign: "center" }}>
+              <img
+                src={billModal.imgUrl}
+                alt="Hóa đơn rút tiền"
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "70vh",
+                  objectFit: "contain",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "8px",
+                  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                }}
+                onError={(e) => {
+                  e.target.style.display = "none";
+                  e.target.nextSibling.style.display = "block";
+                }}
+              />
+              <div
+                style={{
+                  display: "none",
+                  color: "#6b7280",
+                  padding: "40px 20px",
+                  fontSize: "16px",
+                  backgroundColor: "#f9fafb",
+                  borderRadius: "8px",
+                  border: "1px dashed #d1d5db",
+                }}
+              >
+                ...
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default WalletHistoryModal;

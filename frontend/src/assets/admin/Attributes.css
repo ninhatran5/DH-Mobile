@@ -1,0 +1,416 @@
+.AttributeList-adminattributes {
+  padding: 24px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: #f9f9fb;
+  color: #1c1c1e;
+}
+
+h1 {
+  margin-bottom: 24px;
+  font-weight: 700;
+  color: #1c1c1e;
+}
+
+.AttributeList-header-actions {
+  margin-bottom: 16px;
+}
+
+.AttributeList-btn-add {
+  background: linear-gradient(145deg, #007aff, #0051c6);
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.AttributeList-btn-add:hover {
+  background: #004bb8;
+  box-shadow: 0 8px 24px rgba(0, 91, 255, 0.6);
+  transform: translateY(-2px);
+}
+
+.AttributeList-attribute-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.AttributeList-attribute-item {
+  border: 1px solid #e0e0e5;
+  border-radius: 14px;
+  padding: 18px 24px;
+  margin-bottom: 20px;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  opacity: 0;
+  transform: translateY(8px);
+  animation: fadeSlideUp 0.4s ease forwards;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.AttributeList-attribute-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.12);
+}
+
+.AttributeList-attribute-row {
+  display: flex;
+  margin-bottom: 12px;
+}
+
+.AttributeList-attribute-label {
+  width: 130px;
+  font-weight: 700;
+  color: #444;
+}
+
+.AttributeList-attribute-data {
+  flex: 1;
+  color: #333;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Value item - macOS style pill */
+.AttributeList-value-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(8px);
+  border-radius: 999px;
+  padding: 10px 16px 10px 14px;
+  font-size: 15px;
+  color: #007aff;
+  margin-right: 12px;
+  margin-bottom: 8px;
+  user-select: none;
+  gap: 8px;
+  white-space: nowrap;
+  box-shadow: inset 0 0 0 1px rgba(200, 220, 255, 0.4),
+              0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.AttributeList-value-item:hover {
+  transform: scale(1.08);
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: inset 0 0 0 1.5px rgba(150, 180, 255, 0.7),
+              0 6px 14px rgba(0, 120, 255, 0.15);
+}
+
+/* Value text inside the pill */
+.AttributeList-value-text {
+  user-select: text;
+  padding-right: 4px;
+  font-weight: 500;
+}
+
+/* Delete button (macOS red close) */
+.AttributeList-btn-delete-value {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  border: none;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+  color: white;
+  background-color: #ff3b30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  user-select: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.2s;
+}
+
+.AttributeList-btn-delete-value:hover {
+  background-color: #c12b22;
+}
+
+/* Edit button (macOS green style) */
+.AttributeList-btn-edit-value {
+  border: none;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: white;
+  background-color: #303431;
+  margin-left: 4px;
+  flex-shrink: 0;
+  user-select: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.2s;
+}
+
+.AttributeList-btn-edit-value:hover {
+  background-color: #248f3c;
+}
+
+.action-buttons {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.btn-edit {
+  background: #007aff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0, 122, 255, 0.2);
+  transition: all 0.2s ease;
+}
+
+
+
+.btn-delete-attribute {
+  background-color: #ff3b30;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(255, 59, 48, 0.2);
+  transition: all 0.2s ease;
+}
+
+.btn-delete:hover {
+  background-color: #a62118;
+  box-shadow: 0 8px 24px rgba(182, 24, 24, 0.5);
+  transform: translateY(-2px);
+}
+
+.input-add-value {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  flex: 1;
+  max-width: 250px;
+  transition: border-color 0.3s;
+}
+
+.input-add-value:focus {
+  border-color: #007aff;
+  outline: none;
+}
+
+.btn-add-value {
+  background-color: #007aff;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.btn-add-value:hover {
+  background-color: #0051c6;
+}
+
+.AttributeList-error {
+  color: red;
+  margin-bottom: 16px;
+}
+
+.AttributeList-loading {
+  color: #555;
+  margin-bottom: 16px;
+}
+
+/* Fade-in animation */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Button press-down effect */
+button:active {
+  transform: scale(0.94);
+  box-shadow: none !important;
+  transition: transform 0.1s ease;
+}
+.adminaddattributevalues-container {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: #f9f9f9;
+  margin: 1rem auto;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+}
+
+.adminaddattributevalues-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #111;
+  text-align: center;
+}
+
+.adminaddattributevalues-highlight {
+  color: #007aff; /* macOS blue */
+}
+
+.adminaddattributevalues-error {
+  color: #ff3b30; /* macOS red */
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.adminaddattributevalues-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.adminaddattributevalues-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.adminaddattributevalues-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.adminaddattributevalues-input {
+  padding: 10px 14px;
+  font-size: 16px;
+  border: 1px solid #d1d1d6;
+  border-radius: 10px;
+  transition: border 0.2s, box-shadow 0.2s;
+  background-color: white;
+}
+
+.adminaddattributevalues-input:focus {
+  border-color: #007aff;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+  outline: none;
+}
+
+.adminaddattributevalues-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.adminaddattributevalues-submit,
+.adminaddattributevalues-cancel {
+  padding: 10px 18px;
+  font-size: 15px;
+  font-weight: 500;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.adminaddattributevalues-submit {
+  background-color: #007aff;
+  color: white;
+}
+
+.adminaddattributevalues-submit:hover {
+  background-color: #005fcc;
+  box-shadow: 0 2px 6px rgba(0, 122, 255, 0.4);
+}
+
+.adminaddattributevalues-submit:disabled {
+  background-color: #a5d0ff;
+  cursor: not-allowed;
+}
+
+.adminaddattributevalues-cancel {
+  background-color: #e5e5ea;
+  color: #333;
+}
+
+.adminaddattributevalues-cancel:hover {
+  background-color: #d1d1d6;
+}
+/* Nút xoá thuộc tính */
+.AttributeList-deleteAttribute {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border: 2px solid #dc2626;
+  border-radius: 12px;
+  background-color: #fee2e2;
+  color: #dc2626;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.AttributeList-deleteAttribute:hover {
+  background-color: #fecaca;
+}
+
+/* Các nút khác */
+.AttributeList-btn-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+}
+
+.AttributeList-btn-edit {
+  background-color: #fef9c3;
+  color: #854d0e;
+  border: 1px solid #eab308;
+}
+
+.AttributeList-btn-edit:hover {
+  background-color: #fef08a;
+}
+
+.AttributeList-btn-add-value {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+  border: 1px solid #60a5fa;
+}
+
+.AttributeList-btn-add-value:hover {
+  background-color: #bfdbfe;
+}

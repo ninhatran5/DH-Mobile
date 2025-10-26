@@ -1,0 +1,297 @@
+.admin-edit-categories-form {
+  margin: 40px auto;
+  padding: 24px 32px;
+  background: #ffffffcc;
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #333;
+}
+
+.admin-edit-categories-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  text-align: center;
+  color: #1d1d1f;
+}
+
+.admin-edit-categories-label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 6px;
+  margin-top: 16px;
+  color: #444;
+}
+
+.admin-edit-categories-input,
+.admin-edit-categories-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  background-color: #fafafa;
+  transition: border-color 0.3s;
+  font-size: 15px;
+}
+
+.admin-edit-categories-input:focus,
+.admin-edit-categories-textarea:focus {
+  border-color: #007aff;
+  outline: none;
+  background-color: #fff;
+}
+
+.admin-edit-categories-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.admin-edit-categories-checkbox {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.admin-edit-categories-button {
+  margin-top: 24px;
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 16px;
+  background-color: #007aff;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.admin-edit-categories-button:hover {
+  background-color: #005fcc;
+}
+
+.admin-edit-categories-image-preview {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.admin-edit-categories-image-preview img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+/* Container cho image preview - giữ nguyên */
+.admin-edit-categories-image-preview-container {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* Thêm này để tránh ảnh tràn */
+}
+
+/* Sửa lại CSS cho ảnh preview */
+.admin-edit-categories-preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Thay đổi từ cover thành contain */
+  object-position: center;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* Alternative: Nếu muốn ảnh nhỏ hơn và có padding */
+.admin-edit-categories-preview-image-small {
+  max-width: 80%;
+  max-height: 80%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  border: 2px solid #E5E7EB;
+}
+/* Container cho file upload */
+.admin-edit-categories-file-upload-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+/* Ẩn input file gốc */
+.admin-edit-categories-file-input {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+}
+
+/* Style cho label như drop zone */
+.admin-edit-categories-file-upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 200px;
+  border: 2px dashed #D1D5DB;
+  border-radius: 12px;
+  background-color: #F9FAFB;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 40px 20px;
+  overflow: hidden;
+}
+
+.admin-edit-categories-file-upload-label:hover {
+  border-color: #007aff;
+  background-color: #f0f8ff;
+}
+
+.admin-edit-categories-file-upload-label:active {
+  transform: scale(0.98);
+}
+
+/* Icon upload */
+.admin-edit-categories-upload-icon {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  background-color: #E5E7EB;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
+
+.admin-edit-categories-file-upload-label:hover .admin-edit-categories-upload-icon {
+  background-color: #E0E7FF;
+}
+
+.admin-edit-categories-upload-icon svg {
+  transition: stroke 0.3s ease;
+}
+
+.admin-edit-categories-file-upload-label:hover .admin-edit-categories-upload-icon svg path,
+.admin-edit-categories-file-upload-label:hover .admin-edit-categories-upload-icon svg polyline {
+  stroke: #007aff;
+}
+
+/* Text upload */
+.admin-edit-categories-upload-text {
+  text-align: center;
+}
+
+.admin-edit-categories-upload-main {
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 4px 0;
+}
+
+.admin-edit-categories-upload-sub {
+  font-size: 14px;
+  color: #9CA3AF;
+  margin: 0;
+}
+
+/* Style khi có preview */
+.admin-edit-categories-file-upload-label.has-preview {
+  padding: 0;
+  border-color: #007aff;
+  background-color: transparent;
+}
+
+/* Overlay khi hover */
+.admin-edit-categories-preview-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 10px;
+}
+
+.admin-edit-categories-file-upload-label.has-preview:hover .admin-edit-categories-preview-overlay {
+  opacity: 1;
+}
+
+/* Text trong overlay */
+.admin-edit-categories-preview-text {
+  text-align: center;
+  color: white;
+}
+
+.admin-edit-categories-preview-text p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Button xóa ảnh */
+.admin-edit-categories-remove-image {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #EF4444;
+  color: white;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.admin-edit-categories-remove-image:hover {
+  background-color: #DC2626;
+  transform: scale(1.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-edit-categories-file-upload-label {
+    min-height: 150px;
+    padding: 30px 15px;
+  }
+  
+  .admin-edit-categories-image-preview-container {
+    height: 150px;
+  }
+  
+  .admin-edit-categories-remove-image {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-edit-categories-file-upload-label {
+    min-height: 120px;
+    padding: 20px 10px;
+  }
+  
+  .admin-edit-categories-image-preview-container {
+    height: 120px;
+  }
+}

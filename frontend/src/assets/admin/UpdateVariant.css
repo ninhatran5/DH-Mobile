@@ -1,0 +1,308 @@
+/* UpdateVariant.css - Modern Image Upload Styles */
+
+/* Image Upload Container */
+.variant-image-upload-container {
+  width: 100%;
+}
+
+.variant-image-upload-area {
+  border: 2px dashed #d1d5db;
+  border-radius: 16px;
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #f9fafb;
+  position: relative;
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.variant-image-upload-area:hover {
+  border-color: #6366f1;
+  background-color: #f0f4ff;
+  transform: translateY(-2px);
+}
+
+/* Upload Placeholder */
+.variant-upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 20px;
+}
+
+.variant-upload-icon {
+  font-size: 4rem;
+  color: #9ca3af;
+  margin-bottom: 10px;
+}
+
+.variant-upload-placeholder h5 {
+  color: #374151;
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.variant-upload-placeholder p {
+  margin: 0;
+  font-size: 15px;
+  color: #6b7280;
+}
+
+/* Image Preview Container */
+.variant-image-preview-container {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  height: 280px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+
+.variant-image-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 16px;
+  background: #ffffff;
+  padding: 10px;
+}
+
+/* Image Overlay */
+.variant-image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  color: white;
+  gap: 10px;
+  border-radius: 16px;
+}
+
+.variant-image-preview-container:hover .variant-image-overlay {
+  opacity: 1;
+}
+
+.variant-image-overlay i {
+  font-size: 2rem;
+}
+
+.variant-image-overlay span {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Remove Image Button */
+.variant-btn-remove-image {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: #ef4444;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 18px;
+  font-weight: bold;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.variant-btn-remove-image:hover {
+  background: #dc2626;
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.6);
+}
+
+/* Price Input Enhancements - Scoped to Update Variant */
+.variant-form .input-group .form-control:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+}
+
+.variant-form .input-group-text {
+  background-color: #f8fafc;
+  border-color: #d1d5db;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Form Enhancements - Scoped */
+.variant-form .form-label {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.variant-form .form-text.text-muted {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* Card Enhancements - Scoped */
+.variant-form .card {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.variant-form .card-body {
+  padding: 2rem;
+}
+
+/* Button Enhancements - Scoped */
+.variant-form .btn-primary {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.variant-form .btn-primary:hover {
+  background: linear-gradient(135deg, #4f46e5, #4338ca);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+.variant-form .btn-secondary {
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.variant-form .btn-outline-secondary {
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.variant-form .btn-outline-secondary:hover {
+  transform: translateY(-1px);
+}
+
+/* Form Control Enhancements - Scoped */
+.variant-form .form-control,
+.variant-form .form-select {
+  border-radius: 8px;
+  border: 2px solid #e5e7eb;
+  padding: 10px 12px;
+  transition: all 0.2s ease;
+}
+
+.variant-form .form-control:focus,
+.variant-form .form-select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .variant-form .card-body {
+    padding: 1.5rem;
+  }
+  
+  .variant-image-preview-container {
+    max-width: 350px;
+    height: 240px;
+  }
+  
+  .variant-upload-icon {
+    font-size: 3rem;
+  }
+  
+  .variant-image-upload-area {
+    min-height: 280px;
+    padding: 25px;
+  }
+  
+  .variant-btn-remove-image {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+  }
+  
+  .variant-form .d-flex.gap-2 {
+    flex-direction: column;
+    gap: 12px !important;
+  }
+  
+  .variant-form .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .variant-image-upload-area {
+    min-height: 250px;
+    padding: 20px;
+  }
+  
+  .variant-image-preview-container {
+    max-width: 280px;
+    height: 200px;
+  }
+  
+  .variant-btn-remove-image {
+    width: 26px;
+    height: 26px;
+    font-size: 14px;
+  }
+  
+  .variant-upload-placeholder h5 {
+    font-size: 1.1rem;
+  }
+  
+  .variant-upload-placeholder p {
+    font-size: 14px;
+  }
+  
+  .variant-upload-icon {
+    font-size: 2.5rem;
+  }
+}
+
+/* Loading States */
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Success/Error States */
+.text-danger {
+  color: #ef4444 !important;
+}
+
+/* Attribute Section */
+.variant-form .mb-4 .form-label.fw-bold {
+  font-size: 1.1rem;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}

@@ -1,0 +1,392 @@
+/* WithdrawModal.css */
+
+/* Modal overlay */
+.withdraw-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.wm-validate-text {
+  color: #ef4444;
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+/* Modal content container */
+.withdraw-modal-content {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  width: 70vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Header styles */
+.withdraw-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 16px;
+}
+
+.withdraw-modal-title {
+  margin: 0;
+  color: #1f2937;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.withdraw-modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.withdraw-modal-close-btn:hover {
+  color: #374151;
+}
+
+/* Balance display */
+.withdraw-balance-display {
+  background-color: #f8fafc;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.withdraw-balance-label {
+  margin: 0 0 4px 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.withdraw-balance-amount {
+  margin: 0;
+  color: #1f2937;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* Bank accounts section */
+.withdraw-accounts-title {
+  margin: 0 0 16px 0;
+  color: #1f2937;
+  font-size: 16px;
+}
+
+.withdraw-accounts-container {
+  margin-bottom: 20px;
+}
+
+/* Bank account card */
+.withdraw-account-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.withdraw-account-card:hover {
+  border-color: #3b82f6;
+  background-color: #f8fafc;
+}
+
+.withdraw-account-card.selected {
+  border: 2px solid #3b82f6;
+  background-color: #eff6ff;
+}
+
+.withdraw-account-card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.withdraw-account-info {
+  flex: 1;
+}
+
+.withdraw-account-bank-name {
+  margin: 0 0 4px 0;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.withdraw-account-number {
+  margin: 0 0 4px 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.withdraw-account-holder {
+  margin: 0 0 4px 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.withdraw-account-branch {
+  margin: 0;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.withdraw-account-delete-btn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 4px;
+  margin-top: -10px;
+  font-size: 20px;
+  transition: color 0.2s;
+}
+
+.withdraw-account-edit-btn {
+  background: none;
+  border: none;
+  color: #4469ef;
+  cursor: pointer;
+  padding: 4px;
+  margin-top: -10px;
+  font-size: 20px;
+  transition: color 0.2s;
+}
+
+.withdraw-account-delete-btn:hover {
+  color: #dc2626;
+}
+
+/* Button groups */
+.withdraw-button-group {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+/* Empty state */
+.withdraw-empty-state {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.withdraw-empty-text {
+  color: #6b7280;
+  margin-bottom: 20px;
+}
+
+/* Form styles */
+.withdraw-form-group {
+  margin-bottom: 16px;
+}
+
+.withdraw-form-group.last {
+  margin-bottom: 24px;
+}
+
+.withdraw-form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #374151;
+  font-size: 14.5px;
+  font-weight: 500;
+}
+
+.withdraw-form-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.withdraw-form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.withdraw-form-input.error {
+  border-color: #ef4444;
+}
+
+.withdraw-form-error {
+  color: #ef4444;
+  font-size: 12px;
+  margin: 4px 0 0 0;
+}
+
+.withdraw-form-help {
+  margin: 4px 0 0 0;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+/* Button styles */
+.withdraw-btn {
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.withdraw-btn-primary {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+}
+
+.withdraw-btn-primary:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.withdraw-btn-primary:disabled {
+  background-color: #d1d5db;
+  cursor: not-allowed;
+}
+
+.withdraw-btn-secondary {
+  background-color: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.withdraw-btn-secondary:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.withdraw-btn-success {
+  background-color: #10b981;
+  color: white;
+  border: none;
+}
+
+.withdraw-btn-success:hover {
+  background-color: #059669;
+}
+
+.withdraw-btn-full {
+  flex: 1;
+}
+
+.withdraw-btn-loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Selected account display */
+.withdraw-selected-account {
+  background-color: #f8fafc;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.withdraw-selected-account-title {
+  margin: 0 0 8px 0;
+  color: #1f2937;
+  font-size: 15.5px;
+}
+
+.withdraw-selected-account-bank {
+  margin: 0 0 4px 0;
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 15.5px;
+}
+
+.withdraw-selected-account-details {
+  margin: 0 0 4px 0;
+  color: #6b7280;
+  font-size: 15px;
+}
+
+/* Required field indicator */
+.withdraw-required {
+  color: #ef4444;
+}
+
+/* Loading spinner */
+.withdraw-loading-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: withdraw-spin 1s ease-in-out infinite;
+  margin-right: 8px;
+}
+.withdraw-account-card {
+  transition: all 0.3s ease;
+}
+
+.withdraw-account-card.active {
+  background-color: #e6f3ff;
+  border: 1px solid #2563eb;
+}
+@keyframes withdraw-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .withdraw-modal-content {
+    max-width: 95vw;
+    width: auto;
+    margin: 16px;
+    max-height: 90vh;
+  }
+
+  .withdraw-button-group {
+    flex-direction: column;
+  }
+
+  .withdraw-btn-full {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .withdraw-modal-content {
+    padding: 16px;
+  }
+
+  .withdraw-modal-title {
+    font-size: 16px;
+  }
+
+  .withdraw-balance-amount {
+    font-size: 18px;
+  }
+}

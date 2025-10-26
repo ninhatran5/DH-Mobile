@@ -1,0 +1,224 @@
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams, useNavigate } from "react-router-dom";
+import { fetchUserById } from "../../slices/adminuserSlice";
+import {
+  FaArrowLeft,
+  FaUser,
+  FaUserTie,
+  FaStar,
+  FaCoins,
+  FaEnvelope,
+  FaPhone,
+  FaAddressBook,
+  FaUserCog,
+  FaMapMarkerAlt,
+  FaHome,
+  FaLocationArrow,
+  FaClock,
+  FaExclamationTriangle,
+  FaEdit, // Thêm icon edit
+} from "react-icons/fa";
+import "../../assets/admin/AdminDetailAcccount.css";
+
+const ProfileAdmin = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { id } = useParams();
+
+  const { selectedUser, loading, error } = useSelector(
+    (state) => state.adminuser
+  );
+
+  useEffect(() => {
+    if (id) dispatch(fetchUserById(id));
+  }, [dispatch, id]);
+
+  const goBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      toast.error("Không thể quay lại trang trước!");
+    }
+  };
+
+  const handleEditAccount = () => {
+    navigate(`/admin/Editaccounts/${id}`);
+  };
+
+  if (loading)
+    return (
+      <div className="text-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p className="text-gray-600">Đang tải thông tin...</p>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="text-center py-12 text-red-600">
+        <FaExclamationTriangle className="text-4xl mb-4 mx-auto" />
+        <p>Lỗi: {error}</p>
+      </div>
+    );
+
+  if (!selectedUser)
+    return (
+      <div className="text-center py-12 text-gray-600">
+        Không tìm thấy người dùng.
+      </div>
+    );
+
+  const {
+    image_url,
+    username,
+    full_name,
+    email,
+    phone,
+    address,
+    ward,
+    district,
+    city,
+    role,
+    tier_id,
+    loyalty_points,
+    created_at,
+    updated_at,
+  } = selectedUser;
+
+  return (
+    <div className="container">
+      {/* Header với Back button và Edit button */}
+      <div className="profile-header-actions">
+        <button onClick={goBack} className="backdetailacccount">
+          <FaArrowLeft className="icon-detailacccount" style={{ color: '#ffffff' }} />
+          Quay lại
+        </button>
+        
+        <button onClick={handleEditAccount} className="edit-account-btn">
+          <FaEdit className="icon-detailacccount" style={{ color: '#ffffff' }} />
+          Chỉnh sửa tài khoản
+        </button>
+      </div>
+
+      <div className="profile-card">
+        <div className="profile-header">
+          <div className="profile-header-overlay"></div>
+        </div>
+
+        <div className="profile-content">
+          <div className="avatar-detailacccount">
+            <img
+              src={image_url}
+              alt="Ảnh đại diện"
+              onError={(e) => {
+                e.target.style.display = "none";
+                e.target.nextElementSibling.style.display = "flex";
+              }}
+            />
+            <div className="avatar-placeholder">
+              <FaUser className="icon-detailacccount" style={{ color: '#6c757d' }} />
+            </div>
+          </div>
+
+          <h1 className="profile-name">{username || "Không rõ tên"}</h1>
+          
+         
+
+          <div className="tongthe11">
+            <div className="section">
+              <h3 className="section-title">
+               <span> <FaAddressBook className="icon-detailacccount" style={{ color: '#6c757d' }} /> Thông tin liên hệ</span>
+              </h3>
+              <div className="section-content">
+                <div className="item">
+                  <FaEnvelope className="icon-detailacccount" style={{ color: '#007bff', fontWeight: 'bold' }} /> Thư điện tử
+                  <div>
+                    <p style={{ fontWeight: 'bold', color: '#000' }}>Email: {email}</p>
+                  </div>
+                </div>
+                <div className="item">
+                  <FaPhone className="icon-detailacccount" style={{ color: '#007bff', fontWeight: 'bold' }} /> Số điện thoại
+                  <div>
+                    <p style={{ fontWeight: 'bold', color: '#000' }}>Số điện thoại: {phone}</p>
+                  </div>
+                   <div className="item">
+               <span>
+  <FaUser className="icon-detailacccount" style={{ color: '#6c757d' }} />
+  Họ và tên
+</span>
+<p style={{ fontWeight: 'bold', color: '#000' }}>
+  {full_name || "Không rõ tên"}
+</p>
+              </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="section">
+            <h3 className="section-title">
+            <span>  <FaMapMarkerAlt className="icon-detailacccount" style={{ color: '#dc3545' }} />
+              Thông tin địa chỉ</span>
+            </h3>
+            <div className="section-content">
+              <div className="item">
+                <span>
+                  <FaHome className="icon-detailacccount" style={{ color: '#6c757d' }} />
+                  Địa chỉ nhà
+                </span>
+                <p style={{ fontWeight: 'bold', color: '#000' }}>{address}</p>
+              </div>
+              <div className="item">
+                <FaLocationArrow className="icon-detailacccount" style={{ color: '#28a745' }} /> Vị trí
+                <div>
+                <p style={{ fontWeight: 'bold', color: '#000' }}>
+  Xã/Phường: {ward || "Chưa cập nhật"}
+</p>
+<p style={{ fontWeight: 'bold', color: '#000' }}>
+  Huyện/Quận: {district || "Chưa cập nhật"}
+</p>
+<p style={{ fontWeight: 'bold', color: '#000' }}>
+  Tỉnh/Thành phố: {city || "Chưa cập nhật"}
+</p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+          </div>
+          
+          <br />
+        
+
+          <div className="section timeline">
+            <h3 className="section-title">
+              <span><FaClock className="icon-detailacccount" style={{ color: '#ffc107' }} />
+              Lịch sử hoạt động</span>
+            </h3>
+            <div className="event">
+              <div className="dot"></div>
+              <div className="content">
+                <p>Tài khoản được tạo</p>
+                <p className="date" style={{ fontWeight: 'bold', color: '#000' }}>
+                  {new Date(created_at).toLocaleString("vi-VN")}
+                </p>
+              </div>
+            </div>
+            <div className="event">
+              <div className="dot"></div>
+              <div className="content">
+                <p>Cập nhật gần nhất</p>
+                <p className="date" style={{ fontWeight: 'bold', color: '#000' }}>
+                  {new Date(updated_at).toLocaleString("vi-VN")}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ProfileAdmin;

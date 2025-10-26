@@ -1,0 +1,162 @@
+.bg-secondary-soft-custom {
+  margin-top: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  background-color: #fcfcfc;
+}
+.input-password-wrapper {
+  position: relative;
+}
+
+.input-password-wrapper input {
+  padding-right: 40px; /* chừa chỗ cho icon */
+}
+
+.toggle-password-icon {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  font-size: 20px;
+  color: #6c757d;
+  cursor: pointer;
+}
+
+.rounded-custom {
+  border-radius: 5px !important;
+}
+
+.py-5 {
+  padding-top: 3rem !important;
+  padding-bottom: 3rem !important;
+}
+
+.px-4 {
+  padding-right: 1.5rem !important;
+  padding-left: 1.5rem !important;
+}
+
+.file-upload .square-custom {
+  height: 250px;
+  width: 250px;
+  margin: auto;
+  vertical-align: middle;
+  border: 1px solid #e5dfe4;
+  background-color: #fff;
+  border-radius: 200px;
+}
+
+.text-secondary {
+  color: rgba(208, 212, 217, 0.5) !important;
+}
+
+.btn-success-soft-custom {
+  color: #28a745;
+  background-color: rgba(40, 167, 69, 0.1);
+}
+
+.btn-danger-soft-custom {
+  color: #dc3545;
+  background-color: rgba(220, 53, 69, 0.1);
+}
+.span-validate {
+  color: rgb(219, 0, 0);
+}
+.title-edit-profile {
+  font-weight: 600;
+}
+.input_profile_edit:focus {
+  box-shadow: none !important;
+}
+.input_profile_edit-select:focus {
+  box-shadow: none !important;
+  cursor: pointer;
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #29292e;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #e5dfe4;
+  border-radius: 5px;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.square-custom {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+}
+
+.square-custom img {
+  border-radius: 200px;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rounded-custom {
+  border-radius: 1rem;
+}
+
+/* Tùy chỉnh khung ảnh */
+.square-custom {
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 4px solid #dee2e6;
+  margin: 0 auto;
+  background-color: #ffffff;
+}
+
+/* Ảnh trong khung */
+.square-custom img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Nút upload */
+#customFile + label {
+  display: inline-block;
+  padding: 4px 42px;
+  background-color: #007bff;
+  color: white;
+  font-weight: 500;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#customFile + label:hover {
+  background-color: #0056b3;
+}
+
+.btn-custom-profile {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-weight: 500;
+  font-size: 15px;
+  margin-right: 10px;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 4px rgba(25, 118, 210, 0.08);
+  cursor: pointer;
+  margin-top: -20px;
+}
+
+.btn-custom-profile:last-child {
+  margin-right: 0;
+}
+
+.btn-custom-profile:hover {
+  background: #1251a3;
+  color: #fff;
+}

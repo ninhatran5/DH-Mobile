@@ -1,0 +1,101 @@
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+
+export default function News({ item }) {
+  const { t } = useTranslation();
+  function truncateText(text, maxLength) {
+    if (!text) return "";
+    if (text.length <= maxLength) return text;
+    return text.slice(0, maxLength) + "...";
+  }
+
+  return (
+    <div className="card-products col-md-4" key={item.id}>
+      <article className="post-item card border-0 shadow-sm d-flex flex-column">
+        <div
+          className="image-holder zoom-effect"
+          style={{
+            width: "100%",
+            height: 260,
+            overflow: "hidden",
+            background: "#f6f6f6",
+          }}
+        >
+          <Link
+            to={`/blog-detail/${item.news_id}`}
+            style={{ display: "block", width: "100%", height: "100%" }}
+          >
+            <img
+              src={item.image_url}
+              alt="post"
+              className="card-img-top"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                display: "block",
+              }}
+            />
+          </Link>
+        </div>
+        <div className="card-body flex-grow-1">
+          <div className="post-meta d-flex text-uppercase gap-3 my-2 align-items-center mb-2">
+            <div style={{fontSize: 13.5}} className="meta-date">
+              <small className="me-1"> {t("blog.date")}</small>
+              {item.created_at && (
+                <>
+                  {new Date(item.created_at).toLocaleDateString("vi-VN")} -{" "}
+                  {new Date(item.created_at).toLocaleTimeString("vi-VN", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                  })}
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="post-header">
+            <h4 className="post-title">
+              <Link
+                to={`/blog-detail/${item.id}`}
+                className="text-decoration-none fw-bold"
+                style={{ color: "black" }}
+              >
+                {item.title}
+              </Link>
+            </h4>
+            <div
+            style={{ fontSize: 14.5}}
+              dangerouslySetInnerHTML={{
+                __html: truncateText(item.content, 170),
+              }}
+            />
+          </div>
+        </div>
+        <div className="card-footer text-end d-flex justify-content-between align-items-center">
+          <div className="meta-date-updated">
+            <span className="me-1" style={{ fontSize: 12 }}>
+              {" "}
+              {t("blog.update")}
+            </span>
+            {item.updated_at && (
+              <>
+                {new Date(item.updated_at).toLocaleDateString("vi-VN")} -{" "}
+                {new Date(item.updated_at).toLocaleTimeString("vi-VN", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                })}
+              </>
+            )}
+          </div>
+          <small>
+            {t("blog.poster")}:{" "}
+            <span className="fw-bold">{item?.user?.full_name}</span>
+          </small>
+        </div>
+      </article>
+    </div>
+  );
+}
